@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="概述Java 8 API添加了一个新的抽象称为流Stream，可以让你以一种声明的方式处理数据。  这种风格将要处理的元素集合看作一种流， 流在管道中传输， 并且可以在管道的节点上进行处理， 比如筛选， 排序，聚合等。 元素流在管道中经过中间操作的处理，最后由最终操作得到前面处理的结果。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JDK1.8新特性（一）：Stream">
+<meta property="og:url" content="http://createsequence.github.io/2019/12/01/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AStream/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="概述Java 8 API添加了一个新的抽象称为流Stream，可以让你以一种声明的方式处理数据。  这种风格将要处理的元素集合看作一种流， 流在管道中传输， 并且可以在管道的节点上进行处理， 比如筛选， 排序，聚合等。 元素流在管道中经过中间操作的处理，最后由最终操作得到前面处理的结果。">
+<meta property="og:locale">
+<meta property="og:image" content="http://img.xiajibagao.top/%E6%8F%8F%E8%BF%B0stream.PNG">
+<meta property="article:published_time" content="2019-11-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-10-26T10:51:55.408Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="java">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.xiajibagao.top/%E6%8F%8F%E8%BF%B0stream.PNG">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://createsequence.github.io/2019/12/01/java/JDK1.8新特性（一）：Stream/"/>
+
+
+
+
+
+  <title>JDK1.8新特性（一）：Stream | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Createsequence's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://createsequence.github.io/2019/12/01/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AStream/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JDK1.8新特性（一）：Stream</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-01T00:00:00+08:00">
+                2019-12-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>Java 8 API添加了一个新的抽象称为流Stream，可以让你以一种声明的方式处理数据。 </p>
+<p>这种风格将要处理的元素集合看作一种流， 流在管道中传输， 并且可以在管道的节点上进行处理， 比如筛选， 排序，聚合等。</p>
+<p>元素流在管道中经过中间操作的处理，最后由最终操作得到前面处理的结果。</p>
+<p><img src="http://img.xiajibagao.top/%E6%8F%8F%E8%BF%B0stream.PNG"></p>
+<a id="more"></a>
+
+<h2 id="二-举个例子？"><a href="#二-举个例子？" class="headerlink" title="二. 举个例子？"></a>二. 举个例子？</h2><p>现在有一个字符串集合，我们需要过滤掉集合里头长度小于2的字符串：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">( String[] args )</span> </span>&#123;</span><br><span class="line">    List&lt;String&gt; strings = Arrays.asList(<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;bc&quot;</span>, <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;abcd&quot;</span>,<span class="string">&quot;&quot;</span>, <span class="string">&quot;jkl&quot;</span>);</span><br><span class="line">    List&lt;String&gt; stringList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (String str : strings)&#123;</span><br><span class="line">        <span class="comment">//如果长度大于2</span></span><br><span class="line">        <span class="keyword">if</span> (str.length() &gt;= <span class="number">2</span>)&#123;</span><br><span class="line">            <span class="comment">//将字符串添加至新集合</span></span><br><span class="line">            stringList.add(str);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    strings = stringList;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>如果使用stream实现一模一样的效果：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">( String[] args )</span> </span>&#123;</span><br><span class="line">    List&lt;String&gt; strings = Arrays.asList(<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;bc&quot;</span>, <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;abcd&quot;</span>,<span class="string">&quot;&quot;</span>, <span class="string">&quot;jkl&quot;</span>);</span><br><span class="line">    <span class="comment">//通过stream操作集合</span></span><br><span class="line">    strings = strings.stream()</span><br><span class="line">        <span class="comment">//去掉长度小于2的字符串</span></span><br><span class="line">        .filter(s -&gt; s.length() &gt;= <span class="number">2</span>)</span><br><span class="line">        <span class="comment">//转回集合</span></span><br><span class="line">        .collect(Collectors.toList());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可见，使用streamAPI可以轻松写出更高效，更简洁，可读性更强的代码</p>
+<h2 id="三-如何使用stream？"><a href="#三-如何使用stream？" class="headerlink" title="三. 如何使用stream？"></a>三. 如何使用stream？</h2><p>简单的说，分两步：生成流，操作流</p>
+<h3 id="1-生成流"><a href="#1-生成流" class="headerlink" title="1.  生成流"></a>1.  生成流</h3><p>Stream 的创建需要指定一个数据源，比如 java.util.Collection的子类，List或者Set， 不支持Map</p>
+<p>1.1 Collection接口的stream()或parallelStream()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//将Set或List集合直接转换为stream对象</span></span><br><span class="line">List&lt;Person&gt; personList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">Set&lt;Person&gt; set = <span class="keyword">new</span> HashSet&lt;&gt;();</span><br><span class="line"></span><br><span class="line">Stream&lt;Person&gt; personStream1 = personList.stream();<span class="comment">//生成串行流</span></span><br><span class="line">Stream&lt;Person&gt; personStream2 = set.parallelStream();<span class="comment">//生成并行流</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>1.2 Stream.of()，Arrays.stream，Stream.empty()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">String[] strArr = &#123;<span class="string">&quot;a&quot;</span>,<span class="string">&quot;a&quot;</span>,<span class="string">&quot;a&quot;</span>,<span class="string">&quot;a&quot;</span>,<span class="string">&quot;a&quot;</span>,<span class="string">&quot;a&quot;</span>&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//Stream.empty()</span></span><br><span class="line">Stream&lt;Integer&gt; integerStream = Stream.empty();</span><br><span class="line"></span><br><span class="line"><span class="comment">//Stream.of() （方法内部调用的还是Arrays.stream）</span></span><br><span class="line">Stream&lt;String&gt; stringStream = Stream.of(strArr);</span><br><span class="line"></span><br><span class="line"><span class="comment">//Arrays.stream</span></span><br><span class="line">Stream&lt;String&gt; stringStream2 = Arrays.stream(strArr);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>1.3 Stream.concat()方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//已有的对象</span></span><br><span class="line">Stream&lt;Integer&gt; integerStream = Stream.empty();</span><br><span class="line">Stream&lt;String&gt; stringStream = Stream.of(strArr);</span><br><span class="line">Stream&lt;String&gt; stringStream2 = Arrays.stream(strArr);</span><br><span class="line"></span><br><span class="line"><span class="comment">//合并两个流</span></span><br><span class="line">Stream conStream1 = Stream.concat(stringStream,integerStream);</span><br><span class="line">Stream conStream2 = Stream.concat(stringStream,stringStream2);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>1.4 静态的Files.lines(path) </p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">File file = <span class="keyword">new</span> File(<span class="string">&quot;D://test.txt&quot;</span>);</span><br><span class="line">Stream&lt;String&gt; lines = Files.lines(file);</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="2-操作流"><a href="#2-操作流" class="headerlink" title="2. 操作流"></a>2. 操作流</h3><p> Stream 操作分为中间操作或者最终操作两种，最终操作返回一特定类型的计算结果，而中间操作返回Stream本身，可以在后头跟上其他中间操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//接下来的示例代码基于此集合</span></span><br><span class="line">List&lt;String&gt; strings = Arrays.asList(<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;bc&quot;</span>, <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;abcd&quot;</span>,<span class="string">&quot;&quot;</span>, <span class="string">&quot;jkl&quot;</span>);</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2.1 filter(Predicate：将结果为false的元素过滤掉</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//去掉长度小于2的字符串</span></span><br><span class="line">strings = strings.stream()</span><br><span class="line">    .filter(s -&gt; s.length() &gt;= <span class="number">2</span>)</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">System.out.println(strings);</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印strings</span></span><br><span class="line">[ab, bc, cd, abcd, jkl]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2.2 map(fun)：转换元素的值，可以引用方法或者直接用lambda表达式</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">strings = strings.stream()</span><br><span class="line">    <span class="comment">//为每个字符串加上“？？？”</span></span><br><span class="line">    .map(s -&gt; s += <span class="string">&quot;？？？&quot;</span>)</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">System.out.println(strings);</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印strings</span></span><br><span class="line">[ab？？？, ？？？, bc？？？, cd？？？, abcd？？？, ？？？, jkl？？？]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2.3 limit(n)：保留前n个元素</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">strings = strings.stream()</span><br><span class="line">    <span class="comment">//保留前3个</span></span><br><span class="line">    .limit(<span class="number">3</span>)</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">System.out.println(strings);</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印strings</span></span><br><span class="line">[ab, , bc]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2.4 skip(n)：跳过前n个元素</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">strings = strings.stream()</span><br><span class="line">    <span class="comment">//跳过前2个</span></span><br><span class="line">    .skip(<span class="number">2</span>)</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">System.out.println(strings);</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印strings</span></span><br><span class="line">[bc, cd, abcd, , jkl]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2.5 distinct()：剔除重复元素</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">strings = strings.stream()</span><br><span class="line">    <span class="comment">//过滤重复元素</span></span><br><span class="line">    .distinct()</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">System.out.println(strings);</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印strings(过滤掉了一个空字符串)</span></span><br><span class="line">[ab, , bc, cd, abcd, jkl]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2.6 sorted()：通过Comparable对元素排序</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">strings = strings.stream()</span><br><span class="line">    <span class="comment">//按字符串长度排序</span></span><br><span class="line">    .sorted(</span><br><span class="line">        <span class="comment">//比较字符串长度</span></span><br><span class="line">        Comparator.comparing(s -&gt; s.length())</span><br><span class="line">	)</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">System.out.println(strings);</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印strings(过滤掉了一个空字符串)</span></span><br><span class="line">[, , ab, bc, cd, jkl, abcd]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2.7 peek(fun)：流不变，但会把每个元素传入fun执行，可以用作调试</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">strings = strings.stream()</span><br><span class="line">    <span class="comment">//为字符串增加“？？？”</span></span><br><span class="line">    .peek(s -&gt; s += <span class="string">&quot;???&quot;</span>)</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">System.out.println(strings);</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印strings，和map对比，实际并没有改变集合</span></span><br><span class="line">[ab, , bc, cd, abcd, , jkl]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2.8 flatMap(fun)：若元素是流，将流摊平为正常元素，再进行元素转换</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//将具有多重嵌套结构的集合扁平化</span></span><br><span class="line"></span><br><span class="line"><span class="comment">//获取一个两重集合</span></span><br><span class="line">List&lt;String&gt; strings = Arrays.asList(<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;bc&quot;</span>, <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;abcd&quot;</span>,<span class="string">&quot;&quot;</span>, <span class="string">&quot;jkl&quot;</span>);</span><br><span class="line">List&lt;String&gt; strings2 = Arrays.asList(<span class="string">&quot;asd&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;bzxasdc&quot;</span>, <span class="string">&quot;cddsdsd&quot;</span>, <span class="string">&quot;adsdsg&quot;</span>,<span class="string">&quot;&quot;</span>, <span class="string">&quot;jvcbl&quot;</span>);</span><br><span class="line">List&lt;List&lt;String&gt;&gt; lists = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">lists.add(strings);</span><br><span class="line">lists.add(strings2);</span><br><span class="line"></span><br><span class="line"><span class="comment">//获取将两重集合压成一层</span></span><br><span class="line">List&lt;String&gt; stringList = lists.stream()</span><br><span class="line">    <span class="comment">//将两重集合的子元素，即集合strings和strings2转成流再平摊</span></span><br><span class="line">    .flatMap(Collection::stream)</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">System.out.println(stringList);</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印stringList</span></span><br><span class="line">[ab, , bc, cd, abcd, , jkl, asd, , bzxasdc, cddsdsd, adsdsg, , jvcbl]</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2.9 anyMatch(fun)，allMatch(fun)：判断流中的元素是否匹配 【最终操作】</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//allMatch</span></span><br><span class="line">Boolean isAllMatch = strings.stream()</span><br><span class="line">    <span class="comment">//判断元素中是否有匹配“ab”的字符串，返回true或fals</span></span><br><span class="line">    <span class="comment">//判断元素中的字符串是否都与“ab”匹配，返回true或fals</span></span><br><span class="line">    .allMatch(str -&gt; str.equals(<span class="string">&quot;ab&quot;</span>));</span><br><span class="line"></span><br><span class="line">System.out.println(isMatch);</span><br><span class="line"></span><br><span class="line"><span class="comment">//anyMatch</span></span><br><span class="line">Boolean isAnyMatch = strings.stream()</span><br><span class="line">    <span class="comment">//判断元素中是否有匹配“ab”的字符串，返回true或fals</span></span><br><span class="line">    .anyMatch(str -&gt; str.equals(<span class="string">&quot;ab&quot;</span>));</span><br><span class="line"></span><br><span class="line">System.out.println(<span class="string">&quot;isAnyMatch：&quot;</span> + isAnyMatch);</span><br><span class="line">System.out.println(<span class="string">&quot;isAllMatch：&quot;</span> + isAllMatch);</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印结果</span></span><br><span class="line">isAnyMatch：<span class="keyword">true</span></span><br><span class="line">isAllMatch：<span class="keyword">false</span></span><br></pre></td></tr></table></figure>
+
+
+
+<p>2.10 forEach(fun)： 迭代流中的每个数据 【最终操作】</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">strings.stream()</span><br><span class="line">    <span class="comment">//遍历每一个元素</span></span><br><span class="line">    .forEach(s -&gt; System.out.print(s + <span class="string">&quot;; &quot;</span>));</span><br></pre></td></tr></table></figure>
+
+
+
+<p>2.11 collect()：返回结果集 【最终操作】</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">strings = strings.stream()</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="四-使用IntSummaryStatistics类处理数据"><a href="#四-使用IntSummaryStatistics类处理数据" class="headerlink" title="四. 使用IntSummaryStatistics类处理数据"></a>四. 使用IntSummaryStatistics类处理数据</h2><h3 id="1-IntSummaryStatistics类"><a href="#1-IntSummaryStatistics类" class="headerlink" title="1. IntSummaryStatistics类"></a>1. IntSummaryStatistics类</h3><p>IntSummaryStatistics类，在 java8中配合Stream使用，是用于收集统计信息（例如计数，最小值，最大值，总和和*平均值）的状态对象。</p>
+<p>这个类长这样：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">IntSummaryStatistics</span> <span class="keyword">implements</span> <span class="title">IntConsumer</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> count;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">long</span> sum;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> min = Integer.MAX_VALUE;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> max = Integer.MIN_VALUE;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">IntSummaryStatistics</span><span class="params">()</span> </span>&#123; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">accept</span><span class="params">(<span class="keyword">int</span> value)</span> </span>&#123;</span><br><span class="line">        ++count;</span><br><span class="line">        sum += value;</span><br><span class="line">        min = Math.min(min, value);</span><br><span class="line">        max = Math.max(max, value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">combine</span><span class="params">(IntSummaryStatistics other)</span> </span>&#123;</span><br><span class="line">        count += other.count;</span><br><span class="line">        sum += other.sum;</span><br><span class="line">        min = Math.min(min, other.min);</span><br><span class="line">        max = Math.max(max, other.max);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getCount</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> count;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">long</span> <span class="title">getSum</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> sum;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getMin</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> min;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">int</span> <span class="title">getMax</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> max;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">double</span> <span class="title">getAverage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> getCount() &gt; <span class="number">0</span> ? (<span class="keyword">double</span>) getSum() / getCount() : <span class="number">0.0d</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> String.format(</span><br><span class="line">            <span class="string">&quot;%s&#123;count=%d, sum=%d, min=%d, average=%f, max=%d&#125;&quot;</span>,</span><br><span class="line">            <span class="keyword">this</span>.getClass().getSimpleName(),</span><br><span class="line">            getCount(),</span><br><span class="line">            getSum(),</span><br><span class="line">            getMin(),</span><br><span class="line">            getAverage(),</span><br><span class="line">            getMax());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-使用"><a href="#2-使用" class="headerlink" title="2.使用"></a>2.使用</h3><p>这个类的理解起来很简单，内部有这几个方法：</p>
+<p>2.1 获取总条数：getCount()，</p>
+<p>2.2 获取和：getSum()，</p>
+<p>2.3 获取最小值：getMin()，</p>
+<p>2.4 获取最大值：getMax()，</p>
+<p>2.5 获取平均值：getAverage()</p>
+<p>示例如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">( String[] args )</span> </span>&#123;</span><br><span class="line">    List&lt;Integer&gt; integerList = Arrays.asList(<span class="number">3</span>, <span class="number">4</span>, <span class="number">22</span>, <span class="number">31</span>, <span class="number">75</span>, <span class="number">32</span>, <span class="number">54</span>);</span><br><span class="line"></span><br><span class="line">    IntSummaryStatistics sta = integerList</span><br><span class="line">        .stream()</span><br><span class="line">        <span class="comment">//将元素映射为对应的数据类型（int,double,long）</span></span><br><span class="line">        .mapToInt(i -&gt; i)</span><br><span class="line">        <span class="comment">//转换为summaryStatistics类</span></span><br><span class="line">        .summaryStatistics();</span><br><span class="line"></span><br><span class="line">    System.out.println(<span class="string">&quot;总共有 : &quot;</span>+ sta.getCount());</span><br><span class="line">    System.out.println(<span class="string">&quot;列表中最大的数 : &quot;</span> + sta.getMax());</span><br><span class="line">    System.out.println(<span class="string">&quot;列表中最小的数 : &quot;</span> + sta.getMin());</span><br><span class="line">    System.out.println(<span class="string">&quot;所有数之和 : &quot;</span> + sta.getSum());</span><br><span class="line">    System.out.println(<span class="string">&quot;平均数 : &quot;</span> + sta.getAverage());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//打印结果</span></span><br><span class="line">总共有 : <span class="number">7</span></span><br><span class="line">列表中最大的数 : <span class="number">75</span></span><br><span class="line">列表中最小的数 : <span class="number">3</span></span><br><span class="line">所有数之和 : <span class="number">221</span></span><br><span class="line">平均数 : <span class="number">31.571428571428573</span></span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/12/01/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ACollectors%E6%94%B6%E9%9B%86%E5%99%A8%E7%B1%BB/" rel="next" title="JDK1.8新特性（二）：Collectors收集器类">
+                <i class="fa fa-chevron-left"></i> JDK1.8新特性（二）：Collectors收集器类
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/06/27/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%EF%BC%8C%E5%B9%B6%E8%A1%8C%E5%B9%B6%E5%8F%91%EF%BC%8C%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%EF%BC%8C%E9%98%BB%E5%A1%9E%E8%B4%B9%E9%98%BB%E5%A1%9E/" rel="prev" title="进程线程，并行并发，同步异步，阻塞费阻塞">
+                进程线程，并行并发，同步异步，阻塞费阻塞 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7Carchive">
+              
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">2</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90%EF%BC%9F"><span class="nav-number">2.</span> <span class="nav-text">二. 举个例子？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E5%A6%82%E4%BD%95%E4%BD%BF%E7%94%A8stream%EF%BC%9F"><span class="nav-number">3.</span> <span class="nav-text">三. 如何使用stream？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%94%9F%E6%88%90%E6%B5%81"><span class="nav-number">3.1.</span> <span class="nav-text">1.  生成流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%93%8D%E4%BD%9C%E6%B5%81"><span class="nav-number">3.2.</span> <span class="nav-text">2. 操作流</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B-%E4%BD%BF%E7%94%A8IntSummaryStatistics%E7%B1%BB%E5%A4%84%E7%90%86%E6%95%B0%E6%8D%AE"><span class="nav-number">4.</span> <span class="nav-text">四. 使用IntSummaryStatistics类处理数据</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-IntSummaryStatistics%E7%B1%BB"><span class="nav-number">4.1.</span> <span class="nav-text">1. IntSummaryStatistics类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BD%BF%E7%94%A8"><span class="nav-number">4.2.</span> <span class="nav-text">2.使用</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Createsequence</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
