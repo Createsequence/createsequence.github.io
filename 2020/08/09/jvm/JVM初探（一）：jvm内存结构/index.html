@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="java,jvm," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="概述我们知道java代码先编译为.class文件，然后再将.class文件交由jvm执行。在程序运行的这一过程中，jvm会将其管理的内存空间划分为不同的区域，这些区域各有各的用途，我们将其分为五类：  方法区 堆 虚拟机栈 本地方法栈 程序计数器  其中方法区和堆是线程共享的，随jvm启动和停止而创建和销毁； 而虚拟机栈、本地方法栈和程序计数器则是线程私有的，随线程的创建和结束而创建和销毁。  一">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JVM初探（一）：jvm内存结构">
+<meta property="og:url" content="http://createsequence.github.io/2020/08/09/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9Ajvm%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="概述我们知道java代码先编译为.class文件，然后再将.class文件交由jvm执行。在程序运行的这一过程中，jvm会将其管理的内存空间划分为不同的区域，这些区域各有各的用途，我们将其分为五类：  方法区 堆 虚拟机栈 本地方法栈 程序计数器  其中方法区和堆是线程共享的，随jvm启动和停止而创建和销毁； 而虚拟机栈、本地方法栈和程序计数器则是线程私有的，随线程的创建和结束而创建和销毁。  一">
+<meta property="og:locale">
+<meta property="og:image" content="http://img.xiajibagao.top/jvm%E5%86%85%E5%AD%98%E4%BD%93%E7%B3%BB.png">
+<meta property="og:image" content="http://img.xiajibagao.top/%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8.png">
+<meta property="og:image" content="http://img.xiajibagao.top/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88.png">
+<meta property="og:image" content="http://img.xiajibagao.top/%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88.png">
+<meta property="og:image" content="http://img.xiajibagao.top/java%E5%A0%86.png">
+<meta property="og:image" content="http://img.xiajibagao.top/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0.png">
+<meta property="og:image" content="http://img.xiajibagao.top/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E5%9C%A8JDK8%E8%A2%AB%E5%88%86%E7%A6%BB.png">
+<meta property="article:published_time" content="2020-08-08T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-10-27T01:30:59.745Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="jvm">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.xiajibagao.top/jvm%E5%86%85%E5%AD%98%E4%BD%93%E7%B3%BB.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://createsequence.github.io/2020/08/09/jvm/JVM初探（一）：jvm内存结构/"/>
+
+
+
+
+
+  <title>JVM初探（一）：jvm内存结构 | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Createsequence's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://createsequence.github.io/2020/08/09/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9Ajvm%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">JVM初探（一）：jvm内存结构</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-09T00:00:00+08:00">
+                2020-08-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id=""><a href="#" class="headerlink" title=""></a></h2><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>我们知道java代码先编译为.class文件，然后再将.class文件交由jvm执行。在程序运行的这一过程中，jvm会将其管理的内存空间划分为不同的区域，这些区域各有各的用途，我们将其分为五类：</p>
+<ol>
+<li>方法区</li>
+<li>堆</li>
+<li>虚拟机栈</li>
+<li>本地方法栈</li>
+<li>程序计数器</li>
+</ol>
+<p>其中方法区和堆是线程共享的，随jvm启动和停止而创建和销毁；</p>
+<p>而虚拟机栈、本地方法栈和程序计数器则是线程私有的，随线程的创建和结束而创建和销毁。</p>
+<p><img src="http://img.xiajibagao.top/jvm%E5%86%85%E5%AD%98%E4%BD%93%E7%B3%BB.png" alt="jvm内存体系"></p>
+<h2 id="一、线程隔离数据区"><a href="#一、线程隔离数据区" class="headerlink" title="一、线程隔离数据区"></a>一、线程隔离数据区</h2><p>包括程序计数器，虚拟机栈，本地方法栈三部分，是线程私有的数据区。</p>
+<h3 id="1-程序计数器"><a href="#1-程序计数器" class="headerlink" title="1.程序计数器"></a>1.程序计数器</h3><p><img src="http://img.xiajibagao.top/%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8.png" alt="程序计数器"></p>
+<blockquote>
+<p>程序计数器用于记录当前线程执行的字节码指令的地址。</p>
+</blockquote>
+<p>我们知道cup实现多线程操作是根据每个线程分配是时间片来决定处的，每一个时间片cup都只处理抢到那个时间片的线程，因此很可能出现线程1指令执行到一半，结果下一个时间片又去处理另一个线程了。</p>
+<p>为了能够在线程切换后依然能恢复到正确的指令位置，<strong>每一个线程都需要一个独立的计数器去记录正在执行的字节码指令地址</strong>，我们可以简单的理解为一个记录执行到的指令行数的一个指示器。</p>
+<p><strong>如果指向的是java方法，计数器记录执行的字节码的地址，如果是非java代码的Native方法，这计数器为空。</strong></p>
+<p><strong>计数器是唯一一个没有规定<code>OutOfMemoryError</code>的区域。</strong></p>
+<h3 id="2-虚拟机栈"><a href="#2-虚拟机栈" class="headerlink" title="2.虚拟机栈"></a>2.虚拟机栈</h3><p><img src="http://img.xiajibagao.top/%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88.png" alt="虚拟机栈"></p>
+<blockquote>
+<p>虚拟机栈是描述java方法执行的一个内存模型。</p>
+</blockquote>
+<p>每个方法执行的时候会常见一个栈帧，栈帧中会储存局部变量表。操作数栈、动态链接、方法出口信息等。比如方法的局部变量会插入局部遍历表，对局部变量的运算和传递则通过数栈等等。</p>
+<p><strong>每个方法从调用到完成就是一个栈帧在虚拟机栈中入栈到出栈的一个过程</strong>。我们使用递归时提到的栈就是虚拟机栈。</p>
+<p>虚拟机栈规定有两种异常：<code>StackOverflowError</code> 和 <code>OutOfMemoryError</code></p>
+<p>我们知道方法调用实际就是栈帧入栈，<strong>如果栈的深度超过规定，就会抛出<code>StackOverflowError</code>异常</strong>；</p>
+<p>栈的大小可以规定也可以动态扩展，<strong>如果栈扩展大小时申请不到足够的内存，就会抛出<code>OutOfMemoryError</code>异常</strong>.</p>
+<h3 id="3-本地方法栈"><a href="#3-本地方法栈" class="headerlink" title="3.本地方法栈"></a>3.本地方法栈</h3><p><img src="http://img.xiajibagao.top/%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88.png" alt="本地方法栈"></p>
+<blockquote>
+<p>本地方法栈是描述j非java的方法执行的一个内存模型。</p>
+</blockquote>
+<p>它与虚拟机栈功能一样，但是不同的是本地方法栈用于存放实现方法非java代码的方法。当一个java方法要调用的的时候，会将java栈帧入虚拟机栈，而当非java方法要调用的时候就会入本地方法栈。</p>
+<p>实际上两种栈之间往往会互相调用对方的方法，比如java方法A调用了java方法B，java方法B调用了C++方法C，这个C++方法又调用了java方法D，描述一下过程就会是：</p>
+<p><code>A =》虚拟机栈，B =》虚拟机栈，C =》本地方法栈，D =》虚拟机栈</code></p>
+<h2 id="二、线程共享数据区"><a href="#二、线程共享数据区" class="headerlink" title="二、线程共享数据区"></a>二、线程共享数据区</h2><h3 id="1-堆"><a href="#1-堆" class="headerlink" title="1.堆"></a>1.堆</h3><p><img src="http://img.xiajibagao.top/java%E5%A0%86.png" alt="java堆"></p>
+<blockquote>
+<p>堆用于存放对象实例、数组和字符串常量池</p>
+</blockquote>
+<p>堆用于存放类的实例对象、数组和字符串常量池、另外，由于实例对象存储于此区域，所以也是<strong>垃圾收集器管理的主要区域，故又称GC堆</strong>。</p>
+<p>java对可以是固定大小，也可以是动态大小，如果<strong>堆中没有内存分配给新的实例对象的时候，就会抛出<code>OutOfMemoryError</code>异常</strong>。</p>
+<h4 id="1-2字符串常量池"><a href="#1-2字符串常量池" class="headerlink" title="1.2字符串常量池"></a>1.2字符串常量池</h4><p>这里稍微提一下字符串常量池，正由于字符串常量池的存在，当创建字符串常量时，<strong>首先检查字符串常量池是否存在该字符串，存在该字符串，返回引用实例，不存在，实例化该字符串并放入池中</strong>。</p>
+<p>这也是为什么字符串明明是对象却可以直接使用 == 比较，因为同样的字符指向的都是常量池里同一个字符串对象。</p>
+<h4 id="1-3内存分配策略"><a href="#1-3内存分配策略" class="headerlink" title="1.3内存分配策略"></a>1.3内存分配策略</h4><p>另外值得一提的是，堆往往和垃圾回收问题一起出现，所以这里也简单的介绍一下内存分配的策略：</p>
+<p>由于jvm内存回收机制采用了<strong>分代收集算法</strong>，所以java堆中还分为<strong>新生代和老年代</strong>，新生代中又分为占大部分控件的<code>eden</code>区域和占较小空间的<code>survivorSpace0</code>和<code>survivorSpace1</code>。</p>
+<p>根据分代收集算法，堆中内存分配时一般遵循以下原则：</p>
+<ul>
+<li><p><strong>对象优先分配给<code>eden</code>区域</strong>。当eden区域没有足够弓箭时，发起一次GC。当垃圾回收时，根据复制算法：</p>
+<p><code>eden</code>和一个<code>survivorSpace</code>中还存活的对象会复制到另一个<code>survivorSpace</code>中，然后清理原先的空间</p>
+</li>
+<li><p><strong>需要大量连续内存空间的大对象直接进入老年代</strong>。比如巨长的数组或者字符串，还有非常高的树之类的。</p>
+</li>
+<li><p><strong>长期存活的对象会进入老年代</strong>。对象在新生代活过一定次数GC后会移入老年代。</p>
+</li>
+<li><p><strong>动态对象年龄判定</strong>。如果在<code>survivorSpace</code>空间中相同年龄所有对象大小的总和大小大于<code>survivorSpace</code>空间的一半，年龄大于或等于该年龄的对象直接进入老年代</p>
+</li>
+</ul>
+<p>当然，不同的垃圾收集器和不同的垃圾收集算法适应不同的程序运行情况，实际的内存回收机制要复杂的多，这里以后会在新随笔里另外再展开，这里就不再赘述了。</p>
+<h3 id="2-方法区"><a href="#2-方法区" class="headerlink" title="2.方法区"></a>2.方法区</h3><blockquote>
+<p>方法区主要用来存放类信息、类的静态变量、常量、运行时常量池等</p>
+</blockquote>
+<p>方法区和堆功能类似，主要用与存放类信息，常量和即时编译器编译后的代码等数据。</p>
+<h4 id="2-2永久代"><a href="#2-2永久代" class="headerlink" title="2.2永久代"></a>2.2永久代</h4><p>很多文章提到方法区的时候都会涉及到这个“永久代”这个词。实际上，<strong>方法区是jvm的一个规范，永久代是这种规范的另一种实现</strong>，类似的还有元空间，这也是方法区的一种实现。</p>
+<p>jvm虚拟机分为很多种，比如HotSpot ，JRockit（Oracle）、J9（IBM）等等，但是只有HotSpot才有永久代这个说法。硬要说的话，方法区可以理解为一个接口，永久区是这个接口的实现类。</p>
+<h4 id="2-3-运行时常量池"><a href="#2-3-运行时常量池" class="headerlink" title="2.3 运行时常量池"></a>2.3 运行时常量池</h4><p><img src="http://img.xiajibagao.top/%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0.png" alt="运行时常量池"></p>
+<p>类似的问题还有运行时常量池。运行时常量池是方法区的一部分，用于存储各种编译时以及运行时产生的新常量，类加载以后的数据就存放于此，还有字符串手动入池方法<code>intern()</code>。</p>
+<p>这里的 “运行时常量池”同上文提到的方法区和永久代的关系一样，也是jvm的规范而不是实现，运行时常量必然会有一个专门的储存空间，但是放在哪就得看虚拟机各自的实现了。</p>
+<p>不过这里要额外理解一下字符串常量池：</p>
+<p>常量池分为两块，一块是堆中的字符串常量池，一块是方法区中的常量池。实际上<strong>JDK8之前字符串常量池也在方法区中的常量池里边，而在JDK8之后被单独分离出来放到了堆里</strong>。</p>
+<p><img src="http://img.xiajibagao.top/%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0%E5%9C%A8JDK8%E8%A2%AB%E5%88%86%E7%A6%BB.png" alt="字符串常量池在JDK8被分离"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/jvm/" rel="tag"># jvm</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/08/05/java/java%E6%98%AF%E5%80%BC%E4%BC%A0%E9%80%92%E8%BF%98%E6%98%AF%E5%BC%95%E7%94%A8%E4%BC%A0%E9%80%92/" rel="next" title="java是值传递还是引用传递">
+                <i class="fa fa-chevron-left"></i> java是值传递还是引用传递
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/08/10/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" rel="prev" title="JVM初探（二）：垃圾回收机制">
+                JVM初探（二）：垃圾回收机制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7Carchive">
+              
+                  <span class="site-state-item-count">40</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text"></span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">2.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%BA%BF%E7%A8%8B%E9%9A%94%E7%A6%BB%E6%95%B0%E6%8D%AE%E5%8C%BA"><span class="nav-number">3.</span> <span class="nav-text">一、线程隔离数据区</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8"><span class="nav-number">3.1.</span> <span class="nav-text">1.程序计数器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%99%9A%E6%8B%9F%E6%9C%BA%E6%A0%88"><span class="nav-number">3.2.</span> <span class="nav-text">2.虚拟机栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%9C%AC%E5%9C%B0%E6%96%B9%E6%B3%95%E6%A0%88"><span class="nav-number">3.3.</span> <span class="nav-text">3.本地方法栈</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%BA%BF%E7%A8%8B%E5%85%B1%E4%BA%AB%E6%95%B0%E6%8D%AE%E5%8C%BA"><span class="nav-number">4.</span> <span class="nav-text">二、线程共享数据区</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%A0%86"><span class="nav-number">4.1.</span> <span class="nav-text">1.堆</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-2%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%B8%B8%E9%87%8F%E6%B1%A0"><span class="nav-number">4.1.1.</span> <span class="nav-text">1.2字符串常量池</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#1-3%E5%86%85%E5%AD%98%E5%88%86%E9%85%8D%E7%AD%96%E7%95%A5"><span class="nav-number">4.1.2.</span> <span class="nav-text">1.3内存分配策略</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%96%B9%E6%B3%95%E5%8C%BA"><span class="nav-number">4.2.</span> <span class="nav-text">2.方法区</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2%E6%B0%B8%E4%B9%85%E4%BB%A3"><span class="nav-number">4.2.1.</span> <span class="nav-text">2.2永久代</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-3-%E8%BF%90%E8%A1%8C%E6%97%B6%E5%B8%B8%E9%87%8F%E6%B1%A0"><span class="nav-number">4.2.2.</span> <span class="nav-text">2.3 运行时常量池</span></a></li></ol></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Createsequence</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
