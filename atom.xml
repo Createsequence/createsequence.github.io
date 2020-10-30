@@ -46,6 +46,31 @@
   </entry>
   
   <entry>
+    <title>JDK1.8新特性（三）：Lambda表达式</title>
+    <link href="http://blog.xiajibagao.top/2020/10/13/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/"/>
+    <id>http://blog.xiajibagao.top/2020/10/13/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/</id>
+    <published>2020-10-12T16:00:00.000Z</published>
+    <updated>2020-10-30T11:14:47.516Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;JDK8 为我们带来了 Lambda 表达式和函数式接口，这一点在前文介绍 Stream 和 Collectors</summary>
+        
+      
+    
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/categories/java/"/>
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
+    
+  </entry>
+  
+  <entry>
     <title>设计模式（一）：工厂模式</title>
     <link href="http://blog.xiajibagao.top/2020/09/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/"/>
     <id>http://blog.xiajibagao.top/2020/09/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/</id>
@@ -503,31 +528,6 @@
     
     
     <category term="杂七乱八" scheme="http://blog.xiajibagao.top/tags/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>数据结构与算法（十一）：二叉树</title>
-    <link href="http://blog.xiajibagao.top/2020/07/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BA%8C%E5%8F%89%E6%A0%91/"/>
-    <id>http://blog.xiajibagao.top/2020/07/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BA%8C%E5%8F%89%E6%A0%91/</id>
-    <published>2020-07-11T16:00:00.000Z</published>
-    <updated>2020-10-27T02:07:52.447Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;一、什么是二叉树&quot;&gt;&lt;a href=&quot;#一、什么是二叉树&quot; class=&quot;headerlink&quot; title=&quot;一、什么是二叉树&quot;&gt;&lt;/a&gt;一、什么是二叉树&lt;/h2&gt;&lt;h3 id=&quot;1-概述&quot;&gt;&lt;a href=&quot;#1-概述&quot; class=&quot;headerlink&quot;</summary>
-        
-      
-    
-    
-    
-    <category term="数据结构与算法" scheme="http://blog.xiajibagao.top/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
-    
-    
-    <category term="数据结构与算法" scheme="http://blog.xiajibagao.top/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   
