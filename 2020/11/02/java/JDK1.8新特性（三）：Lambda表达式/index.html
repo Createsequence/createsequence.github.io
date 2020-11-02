@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="设计模式," />
+  <meta name="keywords" content="java," />
 
 
 
@@ -81,21 +81,18 @@
 
 
 
-<meta name="description" content="概述 工厂模式（Factory Pattern）属于创建型模式，它提供了一种创建对象的最佳方式。在工厂模式中，我们在创建对象时不会对客户端暴露创建逻辑，并且是通过使用一个共同的接口来指向新创建的对象。  工厂模式旨在与解决接口实现类选择这一类问题，让实例创建的代码使用实例的方法解耦。 当我们需要根据不同的明确条件下创建不同的实例的时候，就可以使用工厂模式。 工厂模式分为三类：  工厂方法模式：一个">
+<meta name="description" content="概述JDK8 为我们带来了 Lambda 表达式和函数式接口，这一点在前文介绍 Stream 和 Collectors 的时候已有提及。通过使用这些特性，我们可以更简洁的创建匿名内部类，也可以将方法作为参数直接传入方法中调用。本文将就这两点简要的总结一下 Lambda 的使用。 一、函数式接口我们知道，java 中允许将接口作为方法的参数类型，但是我们只能传入其实现类。实际开发中，有些接口的仅有少">
 <meta property="og:type" content="article">
-<meta property="og:title" content="设计模式（一）：工厂模式">
-<meta property="og:url" content="http://blog.xiajibagao.top/2020/09/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/index.html">
+<meta property="og:title" content="JDK1.8新特性（三）：Lambda表达式">
+<meta property="og:url" content="http://blog.xiajibagao.top/2020/11/02/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 工厂模式（Factory Pattern）属于创建型模式，它提供了一种创建对象的最佳方式。在工厂模式中，我们在创建对象时不会对客户端暴露创建逻辑，并且是通过使用一个共同的接口来指向新创建的对象。  工厂模式旨在与解决接口实现类选择这一类问题，让实例创建的代码使用实例的方法解耦。 当我们需要根据不同的明确条件下创建不同的实例的时候，就可以使用工厂模式。 工厂模式分为三类：  工厂方法模式：一个">
+<meta property="og:description" content="概述JDK8 为我们带来了 Lambda 表达式和函数式接口，这一点在前文介绍 Stream 和 Collectors 的时候已有提及。通过使用这些特性，我们可以更简洁的创建匿名内部类，也可以将方法作为参数直接传入方法中调用。本文将就这两点简要的总结一下 Lambda 的使用。 一、函数式接口我们知道，java 中允许将接口作为方法的参数类型，但是我们只能传入其实现类。实际开发中，有些接口的仅有少">
 <meta property="og:locale">
-<meta property="og:image" content="http://img.xiajibagao.top/image-20200926191804858.png">
-<meta property="og:image" content="http://img.xiajibagao.top/image-20200926192545919.png">
-<meta property="article:published_time" content="2020-09-25T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-10-27T01:09:50.505Z">
+<meta property="article:published_time" content="2020-11-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-11-02T12:49:43.372Z">
 <meta property="article:author" content="Createsequence">
-<meta property="article:tag" content="设计模式">
+<meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.xiajibagao.top/image-20200926191804858.png">
 
 
 
@@ -125,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://blog.xiajibagao.top/2020/09/26/设计模式/设计模式（一）：工厂模式/"/>
+  <link rel="canonical" href="http://blog.xiajibagao.top/2020/11/02/java/JDK1.8新特性（三）：Lambda表达式/"/>
 
 
 
 
 
-  <title>设计模式（一）：工厂模式 | Createsequence's Blog</title>
+  <title>JDK1.8新特性（三）：Lambda表达式 | Createsequence's Blog</title>
   
 
 
@@ -292,7 +289,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/09/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/11/02/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -309,7 +306,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">设计模式（一）：工厂模式</h1>
+          <h1 class="post-title" itemprop="name headline">JDK1.8新特性（三）：Lambda表达式</h1>
         
 
         <div class="post-meta">
@@ -321,8 +318,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-26T00:00:00+08:00">
-                2020-09-26
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-02T00:00:00+08:00">
+                2020-11-02
               </time>
             
 
@@ -344,8 +341,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index">
-                    <span itemprop="name">设计模式</span>
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
                   </a>
                 </span>
 
@@ -375,7 +372,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.6k words
+                  2.1k words
                 </span>
               
 
@@ -400,69 +397,66 @@
       
 
       
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><blockquote>
-<p>工厂模式（Factory Pattern）属于创建型模式，它提供了一种创建对象的最佳方式。<br>在工厂模式中，我们在创建对象时不会对客户端暴露创建逻辑，并且是通过使用一个共同的接口来指向新创建的对象。</p>
-</blockquote>
-<p>工厂模式旨在与解决接口实现类选择这一类问题，让实例创建的代码使用实例的方法解耦。</p>
-<p>当我们需要根据不同的明确条件下创建不同的实例的时候，就可以使用工厂模式。</p>
-<p>工厂模式分为三类：</p>
+        <h2><span id="概述">概述</span></h2><p>JDK8 为我们带来了 Lambda 表达式和函数式接口，这一点在前文介绍 Stream 和 Collectors 的时候已有提及。通过使用这些特性，我们可以更简洁的创建匿名内部类，也可以将方法作为参数直接传入方法中调用。本文将就这两点简要的总结一下 Lambda 的使用。</p>
+<h2><span id="一-函数式接口">一、函数式接口</span></h2><p>我们知道，java 中允许将接口作为方法的参数类型，但是我们只能传入其实现类。实际开发中，有些接口的仅有少数的方法，并且往往其实现类只在特定的地方使用，为此专门去创建一个新的实现类其实是有点繁琐的，为此 JDK8 引入了函数式接口。</p>
+<p>函数式接口有且仅有一个抽象方法，抽象方法允许有一个默认实现（实际上接口的默认实现也是 JDK8 的新特性）。当我们调用方法时，<strong>可以直接通过 Lambda 表达式直接以匿名内部类的形式去实现他的方法</strong>。表现为直接在参数小括号中： <code>void test(param1, () -&gt; System.out.print(&quot;hello world&quot;))</code></p>
+<p>当使用作为方法参数类型是，通过在接口上添加<code>@FunctionalInterface</code>注解来声明。</p>
+<p>我们举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 函数式接口</span></span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TestInterface</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将接口作为方法参数</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(TestInterface testInterface)</span></span>&#123;</span><br><span class="line">    <span class="comment">// 有且仅有一个抽象方法</span></span><br><span class="line">    testInterface.test();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用方法</span></span><br><span class="line">test(()-&gt; System.out.println(<span class="string">&quot;hello world&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到，实现的代码非常的简洁，对于一些不复杂的功能用起来非常方便，而如果使用原本的实现方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">TestInterface testInterface = <span class="keyword">new</span> TestInterface() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;hello world&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用方法</span></span><br><span class="line">test(testInterface);</span><br></pre></td></tr></table></figure>
+
+<p>Lambda 写法的方便简洁可见一斑。</p>
+<h2><span id="二-lambda-表达式">二、Lambda 表达式</span></h2><h3><span id="1语法">1.语法</span></h3><p>Lambda 表达式，也可称为闭包。一个典型的表达式由一对圆括号和括号中的参数，一个横杠加箭头，和一对大括号组成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(<span class="keyword">int</span> x, <span class="keyword">int</span> y) -&gt; &#123; System.out.println(<span class="string">&quot;hello world&quot;</span>)) &#125;</span><br></pre></td></tr></table></figure>
+
+<p>实际上，表达式并不是所有时候都需要写的那么标准：</p>
 <ul>
-<li>工厂方法模式：一个工厂生产固定的一个类。</li>
-<li>简单/静态工厂模式：一个工厂生产固定种类的多个类。</li>
-<li>抽象工厂模式：一个抽象工厂生产一</li>
+<li><strong>可选类型声明：</strong>不需要声明参数类型，编译器可以统一识别参数值。</li>
+<li><strong>可选的参数圆括号：</strong>一个参数无需定义圆括号，但多个参数需要定义圆括号。</li>
+<li><strong>可选的大括号：</strong>如果主体包含了一个语句，就不需要使用大括号。</li>
+<li><strong>可选的返回关键字：</strong>如果主体只有一个表达式返回值则编译器会自动返回值，大括号需要指定明表达式返回了一个数值。</li>
 </ul>
-<h2 id="一、工厂方法模式"><a href="#一、工厂方法模式" class="headerlink" title="一、工厂方法模式"></a>一、工厂方法模式</h2><p>假设我们有一个导出报表的抽象类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 文件导出接口</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Exporter</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">export</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="2配合函数式接口使用">2.配合函数式接口使用</span></h3><p>Lambda 表达式需要配合函数式接口使用。</p>
+<p>对于函数式接口，我们可以像上文举的例子一样，自己创建一个函数式接口，也可以使用 <code>java.util.function</code>包下已经提供好的函数式接口。</p>
+<p><code>java.util.function</code>包提供了很多现成的接口，<a target="_blank" rel="noopener" href="https://www.runoob.com/java/java8-functional-interfaces.html">菜鸟教程</a>上介绍的很详细，这里就不复制黏贴了。</p>
+<p>现在，我们用用看：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 使用自己的函数式接口</span></span><br><span class="line">TestInterface testInterface = () -&gt; &#123;</span><br><span class="line">    <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">    System.out.println(i++);</span><br><span class="line">&#125;;</span><br><span class="line">testInterface.test();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用 java.util.function 包的函数式接口</span></span><br><span class="line">IntFunction intFunction = x -&gt; x + <span class="number">1</span>;</span><br><span class="line">System.out.println(intFunction.apply(<span class="number">15</span>));</span><br></pre></td></tr></table></figure>
 
-<p>他现在有一个Excel导出实现类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Excel导出实现类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExcelExporter</span> <span class="title">extend</span> <span class="title">Exporter</span></span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> String modelPath;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">private</span> String fileName;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;导出Excel:&quot;</span>+<span class="string">&quot;模板路径：&quot;</span>+ modelPath +<span class="string">&quot;文件名：&quot;</span> + fileName);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ExcelExporter</span><span class="params">(String modelPath, String fileName)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.modelPath = modelPath;</span><br><span class="line">        <span class="keyword">this</span>.fileName = fileName;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们可以发现，对于我们自己的定义的接口，唯一的抽象方法是<code>test()</code>，所以放入实现以后实际上就是<code>test()</code>方法的实现，而 IntFunction 通过表达式实现的就是<code>apply()</code>方法。</p>
+<h3><span id="3变量作用域">3.变量作用域</span></h3><p>Lambda 实际上可以理解为一个匿名的内部类，<strong>他可以访问外部的变量，但是不可以对变量做出改变</strong>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">IntFunction intFunction = x -&gt; &#123;</span><br><span class="line">    <span class="comment">// lambda表达式中使用的变量应该是final</span></span><br><span class="line">    i++; </span><br><span class="line">    <span class="keyword">return</span> x + <span class="number">1</span>;</span><br><span class="line">&#125;;</span><br><span class="line">i++;</span><br></pre></td></tr></table></figure>
 
-<p>现在我们需要在一个方法里去调用它，让客户可以导出报表：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//从配置中读取模板路径</span></span><br><span class="line">String modelPath = Config.getExcelModelPath();</span><br><span class="line"><span class="comment">//获取文件名</span></span><br><span class="line">String fileName = name + Config.getExcelLastName(); </span><br><span class="line">ExcelExporter ee = <span class="keyword">new</span> ExcelExporter(modelPath, fileName);</span><br><span class="line"><span class="comment">//一些其他业务逻辑</span></span><br><span class="line">... ...</span><br><span class="line">ee.export();</span><br></pre></td></tr></table></figure>
+<p>上述这段代码会报编译错误，他会提示 lambda 表达式中使用的变量应该是 final。当然，我们删去 <code>i++</code>这行代码，让方法返回 <code>i + 1</code>就没影响了。可以见我们并不需要加 final 也可以。以前 java 的匿名内部类在访问外部变量的时候，外部变量必须用 final 修饰。在JDK8 对这个限制做了优化，可以不用显示使用final修饰，编译器自己隐式当成 final 来处理。</p>
+<h3><span id="4表达式的-this">4.表达式的 this</span></h3><p>我们可以通过一个简单的例子来了解一下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanA</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    String name = <span class="string">&quot;BeanA&quot;</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 匿名内部类</span></span><br><span class="line">        <span class="keyword">new</span> Thread(<span class="keyword">new</span> Runnable() &#123;</span><br><span class="line">            <span class="keyword">private</span> String name = <span class="string">&quot;Runnable&quot;</span>;</span><br><span class="line">            <span class="meta">@Override</span></span><br><span class="line">            <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">                System.out.println(<span class="string">&quot;这里的this指向匿名类:&quot;</span> + <span class="keyword">this</span>.name);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;).start();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Lambda表达式</span></span><br><span class="line">        <span class="keyword">new</span> Thread(() -&gt; &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;这里的this指向当前的ThisDemo类:&quot;</span> + <span class="keyword">this</span>.name);</span><br><span class="line">        &#125;).start();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结果：</span></span><br><span class="line"><span class="comment">// 这里的this指向匿名类:Runnable</span></span><br><span class="line"><span class="comment">// 这里的this指向当前的ThisDemo类:张三</span></span><br></pre></td></tr></table></figure>
 
-<p>我们在很多方法都需要调用这个类，但是每次使用都要写那么多行代码，实在太麻烦，而且万一忽然modelPath或者fileName这些参数要改，那工程量也很让人头痛。</p>
-<p>所以我们可以把获取对象的操作提出来，把读取配置路径等方法都单独提出来，最后统一放到一个工厂类里：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Excel文件导出实现类的工厂</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExcelExporterFactory</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getExcelLastName</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Config.getExcelLastName();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getModePath</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Config.getExcelModelPath();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> ExcelExporter <span class="title">getExporter</span><span class="params">(String type)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ExcelExporter(getModePath(),getExcelLastName());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>最后使用的时候不需要在意实例化的过程，只需要调用方法获取新对象就行了：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ExcelExporterFactory factory = <span class="keyword">new</span> ExcelExporterFactory();</span><br><span class="line">factory.getExcelExporter().export();</span><br></pre></td></tr></table></figure>
-
-<p>值得一提的是，由于工厂的特殊性，它大多数情况下都是单例的。</p>
-<p>不难发现，工厂方法模式有以下优点：</p>
+<p>匿名内部类的 this 指向的是内部类自己，而 Lambda 表达式里的 <strong>this 实际上指向的是离他最近的那一层的外部类</strong>。</p>
+<p>之所以这样，是因为当要编译 Lambda 表达式的时候，JVM会把 Lambda 表达式编译为一个<strong>在本类中的以lambda$+数字的方法</strong>。</p>
+<p>值得一提的是，我们知道静态方法通过类调用，所以静态方法是获取不到 this 实例的，而Lambda 表达式会被编译为一个方法，<strong>如果表达式中使用了 this，那么就会编译为一个非静态方法，而未使用 this，就会编译为一个带 static 关键字的静态方法</strong>。</p>
+<h2><span id="三-方法引用">三、方法引用</span></h2><h3><span id="1语法">1.语法</span></h3><p>方法引用通过方法的名字来指向一个方法，他使 Lambada 更加简洁易懂。</p>
+<p>方法引用的写法类似这样 <code>类/实例::方法名</code>：</p>
 <ul>
-<li>1:客户端不需要在负责对象的创建,<strong>明确了各个类的职责</strong>；</li>
-<li>2:如果有<strong>新的对象增加</strong>,只需要<strong>增加一个具体的类和具体的工厂类</strong>即可；</li>
-<li>3:<strong>不会影响已有的代码</strong>,后期维护容易,增强系统的扩展性。</li>
+<li>引用静态方法/成员方法：Class::StaticMethod 或 Class::Method</li>
+<li>引用成员方法：Instance::Method</li>
 </ul>
-<h2 id="二、简单-静态工厂"><a href="#二、简单-静态工厂" class="headerlink" title="二、简单/静态工厂"></a>二、简单/静态工厂</h2><p>工厂方法模式确实好，但是有时候我们需要用工厂生产的往往只有特定的几个类，其他的直接new就可以了。这种情况下在<strong>为每一个类单独创建一个工厂类太过麻烦，为此我们让一个工厂去生产固定的那几种类</strong>，这就是简单/静态工厂。</p>
-<p>假设我们目前只需要导出Excel和word类型的报表，我们在上一个例子的基础上再加一WordExporter实现类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Excel导出实现类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">WordExporter</span> <span class="title">extend</span> <span class="title">Exporter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String modelPath;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> String fileName;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;导出Word！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">WordExporter</span><span class="params">(String modelPath, String fileName)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.modelPath = modelPath;</span><br><span class="line">        <span class="keyword">this</span>.fileName = fileName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>下面举个例子来说明一下这些引用方式的差异：</p>
+<p>假如我们有这么一个类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanA</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    String name;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 静态方法</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> a</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">staticMethod</span><span class="params">(BeanA a)</span> </span>&#123;</span><br><span class="line">        System.out.println(a.getName() + <span class="string">&quot;被staticMethod输出了！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 成员方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">instanceMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="keyword">this</span>.getName() + <span class="string">&quot;被instanceMethod方法输出了！this指向&quot;</span> + <span class="keyword">this</span>.hashCode());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>然后我们改造一下原本的ExcelExporterFactory，让他也能生产WordExporter：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 文件导出实现类的简单工厂</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExporterFactory</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getExcelLastName</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Config.getExcelLastName();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getModePath</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> Config.getExcelModelPath();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Exporter <span class="title">getExporter</span><span class="params">(String type)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//根据条件返回对应的实例</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="string">&quot;word&quot;</span>.equals(type)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> WordExporter(getModePath(),getExcelLastName());</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;excel&quot;</span>.equals(type)) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> ExcelExporter(getModePath(),getExcelLastName());</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;导出类型不存在！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们通过方法引用来使用这些方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.引用静态方法</span></span><br><span class="line">Consumer&lt;BeanA&gt; c = BeanA::staticMethod;</span><br><span class="line">c.accept(a);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2.通过类引用成员方法</span></span><br><span class="line">Consumer&lt;BeanA&gt; c2 = BeanA::instanceMethod;</span><br><span class="line">c2.accept(a);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3.通过实例引用成员方法</span></span><br><span class="line">Supplier&lt;String&gt; c3 = a::instanceMethod;</span><br><span class="line">c3.get();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结果</span></span><br><span class="line">张三被staticMethod输出了！</span><br><span class="line">张三被instanceMethod方法输出了！<span class="keyword">this</span>指向<span class="number">45721950</span></span><br><span class="line">张三被instanceMethod方法输出了！<span class="keyword">this</span>指向<span class="number">45721950</span></span><br></pre></td></tr></table></figure>
 
-<p>当我们要调用的时候，直接通过工厂调用就可以了：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ExporterFactory factory = <span class="keyword">new</span> ExporterFactory();</span><br><span class="line">factory.getExcelExporter(type).export();</span><br></pre></td></tr></table></figure>
+<h3><span id="2方法引用中的this">2.方法引用中的this</span></h3><p>我们可以在上述的例子中注意到一个很有趣的地方，<strong>成员方法使用了this，但是仍然可以通过跟静态一样的形式去调用，但是却需要传递一个方法参数，而通过实例去调用就不需要传入参数</strong>。</p>
+<p><code>instanceMethod()</code>本身是个无参的方法，但是在第二中引用方式中却传递了 a 这个对象进去，我们是不是可以认为这就是被传入使用的 this？</p>
+<p>我们再写一个方法作为对照：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 传入李四</span></span><br><span class="line">Consumer&lt;BeanA&gt; c2 = BeanA::instanceMethod;</span><br><span class="line">c2.accept(<span class="keyword">new</span> BeanA(<span class="string">&quot;李四&quot;</span>, <span class="number">18</span>));</span><br><span class="line"><span class="comment">// 传入张三</span></span><br><span class="line">Consumer&lt;BeanA&gt; c25 = BeanA::instanceMethod;</span><br><span class="line">c25.accept(a);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结果</span></span><br><span class="line">李四被instanceMethod方法输出了！<span class="keyword">this</span>指向<span class="number">49685098</span></span><br><span class="line">张三被instanceMethod方法输出了！<span class="keyword">this</span>指向<span class="number">45721950</span></span><br></pre></td></tr></table></figure>
 
-<p>这个就是<strong>简单工厂</strong>。</p>
-<p>在简单工厂的基础上，我们不难看出，现在的ExporterFactory总是只能生产固定的那几种类，那么其实调用<code>getExporter()</code>去获取实现类的时候根本没必要new一个新工厂。</p>
-<p>于是我们将这个工程里的所有方法都变成静态方法，调用的时候就很方便了：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExportService es = ExporterFactory.getExporter(type);</span><br></pre></td></tr></table></figure>
+<p> 我们可以看到，同样一个方法，传入了不同的实例，this 就指向了不同的实例。我们可以进一步推测，是不是跟 python 中的类的成员方法中的 self 一样，java 的成员方法也有一个 this 作为参数，只是平时编译器帮我们省略了呢？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 手动添加一个 this</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">testMethod</span><span class="params">(BeanA <span class="keyword">this</span>)</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;参数this指向&quot;</span> + <span class="keyword">this</span>.hashCode() + <span class="string">&quot;,关键字的this指向&quot;</span> + <span class="keyword">this</span>.hashCode());</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.getName();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用时可以发现，并不需要传入 this 这个参数</span></span><br><span class="line">a.testMethod();</span><br></pre></td></tr></table></figure>
 
-<p>这个就是<strong>静态工厂</strong>。</p>
-<h2 id="三、抽象工厂模式"><a href="#三、抽象工厂模式" class="headerlink" title="三、抽象工厂模式"></a>三、抽象工厂模式</h2><p>简单工厂对工厂方法做了减法，简化了代码结构，但是简单工厂违背了开闭原则，如果要添加新的产品，就需要修改工厂类代码。而传统的工厂方法模式，如果有很多产品的情况下又会创建过多的工厂类。</p>
-<p>为此，我们对工厂方法模式做加法，就有了抽象工厂模式：由顶层的抽象工厂提供生产产品的接口，具体的生产过程由继承了抽象工厂的子工厂去实现。</p>
-<p>举个例子：</p>
-<p>根据上文，我们现在有了Exporter接口，和两个实现类ExcelExporter和WordExporter，现在我们有了新的需求：</p>
-<p>导出的报表要分成两种类型：有数据的表格和没有数据的表格。（empty）</p>
-<h3 id="1-产品的抽象"><a href="#1-产品的抽象" class="headerlink" title="1.产品的抽象"></a>1.产品的抽象</h3><p>我们先对产品进行抽象：</p>
-<p>Exporter这个类不管是否有数据，都需要导出方法 <code>export()</code>，然后根据表格是否有数据，还需要一个方法 <code>empty()</code>。</p>
-<p>我们将其分为由原本的ExcelExporter和WordExporter也变成抽象类，只实现各种的<code>export()</code>方法，然后再针对ExcelExporter和WordExporter再拆分，得到无数据表格类EmptyExcelExporter，EmptyWordExporter，有数据表格类FullExcelExporter，FullWordExporter。</p>
-<p><img src="http://img.xiajibagao.top/image-20200926191804858.png" alt="抽象工厂生产产品的抽象"></p>
-<h3 id="2-工厂的抽象"><a href="#2-工厂的抽象" class="headerlink" title="2.工厂的抽象"></a>2.工厂的抽象</h3><p>由于产品的层级变成了三层，原本用于生产WordExporter和ExcelExporter的工厂ExporterFactory也要进行拆分。</p>
-<p>将ExporterFactory变为接口，里面规定了<code>getExcelExporter()</code>和<code>getWordExporter()</code>两个接口方法，然后由EmptyExporterFactory还有FullExporterFactory工厂去</p>
-<p><img src="http://img.xiajibagao.top/image-20200926192545919.png" alt="工厂类的抽象"></p>
-<p>不难看出，抽象工厂通过多了一层抽象，减少了工厂类的数量，但是当要添加一类产品，比如加一个导出PDF类，同样要修改ExporterFactory及其实现类。</p>
+<p>至此问题就明朗了，this 其实也是一个方法参数，就跟 python 的 self 一样。</p>
 
       
     </div>
@@ -480,7 +474,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag"># 设计模式</a>
+            <a href="/tags/java/" rel="tag"># java</a>
           
         </div>
       
@@ -493,8 +487,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/08/19/Spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/" rel="next" title="SpringAOP知识小结">
-                <i class="fa fa-chevron-left"></i> SpringAOP知识小结
+              <a href="/2020/10/16/java/%E9%80%9A%E7%94%A8%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0/" rel="next" title="Mybatis通用底层实现">
+                <i class="fa fa-chevron-left"></i> Mybatis通用底层实现
               </a>
             
           </div>
@@ -502,10 +496,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2020/10/16/java/%E9%80%9A%E7%94%A8%E5%BA%95%E5%B1%82%E5%AE%9E%E7%8E%B0/" rel="prev" title="Mybatis通用底层实现">
-                Mybatis通用底层实现 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -648,7 +638,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%B7%A5%E5%8E%82%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F"><span class="nav-text">一、工厂方法模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E7%AE%80%E5%8D%95-%E9%9D%99%E6%80%81%E5%B7%A5%E5%8E%82"><span class="nav-text">二、简单&#x2F;静态工厂</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%8A%BD%E8%B1%A1%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F"><span class="nav-text">三、抽象工厂模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BA%A7%E5%93%81%E7%9A%84%E6%8A%BD%E8%B1%A1"><span class="nav-text">1.产品的抽象</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%B7%A5%E5%8E%82%E7%9A%84%E6%8A%BD%E8%B1%A1"><span class="nav-text">2.工厂的抽象</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">一、函数式接口</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">二、Lambda 表达式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1.语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2.配合函数式接口使用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">3.变量作用域</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">4.表达式的 this</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">三、方法引用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1.语法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2.方法引用中的this</span></a></li></ol></li></ol></div>
             
 
           </div>

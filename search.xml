@@ -3594,7 +3594,7 @@
   </entry>
   <entry>
     <title>JDK1.8新特性（三）：Lambda表达式</title>
-    <url>/2020/10/13/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
+    <url>/2020/11/02/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/</url>
     <content><![CDATA[<h2><span id="概述">概述</span></h2><p>JDK8 为我们带来了 Lambda 表达式和函数式接口，这一点在前文介绍 Stream 和 Collectors 的时候已有提及。通过使用这些特性，我们可以更简洁的创建匿名内部类，也可以将方法作为参数直接传入方法中调用。本文将就这两点简要的总结一下 Lambda 的使用。</p>
 <h2><span id="一-函数式接口">一、函数式接口</span></h2><p>我们知道，java 中允许将接口作为方法的参数类型，但是我们只能传入其实现类。实际开发中，有些接口的仅有少数的方法，并且往往其实现类只在特定的地方使用，为此专门去创建一个新的实现类其实是有点繁琐的，为此 JDK8 引入了函数式接口。</p>
 <p>函数式接口有且仅有一个抽象方法，抽象方法允许有一个默认实现（实际上接口的默认实现也是 JDK8 的新特性）。当我们调用方法时，<strong>可以直接通过 Lambda 表达式直接以匿名内部类的形式去实现他的方法</strong>。表现为直接在参数小括号中： <code>void test(param1, () -&gt; System.out.print(&quot;hello world&quot;))</code></p>
@@ -3633,6 +3633,28 @@
 <p>匿名内部类的 this 指向的是内部类自己，而 Lambda 表达式里的 <strong>this 实际上指向的是离他最近的那一层的外部类</strong>。</p>
 <p>之所以这样，是因为当要编译 Lambda 表达式的时候，JVM会把 Lambda 表达式编译为一个<strong>在本类中的以lambda$+数字的方法</strong>。</p>
 <p>值得一提的是，我们知道静态方法通过类调用，所以静态方法是获取不到 this 实例的，而Lambda 表达式会被编译为一个方法，<strong>如果表达式中使用了 this，那么就会编译为一个非静态方法，而未使用 this，就会编译为一个带 static 关键字的静态方法</strong>。</p>
+<h2><span id="三-方法引用">三、方法引用</span></h2><h3><span id="1语法">1.语法</span></h3><p>方法引用通过方法的名字来指向一个方法，他使 Lambada 更加简洁易懂。</p>
+<p>方法引用的写法类似这样 <code>类/实例::方法名</code>：</p>
+<ul>
+<li>引用静态方法/成员方法：Class::StaticMethod 或 Class::Method</li>
+<li>引用成员方法：Instance::Method</li>
+</ul>
+<p>下面举个例子来说明一下这些引用方式的差异：</p>
+<p>假如我们有这么一个类：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">BeanA</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    String name;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 静态方法</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> a</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">staticMethod</span><span class="params">(BeanA a)</span> </span>&#123;</span><br><span class="line">        System.out.println(a.getName() + <span class="string">&quot;被staticMethod输出了！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 成员方法</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">instanceMethod</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="keyword">this</span>.getName() + <span class="string">&quot;被instanceMethod方法输出了！this指向&quot;</span> + <span class="keyword">this</span>.hashCode());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们通过方法引用来使用这些方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 1.引用静态方法</span></span><br><span class="line">Consumer&lt;BeanA&gt; c = BeanA::staticMethod;</span><br><span class="line">c.accept(a);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 2.通过类引用成员方法</span></span><br><span class="line">Consumer&lt;BeanA&gt; c2 = BeanA::instanceMethod;</span><br><span class="line">c2.accept(a);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3.通过实例引用成员方法</span></span><br><span class="line">Supplier&lt;String&gt; c3 = a::instanceMethod;</span><br><span class="line">c3.get();</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结果</span></span><br><span class="line">张三被staticMethod输出了！</span><br><span class="line">张三被instanceMethod方法输出了！<span class="keyword">this</span>指向<span class="number">45721950</span></span><br><span class="line">张三被instanceMethod方法输出了！<span class="keyword">this</span>指向<span class="number">45721950</span></span><br></pre></td></tr></table></figure>
+
+<h3><span id="2方法引用中的this">2.方法引用中的this</span></h3><p>我们可以在上述的例子中注意到一个很有趣的地方，<strong>成员方法使用了this，但是仍然可以通过跟静态一样的形式去调用，但是却需要传递一个方法参数，而通过实例去调用就不需要传入参数</strong>。</p>
+<p><code>instanceMethod()</code>本身是个无参的方法，但是在第二中引用方式中却传递了 a 这个对象进去，我们是不是可以认为这就是被传入使用的 this？</p>
+<p>我们再写一个方法作为对照：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 传入李四</span></span><br><span class="line">Consumer&lt;BeanA&gt; c2 = BeanA::instanceMethod;</span><br><span class="line">c2.accept(<span class="keyword">new</span> BeanA(<span class="string">&quot;李四&quot;</span>, <span class="number">18</span>));</span><br><span class="line"><span class="comment">// 传入张三</span></span><br><span class="line">Consumer&lt;BeanA&gt; c25 = BeanA::instanceMethod;</span><br><span class="line">c25.accept(a);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 结果</span></span><br><span class="line">李四被instanceMethod方法输出了！<span class="keyword">this</span>指向<span class="number">49685098</span></span><br><span class="line">张三被instanceMethod方法输出了！<span class="keyword">this</span>指向<span class="number">45721950</span></span><br></pre></td></tr></table></figure>
+
+<p> 我们可以看到，同样一个方法，传入了不同的实例，this 就指向了不同的实例。我们可以进一步推测，是不是跟 python 中的类的成员方法中的 self 一样，java 的成员方法也有一个 this 作为参数，只是平时编译器帮我们省略了呢？</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 手动添加一个 this</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> String <span class="title">testMethod</span><span class="params">(BeanA <span class="keyword">this</span>)</span> </span>&#123;</span><br><span class="line">    System.out.println(<span class="string">&quot;参数this指向&quot;</span> + <span class="keyword">this</span>.hashCode() + <span class="string">&quot;,关键字的this指向&quot;</span> + <span class="keyword">this</span>.hashCode());</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.getName();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用时可以发现，并不需要传入 this 这个参数</span></span><br><span class="line">a.testMethod();</span><br></pre></td></tr></table></figure>
+
+<p>至此问题就明朗了，this 其实也是一个方法参数，就跟 python 的 self 一样。</p>
 ]]></content>
       <categories>
         <category>java</category>
