@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2020-11-03T12:41:34.377Z</updated>
+  <updated>2020-11-05T12:14:36.156Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -15,6 +15,34 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Mysql初探：三大日志概述</title>
+    <link href="http://blog.xiajibagao.top/2020/11/05/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/"/>
+    <id>http://blog.xiajibagao.top/2020/11/05/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/</id>
+    <published>2020-11-04T16:00:00.000Z</published>
+    <updated>2020-11-05T12:14:36.156Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;此文为极客时间：MySQL实战45讲的 2、15节日志相关部分和网上一些相关文章的内容的总结&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;&lt;span id=&quot;一-redo-log&quot;&gt;一、redo log&lt;/span&gt;&lt;/h2&gt;&lt;h3&gt;&lt;span</summary>
+        
+      
+    
+    
+    
+    <category term="mysql" scheme="http://blog.xiajibagao.top/categories/mysql/"/>
+    
+    
+    <category term="mysql" scheme="http://blog.xiajibagao.top/tags/mysql/"/>
+    
+  </entry>
   
   <entry>
     <title>JDK1.8新特性（四）：Optional类</title>
@@ -500,31 +528,6 @@
         
         
     <summary type="html">&lt;h2 id=&quot;一、什么是二叉排序树&quot;&gt;&lt;a href=&quot;#一、什么是二叉排序树&quot; class=&quot;headerlink&quot;</summary>
-        
-      
-    
-    
-    
-    <category term="数据结构与算法" scheme="http://blog.xiajibagao.top/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
-    
-    
-    <category term="数据结构与算法" scheme="http://blog.xiajibagao.top/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>数据结构与算法（十四）：赫夫曼编码</title>
-    <link href="http://blog.xiajibagao.top/2020/07/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E5%9B%9B%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E7%BC%96%E7%A0%81/"/>
-    <id>http://blog.xiajibagao.top/2020/07/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E5%9B%9B%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E7%BC%96%E7%A0%81/</id>
-    <published>2020-07-18T16:00:00.000Z</published>
-    <updated>2020-10-27T02:07:02.224Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;一、什么是赫夫曼编码&quot;&gt;&lt;a href=&quot;#一、什么是赫夫曼编码&quot; class=&quot;headerlink&quot; title=&quot;一、什么是赫夫曼编码&quot;&gt;&lt;/a&gt;一、什么是赫夫曼编码&lt;/h2&gt;&lt;p&gt;哈夫曼编码(Huffman</summary>
         
       
     
