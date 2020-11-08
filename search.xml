@@ -3928,7 +3928,7 @@
   </entry>
   <entry>
     <title>Mysql初探：索引</title>
-    <url>/2020/11/02/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9A%E7%B4%A2%E5%BC%95/</url>
+    <url>/2020/10/29/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9A%E7%B4%A2%E5%BC%95/</url>
     <content><![CDATA[<blockquote>
 <p>此文为极客时间：MySQL实战45讲的 4、5、9、10、11、15、18节索引相关部分的总结</p>
 </blockquote>
@@ -3985,14 +3985,14 @@
 
 <p>对于完整索引：</p>
 <ol>
-<li>从 index1 索引树找到满足索引值是’<a href="mailto:&#122;&#104;&#x61;&#110;&#x67;&#x73;&#x73;&#x78;&#121;&#122;&#x40;&#x78;&#x78;&#x78;&#x2e;&#x63;&#111;&#x6d;">&#122;&#104;&#x61;&#110;&#x67;&#x73;&#x73;&#x78;&#121;&#122;&#x40;&#x78;&#x78;&#x78;&#x2e;&#x63;&#111;&#x6d;</a>’的这条记录，取得 ID2 的值；</li>
+<li>从 index1 索引树找到满足索引值是’<a href="mailto:&#x7a;&#104;&#x61;&#x6e;&#103;&#115;&#115;&#120;&#121;&#x7a;&#x40;&#120;&#120;&#120;&#46;&#x63;&#111;&#109;">&#x7a;&#104;&#x61;&#x6e;&#103;&#115;&#115;&#120;&#121;&#x7a;&#x40;&#120;&#120;&#120;&#46;&#x63;&#111;&#109;</a>’的这条记录，取得 ID2 的值；</li>
 <li>到主键上查到主键值是 ID2 的行，判断 email 的值是正确的，将这行记录加入结果集；</li>
 <li>取 index1 索引树上刚刚查到的位置的下一条记录，发现已经不满足 email=’zhangssxyz@xxx.com’的条件了，循环结束。</li>
 </ol>
 <p>而对于前缀索引：</p>
 <ol>
 <li>从 index2 索引树找到满足索引值是’zhangs’的记录，找到的第一个是 ID1；</li>
-<li>到主键上查到主键值是 ID1 的行，判断出 email 的值不是’<a href="mailto:&#122;&#104;&#97;&#x6e;&#103;&#x73;&#x73;&#x78;&#x79;&#122;&#x40;&#120;&#x78;&#120;&#46;&#x63;&#111;&#x6d;">&#122;&#104;&#97;&#x6e;&#103;&#x73;&#x73;&#x78;&#x79;&#122;&#x40;&#120;&#x78;&#120;&#46;&#x63;&#111;&#x6d;</a>’，这行记录丢弃；</li>
+<li>到主键上查到主键值是 ID1 的行，判断出 email 的值不是’<a href="mailto:&#122;&#104;&#97;&#110;&#103;&#x73;&#115;&#120;&#x79;&#x7a;&#x40;&#x78;&#120;&#x78;&#46;&#99;&#111;&#x6d;">&#122;&#104;&#97;&#110;&#103;&#x73;&#115;&#120;&#x79;&#x7a;&#x40;&#x78;&#120;&#x78;&#46;&#99;&#111;&#x6d;</a>’，这行记录丢弃；</li>
 <li>取 index2 上刚刚查到的位置的下一条记录，发现仍然是’zhangs’，取出 ID2，再到 ID 索引上取整行然后判断，这次值对了，将这行记录加入结果集；</li>
 <li>重复上一步，直到在 index2 上取到的值不是’zhangs’时，循环结束。</li>
 </ol>
@@ -4135,7 +4135,7 @@
   </entry>
   <entry>
     <title>Mysql初探：三大日志概述</title>
-    <url>/2020/11/05/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/</url>
+    <url>/2020/10/25/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/</url>
     <content><![CDATA[<blockquote>
 <p>此文为极客时间：MySQL实战45讲的 2、15节日志相关部分和网上一些相关文章的内容的总结</p>
 </blockquote>
@@ -4234,6 +4234,328 @@
 <li>undo log保证事务不成功可以回滚，支持的是事务的原子性</li>
 <li>redo log和binlog的二次提交机制，为事务的一致性提供了一定的保证</li>
 </ul>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql初探：count</title>
+    <url>/2020/11/04/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9Acount/</url>
+    <content><![CDATA[<blockquote>
+<p>此文为极客时间：MySQL实战45讲的14节count相关内容的笔记</p>
+</blockquote>
+<h2><span id="一-count的查询过程">一、count的查询过程</span></h2><p>count() 函数用于查询数据的数量，不同的引擎有不同的实现。</p>
+<p>在 MySAM 引擎会专门记录表的总数；而在 innodb 中，由于 MVCC 的原因，在统计数量的时候需要一行一行的判断当前数据是否对查询的事务的可见的。此外，<code>show table status</code>的 Rows 字段也能获取表的总条数，但是这只是预估值，实际上并不准确。</p>
+<p>因此，表的遍历是无法避免的，但是 innodb 也有针对此做出优化：</p>
+<p>主键索引树的叶子节点是数据行，而普通索引树的叶子节点是主键，针对 count 操作遍历那颗树都是一样的，因此查询的时候回找到最小的那颗索引树进行遍历。</p>
+<h2><span id="二-计数操作的实现">二、计数操作的实现</span></h2><p>计数这个功能通过 redis 也可以实现，即在 redis 中设定一个值用于计数，但是在遇到异常停止服务后不免会遇到数据丢失的问题。</p>
+<p>如果结合 mysql 来做，即 redis 更新数据后再变更数据库里的数据，读取的时候直接从 redis 读，这样虽然一定程度避免了数据丢失的问题，但是却有可能导致数据不一致。举个例子：</p>
+<p>现在计数是5，我们要为计数+1</p>
+<ul>
+<li>先更新 redis 再更新 mysql：如果中间其他线程进行了一次查询，此时数据库是5，但是却查到了6</li>
+<li>先更新 mysql 在更新 redis：如果中间其他线程进行了一次查询，此时数据库是6，但是却查到了5</li>
+</ul>
+<p>而如果使用 mysql，借助 innodb 可重复读下事务隔离的特性，我们就可以比较好的避免上述问题。</p>
+<p>另外，值得一提的是，由于 innodb 的两阶段提交机制，<strong>更新获取的行锁会等到事务提交才释放，所以最好先插入再更新</strong>。</p>
+<h2><span id="三-不同-count-的区别">三、不同 count 的区别</span></h2><p>我们常见的 count 的用法一般有这三种：count(*)，count(1)，count(id)。下面就来描述一下这三种的区别。</p>
+<p>count() 是一个聚合函数，他会判断括号中的条件是否为 null，不是就累加1。因此，对于 count(id) 这样涉及字段的操作，一般流程是这样的：</p>
+<ul>
+<li>遍历数据行</li>
+<li>取出 id 字段的值并返回</li>
+<li>判断 id 不为 null</li>
+<li>计数+1</li>
+</ul>
+<p>而 count(1) 则是这样：</p>
+<ul>
+<li>遍历数据行</li>
+<li>直接返回 1</li>
+<li>判断 1 不为 null</li>
+<li>计数+1 </li>
+</ul>
+<p>count(*) 专门做了优化，流程与 count(1) 差不多。</p>
+<p>因此，不难理解，由于需要去解析数据并且取出字段值，相对于不需要这些操作的 count(1) 和 count(*) 来说，速度是要慢一些的。而 count(字段) 相比起作为主键索引树上的 id，如果没有专门建索引，速度只会比 count(id) 更慢。</p>
+<p>也就是说，他们速度是这样的：*<em>count(字段) &lt; count(id) &lt;count(1) ≈ count(</em>)**</p>
+<h2><span id="四-总结">四、总结</span></h2><p>MySAM 会专门记录条数，查询的时候直接返回。innodb 由于 MVCC 机制， count 查询需要遍历数据以判断事务可见性。</p>
+<p>redis 计数不能保证数据不丢失，redis + mysql 缓存和数据库数据可能会不一致，借助 innodb 的事务可以避免以上问题。</p>
+<p>因为 innodb 的两阶段提交机制，最好先插入再更新。</p>
+<p>查询速度：count(字段) &lt; count(id) &lt;count(1) ≈ count(*)</p>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql初探：join</title>
+    <url>/2020/11/06/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9Ajoin/</url>
+    <content><![CDATA[<blockquote>
+<p>此文为极客时间：MySQL实战45讲的 34、35节join相关内容的笔记</p>
+</blockquote>
+<h2><span id="一-join的查询流程">一、Join的查询流程</span></h2><p>假设我们有表 t1 和表 t2，他们都有字段 a，b，其中 t1 有 100条数据，而 t2 有1000条数据。</p>
+<p>我们要执行这么一条sql：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t1 <span class="keyword">join</span> t2 <span class="keyword">on</span> t2.a = t1.a</span><br></pre></td></tr></table></figure>
+
+<p>执行流程就是会这样的：</p>
+<ol>
+<li>先取出 t1 的一条数据 R；</li>
+<li>然后根据 R 的 a 字段 去 t2 表里找复合条件的数据；</li>
+<li>找到以后，就和 R 的数据拼起来作为结果集的一部分；</li>
+<li>重复以上步骤，直到遍历完 t1 最后一条数据。</li>
+</ol>
+<p>其中，被驱动表的关联条件是否有索引对性能有着很大的影响。</p>
+<h2><span id="二-关联条件有索引">二、关联条件有索引</span></h2><h3><span id="1njl算法">1.NJL算法</span></h3><p>还是以上面的 sql 为例：</p>
+<ol>
+<li>对驱动表 t1 做了全表扫描，这个过程需要扫描 100 行；</li>
+<li>而对于每一行 R，根据 a 字段去表 t2 查找，<strong>走的是树搜索过程</strong>。由于我们构造的数据都是一一对应的，因此每次的搜索过程都只扫描一行，也是总共扫描 100 行；</li>
+<li>所以，整个执行流程，总扫描行数是 200。</li>
+</ol>
+<p>这个算法叫做<strong>NJL</strong>（Index Nested-Loop Join），由于从 t1 往 t2 查找的过程中使用了索引，所以关联查询的过程其实是一个查找树的过程：</p>
+<blockquote>
+<p>假设<strong>被驱动表的行数是 M</strong>。每次在被驱动表查一行数据，要先搜索索引 a，再搜索主键索引。每次搜索一棵树近似复杂度是以 2 为底的 M 的对数，记为 log2M，所以在被驱动表上查一行的时间复杂度是 2*log2M。</p>
+<p>假设<strong>驱动表的行数是 N</strong>，执行过程就要扫描驱动表 N 行，然后对于每一行，到被驱动表上匹配一次。</p>
+<p><strong>因此整个执行过程，近似复杂度是 <code>N + N * 2 * log2M</code>。</strong></p>
+</blockquote>
+<p>所以，对于有索引的情况下，<strong>需要让小表做驱动表</strong>。</p>
+<h3><span id="2mrr优化">2.MRR优化</span></h3><p>对于关联条件上有索引，但是查询条件没有实现索引覆盖的字段，仍然需要在获得了非主键索引后，进行回表获取数据。在这过程，回表需要一行一行的扫描主键索引树。</p>
+<p>假设我们执行一条sql：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t3 <span class="keyword">join</span> t4 <span class="keyword">on</span> t3.a = t4.a <span class="keyword">where</span> t3.a &gt; <span class="number">20</span></span><br></pre></td></tr></table></figure>
+
+<p>由于 a 索引树是按 a 排序的，按照 a 的排序去回表，很可能对应主键索引树上的记录是无序的。比如 a 索引树上按顺序是a=1，a=2，a=3….而对应的主键索引树上，是id=1(a=2)，id=2(a=8)，id=3(a=1)….也就是说，可能会出现随机访问，性能较差。</p>
+<p>针对这个问题，使用MRR（Multi-Range Read）这个过程优化为顺序读：</p>
+<ol>
+<li>先查找 a 索引树，找到相关记录</li>
+<li>在一块 read_rnd_buffer  内存中对 a 索引树的记录按 id 自增排序</li>
+<li>回表，返回并且拼接复合条件的记录</li>
+</ol>
+<p>在这里，read_rnd_buffer 的大小是由 read_rnd_buffer_size 参数控制的。如果步骤 1 中，read_rnd_buffer 放满了，就会先执行完步骤 2 和 3，然后清空 read_rnd_buffer。之后继续找索引 a 的下个记录，并继续循环。</p>
+<p>MRR 能够提升性能的核心在于，这条<strong>查询语句在索引 a 上做的是一个范围查询</strong>，可以得到足够多的主键 id。这样通过排序以后，再去主键索引查数据，才能体现出“顺序读”的优势。</p>
+<h3><span id="3bka算法">3.BKA算法</span></h3><p>基于上面 MRR 优化的思想，MySQL 在 5.6 版本后开始引入的 批量索引访问（Batched Key Access）算法，针对关联条件有索引情况下的索引嵌套循环算法 NLJ 进行了优化。由于 NLJ 并没有像无索引条件下的块嵌套循环 BNL 算法那样，使用到 join_buffer，因此刚好将次内存区作为 MRR 优化的 read_rnd_buffer 。</p>
+<p>如果要使用 BKA 优化算法的话，你需要在执行 SQL 语句之前，先设置</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">set</span> optimizer_switch=<span class="string">&#x27;mrr=on,mrr_cost_based=off,batched_key_access=on&#x27;</span>;</span><br></pre></td></tr></table></figure>
+
+<p>其中，前两个参数的作用是要启用 MRR。这么做的原因是，BKA 算法的优化要依赖于 MRR。</p>
+<h2><span id="三-关联条件无索引">三、关联条件无索引</span></h2><h3><span id="1bnl算法">1.BNL算法</span></h3><p>在无索引的情况下，如果仍然使用索引循环嵌套的算法，那么每次关联 t2 的时候都需要对 t2 进行一次全表扫描，也就是说，如果执行联查的 sql，就需要查询 t2 100000次。这个算法叫做SNL（Simple Nested-Loop Join）</p>
+<p>实际上，SNL 太过笨重了，Mysql 选择的是<strong>BNL</strong>（Block Nested-Loop Join）算法：</p>
+<ol>
+<li>将 t1 读入线程内存 join buffer 中，<strong>如果放不下就分块进行</strong>；</li>
+<li>全表扫描 t2 ，每扫描一行就和 t1的每一行进行比较；</li>
+<li>把复合条件的数据返回结果集；</li>
+</ol>
+<p>这个做法和 SNL 需要扫描的次数一样，但是由于判断在内存进行，所以速度会快很多。</p>
+<p>当 join_buffer_size 规定的 join buffer 大小能够装下 t1 时：</p>
+<blockquote>
+<p>假设小表的行数是 N，大表的行数是 M，那么在这个算法里：</p>
+<ol>
+<li>两个表都做一次全表扫描，所以总的扫描行数是 M+N；</li>
+<li>内存中的判断次数是 M*N。</li>
+</ol>
+</blockquote>
+<p>可以看到，调换这两个算式中的 M 和 N 没差别，因此<strong>这时候选择大表还是小表做驱动表，执行耗时是一样的</strong>。</p>
+<p><strong>但是，如果 join buffer 放不下 t1，这个过程就需要分块进行</strong>：</p>
+<ol>
+<li>假如只放得下88行，那么就先将 t1 的前88行读入内存；</li>
+<li>扫描 t2，每一行都比较88次，然后符合条件的放入结果集</li>
+<li>清空 join buffer</li>
+<li>重复以上步骤，处理完剩下的12行数据</li>
+</ol>
+<p>这种情况下，驱动表的选择是这么考虑的：</p>
+<blockquote>
+<p>假设，驱动表的数据行数是 N，需要分 K 段才能完成算法流程，被驱动表的数据行数是 M。</p>
+<p>注意，这里的 K 不是常数，N 越大 K 就会越大，因此把 K 表示为λ*N，显然λ的取值范围是 (0,1)。</p>
+<p>所以，在这个算法的执行过程中：</p>
+<ol>
+<li>扫描行数是 <code>N + λ * N * M</code>；</li>
+<li>内存判断 N*M 次。</li>
+<li>显然，内存判断次数是不受选择哪个表作为驱动表影响的。而考虑到扫描行数，在 M 和 N 大小确定的情况下，N 小一些，整个算式的结果会更小。</li>
+</ol>
+</blockquote>
+<p>所以结论是，<strong>还是应该让小表当驱动表</strong>。</p>
+<p>当然，你会发现，在 N+λ<em>N</em>M 这个式子里，λ才是影响扫描行数的关键因素，这个值越小越好，而决定了需要分几块的关键参数就在于 join buffer 的大小，join buffer 越大，一次性放入的数据就越多，需要分的块 K ——也就是 λ*N ——就越小。</p>
+<p>所以，如果连表查询速度很慢，可以试着吧 join_buffer_size 调大。</p>
+<h3><span id="2bnl算法存在的问题">2.BNL算法存在的问题</span></h3><p>由于 InnoDB 对 Bufffer Pool 的 LRU 算法做了优化，即：第一次从磁盘读入内存的数据页，会先放在 old 区域。如果 1 秒之后这个数据页不再被访问了，就不会被移动到 LRU 链表头部，这样对 Buffer Pool 的命中率影响就不大。</p>
+<p>但是，如果一个使用 BNL 算法的 join 语句，多次扫描一个冷表，而且这个语句执行时间超过 1 秒，就会在再次扫描冷表的时候，把冷表的数据页移到 LRU 链表头部。</p>
+<p>这种情况对应的，是冷表的数据量小于整个 Buffer Pool 的 3/8，能够完全放入 old 区域的情况。</p>
+<p>如果这个冷表很大，就会出现另外一种情况：<strong>业务正常访问的数据页，没有机会进入 young 区域</strong>。</p>
+<p>由于优化机制的存在，一个正常访问的数据页，要进入 young 区域，需要隔 1 秒后再次被访问到。但是，由于我们的 join 语句在循环读磁盘和淘汰内存页，进入 old 区域的数据页，很可能在 1 秒之内就被淘汰了。这样，就会导致这个 MySQL 实例的 Buffer Pool 在这段时间内，young 区域的数据页没有被合理地淘汰。</p>
+<p>也就是说，这两种情况都会影响 Buffer Pool 的正常运作。</p>
+<p><strong>大表 join 操作虽然对 IO 有影响，但是在语句执行结束后，对 IO 的影响也就结束了。但是，对 Buffer Pool 的影响就是持续性的，需要依靠后续的查询请求慢慢恢复内存命中率。</strong></p>
+<p>为了减少这种影响，你可以考虑增大 join_buffer_size 的值，减少对被驱动表的扫描次数。</p>
+<p>也就是说，BNL 算法对系统的影响主要包括三个方面：</p>
+<ol>
+<li>可能会多次扫描被驱动表，占用磁盘 IO 资源；</li>
+<li>判断 join 条件需要执行 M*N 次对比（M、N 分别是两张表的行数），如果是大表就会占用非常多的 CPU 资源；</li>
+<li>可能会导致 Buffer Pool 的热数据被淘汰，影响内存命中率。</li>
+</ol>
+<h3><span id="3bnl算法的优化">3.BNL算法的优化</span></h3><p>假如我们要执行这样一条sql：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t1 <span class="keyword">join</span> t2 <span class="keyword">on</span> (t1.b=t2.b) <span class="keyword">where</span> t2.b&gt;=<span class="number">1</span> <span class="keyword">and</span> t2.b&lt;=<span class="number">2000</span>;</span><br></pre></td></tr></table></figure>
+
+<p>其中，表 t1 有1000条数据，表 t2 中有100万条数据，但是经过 where 条件过滤后，需要参与 join 的只有 2000 行数据。</p>
+<p>在 BNL 算法的逻辑下：</p>
+<ol>
+<li>把 t1 存入 join_buffer</li>
+<li>扫描 t2，每一条都去跟 t1 的数据对比，先判断 t1.b=t2.b ，再判断 t2.b&gt;=1和 t2.b&lt;=2000</li>
+<li>返回满足条件的结果集</li>
+</ol>
+<p>按这个做法，每一条数据都必须要跟 join_buffer 里的每一条数据进行比对，也就是 1000*100 万 =10 亿次，显然很不明智。</p>
+<p><strong>加索引</strong></p>
+<p>要优化这个情况，<strong>最直接的方法仍然是查询条件加上索引，将默认的 BNL 算法转为 NLJ 算法</strong>。</p>
+<p><strong>临时表</strong></p>
+<p>当然，并不是所有情况下都时候给字段加上索引的，为此我们可以将整个查询过程分开来，<strong>使用临时表的策略</strong>：先将一部分数据筛选出来，出入临时表，然后在临时表上建立索引，最后再用临时表代替 t2 去跟 t1 联查。也就是这样的形式：</p>
+<ol>
+<li>创建一张临时表，为关联字段加上索引</li>
+<li>先从 t2 查出数据，然后插入临时表</li>
+<li>让临时表代替 t2 去跟 t1 联查。</li>
+</ol>
+<p>对应的 sql 就像这样：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">create</span> <span class="keyword">temporary</span> <span class="keyword">table</span> temp_t(<span class="keyword">id</span> <span class="built_in">int</span> primary <span class="keyword">key</span>, a <span class="built_in">int</span>, b <span class="built_in">int</span>, <span class="keyword">index</span>(b))<span class="keyword">engine</span>=<span class="keyword">innodb</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> temp_t <span class="keyword">select</span> * <span class="keyword">from</span> t2 <span class="keyword">where</span> b&gt;=<span class="number">1</span> <span class="keyword">and</span> b&lt;=<span class="number">2000</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t1 <span class="keyword">join</span> temp_t <span class="keyword">on</span> (t1.b=temp_t.b);</span><br></pre></td></tr></table></figure>
+
+<p><strong>Hash join</strong></p>
+<p>当然，仔细想想，临时表中虽然数据少了很多，但是仍然摆脱不了对数据集的遍历，为此，最好的做法就是使用 hash join，1000*2000次查找换成1000次哈希查找。由于 mysql 并不支持 hash join，所以我们需要自己使用业务代码来实现：</p>
+<ol>
+<li>先查出 t2 的数据，存入 HashMap 这样的结构</li>
+<li>查出 t1 的数据，根据需要从数据结构中去获取值</li>
+</ol>
+<h2><span id="四-总结">四、总结</span></h2><p>在默认情况下，最好做到以下两点：</p>
+<ol>
+<li>尽量为被驱动表的连接条件加上索引；</li>
+<li>使用小表作为驱动表（即查询行数少的，查询字段少的表）。</li>
+</ol>
+<p>在以上情况下，可以继续扩展的做法：</p>
+<ol>
+<li>已经为关联字段建索引的情况：开启 MRR 支持，将 NJL 算法优化为 BKA 算法</li>
+<li>还没有为关联字段建索引的情况：<ul>
+<li>加索引，将 BNL 算法优化为 NJL 算法；</li>
+<li>使用临时表；</li>
+<li>在业务代码中实现 hash join。</li>
+</ul>
+</li>
+</ol>
+<p>其中，对应没有给关键字建索引的情况，要注意根据情况调整 join_buffer_size 以减少对表的减少扫描次数：</p>
+<ol>
+<li>一方面，可以提高查找效率；</li>
+<li>另一方面，减少对了 Buffer Pool 的影响，尽可能避免影响内存命中率。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql初探：数据库表空间的回收</title>
+    <url>/2020/11/01/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/</url>
+    <content><![CDATA[<blockquote>
+<p>此文为极客时间MySQL实战45讲第13节的笔记</p>
+</blockquote>
+<h2><span id="一-表数据的存放位置">一、表数据的存放位置</span></h2><p>表数据既可以存在共享表空间里，也可以是单独的文件。这个行为是由参数 <code>innodb_file_per_table</code> 控制的：</p>
+<ol>
+<li>OFF ：表的数据放在系统共享表空间，即跟数据字典放在一起；</li>
+<li>ON ：表数据存储在一个以 .ibd 为后缀的文件中。（MySQL 5.6.6 默认为 ON）</li>
+</ol>
+<p>一般情况下，表单独存放的时候，可以通过 drop table 语句直接删除，而如果放在共享表空间，及时删除了表也无法回收空间。</p>
+<h2><span id="二-表数据的删除">二、表数据的删除</span></h2><p>一般情况下，很少有直接连结构带数据直接删掉表的情况，更多时候是只删除一些数据，但是这样往往会遇到这样的问题：<strong>表中的数据被删除了，但是表空间却没有被回收</strong>。</p>
+<p>实际上，这与 innodb 中数据都以 B+ 树的结构存储有关：</p>
+<p><img src="http://img.xiajibagao.top/image-20201105203027271.png" alt="image-20201105203027271"></p>
+<p>以上图为例，如果我们删除 R4 这条数据，则 innodb 会把 R4 这个位置标记为删除，之后如果插入一个在 300~600 的记录的时候，就会直接使用现在 R4 的位置。同理，如果我们清除这个 PageA，那么这个数据页都会被标记删除，等到下一个数据页加载的时候就可以直接使用这个空间。而当两个相邻的数据页上被删除了记录很多，也就是页的利用率都很低的时候，系统就会自动合并两个页的数据，并且标记其中一个为可复用。</p>
+<p>值得一提的是，记录的空间被复用，必须限定位置，比如 R4 的空间被复用，就不能插入300 ~ 600之外的数据；而数据页的空间则可以被任意一页新加载的页复用。</p>
+<p>综上所述，不难理解，<strong>我们使用 delete 删除的数据只是把这块空间标记为可复用，是一种逻辑上的删除，并没有实际减少磁盘空间的占用</strong>。</p>
+<p>实际上，<strong>不止是删除数据会造成空洞，插入数据也会。</strong></p>
+<p>如果数据是按照索引递增顺序插入的，那么索引是紧凑的。但如果数据是随机插入的，就可能造成索引的数据页分裂。</p>
+<p><img src="http://img.xiajibagao.top/image-20201105204359077.png" alt="image-20201105204359077"></p>
+<p>假如 PageA 已满，再插入一条550，PageA 就会不得不分离成两页，这就是页的分裂。当分裂完以后，PageA 就会留下一个空洞，新页 PageB 一样没有占满。</p>
+<p>另外，更新索引上的值，可以理解为删除一个旧的值，再插入一个新值。不难理解，这很有可能破坏了索引的有序性，也是会造成空洞的</p>
+<p>也就是说，经过大量增删改的表，都是可能是存在空洞的。所以，<strong>如果能够把这些空洞去掉，就能达到收缩表空间的目的</strong>。</p>
+<p>而重建表，就可以达到这样的目的。</p>
+<h2><span id="三-重建表">三、重建表</span></h2><h3><span id="1重建表的流程">1.重建表的流程</span></h3><p>为了去掉表中的空洞，我们可以新建一个与表 A 结构相同的表 B，然后<strong>按照主键 ID 递增的顺序</strong>，把数据一行一行地从表 A 里读出来再插入到表 B 中。</p>
+<p>由于表 B 是新建的表，所以表 A 主键索引上的空洞，在表 B 中就都不存在了。显然地，表 B 的主键索引更紧凑，数据页的利用率也更高。如果我们把表 B 作为临时表，数据从表 A 导入表 B 的操作完成后，用表 B 替换 A，从效果上看，就起到了收缩表 A 空间的作用。</p>
+<p>可以使用 <code>alter table A engine=InnoDB</code> 命令来重建表。在 MySQL 5.5 版本之前，这个命令的执行流程跟我们前面描述的差不多，mysql 会自动完成全部操作。</p>
+<h3><span id="2优化">2.优化</span></h3><p>但是这个 DDL 语句不是 online 的，也就说，<strong>如果过程中有新的数据往 A 表插入，有可能不会被读到并且一起转移到 B 表，导致最后丢失更新</strong>。因此，在 5.6 版本以后，引入的 online DDL 对这个流程做了优化。</p>
+<p>新的流程如下：</p>
+<ol>
+<li>建立一个临时文件，扫描表 A 主键的所有数据页；</li>
+<li>用数据页中表 A 的记录生成 B+ 树，存储到临时文件中；</li>
+<li>生成临时文件的过程中，<strong>将所有对 A 的操作记录在一个日志文件</strong>中；</li>
+<li>临时文件生成后，<strong>将日志文件中的操作应用到临时文件，得到一个逻辑数据上与表 A 相同的数据文件</strong>；</li>
+<li>用临时文件替换表 A 的数据文件。</li>
+</ol>
+<p>因为过程中对表 A 的操作最后都会通过日志同步到临时文件，所以在整个 DDL 执行的过程不会影响对表 A 的增删改查。</p>
+<h3><span id="3inplace">3.inplace</span></h3><p>我们可以注意到，5.6 之前是创建临时表，而 5.6 以后则是创建了临时文件。这两者的区别在于：<strong>临时表是创建在 server 层的</strong>，<strong>临时文件是创建在 innodb 内部</strong>的，整个 DDL 过程都在 innodb 内部完成。对于 server 层来说，后者没有把数据移到临时表，相当于一个原地操作，所以叫 inplace。</p>
+<p>也就是说，<code>alter table t engine=InnoDB</code> 这个 DDL 实际上相当于：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> t <span class="keyword">engine</span>=<span class="keyword">innodb</span>,ALGORITHM=inplace;</span><br></pre></td></tr></table></figure>
+
+<p>相对于创建临时表：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> t <span class="keyword">engine</span>=<span class="keyword">innodb</span>,ALGORITHM=copy;</span><br></pre></td></tr></table></figure>
+
+<h3><span id="4三种重建表方式的区别">4.三种重建表方式的区别</span></h3><ol>
+<li>从 MySQL 5.6 版本开始，alter table t engine = InnoDB（也就是 recreate）默认的就是上面图 4 的流程了；</li>
+<li>analyze table t 其实不是重建表，只是对表的索引信息做重新统计，没有修改数据，这个过程中加了 MDL 读锁；</li>
+<li>optimize table t 等于 recreate + analyze。</li>
+</ol>
+<h2><span id="四-总结">四、总结</span></h2><p>数据库表文件可以存在共享表空间里；也可以单独以 .ibd 文件存储。共享表空间中的表使用 drop table 无法清除。通过<code>innodb_file_per_table</code>参数的 off/on 可以控制存放策略。mysql 5.6.6 以后默认为 on。</p>
+<p>innodb 中的删除只是标记空间为可复用，没有实际删除数据。当非有序的插增删改影响了索引上的数据的有序性时，可能产生“空洞”降低空间利用率。当内存中相邻表空间利用率都很低的时候，可能引起页的合并，反之，过满或者无序插入会引发页分裂。</p>
+<p>通过拷贝数据到临时表，再有序将数据插入原表，即重建表可以收缩空间。可以使用 <code>alter table A engine=InnoDB</code>的 sql 实现。</p>
+<p>5.5 之前版本拷贝过程中原表的正删改可能在重建后丢失，5.6 之后将对原表的正删改写入临时日志后再同步，实现了 online DDL。</p>
+<p>5.6 之前重建操作为在server 层创建临时表，5.6 之后为在 innodb 内创建临时文件，他们的写法如下：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 默认为inplace</span></span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> t <span class="keyword">engine</span>=<span class="keyword">innodb</span>(,ALGORITHM=inplace);</span><br><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> t <span class="keyword">engine</span>=<span class="keyword">innodb</span>,ALGORITHM=copy;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql初探：内存数据刷盘机制</title>
+    <url>/2020/11/03/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/</url>
+    <content><![CDATA[<blockquote>
+<p>此文为极客时间：MySQL实战45讲的12节的学习笔记</p>
+</blockquote>
+<h2><span id="一-mysql-的刷盘机制">一、mysql 的刷盘机制</span></h2><p>而之前提到过，mysql 使用了 WAL 技术，即更新的时候先更新内存中的数据，然后必要的时候再将内存中的数据刷入磁盘。我们把内存中这些被修改过，跟磁盘中的数据页不一致的数据页称为脏页。</p>
+<p>其中，有四种情况会触发脏页的刷盘：</p>
+<ol>
+<li>redo log 可写空间满了。</li>
+<li>内存满了，需要淘汰的数据页恰好是脏页。</li>
+<li>系统不繁忙的时候。</li>
+<li>关闭数据库的时候。</li>
+</ol>
+<p>其中，第三种情况不会为系统带来过多影响的，第四中情况下不会在乎为系统带来的影响。所以我们只需要关注第一和第二种情况：</p>
+<p>对于第二种情况，由于 mysql 的更新需要先写日志，所以<strong>当日志满了的情况下，所有的更新都会停止，一直到刷完盘日志腾出了空间为止</strong>；</p>
+<p>而对于第二种情况，当查询的数据在内存中的数据页没有的时候，就需要淘汰旧页释放内存以读入新页，<strong>所以当一次查询导致需要淘汰的脏页过多的时候，就需要先等待较长的刷盘时间，然后才能获取响应</strong>。</p>
+<p>为了避免上述两种情况，必须要控制脏页在内存中的比例。</p>
+<h2><span id="二-刷脏页的控制策略">二、刷脏页的控制策略</span></h2><p>首先，我们必须要知道主机磁盘的写入能力有多强，这样 innodb 才可以知道它刷脏页的速度最快应该是多快。</p>
+<p>我们可以通过<strong>设置 <code>innodb_io_capacity</code> 这个参数来告诉 innodb 磁盘的写入速度</strong>。这个参数的值不宜过小，因为这会导致 innodb 错误的估计刷盘速度，最后导致刷脏页的速度跟不上脏页生成的速度。</p>
+<p> <code>innodb_io_capacity</code>规定了刷脏页速度的极限，但是实际上磁盘不可能只服务这么一个功能，所以还需要参考 <strong>redo log 的刷盘速度</strong>和<strong>允许的内存中的脏页</strong>比例。</p>
+<p><strong>参数 <code>innodb_max_dirty_pages_pct</code> 是脏页比例上限</strong>，默认值是 75%。innodb 会根据当前的脏页比例（假设为 M），算出一个范围在 0 到 100 之间的数字，这个公式是 <code>F1(M)</code> 。</p>
+<p>而每次写入 redo log 的写入点 wp 都会有一个序号，innodb 会根据这个序号和上一次清理日志的界限 cp 之间的差值——我们假设为 N——计算得到一个范围在 0 到 100 之间的数字，这个公式是 <code>F2(N)</code></p>
+<p>根据上述算得的 <code>F1(M)</code> 和 <code>F2(N)</code> 两个值，取其中较大的值记为 R，之后引擎就可以按照 <code>innodb_io_capacity</code> 定义的能力乘以 R% 来控制刷脏页的速度。</p>
+<p>这一整个流程对应的图片是这样的：</p>
+<p><img src="http://img.xiajibagao.top/image-20201029164736099.png" alt="image-20201029164736099"></p>
+<p>所以，我们需要关注内存中的脏页比例，让它尽量不要到75%，并且合理的设置 <code>innodb_io_capacity</code> 参数。</p>
+<p>其中，针对脏页的比例，我们可以通过 <code>Innodb_buffer_pool_pages_dirty/Innodb_buffer_pool_pages_total</code>去设置。</p>
+<p>另外，由于 mysql 存在这样一个机制：如果要刷盘的脏页相邻的数据页恰好也是脏页，就一起写入磁盘，如果邻居的邻居也是如此。在机械硬盘时代这个策略可以减少随机IO，但是如果使用固态硬盘的话随机IO的性能往往比较高，所以使用这个策略反而拖累了查询性能。因此可以通过 <code>innodb_flush_neighbors</code>关闭这个“连坐”的策略。</p>
+<h2><span id="三-总结">三、总结</span></h2><p>innodb 有四种情况会触发脏页的刷盘：</p>
+<ul>
+<li>redo log 可写空间满了；</li>
+<li>内存满了，需要淘汰的数据页恰好是脏页；</li>
+<li>系统不繁忙的时候；</li>
+<li>关闭数据库的时候。</li>
+</ul>
+<p>innodb 通过的刷盘速度通过类似这样的公式计算：</p>
+<blockquote>
+<p><code>innodb_io_capacity * Max( F(innodb_max_dirty_pages_pct)， F(redo log的wp - redo log的cp) )</code></p>
+<p>其中，<code>innodb_io_capacity</code>表示磁盘的最大IO能力；<code>innodb_max_dirty_pages_pct</code>表示允许脏页在内存中的占比，默认值为75%；</p>
+</blockquote>
+<p>当使用固态硬盘的时候，可以设置<code>innodb_flush_neighbors</code>关闭默认的刷新相邻脏页的策略。</p>
 ]]></content>
       <categories>
         <category>mysql</category>
