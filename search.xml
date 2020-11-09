@@ -4564,4 +4564,403 @@
         <tag>mysql</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Mysql初探：order by</title>
+    <url>/2020/11/07/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9Aorder%20by/</url>
+    <content><![CDATA[<blockquote>
+<p>此文为极客时间：MySQL实战45讲的16节order by相关内容的笔记</p>
+</blockquote>
+<h2><span id="一-order-by-的执行流程">一、order by 的执行流程</span></h2><h3><span id="1全字段排序">1.全字段排序</span></h3><p>假如此时有这么一张表：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`city`</span> <span class="built_in">varchar</span>(<span class="number">16</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">16</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`age`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`addr`</span> <span class="built_in">varchar</span>(<span class="number">128</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`city`</span> (<span class="string">`city`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span>;</span><br></pre></td></tr></table></figure>
+
+<p>现在要按姓名排序查询杭州1000个人的信息</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> city,<span class="keyword">name</span>,age <span class="keyword">from</span> t <span class="keyword">where</span> city=<span class="string">&#x27;杭州&#x27;</span> <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">name</span> <span class="keyword">limit</span> <span class="number">1000</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这条 sql 的执行流程如下：</p>
+<ol>
+<li>在内存中初始化 sort_buffer，放入 city，name，age 三个字段</li>
+<li>从 city 索引树找到 city = ‘杭州’ 叶子节点存放的主键 id</li>
+<li>回表根据主键 id 找到数据，取出全部字段放入 sort_buffer</li>
+<li>重复上述过程，直到全部符合条件的数据都放入内存</li>
+<li>在 sort_buffer 对数据按 name 进行排序</li>
+<li>按照排序结果取前 1000 行返回</li>
+</ol>
+<p>因为先查了全部需要字段才排序，我们把这个叫做<strong>全字段排序</strong>。</p>
+<p>不难看出，跟 join 有点像，排序也专门在内存里开辟了一块空间 sort_buffer。其中，<code>sort_buffer_size</code>参数的大小决定了 sort_buffer 的大小，<strong>如果 sort_buffer 放不下全部的字段，就必须在磁盘中创建临时文件辅助排序</strong>，这个排序使用的是归并排序，即先让分片变得有序，最后再总体进行排序。<strong>sort_buffer 越小，就会让临时文件越多</strong>。</p>
+<h3><span id="2rowid-排序">2.rowid 排序</span></h3><p>全字段排序的问题在于，如果需要查询返回的数据行数过多，那么就会导致少量的行数也会占满 sort_buffer 。</p>
+<p>为此我们可以调整 <code>max_length_for_sort_data</code> 参数，即当单行的长度超过这个值，就会只在 sort_buffer  中放入主键 id 和需要排序的字段，其他的字段等到排完序再回表查询。</p>
+<p>这个算法的执行流程如下：</p>
+<ol>
+<li>在内存中初始化 sort_buffer，只放入 id，name 两个字段</li>
+<li>从 city 索引树找到 city = ‘杭州’ 叶子节点存放的主键 id</li>
+<li>回表根据主键 id 找到数据，<strong>只取出 id 和 name 字段放入 sort_buffer</strong></li>
+<li>重复上述过程，直到全部符合条件的数据都放入内存</li>
+<li>在 sort_buffer 对数据按 name 进行排序</li>
+<li>遍历排序结果，取前 1000 行，<strong>并按照 id 的值回到原表中取出 city、name 和 age 三个字段返回</strong>。</li>
+</ol>
+<p>因为排序的时候只拿需要排序的字段，我们可以把这个叫做 rowid 排序</p>
+<h2><span id="二-优化">二、优化</span></h2><p>我们可以看到，rowid 排序只担心单行长度过大导致 sort_buffer 一次只能放入少量数据的时候使用，因为 rowid 排序完以后还需要回表进行一次查询，会造成磁盘读，因此不会是一个优先的选择。</p>
+<p>这也是 mysql 优化查询过程中的原则，即<strong>能在内存里处理就尽量在内存里处理，避免回表</strong>。</p>
+<p>排序是一个消耗颇大的操作，但是我们可以<strong>借助索引结构的有序性避免一些额外的排序过程</strong>。同样是上面的例子，我们建一个（city，name）联合索引，那么就可以保证在遍历过程中，只要 city=‘杭州’，那么 name 就一定是有序的。</p>
+<p>这样一来，查询流程就是：</p>
+<ul>
+<li>从联合索引找到第一条city=’杭州’的数据对应的主键</li>
+<li>回表找到city，name，age三个数据加入数据集</li>
+<li>重复上述过程直到查到第 1000 条记录，或者是不满足 city=’杭州’条件时循环结束</li>
+</ul>
+<p>可以看到，由于索引已经确保的数据的有序性，索引就不需要加入内存中的临时表进行排序的过程了。</p>
+<p>如果只查询 city 和 name，或者为联合索引再加上 age 字段，就能实现<strong>索引覆盖，甚至不需要回表</strong>。不过考虑到维护索引的代价，这个就需要根据业务取舍了。</p>
+<h2><span id="三-总结">三、总结</span></h2><p>mysql 的 order by 分全字段排序和 rowid 排序。</p>
+<p>全字段排序需要先查出数据放入 sort_buffer ，然后在内存中排序后返回。如果数据超过了<code>sort_buffer_size</code>参数，就会在磁盘生成临时文件，辅助进行归并排序。</p>
+<p>如果单行长度超过<code>max_length_for_sort_data</code> 参数，就会转为 rowid 排序。即只取 id 和排序字段放入内存，排序完后回表取出对应的数据。</p>
+<p>通过索引结构天然有序，可以借助合适的索引避免额外的排序过程。如果实现了索引覆盖还可以避免回表。</p>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql初探：锁（二）</title>
+    <url>/2020/11/09/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9A%E9%94%81%EF%BC%88%E4%BA%8C%EF%BC%89/</url>
+    <content><![CDATA[<blockquote>
+<p>此文为极客时间：MySQL实战45讲的 21、30、40节锁相关部分的总结</p>
+</blockquote>
+<h2><span id="间隙锁的加锁原则">间隙锁的加锁原则</span></h2><p>间隙锁加锁的情况，<strong>包含了两个“原则”、两个“优化”和一个“bug”。</strong></p>
+<ol>
+<li>原则 1：加锁的基本单位是 next-key lock。即间隙锁+行锁（前开后闭区间）。</li>
+<li>原则 2：查找过程中访问到的对象才会加锁。</li>
+<li>优化 1：索引上的等值查询，给<strong>唯一索引加锁</strong>的时候，next-key lock 退化为行锁。</li>
+<li>优化 2：索引上的等值查询，向右遍历时且最后一个值不满足等值条件的时候，next-key lock 退化为间隙锁。</li>
+<li>一个 bug：唯一索引上的范围查询会访问到不满足条件的第一个值为止。</li>
+</ol>
+<p>以下面的表为例：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t`</span> (</span><br><span class="line">    <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="string">`c`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">    <span class="string">`d`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">    PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">    <span class="keyword">KEY</span> <span class="string">`c`</span> (<span class="string">`c`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">values</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>),(<span class="number">5</span>,<span class="number">5</span>,<span class="number">5</span>),</span><br><span class="line">(<span class="number">10</span>,<span class="number">10</span>,<span class="number">10</span>),(<span class="number">15</span>,<span class="number">15</span>,<span class="number">15</span>),(<span class="number">20</span>,<span class="number">20</span>,<span class="number">20</span>),(<span class="number">25</span>,<span class="number">25</span>,<span class="number">25</span>);</span><br></pre></td></tr></table></figure>
+
+<p>我们需要注意一下，c 是加了索引的，而 d 没有。直观点就是下图：</p>
+<p><img src="http://img.xiajibagao.top/image-20201108173043844.png" alt="image-20201108173043844"></p>
+<h2><span id="一唯一索引等值查询间隙锁">一.唯一索引等值查询间隙锁</span></h2><p><img src="http://img.xiajibagao.top/image-20201108173614816.png" alt="等值查询的间隙锁"></p>
+<p>由于表 t 中没有 id=7 的记录，所以用我们上面提到的加锁规则判断一下的话：</p>
+<ol>
+<li>根据原则 1，加锁单位是 next-key lock，session A 加锁范围就是 (5,10]；</li>
+<li>同时根据优化 2，这是一个等值查询 (id=7)，而 id=10 不满足查询条件，next-key lock 退化成间隙锁，因此最终加锁的范围是 (5,10)。</li>
+</ol>
+<p>所以，session B 要往这个间隙里面插入 id=8 的记录会被锁住，但是 session C 修改 id=10 这行是可以的。</p>
+<h2><span id="二非唯一索引等值查询间隙锁">二.非唯一索引等值查询间隙锁</span></h2><p><img src="http://img.xiajibagao.top/image-20201108173725306.png" alt="只加在非唯一索引下的锁"></p>
+<p>我们分析一下这个过程：</p>
+<ol>
+<li>首先，根据原则1，会为（0,5] 范围加上 next-key lock；</li>
+<li>由于 c 是普通索引，所以因此查到5以后不会停下，会向右遍历到第一个不符合条件的值，也就是10以后才会停下。所以锁的范围会扩张到（0,10]；</li>
+<li>由于符合优化2，所以 next-key lock 会退化为间隙锁，也就是会变成（0,10）；</li>
+<li>根据原则2，只有访问到的才加锁，也就是锁只加在c字段上，对主键索引是没关系的，所以 sessionB 可以更新成功。但 session C 要插入一个 (7,7,7) 的记录，就会被 session A 的间隙锁 (5,10) 锁住。</li>
+</ol>
+<p>需要注意，在这个例子中，<strong>lock in share mode 只锁覆盖索引</strong>，但是如果是 for update 就不一样了。 <strong>执行 for update 时，系统会认为你接下来要更新数据，因此会顺便给主键索引上满足条件的行加上行锁</strong>。</p>
+<p>这个例子说明，锁是加在索引上的；同时，它给我们的指导是，如果你要用 lock in share mode 来给行加读锁避免数据被更新的话，就<strong>必须得绕过覆盖索引的优化，在查询字段中加入索引中不存在的字段</strong>。比如，将 session A 的查询语句改成 <code>select d from t where c=5 lock in share mode</code>。</p>
+<h2><span id="三唯一索引范围锁">三.唯一索引范围锁</span></h2><p>假如现在有两条 sql：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t <span class="keyword">where</span> <span class="keyword">id</span>=<span class="number">10</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t <span class="keyword">where</span> <span class="keyword">id</span>&gt;=<span class="number">10</span> <span class="keyword">and</span> <span class="keyword">id</span>&lt;<span class="number">11</span> <span class="keyword">for</span> <span class="keyword">update</span>;</span><br></pre></td></tr></table></figure>
+
+<p>在逻辑上，两条 sql 是等价的，但是加锁的情况是不一样的。以第二条 sql 为例：</p>
+<p><img src="http://img.xiajibagao.top/image-20201108175305570.png" alt="主键索引范围锁"></p>
+<ol>
+<li>首先加了一个范围为 （5,10] 的 next-key lock，由于id 是唯一索引，根据优化1锁会退化为行锁，也就是只锁id=10；</li>
+<li>由于是范围查找，会继续向右遍历，找到id=15的行发现第一条不符合 id&lt;10 的数据，然后加上（10，15]的锁。</li>
+</ol>
+<p>也就是说，最终 sessionA 会加上 [10,15] 的锁。</p>
+<p>需要注意一点，首次 session A 定位查找 id=10 的行的时候，是当做等值查询来判断的，而向右扫描到 id=15 的时候，用的是范围查询判断。也就是说，&gt;= 这个查询，<strong>实际上是等值+范围查询，两次锁的分别加上的</strong>。</p>
+<h2><span id="四非唯一索引范围锁">四.非唯一索引范围锁</span></h2><p><img src="http://img.xiajibagao.top/image-20201108180453457.png" alt="非唯一索引范围锁"></p>
+<ul>
+<li>首先，由于 c&gt;=10 满足的第一条数据就是 c=10 的这行，因此会加上（5,10] 的 next-key lock，由于 c 不是唯一索引，所以不符合优化1的条件，所以最终加锁范围还是（5,10]</li>
+<li>由于是范围查找，继续向右遍历，直到找到第一行不符合 c&lt;11 的数据，也就是 c=15 这行，加上（10，15] 的，由于后半段是范围查询，所以不符合优化2的条件，所以最终加锁范围还是（10,15]</li>
+</ul>
+<p>也就是说，最终 sessionA 会加上 （5,15] 的锁。</p>
+<h2><span id="五唯一索引范围锁-bug">五.唯一索引范围锁 bug</span></h2><p><img src="http://img.xiajibagao.top/image-20201108181439263.png" alt="唯一索引范围锁 bug"></p>
+<p>session A 是一个范围查询，按照原则 1 的话，应该是索引 id 加上 (10,15] 这个 next-key lock。并且因为 id 是唯一键，相比于情况三，id = 15的这条数据是存在的，所以循环判断到 id=15 这一行就应该停止了。</p>
+<p>但是实现上，InnoDB 会往前扫描到第一个不满足条件的行为止，也就是 id=20。而且由于这是个范围扫描，因此索引 id 上的 (15,20] 这个 next-key lock 也会被锁上。</p>
+<h2><span id="六两个相同的非唯一索引上的等值查询">六.两个相同的非唯一索引上的等值查询</span></h2><h3><span id="1不加limit的情况">1.不加limit的情况</span></h3><p>现在已经有了（10,10,10）这条数据，再插入（30,10,30），也就是说，现在有两条 c = 10 的数据。但是由于非唯一索引上包含主键的值，所以两种是不可能完全相同的，这两条数据也有间隙。</p>
+<p><img src="http://img.xiajibagao.top/image-20201108182444617.png" alt="两个相同的非唯一索引上的间隙"></p>
+<p>在上图的状态，执行sql：</p>
+<p><img src="http://img.xiajibagao.top/image-20201108182706835.png" alt="delete 示例"></p>
+<ol>
+<li>先找到第一条 c=10 的数据，也就是 id=10 的这行，加上（5,10] 的锁;</li>
+<li>向右遍历，一直到第一个不符合条件的数据，也就是加上（10,15] 的锁。注意，这里指的是id，也就是现在这个区间的锁包含了id为（30,15,20）这三条数据和他们的间隙。由于这是等值查询，根据优化1，会退化为间隙锁，也就是变成（10,15）；</li>
+</ol>
+<p>也就是说，现在加锁的就会变成：</p>
+<p><img src="http://img.xiajibagao.top/image-20201108183431275.png" alt="相同索引的等值查询加锁范围"></p>
+<h3><span id="2加limit限制的情况">2.加limit限制的情况</span></h3><p>现在，在上文的 delete 的情况加上 limit：</p>
+<p><img src="http://img.xiajibagao.top/image-20201108183726684.png" alt="加了limit语句限制的情况"></p>
+<p>加锁的逻辑会有一点变化：</p>
+<ol>
+<li>依然先加（5,10] 的锁；</li>
+<li>向右遍历找到第二条符合条件的数据，即 id=30 的数据。由于加上了 limit ，已经找到两条了，所以就不必向后再找到一条不符合的数据了，也就不需要加上（30,15）的锁了。</li>
+</ol>
+<p><img src="http://img.xiajibagao.top/image-20201108184255128.png" alt="加了limit语句限制的锁范围"></p>
+<p>可以看见，这样做减少了锁的范围。</p>
+<p>这个例子对我们实践的指导意义就是，<strong>在删除数据的时候尽量加 limit</strong>。这样不仅可以控制删除数据的条数，让操作更安全，还可以减小加锁的范围。</p>
+<h2><span id="七-间隙锁的扩大">七、间隙锁的扩大</span></h2><p><img src="http://img.xiajibagao.top/image-20201109202937260.png" alt="间隙锁的扩大"></p>
+<p>我们来分析一下：</p>
+<ol>
+<li>由于 id &lt;= 15 第一条满足的数据就是 id=15 这条数据，因此加上 (10,15] 的锁，因为 id &gt; 10，所以不必再理id=10之前的数据了。由于是一个等值查询，所以（10,15] 退化为间隙锁（10,15）；</li>
+<li>sessionB 删除了 id=10 这行数据，由于没锁到 id=10，所以顺利删除了该数据；</li>
+<li>由于缺少了10，所以原本（10,15）的间隙锁扩大为（5,15），因此插入语句被阻塞。</li>
+</ol>
+<p>类似的例子还有这个：</p>
+<p><img src="http://img.xiajibagao.top/image-20201109204020361.png" alt="间隙锁的扩大2"></p>
+<ol>
+<li>sessionA 加上了 ( 5,supremum] 的锁；</li>
+<li>sessionB 将 c=5 变成了 c=1，现在锁扩大到了（1,supremum]；</li>
+<li>sessionB 试图将 c=5 变成 c=1，此时c=5已经在锁的范围了，因此更新的sql被堵塞。</li>
+</ol>
+<h2><span id="八-总结">八、总结</span></h2><p>分析间隙锁的加锁原则：两个原则，两个优化，一个bug。</p>
+<p>加锁的对象一般来说是索引，也就是说，只要更新使用的索引跟上锁的索引不一样，就不会影响到插入间隙的行为。除非使用 for update，这会为整段数据都加上锁。</p>
+<p>加锁单位是 next-key lock，即间隙锁+行锁，是一个前开后闭的区间。也就是，访问到了A，那么锁就是（A-1，A]，即实际上加锁范围由间隙右边的节点决定。</p>
+<p>有且仅在等值查询的过程，对于唯一索引，锁有可能退化为行锁也可能退化为间隙锁；但是对于非唯一索引，锁只可能退化为间隙锁。</p>
+<p>如果删除了间隙锁的“边界”，会导致间隙锁的扩大。</p>
+<p>对于唯一索引：</p>
+<ol>
+<li>等值查询：先加本段的 next-key lock，即前面一段间隙锁加本行行锁。如果本行即使要查询的数据，就退化为行锁，否则就退化为间隙锁。</li>
+<li>范围查询：同上，但是必然会向后查找到第一个不符合的数据，先加上后半段的 next-key lock，再退化为间隙锁。</li>
+</ol>
+<p>对于非唯一索引：</p>
+<ol>
+<li>等值查询：先加本段的 next-key lock，然后向后找到第一条不符合的数据，加上 next-key lock，再让后半段锁退化为间隙锁。</li>
+<li>范围查询：同上，由于不是等值查询所以不符合优化2的条件，相比等值查询，他的后半段还是 next-key lock 而不会退化为间隙锁。</li>
+<li>多个重复的索引值，不加 limit：可以看成特殊的范围查询，会把第一个索引位置的前半段加上 next-key lock，然后再为第一到最后一个索引位置的这段区域全加上 next-key lock，最后再向后查找到第一个不符合条件的值，并加上 next-key lock，由于也算等值查询，根据优化2后半段从 next-key lock退化为间隙锁。</li>
+<li>多个重复的索引值，加 limit：同上，但是由于加了条数限制，所以不必再向后查找到第一个不符合条件的值，所以相比不加 limit 少加最后一个索引位置的之后的一段间隙锁。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Mysql初探：锁（一）</title>
+    <url>/2020/11/08/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9A%E9%94%81%EF%BC%88%E4%B8%80%EF%BC%89/</url>
+    <content><![CDATA[<blockquote>
+<p>此文为极客时间：MySQL实战45讲的 6、7、20 节锁相关部分的总结</p>
+</blockquote>
+<h2><span id="一-全局锁">一、全局锁</span></h2><h3><span id="1概述">1.概述</span></h3><p>全局锁就是对整个数据库实例加锁。通过使用 <code>Flush tables with read lock</code>（FTWRL）语句加锁，此后整个库都会处于只读状态，这时，其他线程的数据定义语句（DDL），数据操作语句（DML）以及更新类事务的提交语句都会被阻塞。</p>
+<p>也就是说，<strong>加了全局锁以后，其他线程不能对数据增删改，也不能对表增删改</strong>。</p>
+<p>另外值得一提的是，在此之前，数据库会<strong>等待 FTWRL 操作前的所有读写操作完成，事务提交完毕；并且把脏页的数据从缓存刷入磁盘，保证数据的一致性</strong>。</p>
+<p>全局锁的典型使用场景是对数据库进行整库备份。</p>
+<h3><span id="2全局锁的缺陷和解决方案">2.全局锁的缺陷和解决方案</span></h3><p>全局锁有以下问题：</p>
+<ul>
+<li>如果你在主库上备份，那么在备份期间都不能执行更新，业务基本上就得停摆；</li>
+<li>如果你在从库上备份，那么备份期间从库不能执行主库同步过来的 binlog，会导致主从延迟。</li>
+</ul>
+<p>但是，<strong>如果不加锁，备份时如果有表的数据发生了变更，那么备份后的数据库就不能保证整个库的表都是在同一个逻辑时间点</strong>，可能会导致使用备份恢复数据库的时候，发生类似“我扣款了但是我下的单没了”，或者“我下单了但是没扣款”这样的问题。</p>
+<p>根据前文提到的数据库事务相关知识，我们知道，要保证一个事务进行中，其他事务的提交不影响会到这个事务，也就是要求事务执行前后的数据要一致，就需要<strong>开启可重复读的隔离级别</strong>。根据这个原理，官方自带的逻辑备份工具 mysqldump 当使用参数 <code>–single-transaction</code> 的时候，<strong>导出数据之前就会启动一个事务，来确保拿到一致性视图</strong>。而且由于 MVCC 的支持，这个过程中数据是可以正常更新的。</p>
+<p>single-transaction 虽好，但是对于像 MyISAM 这样不支持事务的引擎而言就享受不到这样的便利，所以还是需要 FTWRL 语句。这也是为什么推荐使用 innodb 引擎的原因之一。</p>
+<h3><span id="3-为何不能使用readonly替代">3. 为何不能使用readonly替代</span></h3><p>全局锁的效果表现为全库变为只读，但是同样的效果，<code>set global readonly=true</code> 却不是一个合适的替代方案：</p>
+<ol>
+<li><strong>global 不宜改动</strong>：在有些系统中，readonly 的值会被用来做其他逻辑，比如用来判断一个库是主库还是备库。因此，修改 global 变量的方式影响面更大。</li>
+<li><strong>在异常处理机制上有差异</strong>：<strong>如果执行 FTWRL 命令之后由于客户端发生异常断开，那么 MySQL 会自动释放这个全局锁</strong>，整个库回到可以正常更新的状态。而将整个库设置为 readonly 之后，如果客户端发生异常，则数据库就会<strong>一直保持 readonly 状态</strong>，这样会导致整个库长时间处于不可写状态，风险较高。</li>
+<li><strong>无法限制超管操作</strong>：只会禁止普通用户权限的 mysql 写操作，不能限制 super 权限用户的写操作。</li>
+</ol>
+<h2><span id="二-表级锁">二、表级锁</span></h2><p>表级锁是针对数据库表的锁，分为两种：表锁和元数据锁（MDL）。</p>
+<h3><span id="1表锁">1.表锁</span></h3><p>表锁的语法是<code>lock tables … read/write</code>他与全局锁类似，也可以通过<code>unlock tables</code>提前释放锁，也可以在客户端断开连接的时候自动释放锁。 </p>
+<p>如语法所说，表锁区分读锁和写锁，与全局锁不同的是，<strong>表锁除了限制别的线程的操作外，也会限制本线程的操作</strong>：</p>
+<blockquote>
+<p>举个例子, 如果在某个线程 A 中执行 lock tables t1 read, t2 write; 这个语句，则其他线程写 t1、读写 t2 的语句都会被阻塞。同时，线程 A 在执行 unlock tables 之前，也只能执行读 t1、读写 t2 的操作。连写 t1 都不允许，自然也不能访问其他表。</p>
+</blockquote>
+<h3><span id="2元数据锁">2.元数据锁</span></h3><p>元数据锁跟表锁相比，最显著的差别在于<strong>元数据锁不需要显式的调用，在访问表的时候会自动加上</strong>。</p>
+<p>元数据锁的作用在于保证读写的正确性。假设在没有加表锁的情况下，一个线程对另一个线程正在查询的表结构做了修改，那么就会导致查询出了结构不正确的数据。为此 mysql 在5.5版本中引入了 MDL：当读的时候加 MDL 读锁，写的时候加 MDL 写锁。</p>
+<p>申请 MDL 锁的操作会形成一个队列，队列中<strong>写锁获取优先级高于读锁</strong>。一旦出现写锁等待，不但当前操作会被阻塞，同时还会阻塞后续该表的所有操作。事务一旦申请到 MDL 锁后，直到事务执行完才会将锁释放。<strong>如果事务中包含 DDL 操作，mysql 会在 DDL 操作语句执行前，隐式提交commit，以保证该DDL语句操作作为一个单独的事务存在，同时也保证元数据排他锁的释放</strong>。</p>
+<p>换句话说，<strong>元数据锁最主要的目的不是保证 select 与 update 之间的正确进行，而是保证 DDL 语句 和 DML/DQL 语句之间的正确进行</strong>。</p>
+<p>其中：</p>
+<ol>
+<li>读锁与读锁之间不互斥，因此可以同时有多个线程对同一张表进行查询；</li>
+<li>读锁之写锁之间是互斥的，并且写锁获取优先级高，这可以避免一次事务的两次查询查到不一样的表结构；</li>
+<li>写锁与写锁之间是互斥的，这可以用来保证要更改表结构的操作的安全性；</li>
+</ol>
+<p>第二点很好理解，但是第一点可能有点难理解，我们举个例子：</p>
+<p>假如A和B线程同时修改T表的两行数据，A 线程先分别获取 MDL 读锁和 MDL 写锁，然后 B 线程获取 MDL 读锁，但是 B 线程无法获取MDL写锁，所以 B 线程进入等待，等到 A 线程完成后B线程才获取写锁，继续操作。</p>
+<h3><span id="3元数据锁存在的问题">3.元数据锁存在的问题</span></h3><p>事务中的 MDL 锁，在语句执行开始时申请，但是语句结束后并不会马上释放，而会等到整个事务提交后再释放。所以可能会出现这样的问题：</p>
+<p><img src="http://img.xiajibagao.top/image-20201022131135062.png" alt="image-20201022131135062"></p>
+<ol>
+<li>我们可以看到 session A 先启动，这时候会对表 t 加一个 MDL 读锁。由于 session B 需要的也是 MDL 读锁，因此可以正常执行；</li>
+<li>之后 session C 会被 blocked，是因为 session A 的 MDL 读锁还没有释放，而 session C 需要 MDL 写锁，因此只能被阻塞；</li>
+<li>如果只有 session C 自己被阻塞还没什么关系，但是之后所有要在表 t 上新申请 MDL 读锁的请求也会被 session C 阻塞。前面我们说了，所有对表的增删改查操作都需要先申请 MDL 读锁，就都被锁住，等于这个表现在完全不可读写了；</li>
+<li>如果某个表上的查询语句频繁，而且客户端有重试机制，也就是说超时后会再起一个新 session 再请求的话，这个库的线程很快就会爆满。</li>
+</ol>
+<p>针对以上的情况，我们有以下的改善方式：</p>
+<ol>
+<li>假如不是热点表：如果要修改的表有长事务要进行，<strong>要么 kill 掉长事务，要么先暂停表结构的修改</strong>；</li>
+<li>假如是热点表：<strong>为 alert 语句加上等待时间</strong>，避免长时间的阻塞后面的语句。</li>
+</ol>
+<h2><span id="三-行锁">三、行锁</span></h2><h3><span id="1概述">1.概述</span></h3><p>顾名思义，行锁的作用是保证对同一行数据的并发修改可以正确进行。</p>
+<p>假设我们有这样一条sql：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">begin</span>;</span><br><span class="line"><span class="keyword">update</span> t <span class="keyword">set</span> a = <span class="number">2</span> <span class="keyword">where</span> <span class="keyword">id</span> =  <span class="number">1</span>;</span><br><span class="line"><span class="keyword">update</span> t <span class="keyword">set</span> a = <span class="number">3</span> <span class="keyword">where</span> <span class="keyword">id</span> =  <span class="number">2</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
+
+<p>这个过程是这样的：</p>
+<ol>
+<li>开启了一个事务；</li>
+<li>第一条 sql 获得了 id = 1 这一行的行锁，执行完后不释放；</li>
+<li>第二条 sql 获得了 id = 2 这一行的行锁，但是执行完也不释放；</li>
+<li>提交事务，并且释放所有的行锁。</li>
+</ol>
+<p>我们可以看到，<strong>行锁是需要的时候就加上，但是更新完后并不会立刻释放，而是等到事务提交后再统一释放。这就是行锁的两阶段锁。</strong></p>
+<p>基于两阶段锁的原理，对于一些 sql ，我们可以做一些优化，比如：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">begin</span>;</span><br><span class="line"><span class="keyword">update</span> t <span class="keyword">set</span> a = <span class="number">2</span> <span class="keyword">where</span> <span class="keyword">id</span> =  <span class="number">1</span>;</span><br><span class="line"><span class="keyword">update</span> t <span class="keyword">set</span> a = <span class="number">3</span> <span class="keyword">where</span> <span class="keyword">id</span> =  <span class="number">2</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
+
+<p>上面这条 sql 涉及到两个 update 的 sql，一条 select 的 sql。如果可能的话，我们可以把 select 的操作放到最前面，这样就能减少两条 update 的 sql 获取行锁的时间。</p>
+<h3><span id="2死锁与死锁处理策略">2.死锁与死锁处理策略</span></h3><p>在学多线程的时候不难理解死锁的概念，两个线程互相持有对方所需要的锁就会导致死锁。我们拿数据库中的死锁举例：</p>
+<p><img src="http://img.xiajibagao.top/image-20201022134524700.png" alt="image-20201022134524700"></p>
+<p>这时候，事务 A 在等待事务 B 释放 id=2 的行锁，而事务 B 在等待事务 A 释放 id=1 的行锁。 事务 A 和事务 B 在互相等待对方的资源释放，就是进入了死锁状态。</p>
+<p>当出现死锁以后，有两种策略：</p>
+<ol>
+<li><p><strong>直接进入等待，直到超时</strong>。</p>
+<p>这个超时时间可以通过参数 innodb_lock_wait_timeout 来设置。</p>
+</li>
+<li><p>发<strong>起死锁检测，主动回滚死锁链条中的某一个事务，让其他事务得以继续执行</strong>。</p>
+<p>将参数 innodb_deadlock_detect 设置为 on，表示开启这个逻辑。</p>
+</li>
+</ol>
+<p>设置超时时间看上去是个好选择，但是实际上这个时间很难把握。innodb 的默认超时时间是50s，这个时间几乎是不可能接受的。但是如果将时间设置果断，可能又会导致正常的等待锁释放的过程受到影响。</p>
+<p>因此，还是需要采用第二种策略，死锁检测。<strong>这个也是 innodb 默认开启的。死锁检测的问题在于检测过程也是一个非常消耗性能的过程</strong>。当多个事务同时更新一条数据的时候，每个线程都要把所有争夺这把锁的线程检测一遍。这也是有时候 cpu 利用率极高，但是每秒仍然执行不了几个事务。</p>
+<h3><span id="3死锁检测的优化">3.死锁检测的优化</span></h3><p>说明的是，并非所有的访问都需要加锁，对于读和一般不太可能出现死锁的情况是不会进行检测的，比如：</p>
+<blockquote>
+<p>B在等A，D在等C，现在来了一个E，发现E需要等D，那么E才判断跟D、C是否会形成死锁，这个检测不用管B和A</p>
+</blockquote>
+<p>死锁检测的处理过程是很难优化的，我们只能想办法避免这个过程。为此，我们有以下几种方式来优化死锁检测：</p>
+<ul>
+<li><strong>关掉不必要是死锁检测</strong>。如果你能确保这个业务一定不会出现死锁，可以临时把死锁检测关掉。但是这种操作本身带有一定的风险，因为业务设计的时候一般不会把死锁当做一个严重错误，毕竟出现死锁了，就回滚，然后通过业务重试一般就没问题了，这是业务无损的。而关掉死锁检测意味着可能会出现大量的超时，这是业务有损的；</li>
+<li><strong>在客户端做控制并发度</strong>。即控制客户端的并发线程。但是这个方法并不可靠，因为客户端的数量并不可控，即使每个客户端只允许存在三个并发线程，一旦客户端达到1000个，最后还是会可能达到3000个的并发线程；</li>
+<li><strong>在服务端做并发控制</strong>。如果你有中间件，可以考虑在中间件实现；如果你的团队有能修改 MySQL 源码的人，也可以做在 MySQL 里面。基本思路就是，对于相同行的更新，在进入引擎之前排队。这样在 InnoDB 内部就不会有大量的死锁检测工作了。但是这个方案有很高的技术要求。</li>
+<li><strong>分散锁冲突</strong>。即在逻辑上把一行数据改成多行数据，比如对一个总金额字段改为多个金额字段的和。这样在操作的时候锁冲突就会由一个锁分散到多个锁。但是这个方案需要修改业务逻辑，也涉及到一些其他代码的改动。</li>
+</ul>
+<h3><span id="4行锁的锁定范围">4.行锁的锁定范围</span></h3><p>虽然叫行锁，但是<strong>锁并不是只锁一条数据，有些时候行锁会锁住多条数据，在一些没指明主键的情况，行锁会直接转为表锁</strong>。</p>
+<p>我们举个例子: </p>
+<p>假设有个表单 products ，里面有 id 跟 name 二个字段。</p>
+<ol>
+<li><p>明确指定主键，并且有能查到，加行锁</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="string">&#x27;3&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="string">&#x27;3&#x27;</span> <span class="keyword">and</span> <span class="keyword">type</span>=<span class="number">1</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>明确指定主键，不能查到，不加锁</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="string">&#x27;-1&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>不指明主键，加表锁</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">name</span>=<span class="string">&#x27;Mouse&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>主键不明确，加表锁</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>&lt;&gt;<span class="string">&#x27;3&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span> <span class="keyword">LIKE</span> <span class="string">&#x27;3&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<p>实际上，不难看出，如果没有使用索引，行锁很容易就会上升到表锁。</p>
+<h2><span id="四-间隙锁">四、间隙锁</span></h2><h3><span id="1行锁的局限性">1.行锁的局限性</span></h3><p>假设有表 t，t 有 id 和 d 两个字段。现有数据（0，5）和（2，1）。</p>
+<p>我们开启一个事务，加上写锁，进行了三次查询，这样每次都是“当前读”;</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">begin</span>;</span><br><span class="line"><span class="keyword">update</span> t <span class="keyword">set</span> <span class="keyword">id</span> = <span class="number">10</span> <span class="keyword">where</span> d = <span class="number">5</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t <span class="keyword">where</span> d = <span class="number">5</span> <span class="keyword">for</span> <span class="keyword">update</span>; <span class="comment"># Q1</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t <span class="keyword">where</span> d = <span class="number">5</span> <span class="keyword">for</span> <span class="keyword">update</span>; <span class="comment"># Q2</span></span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t <span class="keyword">where</span> d = <span class="number">5</span> <span class="keyword">for</span> <span class="keyword">update</span>; <span class="comment"># Q3</span></span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
+
+<p>其中，在 Q1 和 Q2 的间隙有一个事务进行了更新：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">update</span> t <span class="keyword">set</span> d = <span class="number">5</span> <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">2</span>; <span class="comment"># Q4</span></span><br></pre></td></tr></table></figure>
+
+<p>在 Q2 和 Q3 的间隙进行了一次插入：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">values</span>(<span class="number">3</span>,<span class="number">5</span>); <span class="comment"># Q5</span></span><br></pre></td></tr></table></figure>
+
+<p>现在 sql 的执行顺序是：Q1 -&gt; Q4 -&gt; Q2 -&gt; Q5 -&gt; Q3</p>
+<p>在这种情况下，三条查询的 sql 分别查询出了一条、两条、三条数据：</p>
+<ul>
+<li>Q1：查到了（10，5）</li>
+<li>Q2：查到了（0，5），（2，5）</li>
+<li>Q3：查到了（0，5），（2，5），（3，5）</li>
+</ul>
+<p>其中，<strong>Q3 查到了一条原本不存在的数据，也就是幻读</strong>。</p>
+<p>我们可以看到，虽然在事务一开始的时候就已经拿到了（0，5）的行锁，但是由于没有锁住其他的行，导致最后在 binlog 里出现了严重的数<strong>据不一致问题</strong>：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">update</span> t <span class="keyword">set</span> d = <span class="number">5</span> <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">2</span>;</span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">values</span>(<span class="number">3</span>,<span class="number">5</span>);</span><br><span class="line"><span class="keyword">update</span> t <span class="keyword">set</span> <span class="keyword">id</span> = <span class="number">10</span> <span class="keyword">where</span> d = <span class="number">5</span> <span class="comment"># 最后事务提交的时候行锁才释放</span></span><br></pre></td></tr></table></figure>
+
+<p>也就是说，当从库同步的时候，或者通过 binlog 备份的时候，<strong>原本在数据中的数据，应该只有（0，5）这行的 id 被改成了5，但是最后备份的时候（2，5）和（3，5）的 id 也要被改成了5</strong>，先不说是否能成功，这种情况显然是不允许出现的。</p>
+<p>由于没锁住其他的行，导致了 binlog 上因为顺序导致的数据不一致问题，那么如果把所有扫描到的行都加上锁，那么 Q1 和 Q2 之间的更新就会被放到 Q3 执行事务提交完后，反应到 binlog：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">values</span>(<span class="number">3</span>,<span class="number">5</span>);</span><br><span class="line"><span class="keyword">update</span> t <span class="keyword">set</span> <span class="keyword">id</span> = <span class="number">10</span> <span class="keyword">where</span> d = <span class="number">5</span> <span class="comment"># 最后事务提交的时候行锁才释放</span></span><br><span class="line"><span class="keyword">update</span> t <span class="keyword">set</span> d = <span class="number">5</span> <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">2</span>; <span class="comment"># 拿到写锁后才能更新</span></span><br></pre></td></tr></table></figure>
+
+<p>我们可以看到，及时这样，insert 语句还是会引起 binlog 上的数据不一致，最根本的原因在于，<strong>加锁的时候（3，5）这行还不存在，所以锁加不到这行数据上</strong>。这就是幻读引起的问题。</p>
+<p>因此，需要一种新的锁，来锁住行与行的间隙，来防止意外的插入，这就是间隙锁。</p>
+<h3><span id="2间隙锁">2.间隙锁</span></h3><p>行锁只能锁住行，但是新插入记录这个动作，要更新的是记录之间的“间隙”，所以可能会出现幻读的情况。因此，为了解决这个问题，InnoDB 只好引入新的锁，也就是间隙锁 (Gap Lock)。</p>
+<p>顾名思义，<strong>间隙锁（next-key lock），锁的就是两个值之间的空隙</strong>。</p>
+<p>在最开始，表 t 一共有两条（0，5），（2，5）数据，那么就有三个<strong>前开后闭的区间/间隙</strong>（-∞，0 ]，（0，2 ]，（2，+  supremum )。其中，supremum 是 innodb 允许的索引最大值，这是一个概念上的数，可以认为是正无穷。</p>
+<p>当我们执行第 <code>select * from t whrere d = 5 for update</code>的时候，除了为扫描到的两条数据加上行锁外，还会为这三个区间加上间隙锁。</p>
+<h3><span id="3间隙锁引起死锁问题">3.间隙锁引起死锁问题</span></h3><p>间隙锁跟间隙锁之间是不冲突的，有冲突的是往间隙插入值的行为。也就是说，同样的一个间隙，两条 sql 分别加上了间隙锁，这样就很可能引起死锁。</p>
+<p>举个例子：</p>
+<p>在一开始的时候，表有（0，5）和（2，1）这两条数据，sessionA 执行了：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">begin</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span>; <span class="comment"># Q1</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">values</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="comment"># Q2</span></span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
+
+<p>sessionB 在 sessionA 开始事务后也开启了事务：</p>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">begin</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span>; <span class="comment"># Q3</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">values</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="comment"># Q4</span></span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
+
+<p>现在，语句的执行顺序的：Q1 -&gt; Q3 -&gt; Q4 -&gt; Q2。</p>
+<p>在这种情况下，不等到 Q4 执行，就已经形成死锁了：</p>
+<ol>
+<li>session A 执行 Q1 语句，由于 id=1 这一行并不存在，因此会加上间隙锁 (0,2);</li>
+<li>session B 执行 Q3 语句，同样会加上间隙锁 (5,12)，间隙锁之间不会冲突，因此这个语句可以执行成功；</li>
+<li>session B 试图插入 Q4，被 session A 的间隙锁挡住了，只好进入等待；</li>
+<li>session A 试图插入一行  Q2，被 session B 的间隙锁挡住了。</li>
+</ol>
+<p>至此，两个 session 进入互相等待状态，形成死锁。当然，InnoDB 的死锁检测马上就发现了这对死锁关系，让 session A 的 insert 语句报错返回了。</p>
+<p>间隙锁在解决了一些问题的情况下，又引入了一些新的问题，所以我们也有其他的选择，并非一定需要引入间隙锁：</p>
+<blockquote>
+<p>隙锁是在可重复读隔离级别下才会生效的。所以，你如果把隔离级别设置为读提交的话，就没有间隙锁了。但同时，你要解决可能出现的数据和日志不一致问题，需要把 binlog 格式设置为 row。这也是现在不少公司使用的配置组合。</p>
+</blockquote>
+<p>读提交每次每次 sql 执行的时候都是当前读，所以影响数据的一致性；而 binlog 设置为 row 以后记录的就是每一条数据的变化，因而备份的时候不会导致数据不一致。</p>
+<h2><span id="总结">总结</span></h2><p>根据加锁的范围，MySQL 里面的锁大致可以分成全局锁、表级锁和行锁三类，其中针对行锁难以解决的幻读问题，又添加了间隙锁。</p>
+<p><strong>全局锁</strong>：</p>
+<ol>
+<li>通过 <code>Flush tables with read lock</code>（FTWRL）语句加锁，可以主动释放或者在客户端断开连接时释放；</li>
+<li>会限制其他线程的 DDL 和 DML 操作，但不会限制自己的；</li>
+<li>一般用于 MyISAM 之类不支持事务的引擎进行整库备份。若 innodb 的话，可以开启事务为可重复读，接着 MVCC 实现无全局锁备份。</li>
+</ol>
+<p><strong>表级锁</strong>：</p>
+<ol>
+<li>分为表锁和元数据锁，两者都区分读锁和写锁；</li>
+<li>表锁：<ul>
+<li>表锁和全局锁一样，可以主动释放或者在客户端断开连接时释放；</li>
+<li>表锁是显式使用的，不但限制其他线程对表的操作，也会限制本线程对表的操作；</li>
+</ul>
+</li>
+<li>元数据锁：<ul>
+<li>是一种典型的读写锁，每一条 DDL 都会自动加上元数据锁；</li>
+<li>作用是确保 DDL 和 DML/DQL 语句的正确执行；</li>
+<li>元数据锁可能会因为无法获取锁而引起阻塞，最好的办法是避免长事务和 DDL 的同时存在，对于热点数据由于可能存在频繁的事务开启，所以最好为 DDL 语句添加超时时间，再无法修改表结构的情况下避免阻塞。</li>
+</ul>
+</li>
+</ol>
+<p><strong>行级锁</strong>：</p>
+<ol>
+<li><p>存在两阶段锁的机制：即需要就先获取锁，而使用后不释放锁，直到事务结束再统一释放锁。</p>
+<p>因此，优化思路是在执行 sql 的时候把需要获取行锁的语句放在后面，避免过长时间的占用锁；</p>
+</li>
+<li><p>可能会存在死锁问题，处理策略有两种：</p>
+<ul>
+<li>调整超时时间。innodb_lock_wait_timeout 默认为50s。但是调长容易引起阻塞，调短可能影响正常的锁等待；</li>
+<li>死锁检测。每次获取锁都检测是否有死锁，有就回滚其中一个事务。innodb_deadlock_detect 是默认开启的，但是容易死锁检测在并发线程多的情况下非常消耗性能。</li>
+</ul>
+</li>
+<li><p>死锁检测的优化思路有四种：</p>
+<ul>
+<li>关掉不必要是死锁检测。可能引起大量超时，导致操作丢失；</li>
+<li>在客户端做控制并发度。限制客户端线程并发数，但是无法限制客户端数量，所以不是很有效；</li>
+<li>在服务端做并发控制。使用中间件或者修改 mysql 源码，让争夺锁的线程进入等待队列；</li>
+<li>分散锁冲突。将一个字段在逻辑上分为多个字段，避免多个线程争夺同一把锁。</li>
+</ul>
+</li>
+<li><p>锁同时存在的情况下，并不是只要满足粒度最小的锁不互斥就可以了，而是必须满足全部全部不互斥才行。</p>
+</li>
+</ol>
+<p><strong>间隙锁</strong>：</p>
+<ol>
+<li>锁索引之间的间隙，是前开后闭的区间；</li>
+<li>间隙锁之间不冲突，但是插入间隙的行为是冲突的，所以当两个事务同时为一个间隙加锁容易引起死锁；</li>
+<li>能解决幻读，但不是必须的。读已提交 + 把 binlog 格式设置为 row 也可以防止幻读。</li>
+</ol>
+]]></content>
+      <categories>
+        <category>mysql</category>
+      </categories>
+      <tags>
+        <tag>mysql</tag>
+      </tags>
+  </entry>
 </search>
