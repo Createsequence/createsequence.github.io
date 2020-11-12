@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2020-11-11T12:44:15.991Z</updated>
+  <updated>2020-11-12T13:12:35.281Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -15,6 +15,34 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Mysql初探：自增主键</title>
+    <link href="http://blog.xiajibagao.top/2020/11/12/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9A%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%EF%BC%8C%E8%87%AA%E5%A2%9E%E9%94%81/"/>
+    <id>http://blog.xiajibagao.top/2020/11/12/mysql/Mysql%E5%88%9D%E6%8E%A2%EF%BC%9A%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%EF%BC%8C%E8%87%AA%E5%A2%9E%E9%94%81/</id>
+    <published>2020-11-11T16:00:00.000Z</published>
+    <updated>2020-11-12T13:12:35.281Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;blockquote&gt;
+&lt;p&gt;此文为极客时间：MySQL实战45讲的39节的学习笔记&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;&lt;span</summary>
+        
+      
+    
+    
+    
+    <category term="mysql" scheme="http://blog.xiajibagao.top/categories/mysql/"/>
+    
+    
+    <category term="mysql" scheme="http://blog.xiajibagao.top/tags/mysql/"/>
+    
+  </entry>
   
   <entry>
     <title>Mysql初探：关于元数据锁 online ddl插队问题</title>
@@ -530,31 +558,6 @@
     <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
     
     <category term="jvm" scheme="http://blog.xiajibagao.top/tags/jvm/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>String类小结</title>
-    <link href="http://blog.xiajibagao.top/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/"/>
-    <id>http://blog.xiajibagao.top/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/</id>
-    <published>2020-08-10T16:00:00.000Z</published>
-    <updated>2020-10-27T01:09:33.756Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h2&gt;&lt;p&gt;java 的 String 类可以说是日常中使用的最多的类，但是大多数时候都只是简单的拼接或者调用</summary>
-        
-      
-    
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/categories/java/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
     
   </entry>
   
