@@ -4076,7 +4076,7 @@
 <ol>
 <li>设置为 0 的时候，表示每次事务提交时都<strong>只是把 redo log 留在 redo log buffer 中</strong> ;</li>
 <li>设置为 1 的时候，表示每次事务提交时<strong>都将 redo log 直接持久化到磁盘</strong>；</li>
-<li>设置为 2 的时候，表示每次事务提交时都<strong>只是把 redo log 写到 page cache</strong>。</li>
+<li>设置为 2 的时候，表示每次事务提交时都<strong>只是把 redo log 写到 page cache，由后台线程一秒sync一次</strong>。</li>
 </ol>
 <p>一般情况下，不建议设置为0，如果需要的话可以设置为2，因为实际上 redo log 写到 page cache 也很快，而且只留在 redo log buffer 中风险太大，万一数据库崩溃就没法起到重做的效果了。</p>
 <h3><span id="2未提交事务写入磁盘的情况">2.未提交事务写入磁盘的情况</span></h3><p>正如前文提到的，innodb 有一个两阶段提交机制，因此在事务未提交的时候，日志是有可能直接在 prepare 阶段就被 write 的：</p>
@@ -4451,7 +4451,7 @@
   </entry>
   <entry>
     <title>Mysql初探(十三)：自增主键，自增锁</title>
-    <url>/2020/11/14/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81%E4%B8%89)%EF%BC%9A%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%EF%BC%8C%E8%87%AA%E5%A2%9E%E9%94%81/</url>
+    <url>/2020/11/16/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81%E4%B8%89)%EF%BC%9A%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%EF%BC%8C%E8%87%AA%E5%A2%9E%E9%94%81/</url>
     <content><![CDATA[<blockquote>
 <p>此文为极客时间：MySQL实战45讲的39节的学习笔记</p>
 </blockquote>
@@ -4710,7 +4710,7 @@
   </entry>
   <entry>
     <title>Mysql初探(十二)：order by</title>
-    <url>/2020/11/12/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81%E4%BA%8C)%EF%BC%9Aorder%20by/</url>
+    <url>/2020/11/15/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81%E4%BA%8C)%EF%BC%9Aorder%20by/</url>
     <content><![CDATA[<blockquote>
 <p>此文为极客时间：MySQL实战45讲的16节order by相关内容的笔记</p>
 </blockquote>
