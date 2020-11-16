@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/%E5%8D%9A%E5%AE%A2.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/%E5%8D%9A%E5%AE%A2.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/%E5%8D%9A%E5%AE%A2.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="mysql," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Createsequence's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="此文为极客时间：MySQL实战45讲的23节日志相关部分的学习总结  一、持久化的过程从总的来看，日志一般分为两部分：内存中易遗失的缓存日志和磁盘上持久化的日志文件。 一次事务中，日志先被写入内存，存放在 cache&#x2F;buffer 中，然后事务结束以后准备持久化：先写入磁盘的 page cache 中，这个过程叫做 write ，他仍然是内存操作，只不过从 mysql 的内存去了操作系统的内存，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mysql初探(二)：日志的文件是如何保证不丢失的">
+<meta property="og:url" content="http://blog.xiajibagao.top/2020/10/27/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="此文为极客时间：MySQL实战45讲的23节日志相关部分的学习总结  一、持久化的过程从总的来看，日志一般分为两部分：内存中易遗失的缓存日志和磁盘上持久化的日志文件。 一次事务中，日志先被写入内存，存放在 cache&#x2F;buffer 中，然后事务结束以后准备持久化：先写入磁盘的 page cache 中，这个过程叫做 write ，他仍然是内存操作，只不过从 mysql 的内存去了操作系统的内存，">
+<meta property="og:locale">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20201116192502318.png">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20201116172850486.png">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20201116175630245.png">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20201116200506743.png">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20201116200520213.png">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20201116200601118.png">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20201116200841655.png">
+<meta property="article:published_time" content="2020-10-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-11-16T13:01:46.944Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.xiajibagao.top/image-20201116192502318.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.xiajibagao.top/2020/10/27/mysql/Mysql初探(二)：日志的文件是如何保证不丢失的/"/>
+
+
+
+
+
+  <title>Mysql初探(二)：日志的文件是如何保证不丢失的 | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Createsequence's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个努力前进的程序猿</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/27/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Mysql初探(二)：日志的文件是如何保证不丢失的</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-27T00:00:00+08:00">
+                2020-10-27
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.6k words
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>此文为极客时间：MySQL实战45讲的23节日志相关部分的学习总结</p>
+</blockquote>
+<h2><span id="一-持久化的过程">一、持久化的过程</span></h2><p>从总的来看，日志一般分为两部分：内存中<strong>易遗失的缓存日志</strong>和磁盘上<strong>持久化的日志文件</strong>。</p>
+<p>一次事务中，日志<strong>先被写入内存</strong>，存放在 cache/buffer 中，然后事务结束以后准备持久化：<strong>先写入磁盘的 page cache 中，这个过程叫做 write</strong> ，他仍然是内存操作，只不过从 mysql 的内存去了操作系统的内存，所以比较快；<strong>然后再调用操作系统的方法来写入磁盘，这个过程叫做 fsync ，是真正的持久化过程</strong>，比较耗费时间。</p>
+<p>这个过程，我们可以简单的理解为下图：</p>
+<p><img src="http://img.xiajibagao.top/image-20201116192502318.png" alt="日志的持久化过程"></p>
+<p>基于以上的概念，我们了解一下 binlog 和 redo log 的持久化策略。</p>
+<h2><span id="二-binlog-的持久化">二、binlog 的持久化</span></h2><h3><span id="1文件结构">1.文件结构</span></h3><p>系统给 binlog cache 分配了一片内存，<strong>每个线程独享一块内存</strong>，参数 <code>binlog_cache_size</code> 用于控制单个线程内 binlog cache 所占内存的大小。如果超过了这个参数规定的大小，就要暂存到磁盘。</p>
+<p><img src="http://img.xiajibagao.top/image-20201116172850486.png" alt="binlog 写盘状态"></p>
+<p>每个线程有自己 binlog cache，但是共用同一份 binlog 文件。这样是因为 binlog 的执行是不允许打断的，事务必须完成后完整的写入日志，不能也不允许出现像 redo log 那样两阶段提交只完成了一个阶段就能刷盘的情况。</p>
+<h3><span id="2刷盘策略">2.刷盘策略</span></h3><p>当事务执行的时候，会<strong>先把日志写到内存里的 binlog cache 中，然后事务提交以后再调用 fsync 写入磁盘的 log file 上</strong>。由于一个事务的 binlog 不能拆开，因此每次写入都代表一次事务提交。</p>
+<ul>
+<li>图中的 write，指的就是指把日志写入到文件系统的 page cache，并没有把数据持久化到磁盘，所以速度比较快。</li>
+<li>图中的 fsync，才是将数据持久化到磁盘的操作。一般情况下，我们认为 fsync() 才占磁盘的 IOPS。</li>
+</ul>
+<p>write 和 fsync 的时机，是由参数 <code>sync_binlog</code> 控制的：</p>
+<ol>
+<li>sync_binlog=0 的时候，表示每次提交事务都<strong>只 write，不 fsync</strong>；</li>
+<li>sync_binlog=1 的时候，表示每次提交事务<strong>都会执行 fsync</strong>；</li>
+<li>sync_binlog=N(N&gt;1) 的时候，表示<strong>每次提交事务都 write，但累积 N 个事务后才 fsync</strong>。</li>
+</ol>
+<p>因此，在出现 IO 瓶颈的场景里，将 sync_binlog 设置成一个比较大的值，可以提升性能。在实际的业务场景中，考虑到丢失日志量的可控性，一般不建议将这个参数设成 0，比较常见的是将其设置为 100~1000 中的某个数值。</p>
+<p>但是，将 sync_binlog 设置为 N，对应的风险是：如果主机发生异常重启，会丢失最近 N 个事务的 binlog 日志。</p>
+<h2><span id="三-redo-log-的持久化">三、redo log 的持久化</span></h2><h3><span id="1刷盘策略">1.刷盘策略</span></h3><p>和 binlog 相同，在事务未提交前，生成的日志也会先放在内存，不过不同于 <strong>binlog 存放在 binlog cache，redo log 存放在了 redo log buffer</strong>。</p>
+<p>在 mysql 的运行过程中，redo log 的数据可能存在三种状态：</p>
+<p><img src="http://img.xiajibagao.top/image-20201116175630245.png" alt="image-20201116175630245"> </p>
+<p>这三种状态分别是：</p>
+<ol>
+<li>红色：存在 redo log buffer 中，物理上是在 MySQL 进程内存中，就是图中的红色部分；</li>
+<li>黄色：写到磁盘 (write)，但是没有持久化（fsync)，物理上是在文件系统的 page cache 里面，也就是图中的黄色部分；</li>
+<li>绿色：持久化到磁盘，对应的是 hard disk，也就是图中的绿色部分。</li>
+</ol>
+<p>为了控制 redo log 的写入策略，InnoDB 提供了 innodb_flush_log_at_trx_commit 参数，它有三种可能取值：</p>
+<ol>
+<li>设置为 0 的时候，表示每次事务提交时都<strong>只是把 redo log 留在 redo log buffer 中</strong> ;</li>
+<li>设置为 1 的时候，表示每次事务提交时<strong>都将 redo log 直接持久化到磁盘</strong>；</li>
+<li>设置为 2 的时候，表示每次事务提交时都<strong>只是把 redo log 写到 page cache</strong>。</li>
+</ol>
+<p>一般情况下，不建议设置为0，如果需要的话可以设置为2，因为实际上 redo log 写到 page cache 也很快，而且只留在 redo log buffer 中风险太大，万一数据库崩溃就没法起到重做的效果了。</p>
+<h3><span id="2未提交事务写入磁盘的情况">2.未提交事务写入磁盘的情况</span></h3><p>正如前文提到的，innodb 有一个两阶段提交机制，因此在事务未提交的时候，日志是有可能直接在 prepare 阶段就被 write 的：</p>
+<ol>
+<li>InnoDB 有一个后台线程，<strong>每隔 1 秒，就会把 redo log buffer 中的日志刷盘</strong>；</li>
+<li>redo log buffer 占<strong>用的空间即将达到 innodb_log_buffer_size 一半</strong>的时候，后台线程会主动刷盘；</li>
+<li><strong>并发事务提交</strong>的时候，先提交的那个事务会将 redo log buffer 中的日志全部刷盘。这个行为取决于 <code>innodb_flush_log_at_trx_commit</code> 参数，<strong>当该参数为 1 的时候，就会发生这种情况</strong>。</li>
+</ol>
+<p>由于当数据库崩溃后一个事务要同时有 prepare 阶段的 redo log 和 binlog 的记录才会被重做，因此一般情况下，我们会同时设置 <code>sync_binlog</code> 和 <code>innodb_flush_log_at_trx_commit</code> 参数为1，也就是一次事务刷两次盘： binlog 一次，redo log 一次。</p>
+<h3><span id="3-组提交">3. 组提交</span></h3><p>按照上文的逻辑，当设置“双1”配置的时候，实际上要刷盘的次数就会两倍与看到的 TPS，但是事实并非如此。</p>
+<p>当事务提交的时候，会通过<strong>日志逻辑序列号（LSN）</strong>来记录一条日志的长度，通过日志的长度确定事务的起始点和结束点。</p>
+<p>假如我们现在有三个日志等待提交：</p>
+<p><img src="http://img.xiajibagao.top/image-20201116200506743.png" alt="image-20201116200506743"></p>
+<p><img src="http://img.xiajibagao.top/image-20201116200520213.png" alt="image-20201116200520213"></p>
+<p><img src="http://img.xiajibagao.top/image-20201116200601118.png" alt="image-20201116200601118"></p>
+<p>以上三张图就是三个事务的提交过程。我们可以看到：</p>
+<ul>
+<li>trx1 是第一个到达的，会被选为这组的 leader；</li>
+<li>等 trx1 要开始写盘的时候，这个组里面已经有了三个事务，这时候 LSN 也变成了 160；</li>
+<li>trx1 去写盘的时候，<strong>带的就是 LSN=160</strong>，因此等 trx1 返回时，所有 LSN 小于等于 160 的 redo log，都已经被持久化到磁盘；</li>
+<li>这时候 trx2 和 trx3 就可以直接返回了。</li>
+</ul>
+<p>所以，<strong>一次组提交里面，组员越多</strong>，节约磁盘 IOPS 的效果越好。但如果只有单线程压测，那就只能老老实实地一个事务对应一次持久化操作了。</p>
+<p>在并发更新场景下，第一个事务写完 redo log buffer 以后，接下来这个 fsync 越晚调用，组员可能越多，节约 IOPS 的效果就越好。为此，mysql 在两阶段提交做了一个优化：</p>
+<p><img src="http://img.xiajibagao.top/image-20201116200841655.png" alt="image-20201116200841655"></p>
+<p>我们可以看到，<strong>在 redo log 一阶段提交的时候，并没有在 write 完以后立刻就调用 fsync 刷盘，而是等到 binlog 的 write 结束以后才刷盘；binlog 则等 redo log 一阶段刷盘以后才刷盘</strong>，因此可以减少 IOPS 的消耗。</p>
+<p>不过通常情况下第 3 步执行得会很快，所以 binlog 的 write 和 fsync 间的间隔时间短，导致能集合到一起持久化的 binlog 比较少，因此 binlog 的组提交的效果通常不如 redo log 的效果那么好。</p>
+<p>如果你<strong>想提升 binlog 组提交的效果</strong>，可以通过设置 binlog_group_commit_sync_delay 和 binlog_group_commit_sync_no_delay_count 来实现。</p>
+<ol>
+<li><code>binlog_group_commit_sync_delay</code> 参数，表示延迟多少微秒后才调用 fsync;</li>
+<li><code>binlog_group_commit_sync_no_delay_count</code> 参数，表示累积多少次以后才调用 fsync。</li>
+</ol>
+<p>这两个条件是或的关系，也就是说<strong>只要有一个满足条件就会调用 fsync</strong>。</p>
+<p>所以，当 <code>binlog_group_commit_sync_delay</code> 设置为 0 的时候，<code>binlog_group_commit_sync_no_delay_count</code> 也无效了。</p>
+<h3><span id="4-redo-log-提交策略的选择">4. redo log 提交策略的选择</span></h3><p>适当的刷盘策略可以降低 IO 带来的性能压力。结合以上的内容，我们可以有以下三种策略：</p>
+<ol>
+<li>增大<code>binlog_group_commit_sync_no_delay_count</code>和<code>binlog_group_commit_sync_delay</code> 参数，减少 binlog 刷盘次数，提高组提交的效果，但是这样虽然不会丢失数据，却会增加响应的时间；</li>
+<li>增大 <code>sync_binlog</code> ，但是这样万一数据库崩溃会丢失 binlog 日志；</li>
+<li>将<code>innodb_flush_log_at_trx_commit</code> 设置为 2，但是这样数据库崩溃会丢失数据，无法重做。</li>
+</ol>
+<h2><span id="四-总结">四、总结</span></h2><p><strong>持久化过程</strong></p>
+<p>日志的持久化分为三步：</p>
+<ul>
+<li>写入内存里的 buffer/cache 中，此时仍然归于 mysql 进程；</li>
+<li>从内存写入操作系统的 page cache，此操作为 write；</li>
+<li>从 page cache 持久化到磁盘，此操作为 fsync，是真正持久化；</li>
+</ul>
+<p><strong>日志文件结构</strong></p>
+<p>所有线程持久化同一个 binlog 日志文件，但是每个线程都有自己的 binlog cache，这是因为 binlog 必须保证每一次写入都是完整的事务。而 redo log 存在两阶段提交，并且需要 prepare 阶段的 redo log 来重做，所以允许未提交的事务被 write，因此线程共享一个 redo log buffer 和 redo log 日志文件。</p>
+<p><strong>刷盘策略</strong></p>
+<p>binlog 无论 <code>sync_binlog</code>参数怎么设置，都必须要 write：</p>
+<ol>
+<li>sync_binlog=0 的时候，表示每次提交事务都<strong>只 write，不 fsync</strong>；</li>
+<li>sync_binlog=1 的时候，表示每次提交事务<strong>都会执行 fsync</strong>；</li>
+<li>sync_binlog=N(N&gt;1) 的时候，表示<strong>每次提交事务都 write，但累积 N 个事务后才 fsync</strong>。</li>
+</ol>
+<p>redo log 通过 <code>innodb_flush_log_at_trx_commit</code> 参数控制：</p>
+<ol>
+<li>设置为 0 的时候，表示每次事务提交时都<strong>只是把 redo log 留在 redo log buffer 中</strong> ;</li>
+<li>设置为 1 的时候，表示每次事务提交时<strong>都将 redo log 直接持久化到磁盘</strong>；</li>
+<li>设置为 2 的时候，表示每次事务提交时都<strong>只是把 redo log 写到 page cache</strong>。</li>
+</ol>
+<p><strong>组提交</strong></p>
+<p>mysql 通过日志逻辑序列号（LSN）去根据事务数据长度来记录事务在日志中的开始和结束位置。因此，假如有三个并发事务先后准备写入，第一个被 fsync 的日志可以作为 leader，直接携带从一号到三号事务的 LSN 去刷盘，这样后两个事务就不必再单独刷盘，减少的写磁盘的次数。</p>
+<p>针对组提交，二阶段提交进行了优化，redo log 的 write 以后，会等到 binlog 的 wirte 后才调用 fsync，binlog 再等 redo log 的 fsync 完成后才进行 fsync。不过由于时间太短， binlog 的组提交效果不显著，可以通过增大：</p>
+<ol>
+<li><code>binlog_group_commit_sync_delay</code> 参数，表示延迟多少微秒后才调用 fsync;</li>
+<li><code>binlog_group_commit_sync_no_delay_count</code> 参数，表示累积多少次以后才调用 fsync。</li>
+</ol>
+<p>两个参数来提高组提交效率，不过这样会降低语句的响应时间。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mysql/" rel="tag"># mysql</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/10/25/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%80)%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/" rel="next" title="Mysql初探(一)：三大日志概述">
+                <i class="fa fa-chevron-left"></i> Mysql初探(一)：三大日志概述
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/10/28/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%89)%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/" rel="prev" title="Mysql初探(三)：内存数据刷盘机制">
+                Mysql初探(三)：内存数据刷盘机制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Createsequence.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7Carchive">
+              
+                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">一、持久化的过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">二、binlog 的持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1.文件结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2.刷盘策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">三、redo log 的持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1.刷盘策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2.未提交事务写入磁盘的情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">3. 组提交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">4. redo log 提交策略的选择</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">四、总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Createsequence</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
