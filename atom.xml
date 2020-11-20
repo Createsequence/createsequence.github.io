@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2020-11-17T09:31:08.165Z</updated>
+  <updated>2020-11-20T06:49:31.763Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -15,6 +15,58 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>设计模式（二）：策略模式</title>
+    <link href="http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/"/>
+    <id>http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</id>
+    <published>2020-11-19T16:00:00.000Z</published>
+    <updated>2020-11-20T06:49:31.763Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;在策略模式（Strategy</summary>
+        
+      
+    
+    
+    
+    <category term="设计模式" scheme="http://blog.xiajibagao.top/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+    
+    <category term="设计模式" scheme="http://blog.xiajibagao.top/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>设计模式（二）：策略模式</title>
+    <link href="http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/"/>
+    <id>http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/</id>
+    <published>2020-11-19T16:00:00.000Z</published>
+    <updated>2020-11-20T07:26:45.276Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;blockquote&gt;
+&lt;p&gt;在代理模式（Proxy</summary>
+        
+      
+    
+    
+    
+    <category term="设计模式" scheme="http://blog.xiajibagao.top/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+    
+    <category term="设计模式" scheme="http://blog.xiajibagao.top/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+  </entry>
   
   <entry>
     <title>资源推荐：数据库内核月报</title>
@@ -510,56 +562,6 @@
     
     
     <category term="设计模式" scheme="http://blog.xiajibagao.top/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>SpringAOP知识小结</title>
-    <link href="http://blog.xiajibagao.top/2020/08/19/Spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/"/>
-    <id>http://blog.xiajibagao.top/2020/08/19/Spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/</id>
-    <published>2020-08-18T16:00:00.000Z</published>
-    <updated>2020-10-27T01:21:46.659Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot;</summary>
-        
-      
-    
-    
-    
-    <category term="Spring" scheme="http://blog.xiajibagao.top/categories/Spring/"/>
-    
-    
-    <category term="Spring" scheme="http://blog.xiajibagao.top/tags/Spring/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>java集合初探（一）：HashMap</title>
-    <link href="http://blog.xiajibagao.top/2020/08/16/java/java%E9%9B%86%E5%90%88%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AHashMap/"/>
-    <id>http://blog.xiajibagao.top/2020/08/16/java/java%E9%9B%86%E5%90%88%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AHashMap/</id>
-    <published>2020-08-15T16:00:00.000Z</published>
-    <updated>2020-10-27T01:09:12.821Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;&lt;a href=&quot;#概述&quot; class=&quot;headerlink&quot; title=&quot;概述&quot;&gt;&lt;/a&gt;概述&lt;/h2&gt;&lt;p&gt;HashMap 可能是最经常用的Map接口的实现了，但是一直以来，对 HashMap</summary>
-        
-      
-    
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/categories/java/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
     
   </entry>
   
