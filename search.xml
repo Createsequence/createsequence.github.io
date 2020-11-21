@@ -5701,7 +5701,7 @@
       </tags>
   </entry>
   <entry>
-    <title>设计模式（二）：策略模式</title>
+    <title>设计模式（三）：代理模式</title>
     <url>/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/</url>
     <content><![CDATA[<h2><span id="概述">概述</span></h2><blockquote>
 <p>在代理模式（Proxy Pattern）中，一个类代表另一个类的功能。这种类型的设计模式属于结构型模式。</p>
