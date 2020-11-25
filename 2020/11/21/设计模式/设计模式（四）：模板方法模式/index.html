@@ -81,18 +81,18 @@
 
 
 
-<meta name="description" content="概述 在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式&#x2F;模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。  模板方法模式旨在为一些方法的主体部分提供骨架，将具体细节上的一些实现延迟到他的实现类。 JDBC 就运用了模板模式。 一、简单实现举个我在做项目的时候遇到的例子： 假设我们有一个简单的针对 De">
+<meta name="description" content="概述 在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式&#x2F;模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。  模板方法模式旨在为一些方法的主体部分提供骨架，将具体细节上的一些实现延迟到他的实现类。 JDBC 运用了模板模式。JDK 在实现 List 接口的过程中， AbstractCollection">
 <meta property="og:type" content="article">
 <meta property="og:title" content="设计模式（四）：模板方法模式">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/11/21/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式&#x2F;模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。  模板方法模式旨在为一些方法的主体部分提供骨架，将具体细节上的一些实现延迟到他的实现类。 JDBC 就运用了模板模式。 一、简单实现举个我在做项目的时候遇到的例子： 假设我们有一个简单的针对 De">
+<meta property="og:description" content="概述 在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式&#x2F;模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。  模板方法模式旨在为一些方法的主体部分提供骨架，将具体细节上的一些实现延迟到他的实现类。 JDBC 运用了模板模式。JDK 在实现 List 接口的过程中， AbstractCollection">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201120171820576.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201120175032833.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201120180913712.png">
 <meta property="article:published_time" content="2020-11-20T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-11-21T09:12:28.410Z">
+<meta property="article:modified_time" content="2020-11-25T12:20:19.552Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="设计模式">
 <meta name="twitter:card" content="summary">
@@ -405,7 +405,7 @@
 <p>在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式/模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。</p>
 </blockquote>
 <p>模板方法模式旨在为一些方法的主体部分提供骨架，将具体细节上的一些实现延迟到他的实现类。</p>
-<p>JDBC 就运用了模板模式。</p>
+<p>JDBC 运用了模板模式。JDK 在实现 List 接口的过程中， AbstractCollection 和 AbstractList  也使用了模板模式。</p>
 <h2><span id="一-简单实现">一、简单实现</span></h2><p>举个我在做项目的时候遇到的例子：</p>
 <p>假设我们有一个简单的针对 Demo 类的文件导出类，他提供了 Excel 文档的基本导出功能：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoExcelExporter</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 导出excel</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;Demo&gt; list = getData();</span><br><span class="line">        <span class="keyword">for</span>(Demo d : list) &#123;</span><br><span class="line">        	handle(d);</span><br><span class="line">        &#125;</span><br><span class="line">        excel(list);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 1.获取要到导出数据集</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;Demo&gt; <span class="title">getData</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="comment">// 2.处理数据集</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(Demo demo)</span> </span>&#123;&#125;</span><br><span class="line">    <span class="comment">// 3.导出的数据集为excel文件</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">excel</span><span class="params">(List&lt;Demo&gt; list)</span> </span>&#123;&#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -568,7 +568,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">11</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
