@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2020-11-25T11:46:57.191Z</updated>
+  <updated>2020-11-28T05:52:30.178Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -15,6 +15,57 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>java集合源码分析（二）：List与AbstractList</title>
+    <link href="http://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/"/>
+    <id>http://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/</id>
+    <published>2020-11-26T16:00:00.000Z</published>
+    <updated>2020-11-28T05:52:30.178Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;上一篇文章基本介绍了 List 接口的上层结构，也就是 Iterable 接口，Collection 接口以及实现了 Collection</summary>
+        
+      
+    
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/categories/java/"/>
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>java集合源码分析（一）：Collection 与 AbstractCollection</title>
+    <link href="http://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/"/>
+    <id>http://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/</id>
+    <published>2020-11-24T16:00:00.000Z</published>
+    <updated>2020-11-28T05:52:24.654Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。&lt;/p&gt;
+&lt;p&gt;其中， List</summary>
+        
+      
+    
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/categories/java/"/>
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
+    
+  </entry>
   
   <entry>
     <title>Redis在SpringBoot的基本使用</title>
@@ -348,31 +399,6 @@
   </entry>
   
   <entry>
-    <title>JDK1.8新特性（四）：Optional类</title>
-    <link href="http://blog.xiajibagao.top/2020/11/03/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AOptional%E7%B1%BB/"/>
-    <id>http://blog.xiajibagao.top/2020/11/03/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AOptional%E7%B1%BB/</id>
-    <published>2020-11-02T16:00:00.000Z</published>
-    <updated>2020-11-16T08:45:37.210Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;针对我们熟悉又深恶痛绝的空指针异常 &lt;code&gt;NullPointException&lt;/code&gt;，JDK8 新增了一个用于处理可能出现的空对象的类 Optionalt</summary>
-        
-      
-    
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/categories/java/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
     <title>Mysql初探(七)：全局锁，表锁，行锁，间隙锁</title>
     <link href="http://blog.xiajibagao.top/2020/11/03/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%83)%EF%BC%9A%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81%EF%BC%8C%E9%97%B4%E9%9A%99%E9%94%81/"/>
     <id>http://blog.xiajibagao.top/2020/11/03/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%83)%EF%BC%9A%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81%EF%BC%8C%E9%97%B4%E9%9A%99%E9%94%81/</id>
@@ -397,6 +423,31 @@
     
     
     <category term="mysql" scheme="http://blog.xiajibagao.top/tags/mysql/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>JDK1.8新特性（四）：Optional类</title>
+    <link href="http://blog.xiajibagao.top/2020/11/03/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AOptional%E7%B1%BB/"/>
+    <id>http://blog.xiajibagao.top/2020/11/03/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AOptional%E7%B1%BB/</id>
+    <published>2020-11-02T16:00:00.000Z</published>
+    <updated>2020-11-16T08:45:37.210Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;针对我们熟悉又深恶痛绝的空指针异常 &lt;code&gt;NullPointException&lt;/code&gt;，JDK8 新增了一个用于处理可能出现的空对象的类 Optionalt</summary>
+        
+      
+    
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/categories/java/"/>
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
     
   </entry>
   
@@ -429,31 +480,6 @@
   </entry>
   
   <entry>
-    <title>JDK1.8新特性（三）：Lambda表达式</title>
-    <link href="http://blog.xiajibagao.top/2020/10/30/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/"/>
-    <id>http://blog.xiajibagao.top/2020/10/30/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/</id>
-    <published>2020-10-29T16:00:00.000Z</published>
-    <updated>2020-11-25T11:45:03.038Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;JDK8 为我们带来了 Lambda 表达式和函数式接口，这一点在前文介绍 Stream 和 Collectors</summary>
-        
-      
-    
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/categories/java/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
-    
-  </entry>
-  
-  <entry>
     <title>Mysql初探(五)：数据库表空间的回收</title>
     <link href="http://blog.xiajibagao.top/2020/10/30/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%94)%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/"/>
     <id>http://blog.xiajibagao.top/2020/10/30/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%94)%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/</id>
@@ -482,6 +508,31 @@
   </entry>
   
   <entry>
+    <title>JDK1.8新特性（三）：Lambda表达式</title>
+    <link href="http://blog.xiajibagao.top/2020/10/30/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/"/>
+    <id>http://blog.xiajibagao.top/2020/10/30/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/</id>
+    <published>2020-10-29T16:00:00.000Z</published>
+    <updated>2020-11-25T11:45:03.038Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;JDK8 为我们带来了 Lambda 表达式和函数式接口，这一点在前文介绍 Stream 和 Collectors</summary>
+        
+      
+    
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/categories/java/"/>
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Mysql初探(四)：索引</title>
     <link href="http://blog.xiajibagao.top/2020/10/29/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%9B%9B)%EF%BC%9A%E7%B4%A2%E5%BC%95/"/>
     <id>http://blog.xiajibagao.top/2020/10/29/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%9B%9B)%EF%BC%9A%E7%B4%A2%E5%BC%95/</id>
@@ -495,62 +546,6 @@
         
     <summary type="html">&lt;blockquote&gt;
 &lt;p&gt;此文为极客时间：MySQL实战45讲的 4、5、9、10、11、15、18节索引相关部分的总结&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2&gt;&lt;span</summary>
-        
-      
-    
-    
-    
-    <category term="mysql" scheme="http://blog.xiajibagao.top/categories/mysql/"/>
-    
-    
-    <category term="mysql" scheme="http://blog.xiajibagao.top/tags/mysql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Mysql初探(三)：内存数据刷盘机制</title>
-    <link href="http://blog.xiajibagao.top/2020/10/28/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%89)%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/"/>
-    <id>http://blog.xiajibagao.top/2020/10/28/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%89)%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/</id>
-    <published>2020-10-27T16:00:00.000Z</published>
-    <updated>2020-11-16T12:59:23.841Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;此文为极客时间：MySQL实战45讲的12节的学习笔记&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2&gt;&lt;span id=&quot;一-mysql-的刷盘机制&quot;&gt;一、mysql 的刷盘机制&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;而之前提到过，mysql 使用了 WAL</summary>
-        
-      
-    
-    
-    
-    <category term="mysql" scheme="http://blog.xiajibagao.top/categories/mysql/"/>
-    
-    
-    <category term="mysql" scheme="http://blog.xiajibagao.top/tags/mysql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Mysql初探(二)：日志的文件是如何保证不丢失的</title>
-    <link href="http://blog.xiajibagao.top/2020/10/27/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/"/>
-    <id>http://blog.xiajibagao.top/2020/10/27/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/</id>
-    <published>2020-10-26T16:00:00.000Z</published>
-    <updated>2020-11-16T13:03:28.446Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;此文为极客时间：MySQL实战45讲的23节日志相关部分的学习总结&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2&gt;&lt;span</summary>
         

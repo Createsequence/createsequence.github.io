@@ -81,15 +81,15 @@
 
 
 
-<meta name="description" content="概述针对我们熟悉又深恶痛绝的空指针异常 NullPointException，JDK8 新增了一个用于处理可能出现的空对象的类 Optionalt ，也就意味着。他可以理解为对对象的包装类，对原本的类进行了增强，结合 Lambda 表达式和函数式接口，我们可以安心的操作一些可能是 null 的对象，避免繁琐的空值检验。 举个例子： 我们常见过一些处理对象的方法，有些时候经常能见到这样的写法： 12">
+<meta name="description" content="概述上文我们介绍了JDK8新添加的Stream流接口，借助Stream配合拉姆达表达式，我们可以很方便的处理流对象。 针对流的聚合操作，Stream有一个对应的收集器类Collectors，通过Stream中的collect和collectingAndThen方法，我们可以借助收集器类聚合流中的数据，例如将元素累积到集合中，并根据各种标准对元素进行汇总，分类等操作。 二. 举个例子？1234567">
 <meta property="og:type" content="article">
-<meta property="og:title" content="JDK1.8新特性（四）：Optional类">
-<meta property="og:url" content="http://blog.xiajibagao.top/2020/11/03/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AOptional%E7%B1%BB/index.html">
+<meta property="og:title" content="JDK1.8新特性（二）：Collectors收集器类">
+<meta property="og:url" content="http://blog.xiajibagao.top/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ACollectors%E6%94%B6%E9%9B%86%E5%99%A8%E7%B1%BB/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述针对我们熟悉又深恶痛绝的空指针异常 NullPointException，JDK8 新增了一个用于处理可能出现的空对象的类 Optionalt ，也就意味着。他可以理解为对对象的包装类，对原本的类进行了增强，结合 Lambda 表达式和函数式接口，我们可以安心的操作一些可能是 null 的对象，避免繁琐的空值检验。 举个例子： 我们常见过一些处理对象的方法，有些时候经常能见到这样的写法： 12">
+<meta property="og:description" content="概述上文我们介绍了JDK8新添加的Stream流接口，借助Stream配合拉姆达表达式，我们可以很方便的处理流对象。 针对流的聚合操作，Stream有一个对应的收集器类Collectors，通过Stream中的collect和collectingAndThen方法，我们可以借助收集器类聚合流中的数据，例如将元素累积到集合中，并根据各种标准对元素进行汇总，分类等操作。 二. 举个例子？1234567">
 <meta property="og:locale">
-<meta property="article:published_time" content="2020-11-02T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-11-16T08:45:37.210Z">
+<meta property="article:published_time" content="2019-11-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-10-27T01:09:23.740Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="java">
 <meta name="twitter:card" content="summary">
@@ -122,13 +122,13 @@
 
 
 
-  <link rel="canonical" href="http://blog.xiajibagao.top/2020/11/03/java/JDK1.8新特性（四）：Optional类/"/>
+  <link rel="canonical" href="http://blog.xiajibagao.top/2019/12/01/java/JDK新特性/JDK1.8新特性（二）：Collectors收集器类/"/>
 
 
 
 
 
-  <title>JDK1.8新特性（四）：Optional类 | Createsequence's Blog</title>
+  <title>JDK1.8新特性（二）：Collectors收集器类 | Createsequence's Blog</title>
   
 
 
@@ -289,7 +289,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/11/03/java/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AOptional%E7%B1%BB/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ACollectors%E6%94%B6%E9%9B%86%E5%99%A8%E7%B1%BB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -306,7 +306,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">JDK1.8新特性（四）：Optional类</h1>
+          <h1 class="post-title" itemprop="name headline">JDK1.8新特性（二）：Collectors收集器类</h1>
         
 
         <div class="post-meta">
@@ -318,8 +318,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-03T00:00:00+08:00">
-                2020-11-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-01T00:00:00+08:00">
+                2019-12-01
               </time>
             
 
@@ -372,7 +372,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.5k words
+                  1.3k words
                 </span>
               
 
@@ -397,79 +397,43 @@
       
 
       
-        <h2><span id="概述">概述</span></h2><p>针对我们熟悉又深恶痛绝的空指针异常 <code>NullPointException</code>，JDK8 新增了一个用于处理可能出现的空对象的类 Optionalt ，也就意味着。他可以理解为对对象的包装类，对原本的类进行了增强，结合 Lambda 表达式和函数式接口，我们可以安心的操作一些可能是 null 的对象，避免繁琐的空值检验。</p>
-<p>举个例子：</p>
-<p>我们常见过一些处理对象的方法，有些时候经常能见到这样的写法：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Optional&lt;TestBean&gt; <span class="title">getBean</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Optional&lt;TestBean&gt; bean = <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">// 业务逻辑</span></span><br><span class="line">    <span class="keyword">return</span> bean;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+        <h2><span id="概述">概述</span></h2><p>上文我们介绍了JDK8新添加的Stream流接口，借助Stream配合拉姆达表达式，我们可以很方便的处理流对象。</p>
+<p>针对流的聚合操作，Stream有一个对应的收集器类Collectors，通过Stream中的collect和collectingAndThen方法，我们可以借助收集器类聚合流中的数据，例如将元素累积到集合中，并根据各种标准对元素进行汇总，分类等操作。</p>
+<h2><span id="二-举个例子">二. 举个例子？</span></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取String集合</span></span><br><span class="line">List&lt;String&gt; strings = Arrays.asList(<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;bc&quot;</span>, <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;abcd&quot;</span>,<span class="string">&quot;&quot;</span>, <span class="string">&quot;jkl&quot;</span>);</span><br><span class="line"><span class="comment">//通过stream操作集合</span></span><br><span class="line">List&lt;String&gt; stringList = strings.stream()</span><br><span class="line">    <span class="comment">//为集合中的每一个元素拼接“？？？”</span></span><br><span class="line">    .map(s -&gt; s += <span class="string">&quot;???&quot;</span>)</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
 
-<p>有些时候可能是try-catch块的限制，或者一些其他什么原因，我们的方法可能会返回一个 null，这样对于调用方来说，如果没有做空值检验就很有可能报 NPE，使用 Optional，我们可以<strong>显示的声明返回值可能是 null，并且返回一个 Option 类，调用方可以直接使用内置的方法进行处理</strong>。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Optional&lt;TestBean&gt; <span class="title">getStr</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Optional&lt;TestBean&gt; bean = <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">// 业务逻辑</span></span><br><span class="line">    <span class="keyword">return</span> bean;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用方</span></span><br><span class="line">TestClass.getBean().isPresent();</span><br></pre></td></tr></table></figure>
+<p>如代码所示，我们可以很方便的通过Collectors类对被处理的流数据进行聚合操作，包括并不仅限与将处理过的流转换成集合</p>
+<h2><span id="三-如何使用collectors">三. 如何使用Collectors？</span></h2><h3><span id="1-collectors类中提供的方法">1. Collectors类中提供的方法</span></h3><p>总结一下，就是以下几类方法：</p>
+<p>1.1 转换成集合：toList()，toSet()，toMap()，toCollection()</p>
+<p>1.2 将集合拆分拼接成字符串：joining()</p>
+<p>1.3 求最大值、最小值、求和、平均值 ：maxBy()，minBy()，summingInt()，averagingDouble()</p>
+<p>1.4 对集合分组：groupingBy()，partitioningBy()</p>
+<p>1.5 对数据进行映射：mapping()</p>
+<h3><span id="2-collectors类方法源码">2. Collectors类方法源码</span></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Collectors</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 转换成集合</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; Collector&lt;T, ?, List&lt;T&gt;&gt; toList();</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; Collector&lt;T, ?, Set&lt;T&gt;&gt; toSet();</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T, K, U&gt; Collector&lt;T, ?, Map&lt;K,U&gt;&gt; toMap(Function&lt;? <span class="keyword">super</span> T, ? extends K&gt; keyMapper,</span><br><span class="line">                                                            Function&lt;? <span class="keyword">super</span> T, ? extends U&gt; valueMapper);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T, C extends Collection&lt;T&gt;&gt; Collector&lt;T, ?, C&gt; toCollection(Supplier&lt;C&gt; collectionFactory);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 拼接字符串，有多个重载方法                                  </span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Collector&lt;CharSequence, ?, String&gt; joining(CharSequence delimiter);   </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> Collector&lt;CharSequence, ?, String&gt; joining(CharSequence delimiter,</span><br><span class="line">                                                             CharSequence prefix,</span><br><span class="line">                                                             CharSequence suffix);      </span><br><span class="line">    <span class="comment">// 最大值、最小值、求和、平均值                                                         </span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; Collector&lt;T, ?, Optional&lt;T&gt;&gt; maxBy(Comparator&lt;? <span class="keyword">super</span> T&gt; comparator);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; Collector&lt;T, ?, Optional&lt;T&gt;&gt; minBy(Comparator&lt;? <span class="keyword">super</span> T&gt; comparator);</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; Collector&lt;T, ?, Integer&gt; summingInt(ToIntFunction&lt;? <span class="keyword">super</span> T&gt; mapper);      </span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; Collector&lt;T, ?, Double&gt; averagingDouble(ToDoubleFunction&lt;? <span class="keyword">super</span> T&gt; mapper);                   </span><br><span class="line"></span><br><span class="line">    <span class="comment">// 分组：可以分成true和false两组，也可以根据字段分成多组                                 </span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T, K&gt; Collector&lt;T, ?, Map&lt;K, List&lt;T&gt;&gt;&gt; groupingBy(Function&lt;? <span class="keyword">super</span> T, ? extends K&gt; classifier);</span><br><span class="line">    <span class="comment">// 只能分成true和false两组</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T&gt; Collector&lt;T, ?, Map&lt;Boolean, List&lt;T&gt;&gt;&gt; partitioningBy(Predicate&lt;? <span class="keyword">super</span> T&gt; predicate);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 映射</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T, U, A, R&gt; Collector&lt;T, ?, R&gt; mapping(Function&lt;? <span class="keyword">super</span> T, ? extends U&gt; mapper,</span><br><span class="line">                                                          Collector&lt;? <span class="keyword">super</span> U, A, R&gt; downstream);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> &lt;T, U&gt; Collector&lt;T, ?, U&gt; reducing(U identity,</span><br><span class="line">                                                     Function&lt;? <span class="keyword">super</span> T, ? extends U&gt; mapper,</span><br><span class="line">                                                     BinaryOperator&lt;U&gt; op);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
 
-<h2><span id="一-创建-optional-对象">一、创建 Optional 对象</span></h2><p>在开始了解如何创建 Optional 对象之前，我们要明确，和 Integer 一样，Option 分为类本身与成员变量 value，其中 value 是可能为 null。</p>
-<p>创建 Optional 对象有三种方法：</p>
-<ul>
-<li><p><strong><code>Optional.empty()</code>方法</strong>：创建一个 value 为 null 的空值 Optional</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Optional&lt;String&gt; emptyOptional = Optional.empty();</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong><code>Optional.of()</code>方法</strong>：创建一个有默认值的 Optional</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Optional&lt;String&gt; defaultOptional = Optional.of(<span class="string">&quot;这是一个默认值&quot;</span>);</span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong><code>Optional.ofNullable()</code>方法</strong>：创建一个可能是空值的 Optional。当有值的时候等同于<code>Optional.of()</code>，无值的时候等同于<code>Optional.empty()</code></p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Optional&lt;String&gt; nullableOption = Optional.ofNullable(<span class="keyword">null</span>);</span><br></pre></td></tr></table></figure>
+<h2><span id="四-实例">四. 实例</span></h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//接下来的示例代码基于此集合</span></span><br><span class="line">List&lt;String&gt; strings = Arrays.asList(<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;s&quot;</span>, <span class="string">&quot;bc&quot;</span>, <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;abcd&quot;</span>,<span class="string">&quot;sd&quot;</span>, <span class="string">&quot;jkl&quot;</span>);</span><br></pre></td></tr></table></figure>
 
-</li>
-</ul>
-<p>Optional 的构造器是私有的，即无法也不应该通过构造方法去创建一个 Optional 实例。</p>
-<p>下文的示例将基于空值对象 emptyOptional，非空值对象 defaultOptional 进行演示，</p>
-<h2><span id="二-optional-基本使用">二、Optional 基本使用</span></h2><h3><span id="1判空">1.判空</span></h3><ul>
-<li><p><strong><code>isPresent()</code> 方法</strong>：判空用于判断 Optional 类所包装的 value <strong>是否非空</strong>.</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(emptyOptional.isPresent()); <span class="comment">// false</span></span><br><span class="line">System.out.println(defaultOptional.isPresent()); <span class="comment">// true</span></span><br><span class="line">System.out.println(nullableOption.isPresent()); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong><code>ifPresent()</code>方法</strong>：用于指定若值为不为空的情况下的处理方法，可以看做 <code>ifPresent()</code>用法的延伸</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">emptyOptional.ifPresent(s -&gt; System.out.println(<span class="string">&quot;这玩意不是null&quot;</span>));</span><br></pre></td></tr></table></figure>
 
-</li>
-</ul>
-<h3><span id="2获取值">2.获取值</span></h3><p>获取值的方法：</p>
-<ul>
-<li><p><strong><code>orElse()</code>方法</strong>：参数是一个变量，允许传入空值而不会报 NPE。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(emptyOptional.orElse(<span class="keyword">null</span>)); <span class="comment">// null</span></span><br><span class="line">System.out.println(emptyOptional.orElse(<span class="string">&quot;这是空的&quot;</span>)); <span class="comment">// 这是空的</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong><code>orElseGet()</code>方法</strong>：参数是一个无参有返回值的函数式接口 Supplier，不允许传入空值，当传入空值的时候会报 NPE 异常。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(emptyOptional.orElseGet(<span class="keyword">null</span>)); <span class="comment">// java.lang.NullPointerException</span></span><br><span class="line">System.out.println(emptyOptional.orElseGet(() -&gt; <span class="string">&quot;aaa&quot;</span>)); <span class="comment">// aaa</span></span><br></pre></td></tr></table></figure>
 
-<p>由于Supplier是无参的，所以更推荐使用 <code>Class::method</code>这样形式的静态方法引用来传入方法。</p>
-</li>
-<li><p><strong><code>orElseThrow()</code>方法</strong>：与 <code>orElseGet()</code>方法有点像，不过在<strong>传入的一个抛出异常的方法</strong>，简而言之，就是如果空值就抛异常，传入 null 就抛出 NPE，否则就按传入的自定义异常的构造函数来跑异常。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(nullableOption.orElseThrow(<span class="keyword">null</span>)); <span class="comment">// java.lang.NullPointerException</span></span><br><span class="line">System.out.println(nullableOption.orElseThrow(MyException::<span class="keyword">new</span>)); <span class="comment">// MyException</span></span><br></pre></td></tr></table></figure>
-</li>
-<li><p><strong><code>get()</code>方法</strong>：Option 的 <code>get()</code>是一个奇葩，当 value 是 null 的时候，他不会抛出 NPE，但是会抛出 <code>NoSuchElementException</code>，实乃脱裤子放屁之举。所以一般不通过 <code>get()</code>去取值，只在内部用于其他方法的实现。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">System.out.println(emptyOptional.get()); <span class="comment">// java.util.NoSuchElementException</span></span><br></pre></td></tr></table></figure>
+<h3><span id="1-将流数据转换成集合">1. 将流数据转换成集合</span></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//转换成list集合</span></span><br><span class="line">List&lt;String&gt; stringList = strings.stream().collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line"><span class="comment">//转换成Set集合</span></span><br><span class="line">Set&lt;String&gt; stringSet = strings.stream().collect(Collectors.toSet());</span><br><span class="line"></span><br><span class="line"><span class="comment">//转换成Map集合</span></span><br><span class="line">Map&lt;String,Object&gt; stringObjectMap = strings.stream()</span><br><span class="line">    .collect(Collectors.toMap(k -&gt; k, v -&gt; v ));</span><br><span class="line"></span><br><span class="line">System.out.println(stringList);</span><br><span class="line">System.out.println(stringSet);</span><br><span class="line">System.out.println(stringObjectMap);</span><br><span class="line"></span><br><span class="line"><span class="comment">//=================打印结果=================</span></span><br><span class="line">[ab, s, bc, cd, abcd, sd, jkl]</span><br><span class="line">[ab, bc, cd, sd, s, jkl, abcd]</span><br><span class="line">&#123;sd=sd, cd=cd, bc=bc, ab=ab, s=s, jkl=jkl, abcd=abcd&#125;</span><br></pre></td></tr></table></figure>
 
-</li>
-</ul>
-<p><code>orElse()</code>方法和 <code>orElseGet()</code>方法用法看起来有点相近，但是参数决定了两个方法使用场景的不同。</p>
-<p>就我个人理解，<code>orElse()</code>适用于检验参数的非空，比如一些<strong>非必要参数可以通过该方法保证默认值</strong>；而<code>orElseGet()</code>因为传入的是一个函数式接口的实现，适用于在<strong>使用前需要对可能为空的值进行预选处理的场合</strong>，比如日志系统记录空查询这样的情况。</p>
-<p>另外，值得一提的是，<code>toString</code>未尝不能看做是一种特别的取值行为。Optional 重写了 <code>toStirng()</code>方法，当 value 为 null 的时候返回的是字符串 “Optional.empty”，否则返回 “Optional[默认值]”形式的字符串</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 空值打印 Optional.empty，否则打印 Optional[这是一个默认值]</span></span><br><span class="line">System.out.println(nullableOption.toString());</span><br></pre></td></tr></table></figure>
 
-<h2><span id="三-optional-过滤和转换">三、Optional 过滤和转换</span></h2><h3><span id="1过滤">1.过滤</span></h3><p>Optional 提供了 <code>filter()</code>方法用于过滤数据。它和 Stream 的 <code>filter()</code>方法一样，都是使用了有一个参数返回boolean值的函数式接口 Predicate作为参数，通过 Lambda 表达式直接传入实现类，从而实现快速过滤的目的。</p>
-<p>举个例子：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// emptyOptional里面字符串长度并没有大于5</span></span><br><span class="line">Optional&lt;String&gt; s = emptyOptional.filter(t -&gt; t.length() &gt; <span class="number">5</span>);</span><br><span class="line">System.out.println(s); <span class="comment">// Optional.empty</span></span><br><span class="line">System.out.println(s.isPresent()); <span class="comment">// false</span></span><br></pre></td></tr></table></figure>
 
-<p>由于默认会进行一次判空，所以<code>filter</code>我们可以看成下面代码的简化：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (conditionStr != <span class="keyword">null</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (conditionStr.length() &gt; <span class="number">5</span>) &#123;</span><br><span class="line">        System.out.println(emptyStr);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3><span id="2-将集合拆分拼接成字符串">2. 将集合拆分拼接成字符串</span></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//joining</span></span><br><span class="line">String str1 = strings.stream()</span><br><span class="line">    .collect(Collectors.joining(<span class="string">&quot;--&quot;</span>));</span><br><span class="line"></span><br><span class="line"><span class="comment">//collectingAndThen</span></span><br><span class="line">String str2 = strings.stream()</span><br><span class="line">    .collect(Collectors.collectingAndThen(</span><br><span class="line">        <span class="comment">//在第一个joining操作的结果基础上再进行一次操作</span></span><br><span class="line">        Collectors.joining(<span class="string">&quot;--&quot;</span>), s1 -&gt; s1 += <span class="string">&quot;,then&quot;</span></span><br><span class="line">    ));</span><br><span class="line"></span><br><span class="line">System.out.println(str1);</span><br><span class="line">System.out.println(str2);</span><br><span class="line"></span><br><span class="line"><span class="comment">//=================打印结果=================</span></span><br><span class="line">ab--s--bc--cd--abcd--sd--jkl</span><br><span class="line">ab--s--bc--cd--abcd--sd--jkl,then</span><br></pre></td></tr></table></figure>
 
-<h3><span id="2转换">2.转换</span></h3><p><code>map()</code>用于值的转换，这个方法同样与 Stream 的 <code>map()</code>异曲同工。通过传入拥有一个参数和一个返回值的函数式接口 Function 的实现类，从而实现 value 的转换。</p>
-<p>举个例子：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// defaultOptional的value为“这是一个默认值”</span></span><br><span class="line">Optional&lt;String[]&gt; s = defaultOptional.map(t -&gt; t.split(<span class="string">&quot;&quot;</span>));</span><br><span class="line">System.out.println(Arrays.toString(s.get())); <span class="comment">// [这, 是, 一, 个, 默, 认, 值]</span></span><br></pre></td></tr></table></figure>
 
-<h2><span id="四-总结">四、总结</span></h2><p>网上对 Optional 类的评价有褒有贬，公司里因为有专门用于处理各种类型的参数的空值工具类，所以也不太常见到过它。但是我在知乎上曾经看到过一个对 Optional 类的很贴切的总结：</p>
-<blockquote>
-<p>Optional的核心思想就是<strong>我明确告诉你可能会返回null</strong>，你一定要处理。所以，现在模块间提供给其他人的接口，如果有可能返回为null都要声明为Optional。</p>
-</blockquote>
+
+<h3><span id="3-求最大值-最小值-求和-平均值">3. 求最大值、最小值、求和、平均值</span></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Integer&gt; list = Arrays.asList(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//最大值</span></span><br><span class="line">Integer maxValue = list.stream().collect(Collectors.collectingAndThen(</span><br><span class="line">    <span class="comment">//maxBy需要Comparator.comparingInt来确定排序规则</span></span><br><span class="line">    Collectors.maxBy(Comparator.comparingInt(a -&gt; a)), Optional::get</span><br><span class="line">));</span><br><span class="line"><span class="comment">//最小值</span></span><br><span class="line">Integer minValue = list.stream().collect(Collectors.collectingAndThen(</span><br><span class="line">    <span class="comment">//minBy需要Comparator.comparingInt来确定排序规则</span></span><br><span class="line">    Collectors.minBy(Comparator.comparingInt(a -&gt; a)), Optional::get</span><br><span class="line">));</span><br><span class="line"><span class="comment">//求和</span></span><br><span class="line">Integer sumValue = list.stream().collect(Collectors.summingInt(i -&gt; i));</span><br><span class="line"><span class="comment">//平均值</span></span><br><span class="line">Double avgValue = list.stream().collect(Collectors.averagingDouble(i -&gt; i));</span><br><span class="line"></span><br><span class="line">System.out.println(<span class="string">&quot;列表中最大的数 : &quot;</span> + maxValue);</span><br><span class="line">System.out.println(<span class="string">&quot;列表中最小的数 : &quot;</span> + minValue);</span><br><span class="line">System.out.println(<span class="string">&quot;所有数之和 : &quot;</span> + sumValue);</span><br><span class="line">System.out.println(<span class="string">&quot;平均数 : &quot;</span> + avgValue);</span><br><span class="line"></span><br><span class="line"><span class="comment">//=================打印结果=================</span></span><br><span class="line">列表中最大的数 : <span class="number">5</span></span><br><span class="line">列表中最小的数 : <span class="number">1</span></span><br><span class="line">所有数之和 : <span class="number">15</span></span><br><span class="line">平均数 : <span class="number">3.0</span></span><br></pre></td></tr></table></figure>
+
+<p>虽然这样也可以，但是明显IntSummaryStatistics要更灵活点</p>
+<h3><span id="4-对集合分组">4. 对集合分组</span></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;Integer, List&lt;String&gt;&gt; map = strings.stream()</span><br><span class="line">    <span class="comment">//根据字符串长度分组（同理，对对象可以通过某个属性分组）</span></span><br><span class="line">    .collect(Collectors.groupingBy(String::length));</span><br><span class="line"></span><br><span class="line">Map&lt;Boolean, List&lt;String&gt;&gt; map2 = strings.stream()</span><br><span class="line">    <span class="comment">//根据字符串是否大于2分组</span></span><br><span class="line">    .collect(Collectors.groupingBy(s -&gt; s.length() &gt; <span class="number">2</span>));</span><br><span class="line"></span><br><span class="line">System.out.println(map);</span><br><span class="line">System.out.println(map2);</span><br><span class="line"></span><br><span class="line"><span class="comment">//=================打印结果=================</span></span><br><span class="line">&#123;<span class="number">1</span>=[s], <span class="number">2</span>=[ab, bc, cd, sd], <span class="number">3</span>=[jkl], <span class="number">4</span>=[abcd]&#125;</span><br><span class="line">&#123;<span class="keyword">false</span>=[ab, s, bc, cd, sd], <span class="keyword">true</span>=[abcd, jkl]&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3><span id="5对数据进行映射">5.对数据进行映射</span></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">String str = strings.stream().collect(Collectors.mapping(</span><br><span class="line">    <span class="comment">//先对集合中的每一个元素进行映射操作</span></span><br><span class="line">    s -&gt; s += <span class="string">&quot;,mapping&quot;</span>,</span><br><span class="line">    <span class="comment">//再对映射的结果使用Collectors操作</span></span><br><span class="line">    Collectors.collectingAndThen(Collectors.joining(<span class="string">&quot;;&quot;</span>), s -&gt; s += <span class="string">&quot;=====then&quot;</span> )</span><br><span class="line">));</span><br><span class="line"></span><br><span class="line">System.out.println(str);</span><br><span class="line"></span><br><span class="line"><span class="comment">//=================打印结果=================</span></span><br><span class="line">ab,mapping;s,mapping;bc,mapping;cd,mapping;abcd,mapping;sd,mapping;jkl,mapping=====then</span><br></pre></td></tr></table></figure>
+
+<p>。</p>
 
       
     </div>
@@ -500,8 +464,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/11/03/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%83)%EF%BC%9A%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81%EF%BC%8C%E9%97%B4%E9%9A%99%E9%94%81/" rel="next" title="Mysql初探(七)：全局锁，表锁，行锁，间隙锁">
-                <i class="fa fa-chevron-left"></i> Mysql初探(七)：全局锁，表锁，行锁，间隙锁
+              <a href="/2019/09/02/Docker/Docker%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" rel="next" title="Docker基本操作">
+                <i class="fa fa-chevron-left"></i> Docker基本操作
               </a>
             
           </div>
@@ -510,8 +474,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/11/09/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%85%AB)%EF%BC%9A%E9%97%B4%E9%9A%99%E9%94%81%E7%9A%84%E5%8A%A0%E9%94%81%E6%9D%A1%E4%BB%B6/" rel="prev" title="Mysql初探(八)：间隙锁的加锁条件">
-                Mysql初探(八)：间隙锁的加锁条件 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AStream/" rel="prev" title="JDK1.8新特性（一）：Stream">
+                JDK1.8新特性（一）：Stream <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -593,7 +557,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">65</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -655,7 +619,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">一、创建 Optional 对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">二、Optional 基本使用</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1.判空</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2.获取值</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">三、Optional 过滤和转换</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1.过滤</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2.转换</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">四、总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">二. 举个例子？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">三. 如何使用Collectors？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1. Collectors类中提供的方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2. Collectors类方法源码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">四. 实例</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1. 将流数据转换成集合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2. 将集合拆分拼接成字符串</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">3. 求最大值、最小值、求和、平均值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">4. 对集合分组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">5.对数据进行映射</span></a></li></ol></li></ol></div>
             
 
           </div>
