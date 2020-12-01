@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java," />
+  <meta name="keywords" content="java,java集合," />
 
 
 
@@ -92,9 +92,10 @@
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201125151935252.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201125154357523.png">
 <meta property="article:published_time" content="2020-11-24T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-11-28T05:52:24.654Z">
+<meta property="article:modified_time" content="2020-12-01T12:24:34.767Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="java">
+<meta property="article:tag" content="java集合">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://img.xiajibagao.top/image-20201126100539307.png">
 
@@ -376,7 +377,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.7k words
+                  2.9k words
                 </span>
               
 
@@ -492,7 +493,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Object[] toArray() &#123;</span><br><span class="line">    <span class="comment">// 创建一个和List相同长度的数字</span></span><br><span class="line">    Object[] r = <span class="keyword">new</span> Object[size()];</span><br><span class="line">    Iterator&lt;E&gt; it = iterator();</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; r.length; i++) &#123;</span><br><span class="line">        <span class="comment">// 如果数组长度大于集合长度</span></span><br><span class="line">        <span class="keyword">if</span> (! it.hasNext())</span><br><span class="line">            <span class="comment">// 用Arrays.copyOf把剩下的位置用null填充</span></span><br><span class="line">            <span class="keyword">return</span> Arrays.copyOf(r, i);</span><br><span class="line">        r[i] = it.next();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果数组长度反而小于集合长度，就扩容数组并且重复上述过程</span></span><br><span class="line">    <span class="keyword">return</span> it.hasNext() ? finishToArray(r, it) : r;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>其中，在 finishToArray(r, it) 这个方法里涉及到了一个扩容的过程：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 位运算，扩大当前容量的一半+1</span></span><br><span class="line"><span class="keyword">int</span> newCap = cap + (cap &gt;&gt; <span class="number">1</span>) + <span class="number">1</span>;</span><br><span class="line"><span class="comment">// 如果扩容后的大小比MAX_ARRAY_SIZE还大</span></span><br><span class="line"><span class="keyword">if</span> (newCap - MAX_ARRAY_SIZE &gt; <span class="number">0</span>)</span><br><span class="line">    <span class="comment">// 使用原容量+1，去判断要直接扩容到MAX_ARRAY_SIZE，Integer.MAX_VALUE还是直接抛OutOfMemoryError异常</span></span><br><span class="line">    newCap = hugeCapacity(cap + <span class="number">1</span>);</span><br><span class="line">r = Arrays.copyOf(r, newCap);</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 成员变量，允许数组理论允许的大小</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAX_ARRAY_SIZE = Integer.MAX_VALUE - <span class="number">8</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 位运算，扩大当前容量的一半+1</span></span><br><span class="line"><span class="keyword">int</span> newCap = cap + (cap &gt;&gt; <span class="number">1</span>) + <span class="number">1</span>;</span><br><span class="line"><span class="comment">// 如果扩容后的大小比MAX_ARRAY_SIZE还大</span></span><br><span class="line"><span class="keyword">if</span> (newCap - MAX_ARRAY_SIZE &gt; <span class="number">0</span>)</span><br><span class="line">    <span class="comment">// 使用原容量+1，去判断要直接扩容到MAX_ARRAY_SIZE，Integer.MAX_VALUE还是直接抛OutOfMemoryError异常</span></span><br><span class="line">    newCap = hugeCapacity(cap + <span class="number">1</span>);</span><br><span class="line">r = Arrays.copyOf(r, newCap);</span><br></pre></td></tr></table></figure>
 
 <p>这里的 <code>MAX_ARRAY_SIZE</code> 是一个常量：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> MAX_ARRAY_SIZE = Integer.MAX_VALUE - <span class="number">8</span>;</span><br></pre></td></tr></table></figure>
@@ -500,6 +501,12 @@
 <p>这里又通过<code>hugeCapacity()</code>方法进行了大小的限制：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">hugeCapacity</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 如果已经大到溢出就抛异常</span></span><br><span class="line">    <span class="keyword">if</span> (minCapacity &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> OutOfMemoryError</span><br><span class="line">        (<span class="string">&quot;Required array size too large&quot;</span>);</span><br><span class="line">    <span class="comment">// 容量+1是否还是大于允许的数组最大大小</span></span><br><span class="line">    <span class="keyword">return</span> (minCapacity &gt; MAX_ARRAY_SIZE) ?</span><br><span class="line">        <span class="comment">// 如果是，就把容量直接扩大到Integer.MAX_VALUE</span></span><br><span class="line">        Integer.MAX_VALUE :</span><br><span class="line">    <span class="comment">// 否则就直接扩容到运行的数组最大大小</span></span><br><span class="line">    MAX_ARRAY_SIZE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
+<p>可能有人会疑问，<code>MAX_ARRAY_SIZE</code>应该就是允许扩容的最大大小了，为什么还可以扩容到<code>Integer.MAX_VALUE</code>？</p>
+<p>实际上，根据 JavaDoc 的解释：</p>
+<blockquote>
+<p>Some VMs reserve some header words in an array.<br>Attempts to allocate larger arrays may result in OutOfMemoryError</p>
+</blockquote>
+<p>一些 JVM 可能会用数组头存放一些关于数组的数据，一般情况下，最好不要直接可以扩容到<code>Integer.MAX_VALUE</code>，因此扩容到<code>Integer.MAX_VALUE-8</code>就是理论上允许的最大值了，但是如果真的大到了这个地步，就只能特殊情况特殊对待，试试看可不可以扩容到<code>Integer.MAX_VALUE</code>，如果再大就要溢出了。</p>
 <h3><span id="6clear">6.clear</span></h3><p>迭代并且删除全部元素。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Iterator&lt;E&gt; it = iterator();</span><br><span class="line"><span class="keyword">while</span> (it.hasNext()) &#123;</span><br><span class="line">    it.next();</span><br><span class="line">    it.remove();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -533,6 +540,8 @@
         <div class="post-tags">
           
             <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/java%E9%9B%86%E5%90%88/" rel="tag"># java集合</a>
           
         </div>
       
@@ -660,7 +669,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
