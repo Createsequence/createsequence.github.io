@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="概述在前文：java集合源码分析（二）：List与AbstractList 和 java集合源码分析（一）：Collection 与 AbstractCollection 中，我们大致了解了从 Collection 接口到 List 接口，从 AbstractCollection 抽象类到 AbstractList 的层次关系和方法实现的大体过程。 在本篇文章，将在前文的基础上，阅读 List 最">
+<meta name="description" content="概述ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector 有着一样的继承关系，也都能随机访问，但是不同的是不能保证线程安全。 这是关于 java 集合类源码的第三篇文章。如果之前还没了解过相关内容，可以先看看之前的文章：  java集合源码分析（一）：Collection 与 AbstractCollection   java集合源码分析（二）：List">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java集合源码分析（三）：ArrayList">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述在前文：java集合源码分析（二）：List与AbstractList 和 java集合源码分析（一）：Collection 与 AbstractCollection 中，我们大致了解了从 Collection 接口到 List 接口，从 AbstractCollection 抽象类到 AbstractList 的层次关系和方法实现的大体过程。 在本篇文章，将在前文的基础上，阅读 List 最">
+<meta property="og:description" content="概述ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector 有着一样的继承关系，也都能随机访问，但是不同的是不能保证线程安全。 这是关于 java 集合类源码的第三篇文章。如果之前还没了解过相关内容，可以先看看之前的文章：  java集合源码分析（一）：Collection 与 AbstractCollection   java集合源码分析（二）：List">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201201161347920.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201201194637410.png">
@@ -95,7 +95,7 @@
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201202154625429.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201202202927612.png">
 <meta property="article:published_time" content="2020-12-01T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-12-02T12:36:14.313Z">
+<meta property="article:modified_time" content="2020-12-04T07:43:45.765Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="java集合">
@@ -380,7 +380,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  7.4k words
+                  7.7k words
                 </span>
               
 
@@ -405,8 +405,12 @@
       
 
       
-        <h2><span id="概述">概述</span></h2><p>在前文：<a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a> 和 <a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a> 中，我们大致了解了从 Collection 接口到 List 接口，从 AbstractCollection 抽象类到 AbstractList 的层次关系和方法实现的大体过程。</p>
-<p>在本篇文章，将在前文的基础上，阅读 List 最常用的实现类 Arraylist 的源码，深入了解这个“熟悉的陌生人”。</p>
+        <h2><span id="概述">概述</span></h2><p>ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector 有着一样的继承关系，也都能随机访问，但是不同的是不能保证线程安全。</p>
+<p>这是关于 java 集合类源码的第三篇文章。如果之前还没了解过相关内容，可以先看看之前的文章：</p>
+<ul>
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a>  </li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+</ul>
 <h2><span id="一-arraylist-的类关系">一、ArrayList 的类关系</span></h2><p><img src="http://img.xiajibagao.top/image-20201201161347920.png" alt="image-20201201161347920"></p>
 <p>ArrayList 实现了三个接口，继承了一个抽象类，其中 Serializable ，Cloneable 与 RandomAccess 接口都是用于标记的空接口，他的主要抽象方法来自于 List，一些实现来自于 AbstractList。 </p>
 <h3><span id="1abstractlist-与-list">1.AbstractList 与 List</span></h3><p>ArrayList 实现了 List 接口，是 List 接口的实现类之一，他通过继承抽象类 AbstractList 获得的大部分方法的实现。</p>
@@ -564,24 +568,29 @@
 <li>for 循环。</li>
 </ul>
 <p>如果我们在循环中删除集合的节点，只有迭代器的方式可以正常删除，其他都会出问题。</p>
+<p>或者更准确点说，只要会引起 <code>modCount++</code>的操作，不通过迭代器进行都会出现一些问题。</p>
 <p><strong>forEach</strong></p>
 <p>我们先试试使用 <code>forEach()</code>：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;String&gt; arrayList1 = <span class="keyword">new</span> ArrayList&lt;&gt;(Arrays.asList(<span class="string">&quot;A&quot;</span>,<span class="string">&quot;B&quot;</span>,<span class="string">&quot;C&quot;</span>,<span class="string">&quot;D&quot;</span>));</span><br><span class="line">arrayList1.forEach(arrayList1::remove); <span class="comment">// java.util.ConcurrentModificationException</span></span><br></pre></td></tr></table></figure>
 
 <p>可见会抛出 <code>ConcurrentModificationException</code>异常，我们回到 <code>forEach()</code>的代码中：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">forEach</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> E&gt; action)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取 modCount</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> expectedModCount = modCount;</span><br><span class="line">    </span><br><span class="line">    ... ...</span><br><span class="line">    <span class="keyword">for</span> () &#123;</span><br><span class="line">        <span class="comment">// 遍历元素并调用lambda表达式处理元素</span></span><br><span class="line">        action.accept(elementData[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    ... ...</span><br><span class="line">        </span><br><span class="line">    <span class="comment">// 遍历结束后才进行并发修改检测</span></span><br><span class="line">    <span class="keyword">if</span> (modCount != expectedModCount) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">forEach</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> E&gt; action)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取 modCount</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> expectedModCount = modCount;</span><br><span class="line">    </span><br><span class="line">    ... ...</span><br><span class="line">    <span class="comment">// 每次循环都要检查并发修改</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; modCount == expectedModCount &amp;&amp; i &lt; size; i++) &#123;</span><br><span class="line">        action.accept(elementData[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    ... ...</span><br><span class="line">        </span><br><span class="line">    <span class="comment">// 遍历结束后才进行并发修改检测</span></span><br><span class="line">    <span class="keyword">if</span> (modCount != expectedModCount) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>由于在方法执行的开始就令 <code>expectedModCount= modCount</code>，等到循环处理结束后才进行 <code>modCount != expectedModCount</code>的判断，这样如果我们<strong>在匿名函数中对元素做了一些结构性操作，导致 <code>modCount</code>增加</strong>，最后就会在检测就会发现循环结束以后的 <code>modCount</code> 与一开始得到的 <code>modCount</code>不一致，所以会抛出 <code>ConcurrentModificationException</code>异常。</p>
+<p>由于在方法执行的开始就令 <code>expectedModCount= modCount</code>，遍历过程中每次都要检查 <code>modCount == expectedModCount</code>，这样如果我们<strong>在匿名函数中对元素做了一些结构性操作，导致 <code>modCount</code>增加</strong>，就会在下一次循环判断的时候跳出循环，由于此时<code>modCount != expectedModCount</code>，所以会直接进入 if 分支抛出 <code>ConcurrentModificationException</code>异常。</p>
+<p>我们可以验证一下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;String&gt; arrayList1 = <span class="keyword">new</span> ArrayList&lt;&gt;(Arrays.asList(<span class="string">&quot;A&quot;</span>,<span class="string">&quot;B&quot;</span>,<span class="string">&quot;C&quot;</span>));</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">    list.forEach(s -&gt; &#123;</span><br><span class="line">        list.add(<span class="string">&quot;D&quot;</span>);</span><br><span class="line">    &#125;);</span><br><span class="line">&#125; <span class="keyword">catch</span> (ConcurrentModificationException e) &#123;</span><br><span class="line">    System.out.println(list); <span class="comment">// [A, B, C, D]</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p><strong>for循环</strong></p>
-<p>先写一个例子：</p>
+<p>由于 for 循环过程不像 <code>forEach()</code>那样在循环的结构中进行并发修改检测，因此结构性操作不会出现<code>ConcurrentModificationException</code>，但是<code>remove()</code>会漏删一下元素。我们来验证一下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;String&gt; arrayList1 = <span class="keyword">new</span> ArrayList&lt;&gt;(Arrays.asList(<span class="string">&quot;A&quot;</span>,<span class="string">&quot;B&quot;</span>,<span class="string">&quot;C&quot;</span>,<span class="string">&quot;D&quot;</span>));</span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arrayList1.size(); i++) &#123;</span><br><span class="line">    arrayList1.remove(i);</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(arrayList1); <span class="comment">// [B, D]</span></span><br></pre></td></tr></table></figure>
 
 <p>可以看到，B 和 C 的删除被跳过了。实际上，这个问题和 AbstractList 的迭代器 Itr 中 <code>remove()</code> 方法遇到的问题有点像：</p>
-<p>在 AbstractList 的 Itr 中，每次删除都会导致数组的“缩短”，在被删除元素的前一个元素会在 <code>remove()</code>后“补空”，落到被删除元素下标所对应的位置上，也就是说，<strong>假如有 a，b 两个元素，删除了下标为0的元素a以后，b就会落到下标为0的位置</strong>。</p>
+<p>在 AbstractList 的 Itr 中，每次删除都会导致数组的“缩短”，在被删除元素的前一个元素会在 <code>remove()</code>后“补空”，落到被删除元素下标所对应的位置上，也就是说，<strong>假如有 a，b 两个元素，删除了下标为0的元素 a 以后，b 就会落到下标为0的位置</strong>。AbstractList 的 Itr 的解决方案是每次删除都把指向下一个的指针前移，那么 ArrayList 呢？</p>
 <p>上文提到 ArrayList 的 <code>remove()</code> 调用了 <code>fastRemove()</code>方法，我们可以看看他是否就是罪魁祸首：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">fastRemove</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    ... ...</span><br><span class="line">    <span class="comment">// 如果不是在数组末尾删除</span></span><br><span class="line">    <span class="keyword">if</span> (numMoved &gt; <span class="number">0</span>)</span><br><span class="line">        <span class="comment">// 数组被缩短了</span></span><br><span class="line">        System.arraycopy(elementData, index+<span class="number">1</span>, elementData, index,</span><br><span class="line">                         numMoved);</span><br><span class="line">    elementData[--size] = <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>所以数组“缩短”导致的元素下标变动就是问题的根源，换句话说，如果不调用 <code>System.arraycopy()</code>方法，理论上就不会引起这个问题，所以我们可以试试反向删除：</p>
+<p>可见<strong>数组“缩短”确实是导致的元素下标错位就是问题的根源</strong>，实际上，如果不是<code>i &lt; arrayList1.size()</code>在每次循环都会重新获取长度，那么早就抛异常了。</p>
+<p>换句话说，如果不调用 <code>System.arraycopy()</code>方法，数组就不会“缩短”，理论上就不会引起这个问题，所以我们不妨试试反向删除：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">ArrayList&lt;String&gt; arrayList1 = <span class="keyword">new</span> ArrayList&lt;&gt;(Arrays.asList(<span class="string">&quot;A&quot;</span>,<span class="string">&quot;B&quot;</span>,<span class="string">&quot;C&quot;</span>,<span class="string">&quot;D&quot;</span>));</span><br><span class="line"><span class="comment">// 反向删除</span></span><br><span class="line"><span class="keyword">for</span> (<span class="keyword">int</span> i = arrayList1.size() - <span class="number">1</span>; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">    arrayList1.remove(i);</span><br><span class="line">&#125;</span><br><span class="line">System.out.println(arrayList1); <span class="comment">// []</span></span><br></pre></td></tr></table></figure>
 
 <p>可见反向删除是没有问题的。</p>
@@ -601,10 +610,11 @@
 <h3><span id="5clone">5.clone</span></h3><p>ArrayList 实现了 Cloneable 接口，因此他理当有自己的 <code>clone()</code>方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">clone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// Object.clone()拷贝ArrayList</span></span><br><span class="line">        ArrayList&lt;?&gt; v = (ArrayList&lt;?&gt;) <span class="keyword">super</span>.clone();</span><br><span class="line">        <span class="comment">// 拷贝</span></span><br><span class="line">        v.elementData = Arrays.copyOf(elementData, size);</span><br><span class="line">        v.modCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">return</span> v;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</span><br><span class="line">        <span class="comment">// this shouldn&#x27;t happen, since we are Cloneable</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> InternalError(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p>要注意的是，通过 <code>clone()</code>得到的 ArrayList 不是同一个实例，但是使用 <code>Arrays.copyOf()</code>得到的元素对象是同一个对象。我们举个例子：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> NoSuchMethodException, InvocationTargetException, IllegalAccessException </span>&#123;</span><br><span class="line">    ArrayList&lt;MyBean&gt; arrayList1 = <span class="keyword">new</span> ArrayList&lt;&gt;(Arrays.asList(<span class="keyword">new</span> MyBean()));</span><br><span class="line">    ArrayList&lt;MyBean&gt; arrayList2 = (ArrayList&lt;MyBean&gt;) arrayList1.clone();</span><br><span class="line">    System.out.println(arrayList1); <span class="comment">// [$MyBean@782830e]</span></span><br><span class="line">    System.out.println(arrayList2); <span class="comment">// [$MyBean@782830e]</span></span><br><span class="line">    System.out.println(arrayList1 == arrayList2); <span class="comment">// false</span></span><br><span class="line"></span><br><span class="line">    arrayList1.add(<span class="keyword">new</span> MyBean());</span><br><span class="line">    System.out.println(arrayList1); <span class="comment">// [MyBean@782830e, $MyBean@470e2030]</span></span><br><span class="line">    arrayList2.add(<span class="keyword">new</span> MyBean());</span><br><span class="line">    System.out.println(arrayList2); <span class="comment">// [$MyBean@782830e, $MyBean@3fb4f649]</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBean</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
+<p>要注意的是， <code>Object.clone()</code>是浅拷贝， <code>Arrays.copyOf()</code>也是浅拷贝，原本的 ArrayList 和新的 ArrayList 不是同一个对象，内部的 elementData 也不是同一个数组，但是数组内的元素还是同一个。我们举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span></span>&#123;</span><br><span class="line">    ArrayList&lt;MyBean&gt; arrayList1 = <span class="keyword">new</span> ArrayList&lt;&gt;(Arrays.asList(<span class="keyword">new</span> MyBean()));</span><br><span class="line">    ArrayList&lt;MyBean&gt; arrayList2 = (ArrayList&lt;MyBean&gt;) arrayList1.clone();</span><br><span class="line">    System.out.println(arrayList1); <span class="comment">// [$MyBean@782830e]</span></span><br><span class="line">    System.out.println(arrayList2); <span class="comment">// [$MyBean@782830e]</span></span><br><span class="line">    System.out.println(arrayList1 == arrayList2); <span class="comment">// false</span></span><br><span class="line"></span><br><span class="line">    arrayList1.add(<span class="keyword">new</span> MyBean());</span><br><span class="line">    System.out.println(arrayList1); <span class="comment">// [MyBean@782830e, $MyBean@470e2030]</span></span><br><span class="line">    arrayList2.add(<span class="keyword">new</span> MyBean());</span><br><span class="line">    System.out.println(arrayList2); <span class="comment">// [$MyBean@782830e, $MyBean@3fb4f649]</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">MyBean</span> </span>&#123;&#125;</span><br></pre></td></tr></table></figure>
 
-<p>可以看到，<code>arrayList1 == arrayList2</code>是 false，说明是 ArrayList 两个实例，但是内部的第一个 MyBean 都是 $MyBean@782830e，说明是同一个实例。</p>
+
+
 <h3><span id="6isempty">6.isEmpty</span></h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> size == <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h2><span id="九-总结">九、总结</span></h2><p>ArrayList 底层是 Object[] 数组，被 RandomAccess 接口标记，具有根据下标高速随机访问的功能；</p>
@@ -613,7 +623,7 @@
 <p>ArrayList 的添加可能会因为扩容导致数组“膨胀”，同理，不是所有的删除都会引起数组“缩水”：当删除的元素是队尾元素，或者<code>clear()</code>方法都只会把下标对应的地方设置为null，而不会真正的删除数组这个位置；</p>
 <p>ArrayList 在循环中删除——准确的讲，是任何会引起 <code>modCount</code>变化的结构性操作——可能会引起意外：</p>
 <ul>
-<li><p>在 <code>forEach()</code>删除元素会抛<code>ConcurrentModificationException</code>异常，因为 <code>forEach()</code>在循环开始前就获取了 <code>modCount</code>，但是到循环结束才比较旧 <code>modCount</code>和最新的 <code>modeCount</code>；</p>
+<li><p>在 <code>forEach()</code>删除元素会抛<code>ConcurrentModificationException</code>异常，因为 <code>forEach()</code>在循环开始前就获取了 <code>modCount</code>，每次循环都会比较旧 <code>modCount</code>和最新的 <code>modCount</code>，如果循环进行了会使<code>modCount</code>变动的操作，就会在下一次循环开始前抛异常；</p>
 </li>
 <li><p>在 for 循环里删除实际上是以步长为2对节点进行删除，因为删除时数组“缩水”导致原本要删除的下一下标对应的节点，却落到了当前被删除的节点对应的下标位置，导致被跳过。</p>
 <p>如果从队尾反向删除，就不会引起数组“缩水”，因此是正常的。</p>
@@ -660,6 +670,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/" rel="prev" title="java集合源码分析（四）：LinkedList">
+                java集合源码分析（四）：LinkedList <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -740,7 +754,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-count">67</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
