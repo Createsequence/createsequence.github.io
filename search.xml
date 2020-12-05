@@ -6168,8 +6168,7 @@
 <p>AbstractList 重写了 <code>hashCode()</code>方法，不再直接获取实例的 HashCode 值，而遍历集合，根据每一个元素的 HashCode 计算集合的 HashCode，这样保证了内容不同的相同集合不会得到相同的 HashCode。</p>
 ]]></content>
       <categories>
-        <category>java</category>
-        <category>集合容器</category>
+        <category>-[java] -[集合容器]</category>
       </categories>
       <tags>
         <tag>java</tag>
