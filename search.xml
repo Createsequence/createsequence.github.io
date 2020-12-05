@@ -5871,8 +5871,7 @@
 <p>AbstractCollection 在集合转数组的 <code>toArrays()</code> 中提供了关于扩容的初步实现：一般情况下<code>新容量=旧容量 + (旧容量/2 + 1)</code>，如果新容量大于 MAX_ARRAY_SIZE，就会使用 <code>旧容量+1</code>去做判断，如果已经溢出则抛OOM溢出，大于 MAX_ARRAY_SIZE 就使用 Integer.MAX_VALUE 作为新容量，否则就使用 MAX_ARRY_SIZE。</p>
 ]]></content>
       <categories>
-        <category>java</category>
-        <category>集合容器</category>
+        <category>java集合容器</category>
       </categories>
       <tags>
         <tag>java</tag>
@@ -6168,7 +6167,7 @@
 <p>AbstractList 重写了 <code>hashCode()</code>方法，不再直接获取实例的 HashCode 值，而遍历集合，根据每一个元素的 HashCode 计算集合的 HashCode，这样保证了内容不同的相同集合不会得到相同的 HashCode。</p>
 ]]></content>
       <categories>
-        <category>-[java] -[集合容器]</category>
+        <category>java集合容器</category>
       </categories>
       <tags>
         <tag>java</tag>
@@ -6395,10 +6394,11 @@
 <p>我们知道<code>put()</code>方法在插入时会对插入位置进行非空判断，如果两个线程都判断同一个位置为空，那么先执行插入的数据就会被后一个覆盖。</p>
 ]]></content>
       <categories>
-        <category>java</category>
+        <category>java集合容器</category>
       </categories>
       <tags>
         <tag>java</tag>
+        <tag>集合容器</tag>
       </tags>
   </entry>
   <entry>
@@ -6630,8 +6630,7 @@
 </ul>
 ]]></content>
       <categories>
-        <category>java</category>
-        <category>集合容器</category>
+        <category>java集合容器</category>
       </categories>
       <tags>
         <tag>java</tag>
@@ -6766,8 +6765,7 @@
 <p>LinkedList 实现了 Deque 接口，因此可以把它当成队列或者栈使用。实际上，他也提供了对应的同名方法。</p>
 ]]></content>
       <categories>
-        <category>java</category>
-        <category>集合容器</category>
+        <category>java集合容器</category>
       </categories>
       <tags>
         <tag>java</tag>
@@ -6872,8 +6870,7 @@
 <p>其实如果添加元素的话也会有问题，虽然能够添加成功，但是不会按照指定的顺序插入，这也是因为上面这个原因。</p>
 ]]></content>
       <categories>
-        <category>java</category>
-        <category>集合容器</category>
+        <category>java集合容器</category>
       </categories>
       <tags>
         <tag>java</tag>
