@@ -51,14 +51,14 @@
     <link href="http://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/"/>
     <id>http://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/</id>
     <published>2020-12-02T16:00:00.000Z</published>
-    <updated>2020-12-05T04:42:12.187Z</updated>
+    <updated>2020-12-07T11:41:36.606Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;LinkedList 与 ArrayList 出自一个作者，同时也一样是 List 接口下的实现类，但是与 ArrayList 不同的是， LinkedList 继承了</summary>
+    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List</summary>
         
       
     
@@ -69,7 +69,7 @@
     
     <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
     
-    <category term="集合容器" scheme="http://blog.xiajibagao.top/tags/%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
+    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
     
   </entry>
   
@@ -78,15 +78,14 @@
     <link href="http://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/"/>
     <id>http://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/</id>
     <published>2020-12-01T16:00:00.000Z</published>
-    <updated>2020-12-05T04:42:06.349Z</updated>
+    <updated>2020-12-07T11:41:41.003Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector 有着一样的继承关系，也都能随机访问，但是不同的是不能保证线程安全。&lt;/p&gt;
-&lt;p&gt;这是关于 java</summary>
+    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector</summary>
         
       
     
@@ -97,7 +96,7 @@
     
     <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
     
-    <category term="集合容器" scheme="http://blog.xiajibagao.top/tags/%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
+    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
     
   </entry>
   
@@ -106,14 +105,14 @@
     <link href="http://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/"/>
     <id>http://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/</id>
     <published>2020-11-26T16:00:00.000Z</published>
-    <updated>2020-12-05T04:41:50.311Z</updated>
+    <updated>2020-12-07T12:59:43.067Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;上一篇文章基本介绍了 List 接口的上层结构，也就是 Iterable 接口，Collection 接口以及实现了 Collection</summary>
+    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;List 应该接口是 Collection 最常被使用的接口了。其下的实现类皆为有序列表，其中主要分为 Vector，ArrayList，LinkedList 三个实现类，其中 Vecotr 又拥有子类</summary>
         
       
     
@@ -124,7 +123,7 @@
     
     <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
     
-    <category term="集合容器" scheme="http://blog.xiajibagao.top/tags/%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
+    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
     
   </entry>
   
@@ -133,15 +132,14 @@
     <link href="http://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/"/>
     <id>http://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/</id>
     <published>2020-11-24T16:00:00.000Z</published>
-    <updated>2020-12-05T04:42:16.973Z</updated>
+    <updated>2020-12-07T13:00:06.949Z</updated>
     
     
       
       
         
         
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。&lt;/p&gt;
-&lt;p&gt;其中， List</summary>
+    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set</summary>
         
       
     
@@ -152,7 +150,7 @@
     
     <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
     
-    <category term="集合容器" scheme="http://blog.xiajibagao.top/tags/%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
+    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
     
   </entry>
   

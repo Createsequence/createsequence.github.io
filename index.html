@@ -567,7 +567,9 @@
       
         
           
-          概述LinkedList 与 ArrayList 出自一个作者，同时也一样是 List 接口下的实现类，但是与 ArrayList 不同的是， LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，是一个基于双端链
+          概述LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，也正因如此，它也具有队列的特性与方法。
+
+这是关于 java 集合
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -735,9 +737,10 @@
         
           
           概述ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector 有着一样的继承关系，也都能随机访问，但是不同的是不能保证线程安全。
-这是关于 java 集合类源码的第三篇文章。如果之前还没了解过相关内容，可以先看看之前的文章：
 
-java集合源码分析（一）：Co
+这是关于 java 集合类源码的第三篇文章。往期文章：
+
+java集合源码分析（一）：Collection 与 Abstract
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -877,7 +880,7 @@ java集合源码分析（一）：Co
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  5.6k words
+                  5.9k words
                 </span>
               
 
@@ -904,7 +907,8 @@ java集合源码分析（一）：Co
       
         
           
-          概述上一篇文章基本介绍了 List 接口的上层结构，也就是 Iterable 接口，Collection 接口以及实现了 Collection 接口的抽象类的基本情况，现在在前文的基础上，我们将继续向实现前进，进一步的探索 List 接口与其抽象实现类 AbstractList 的源码，了解他是如何
+          概述List 应该接口是 Collection 最常被使用的接口了。其下的实现类皆为有序列表，其中主要分为 Vector，ArrayList，LinkedList 三个实现类，其中 Vecotr 又拥有子类 Stack。
+从线程安全来说，List 下拥有线程安全的集合类 Vector；从数据结构来说
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -1072,9 +1076,7 @@ java集合源码分析（一）：Co
         
           
           概述我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。
-其中， List 应该是日常跟我们打交道最频繁的接口了，按照 JavaDoc 的说明，List 是一种：
-
-有序集合（也称为序列）。此接
+其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 Li
           ...
           <!--noindex-->
           <div class="post-button text-center">
@@ -2041,7 +2043,7 @@ JDB
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

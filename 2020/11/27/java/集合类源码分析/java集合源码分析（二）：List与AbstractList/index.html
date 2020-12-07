@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java,集合容器," />
+  <meta name="keywords" content="java,java集合容器," />
 
 
 
@@ -81,22 +81,22 @@
 
 
 
-<meta name="description" content="概述上一篇文章基本介绍了 List 接口的上层结构，也就是 Iterable 接口，Collection 接口以及实现了 Collection 接口的抽象类的基本情况，现在在前文的基础上，我们将继续向实现前进，进一步的探索 List 接口与其抽象实现类 AbstractList 的源码，了解他是如何在三大实现类与 Collection 接口之间实现承上启下的作用的。 一、List 接口 List">
+<meta name="description" content="概述List 应该接口是 Collection 最常被使用的接口了。其下的实现类皆为有序列表，其中主要分为 Vector，ArrayList，LinkedList 三个实现类，其中 Vecotr 又拥有子类 Stack。 从线程安全来说，List 下拥有线程安全的集合类 Vector；从数据结构来说，List 下拥有基于数组实现的 Vector 与 ArrayList，和基于链表实现的 Linke">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java集合源码分析（二）：List与AbstractList">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述上一篇文章基本介绍了 List 接口的上层结构，也就是 Iterable 接口，Collection 接口以及实现了 Collection 接口的抽象类的基本情况，现在在前文的基础上，我们将继续向实现前进，进一步的探索 List 接口与其抽象实现类 AbstractList 的源码，了解他是如何在三大实现类与 Collection 接口之间实现承上启下的作用的。 一、List 接口 List">
+<meta property="og:description" content="概述List 应该接口是 Collection 最常被使用的接口了。其下的实现类皆为有序列表，其中主要分为 Vector，ArrayList，LinkedList 三个实现类，其中 Vecotr 又拥有子类 Stack。 从线程安全来说，List 下拥有线程安全的集合类 Vector；从数据结构来说，List 下拥有基于数组实现的 Vector 与 ArrayList，和基于链表实现的 Linke">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201125163518482.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201126114026855.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201126204925206.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201126110250536.png">
 <meta property="article:published_time" content="2020-11-26T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-12-05T04:41:50.311Z">
+<meta property="article:modified_time" content="2020-12-07T12:59:43.067Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="java">
-<meta property="article:tag" content="集合容器">
+<meta property="article:tag" content="java集合容器">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://img.xiajibagao.top/image-20201125163518482.png">
 
@@ -378,7 +378,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  5.6k words
+                  5.9k words
                 </span>
               
 
@@ -403,7 +403,13 @@
       
 
       
-        <h2><span id="概述">概述</span></h2><p>上一篇文章基本介绍了 List 接口的上层结构，也就是 Iterable 接口，Collection 接口以及实现了 Collection 接口的抽象类的基本情况，现在在前文的基础上，我们将继续向实现前进，进一步的探索 List 接口与其抽象实现类 AbstractList 的源码，了解他是如何在三大实现类与 Collection 接口之间实现承上启下的作用的。</p>
+        <h2><span id="概述">概述</span></h2><p>List 应该接口是 Collection 最常被使用的接口了。其下的实现类皆为有序列表，其中主要分为 Vector，ArrayList，LinkedList 三个实现类，其中 Vecotr 又拥有子类 Stack。</p>
+<p>从线程安全来说，List 下拥有线程安全的集合类 Vector；从数据结构来说，List 下拥有基于数组实现的 Vector 与 ArrayList，和基于链表实现的 LinkedList。</p>
+<p>本篇文章暂不讨论具体的实现类，而将基于 List 接口与其抽象类 AbstractList，了解 List 接口是如何承上启下，进一步从 Collection 抽象到具体的。</p>
+<blockquote>
+<p>这是关于 java 集合类源码的第二篇文章。往期文章：</p>
+<p><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></p>
+</blockquote>
 <h2><span id="一-list-接口">一、List 接口</span></h2><p><img src="http://img.xiajibagao.top/image-20201125163518482.png" alt="List 接口的方法"></p>
 <p>List 接口继承了 Collection 接口，在 Collection 接口的基础上增加了一些方法。相对于 Collection 接口，我们可以很明显的看到，List <strong>中增加了非常多根据下标操作集合的方法</strong>，我们可以简单粗暴的分辨一个方法的抽象方法到底来自 Collection 还是 List：参数里有下标就是来自 List，没有就是来自 Collection。</p>
 <p>可以说，List 接口在 Collection 的基础上，<strong>进一步明确了 List 集合运允许根据下标快速存取的特性</strong>。</p>
@@ -425,6 +431,14 @@
 <li><code>spliterator()</code>：List 接口重写了 Collection 接口的默认实现，换成了根据顺序的分割。</li>
 </ul>
 <h2><span id="二-abstractlist-抽象类">二、AbstractList 抽象类</span></h2><p>AbstractList 类是一个继承了 AbstractCollection 类并且实现了 List 接口的抽象类，它相当于在 AbstractCollection 后的第二层方法模板。是对 List 接口的初步实现，同时也是 Collection 的进一步实现。</p>
+<p>我们可以根据 JavaDoc 简单的了解一下它：</p>
+<blockquote>
+<p>此类提供List接口的基本实现，以最大程度地减少实现由“随机访问”数据存储（例如数组）支持的此接口所需的工作。 对于顺序访问数据（例如链表），应优先使用AbstractSequentialList代替此类。</p>
+<p>要实现不可修改的列表，程序员只需要扩展此类并为get(int)和size()方法提供实现即可。</p>
+<p>要实现可修改的列表，程序员必须另外重写set(int, E)方法（否则将抛出UnsupportedOperationException ）。 如果列表是可变大小的，则程序员必须另外重写add(int, E)和remove(int)方法。</p>
+<p>不像其他的抽象集合实现，程序员不必提供迭代器实现; </p>
+<p>迭代器和列表迭代器由此类在“随机访问”方法之上实现： get(int) ， set(int, E) ， add(int, E)和remove(int) 。</p>
+</blockquote>
 <h3><span id="1不支持的实现与抽象方法">1.不支持的实现与抽象方法</span></h3><p>可以直接通过下标操作的<code>set()</code>，<code>add()</code>，<code>remove()</code>都是 List 引入的新接口，这些都 AbstractList 都不支持，要使用必须由子类重写。</p>
 <p><code>get()</code>由于不能确定子类是链表还是数组，所以此时<code>get()</code>仍然强制要求子类去实现。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">abstract</span> <span class="keyword">public</span> E <span class="title">get</span><span class="params">(<span class="keyword">int</span> index)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">set</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">remove</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -574,7 +588,7 @@
           
             <a href="/tags/java/" rel="tag"># java</a>
           
-            <a href="/tags/%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/" rel="tag"># 集合容器</a>
+            <a href="/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/" rel="tag"># java集合容器</a>
           
         </div>
       
@@ -702,7 +716,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

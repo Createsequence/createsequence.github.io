@@ -5750,11 +5750,7 @@
     <title>java集合源码分析（一）：Collection 与 AbstractCollection</title>
     <url>/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/</url>
     <content><![CDATA[<h2><span id="概述">概述</span></h2><p>我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。</p>
-<p>其中， List 应该是日常跟我们打交道最频繁的接口了，按照 JavaDoc 的说明，List 是一种：</p>
-<blockquote>
-<p>有序集合（也称为序列）。此接口的用户可以精确控制列表中每个元素的插入位置。用户可以通过其整数索引（在列表中的位置）访问元素，并在列表中搜索元素。</p>
-</blockquote>
-<p>我们以 List 下 Vector，ArrayList，LinkedList 三大实现为主，下面是他们之间的一个关系图。其中，红色表示抽象类，蓝色表示接口。</p>
+<p>其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 List 部分的关系图。</p>
 <p><img src="http://img.xiajibagao.top/image-20201126100539307.png" alt="List集合的实现类关系图"></p>
 <p>根据上图的类关系图，我们研究一下源码中，类与类之间的关系，方法是如何从抽象到具体的。</p>
 <h2><span id="一-iterable-接口">一、Iterable 接口</span></h2><p>Iterable 是最顶层的接口，继承这个接口的类可以被迭代。</p>
@@ -5806,9 +5802,11 @@
 <li><code>spliterator()</code>：重写了 Iterable 接口的 <code>iterator()</code>方法。</li>
 </ul>
 <h3><span id="3equals-和-hashcode">3.equals 和 hashCode</span></h3><p>值得一提的是 Collection <strong>还重写了 Object 的 <code>equals()</code> 和 <code>hashCode()</code> 方法</strong>（或者说变成了抽象方法？），这样<strong>实现 Collection 的类就必须重新实现 <code>equals()</code> 和 <code>hashCode()</code> 方法</strong>。</p>
-<h2><span id="三-abstractcollection-抽象类">三、AbstractCollection 抽象类</span></h2><p>AbstractCollection 是一个抽象类，他实现了 Collection 接口的一些基本方法。JavaDoc 也是如此描述的：</p>
+<h2><span id="三-abstractcollection-抽象类">三、AbstractCollection 抽象类</span></h2><p>AbstractCollection 是一个抽象类，他实现了 Collection 接口的一些基本方法。我们可以根据 JavaDoc 简单的了解一下它：</p>
 <blockquote>
-<p>此类提供了Collection接口的基本实现，以最大程度地减少实现此接口所需的工作。</p>
+<p>要实现不可修改的集合，程序员只需扩展此类并为iterator和size方法提供实现。（由iterator方法返回的迭代器必须实现hasNext和next 。）</p>
+<p>要实现可修改的集合，程序员必须另外重写此类的add方法（否则将抛出UnsupportedOperationException ），并且iterator方法返回的迭代器必须另外实现其remove方法。</p>
+<p>根据Collection接口规范中的建议，程序员通常应提供一个void（无参数）和Collection构造函数</p>
 </blockquote>
 <p>通过类的关系图，AbstractCollection 下面还有一个子抽象类 AbstractList ，进一步提供了对 List 接口的实现。 我们不难发现，这正是模板方法模式在 JDK 中的一种运用。</p>
 <h3><span id="0不支持的实现">0.不支持的实现</span></h3><p>在这之前，需要注意的是，AbstractCollection 中有一些比较特别的写法，即实现了方法，但是默认一调用立刻就抛出 <code>UnsupportedOperationException</code>异常：</p>
@@ -5875,7 +5873,7 @@
       </categories>
       <tags>
         <tag>java</tag>
-        <tag>集合容器</tag>
+        <tag>java集合容器</tag>
       </tags>
   </entry>
   <entry>
@@ -6013,7 +6011,13 @@
   <entry>
     <title>java集合源码分析（二）：List与AbstractList</title>
     <url>/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/</url>
-    <content><![CDATA[<h2><span id="概述">概述</span></h2><p>上一篇文章基本介绍了 List 接口的上层结构，也就是 Iterable 接口，Collection 接口以及实现了 Collection 接口的抽象类的基本情况，现在在前文的基础上，我们将继续向实现前进，进一步的探索 List 接口与其抽象实现类 AbstractList 的源码，了解他是如何在三大实现类与 Collection 接口之间实现承上启下的作用的。</p>
+    <content><![CDATA[<h2><span id="概述">概述</span></h2><p>List 应该接口是 Collection 最常被使用的接口了。其下的实现类皆为有序列表，其中主要分为 Vector，ArrayList，LinkedList 三个实现类，其中 Vecotr 又拥有子类 Stack。</p>
+<p>从线程安全来说，List 下拥有线程安全的集合类 Vector；从数据结构来说，List 下拥有基于数组实现的 Vector 与 ArrayList，和基于链表实现的 LinkedList。</p>
+<p>本篇文章暂不讨论具体的实现类，而将基于 List 接口与其抽象类 AbstractList，了解 List 接口是如何承上启下，进一步从 Collection 抽象到具体的。</p>
+<blockquote>
+<p>这是关于 java 集合类源码的第二篇文章。往期文章：</p>
+<p><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></p>
+</blockquote>
 <h2><span id="一-list-接口">一、List 接口</span></h2><p><img src="http://img.xiajibagao.top/image-20201125163518482.png" alt="List 接口的方法"></p>
 <p>List 接口继承了 Collection 接口，在 Collection 接口的基础上增加了一些方法。相对于 Collection 接口，我们可以很明显的看到，List <strong>中增加了非常多根据下标操作集合的方法</strong>，我们可以简单粗暴的分辨一个方法的抽象方法到底来自 Collection 还是 List：参数里有下标就是来自 List，没有就是来自 Collection。</p>
 <p>可以说，List 接口在 Collection 的基础上，<strong>进一步明确了 List 集合运允许根据下标快速存取的特性</strong>。</p>
@@ -6035,6 +6039,14 @@
 <li><code>spliterator()</code>：List 接口重写了 Collection 接口的默认实现，换成了根据顺序的分割。</li>
 </ul>
 <h2><span id="二-abstractlist-抽象类">二、AbstractList 抽象类</span></h2><p>AbstractList 类是一个继承了 AbstractCollection 类并且实现了 List 接口的抽象类，它相当于在 AbstractCollection 后的第二层方法模板。是对 List 接口的初步实现，同时也是 Collection 的进一步实现。</p>
+<p>我们可以根据 JavaDoc 简单的了解一下它：</p>
+<blockquote>
+<p>此类提供List接口的基本实现，以最大程度地减少实现由“随机访问”数据存储（例如数组）支持的此接口所需的工作。 对于顺序访问数据（例如链表），应优先使用AbstractSequentialList代替此类。</p>
+<p>要实现不可修改的列表，程序员只需要扩展此类并为get(int)和size()方法提供实现即可。</p>
+<p>要实现可修改的列表，程序员必须另外重写set(int, E)方法（否则将抛出UnsupportedOperationException ）。 如果列表是可变大小的，则程序员必须另外重写add(int, E)和remove(int)方法。</p>
+<p>不像其他的抽象集合实现，程序员不必提供迭代器实现; </p>
+<p>迭代器和列表迭代器由此类在“随机访问”方法之上实现： get(int) ， set(int, E) ， add(int, E)和remove(int) 。</p>
+</blockquote>
 <h3><span id="1不支持的实现与抽象方法">1.不支持的实现与抽象方法</span></h3><p>可以直接通过下标操作的<code>set()</code>，<code>add()</code>，<code>remove()</code>都是 List 引入的新接口，这些都 AbstractList 都不支持，要使用必须由子类重写。</p>
 <p><code>get()</code>由于不能确定子类是链表还是数组，所以此时<code>get()</code>仍然强制要求子类去实现。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">abstract</span> <span class="keyword">public</span> E <span class="title">get</span><span class="params">(<span class="keyword">int</span> index)</span></span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">set</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">remove</span><span class="params">(<span class="keyword">int</span> index)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> UnsupportedOperationException();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -6171,7 +6183,7 @@
       </categories>
       <tags>
         <tag>java</tag>
-        <tag>集合容器</tag>
+        <tag>java集合容器</tag>
       </tags>
   </entry>
   <entry>
@@ -6405,11 +6417,13 @@
     <title>java集合源码分析（三）：ArrayList</title>
     <url>/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/</url>
     <content><![CDATA[<h2><span id="概述">概述</span></h2><p>ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector 有着一样的继承关系，也都能随机访问，但是不同的是不能保证线程安全。</p>
-<p>这是关于 java 集合类源码的第三篇文章。如果之前还没了解过相关内容，可以先看看之前的文章：</p>
-<ul>
+<blockquote>
+<p>这是关于 java 集合类源码的第三篇文章。往期文章：</p>
+<ol>
 <li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a>  </li>
 <li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-</ul>
+</ol>
+</blockquote>
 <h2><span id="一-arraylist-的类关系">一、ArrayList 的类关系</span></h2><p><img src="http://img.xiajibagao.top/image-20201201161347920.png" alt="image-20201201161347920"></p>
 <p>ArrayList 实现了三个接口，继承了一个抽象类，其中 Serializable ，Cloneable 与 RandomAccess 接口都是用于标记的空接口，他的主要抽象方法来自于 List，一些实现来自于 AbstractList。 </p>
 <h3><span id="1abstractlist-与-list">1.AbstractList 与 List</span></h3><p>ArrayList 实现了 List 接口，是 List 接口的实现类之一，他通过继承抽象类 AbstractList 获得的大部分方法的实现。</p>
@@ -6634,19 +6648,21 @@
       </categories>
       <tags>
         <tag>java</tag>
-        <tag>集合容器</tag>
+        <tag>java集合容器</tag>
       </tags>
   </entry>
   <entry>
     <title>java集合源码分析（四）：LinkedList</title>
     <url>/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/</url>
-    <content><![CDATA[<h2><span id="概述">概述</span></h2><p>LinkedList 与 ArrayList 出自一个作者，同时也一样是 List 接口下的实现类，但是与 ArrayList 不同的是， LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，是一个基于双端链表而非数组实现的集合类。也正因如此，它也具有队列的特性。</p>
-<p>这是关于 java 集合类源码的第四篇文章。如果之前还没了解过相关内容，可以先看看之前的文章：</p>
+    <content><![CDATA[<h2><span id="概述">概述</span></h2><p>LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，也正因如此，它也具有队列的特性与方法。</p>
+<blockquote>
+<p>这是关于 java 集合类源码的第四篇文章。往期文章：</p>
 <ol>
 <li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a>  </li>
 <li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
 <li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
 </ol>
+</blockquote>
 <h2><span id="一-linkedlist-的类关系">一、LinkedList 的类关系</span></h2><p><img src="http://img.xiajibagao.top/image-20201203153522364.png" alt="LinkedList 的类关系"></p>
 <p>LinkedList 实现了 Cloneable ，Serializable 接口，表明它可以拷贝，可以被序列化。</p>
 <p>但是和 ArrayList 或者 Vector 相比，因为它是链表，所以无法像数组那样通过下标快速随机访问，故而没有实现 RandomAccess 接口。</p>
@@ -6769,7 +6785,7 @@
       </categories>
       <tags>
         <tag>java</tag>
-        <tag>集合容器</tag>
+        <tag>java集合容器</tag>
       </tags>
   </entry>
   <entry>
