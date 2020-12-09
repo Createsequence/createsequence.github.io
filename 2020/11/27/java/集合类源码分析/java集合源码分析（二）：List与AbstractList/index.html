@@ -93,7 +93,7 @@
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201126204925206.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201126110250536.png">
 <meta property="article:published_time" content="2020-11-26T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-12-07T12:59:43.067Z">
+<meta property="article:modified_time" content="2020-12-08T05:39:05.594Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="java集合容器">
@@ -434,10 +434,10 @@
 <p>我们可以根据 JavaDoc 简单的了解一下它：</p>
 <blockquote>
 <p>此类提供List接口的基本实现，以最大程度地减少实现由“随机访问”数据存储（例如数组）支持的此接口所需的工作。 对于顺序访问数据（例如链表），应优先使用AbstractSequentialList代替此类。</p>
-<p>要实现不可修改的列表，程序员只需要扩展此类并为get(int)和size()方法提供实现即可。</p>
-<p>要实现可修改的列表，程序员必须另外重写set(int, E)方法（否则将抛出UnsupportedOperationException ）。 如果列表是可变大小的，则程序员必须另外重写add(int, E)和remove(int)方法。</p>
-<p>不像其他的抽象集合实现，程序员不必提供迭代器实现; </p>
-<p>迭代器和列表迭代器由此类在“随机访问”方法之上实现： get(int) ， set(int, E) ， add(int, E)和remove(int) 。</p>
+<p><strong>要实现不可修改的列表</strong>，程序员只需要扩展此类并为get(int)和size()方法提供实现即可。</p>
+<p><strong>要实现可修改的列表</strong>，程序员必须另外重写set(int, E)方法（否则将抛出UnsupportedOperationException ）。 如果列表是可变大小的，则程序员必须另外重写add(int, E)和remove(int)方法。</p>
+<p>不像其他的抽象集合实现，程序员<strong>不必提供迭代器实现</strong>; </p>
+<p><strong>迭代器和列表迭代器由此类在“随机访问”方法之上实现</strong>： get(int) ， set(int, E) ， add(int, E)和remove(int) 。</p>
 </blockquote>
 <h3><span id="1不支持的实现与抽象方法">1.不支持的实现与抽象方法</span></h3><p>可以直接通过下标操作的<code>set()</code>，<code>add()</code>，<code>remove()</code>都是 List 引入的新接口，这些都 AbstractList 都不支持，要使用必须由子类重写。</p>
 <p><code>get()</code>由于不能确定子类是链表还是数组，所以此时<code>get()</code>仍然强制要求子类去实现。</p>

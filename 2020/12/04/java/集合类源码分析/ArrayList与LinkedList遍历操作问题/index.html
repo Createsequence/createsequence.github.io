@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="java,杂七乱八,集合容器," />
+  <meta name="keywords" content="java,杂七乱八,java集合容器," />
 
 
 
@@ -88,15 +88,15 @@
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
 <meta property="og:description" content="概述一个 java 程序猿比较广为人知的小知识 ，是 ArrayList 和 LinkedList 最好使用迭代器删除，而不是遍历删除。 当我们尝试使用 for 循环或者 forEach 进行删除的时候，往往会出现一些意外的情况，导致集合全部删除失败。关于这点，我一直保持知其然不知其所以然的状态，刚好最近刚看完 ArrayList 和 LinkedList 的源码，今天这篇文章，就结合源码，总结一">
 <meta property="og:locale">
-<meta property="og:image" content="d:/代码及jar包/学习记录/java相关/java集合/List实现类/image-20201205093614320.png">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20201205093614320.png">
 <meta property="article:published_time" content="2020-12-03T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-12-05T04:41:56.746Z">
+<meta property="article:modified_time" content="2020-12-05T04:58:38.052Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="杂七乱八">
-<meta property="article:tag" content="集合容器">
+<meta property="article:tag" content="java集合容器">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="d:/代码及jar包/学习记录/java相关/java集合/List实现类/image-20201205093614320.png">
+<meta name="twitter:image" content="http://img.xiajibagao.top/image-20201205093614320.png">
 
 
 
@@ -422,7 +422,7 @@
 
 <p>在<code>fastRemove()</code>方法里，<strong>调用了数组拷贝的方法 <code>System.arraycopy()</code>，他将删除位置后的数组整体前移一位</strong>。</p>
 <p>我们来复原一下这个删除的流程：</p>
-<p><img src="D:\代码及jar包\学习记录\java相关\java集合\List实现类\image-20201205093614320.png" alt="ArrayList for循环删除的流程"></p>
+<p><img src="http://img.xiajibagao.top/image-20201205093614320.png" alt="ArrayList for循环删除的流程"></p>
 <p><strong>简单的来说，我把 index = a 的元素删掉了，那么原本 index = a + 1 的元素就会跑到 index = a 的位置，当开始下一次循环的时候，我们以为删的是 indedx = a + 1 的元素，其实是 index = a + 2 的元素，索引发生了“偏移”，这就是“漏删”的原因。</strong></p>
 <h3><span id="3解决办法">3.解决办法</span></h3><p>要避免这种情况，有两种办法：</p>
 <ul>
@@ -485,7 +485,7 @@
 <p>上面三种写法是等价的。在 LinkedList 中， forEach 遍历和迭代器遍历是等价的，前者到最后还是用的迭代器。而实际上，当我们看到迭代器里面的 <code>list.remove()</code>就应该明白 LinkedList 的 <code>forEach()</code>为什么会抛异常了。</p>
 <p>和 ArrayList 的迭代器删除一样，<strong>由于调用的是外部的 <code>remove()</code>导致<code>modCount</code>改变，而<code>expectedModCount</code>没有改变，因此在调用<code>next()</code>的时候会因为过不了 <code>expectedModCount = modCount</code>而抛出 ConcurrentModificationException 异常</strong>。</p>
 <h2><span id="七-总结">七、总结</span></h2><p><strong>为什么有时候会抛出 ConcurrentModificationException  异常？</strong></p>
-<p>List 集合中存在并发修改检查机制，AbstractList 提供 <code>modCount</code>字段，当使用 <code>add()</code>或者 <code>remove()</code>这样结构性操作的方法时，会让 <code>modCount + 1</code>。List 实现类的迭代器在创建的时候，都会使用成员变量 <code>expectedModCount</code> 记录当前的 <code>modCount</code>，<strong>每次调用 <code>next()</code>的时候都会检查最新的 <code>modCount</code>与 <code>expectedModCount</code>是否相等，否则就抛出 ConcurrentModificationException  异常</strong>。</p>
+<p>List 集合中存在并发修改检查机制，AbstractList 提供 <code>modCount</code>字段，当使用 <code>add()</code>或者 <code>remove()</code>这样结构性操作的方法时，会让 <code>modCount + 1</code>。List 实现类的迭代器在创建的时候，都会使用成员变量 <code>expectedModCount</code> 记录当前的 <code>modCount</code>，<strong>每次调用 <code>next()</code>的时候都会检查最新的 <code>modCount</code>与 <code>expectedModCount</code>是否相等，否则就抛出 Con0currentModificationException  异常</strong>。</p>
 <p>因此，只有调用迭代器内部提供的方法，才会同步更新<code>expectedModCount</code>，否则只会更新<code>modCount</code>。<strong>所以 ArrayList 与 LinkedList 在迭代器迭代过程中增删会抛异常</strong>。</p>
 <p>ArrayList 重写了 <code>forEach()</code>方法，从增强 for 改为了普通的 for 循环，但是<strong>在方法最开始也记录了<code>modCount</code>，每次循环都会对比，因此也会因为在循环中改变了 <code>modCount</code>而抛异常</strong>。</p>
 <p>LinkedList 未重写 <code>forEach()</code>方法，<strong>底层仍然使用增强 for，编译后还是迭代器，因此抛异常的原因同迭代器中操作</strong>。</p>
@@ -515,7 +515,7 @@
           
             <a href="/tags/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/" rel="tag"># 杂七乱八</a>
           
-            <a href="/tags/%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/" rel="tag"># 集合容器</a>
+            <a href="/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/" rel="tag"># java集合容器</a>
           
         </div>
       
