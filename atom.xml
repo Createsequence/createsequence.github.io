@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2020-12-09T02:37:36.940Z</updated>
+  <updated>2020-12-16T12:40:28.158Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>java集合源码分析（六）：HashMap</title>
+    <link href="http://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/"/>
+    <id>http://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/</id>
+    <published>2020-12-15T16:00:00.000Z</published>
+    <updated>2020-12-16T12:40:28.158Z</updated>
+    
+    
+      
+      
+        
+        
+    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;HashMap 是 Map 接口下一个线程不安全的，基于哈希表的实现类。由于他解决哈希冲突的方式是分离链表法，也就是拉链法，因此他的数据结构是数组+链表，在 JDK8 以后，当哈希冲突严重时，HashMap</summary>
+        
+      
+    
+    
+    
+    <category term="java集合容器" scheme="http://blog.xiajibagao.top/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
+    
+    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
+    
+  </entry>
   
   <entry>
     <title>java集合源码分析（五）：Map与AbstractMap</title>
@@ -537,31 +564,6 @@
     
     
     <category term="mysql" scheme="http://blog.xiajibagao.top/tags/mysql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>JDK1.8新特性（四）：Optional类</title>
-    <link href="http://blog.xiajibagao.top/2020/11/03/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AOptional%E7%B1%BB/"/>
-    <id>http://blog.xiajibagao.top/2020/11/03/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9AOptional%E7%B1%BB/</id>
-    <published>2020-11-02T16:00:00.000Z</published>
-    <updated>2020-11-16T08:45:37.210Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;针对我们熟悉又深恶痛绝的空指针异常 &lt;code&gt;NullPointException&lt;/code&gt;，JDK8 新增了一个用于处理可能出现的空对象的类 Optionalt</summary>
-        
-      
-    
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/categories/java/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
     
   </entry>
   
