@@ -81,25 +81,25 @@
 
 
 
-<meta name="description" content="一、什么是赫夫曼树给定n个权值作为n个叶子节点，构造一课二叉树，若该树的带权路径长度和（wpl）达到最小，称这样的二叉树为最优二叉树，也就是赫夫曼树。 要理解这句话，我们需要了解几个关键词：  路径：从一个节点往下一个节点之间的通路。若根节点层数为1，则根节点通往L层的节点路径长度为L-1 带权路径：权可以理解为节点值，而从根节点到某节点之间的路径长度与该点的权的成绩称为带权路径长度  举个例子：">
+<meta name="description" content="一、什么是赫夫曼树 给定n个权值作为n个叶子节点，构造一课二叉树，若该树的带权路径长度和（wpl）达到最小，称这样的二叉树为最优二叉树，也就是赫夫曼树。 要理解这句话，我们需要了解几个关键词：  路径：从一个节点往下一个节点之间的通路。若根节点层数为1，则根节点通往L层的节点路径长度为L-1 带权路径：权可以理解为节点值，而从根节点到某节点之间的路径长度与该点的权的成绩称为带权路径长度">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据结构与算法（十三）：赫夫曼树">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/07/17/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%91/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="一、什么是赫夫曼树给定n个权值作为n个叶子节点，构造一课二叉树，若该树的带权路径长度和（wpl）达到最小，称这样的二叉树为最优二叉树，也就是赫夫曼树。 要理解这句话，我们需要了解几个关键词：  路径：从一个节点往下一个节点之间的通路。若根节点层数为1，则根节点通往L层的节点路径长度为L-1 带权路径：权可以理解为节点值，而从根节点到某节点之间的路径长度与该点的权的成绩称为带权路径长度  举个例子：">
+<meta property="og:description" content="一、什么是赫夫曼树 给定n个权值作为n个叶子节点，构造一课二叉树，若该树的带权路径长度和（wpl）达到最小，称这样的二叉树为最优二叉树，也就是赫夫曼树。 要理解这句话，我们需要了解几个关键词：  路径：从一个节点往下一个节点之间的通路。若根节点层数为1，则根节点通往L层的节点路径长度为L-1 带权路径：权可以理解为节点值，而从根节点到某节点之间的路径长度与该点的权的成绩称为带权路径长度">
 <meta property="og:locale">
-<meta property="og:image" content="http://img.xiajibagao.top/%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%91.png">
-<meta property="og:image" content="http://img.xiajibagao.top/%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%912.png">
-<meta property="og:image" content="http://img.xiajibagao.top/%E6%9E%84%E5%BB%BA%E8%B5%AB%E5%A4%AB%E6%9B%BC1.png">
-<meta property="og:image" content="http://img.xiajibagao.top/%E6%9E%84%E5%BB%BA%E8%B5%AB%E5%A4%AB%E6%9B%BC2.png">
-<meta property="og:image" content="http://img.xiajibagao.top/%E6%9E%84%E5%BB%BA%E8%B5%AB%E5%A4%AB%E6%9B%BC3.png">
-<meta property="og:image" content="http://img.xiajibagao.top/%E6%9E%84%E5%BB%BA%E8%B5%AB%E5%A4%AB%E6%9B%BC4.png">
+<meta property="og:image" content="http://img.xiajibagao.top/赫夫曼树.png">
+<meta property="og:image" content="http://img.xiajibagao.top/赫夫曼树2.png">
+<meta property="og:image" content="http://img.xiajibagao.top/构建赫夫曼1.png">
+<meta property="og:image" content="http://img.xiajibagao.top/构建赫夫曼2.png">
+<meta property="og:image" content="http://img.xiajibagao.top/构建赫夫曼3.png">
+<meta property="og:image" content="http://img.xiajibagao.top/构建赫夫曼4.png">
 <meta property="article:published_time" content="2020-07-16T16:00:00.000Z">
 <meta property="article:modified_time" content="2020-10-27T02:06:42.249Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="数据结构与算法">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://img.xiajibagao.top/%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%91.png">
+<meta name="twitter:image" content="http://img.xiajibagao.top/赫夫曼树.png">
 
 
 
@@ -379,7 +379,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  730 words
+                  742
                 </span>
               
 
@@ -404,43 +404,49 @@
       
 
       
-        <h2 id="一、什么是赫夫曼树"><a href="#一、什么是赫夫曼树" class="headerlink" title="一、什么是赫夫曼树"></a>一、什么是赫夫曼树</h2><p>给定n个权值作为n个叶子节点，构造一课二叉树，若该树的带权路径长度和（wpl）达到最小，称这样的二叉树为<strong>最优二叉树</strong>，也就是<strong>赫夫曼树</strong>。</p>
+        <h2 id="一-什么是赫夫曼树">一、什么是赫夫曼树</h2>
+<p>给定n个权值作为n个叶子节点，构造一课二叉树，若该树的带权路径长度和（wpl）达到最小，称这样的二叉树为<strong>最优二叉树</strong>，也就是<strong>赫夫曼树</strong>。</p>
 <p>要理解这句话，我们需要了解几个关键词：</p>
 <ul>
 <li>路径：从一个节点往下一个节点之间的通路。若根节点层数为1，则根节点通往L层的节点路径长度为L-1</li>
 <li>带权路径：权可以理解为节点值，而从根节点到某节点之间的路径长度与该点的权的成绩称为带权路径长度</li>
 </ul>
 <p>举个例子：</p>
-<p><img src="http://img.xiajibagao.top/%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%91.png" alt="image-20200717165237484"></p>
+<figure>
+<img src="http://img.xiajibagao.top/赫夫曼树.png" alt="image-20200717165237484"><figcaption aria-hidden="true">image-20200717165237484</figcaption>
+</figure>
 <p>如上图所示，节点13到根节点的路径长度是2，而权是13，所以带权路径长度就是2*13=26，同理，节点7的带权路径长度是14，8是16,3是6，最终该树的带权路径长度之和（wpl）就是26+14+16+6=62。</p>
-<p><img src="http://img.xiajibagao.top/%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%912.png" alt="image-20200717165733984"></p>
+<figure>
+<img src="http://img.xiajibagao.top/赫夫曼树2.png" alt="image-20200717165733984"><figcaption aria-hidden="true">image-20200717165733984</figcaption>
+</figure>
 <p>而该树与上图有相同的叶子节点，但是wpl却是13+16+21+9=59，这<strong>是拥有这几个相同叶子节点的树里面wpl最小的</strong>，所以这颗树就是一颗赫夫曼树。</p>
 <p>我们不难看出，赫夫曼树最大的特点：<strong>权越大的节点越靠近根节点</strong></p>
-<h2 id="二、如何构建赫夫曼树"><a href="#二、如何构建赫夫曼树" class="headerlink" title="二、如何构建赫夫曼树"></a>二、如何构建赫夫曼树</h2><p>举个例子，我们要将{6,1,3,7,13,8,29}这一串数列组建为赫夫曼树</p>
-<ol>
-<li><p>首先，我们对齐从小到大排序，得到{1,3,6,7,8,13,29}</p>
-</li>
+<h2 id="二-如何构建赫夫曼树">二、如何构建赫夫曼树</h2>
+<p>举个例子，我们要将{6,1,3,7,13,8,29}这一串数列组建为赫夫曼树</p>
+<ol type="1">
+<li><p>首先，我们对齐从小到大排序，得到{1,3,6,7,8,13,29}</p></li>
 <li><p>取出1和3，并以两节点之和4为根节点组建树</p>
-<p><img src="http://img.xiajibagao.top/%E6%9E%84%E5%BB%BA%E8%B5%AB%E5%A4%AB%E6%9B%BC1.png" alt="image-20200717172110379"></p>
-</li>
+<figure>
+<img src="http://img.xiajibagao.top/构建赫夫曼1.png" alt="image-20200717172110379"><figcaption aria-hidden="true">image-20200717172110379</figcaption>
+</figure></li>
 <li><p>取出6，并与4之和10为根节点构建树</p>
-<p><img src="http://img.xiajibagao.top/%E6%9E%84%E5%BB%BA%E8%B5%AB%E5%A4%AB%E6%9B%BC2.png" alt="image-20200717172201798"></p>
-</li>
+<figure>
+<img src="http://img.xiajibagao.top/构建赫夫曼2.png" alt="image-20200717172201798"><figcaption aria-hidden="true">image-20200717172201798</figcaption>
+</figure></li>
 <li><p>取出7，并与10之和17为根节点构建树</p>
-<p><img src="http://img.xiajibagao.top/%E6%9E%84%E5%BB%BA%E8%B5%AB%E5%A4%AB%E6%9B%BC3.png" alt="image-20200717172314477"></p>
-</li>
-<li><p>重复以上步骤最终得到赫夫曼树</p>
-</li>
+<figure>
+<img src="http://img.xiajibagao.top/构建赫夫曼3.png" alt="image-20200717172314477"><figcaption aria-hidden="true">image-20200717172314477</figcaption>
+</figure></li>
+<li><p>重复以上步骤最终得到赫夫曼树</p></li>
 </ol>
-<p><img src="http://img.xiajibagao.top/%E6%9E%84%E5%BB%BA%E8%B5%AB%E5%A4%AB%E6%9B%BC4.png" alt="image-20200717172440901"></p>
-<h2 id="三、代码实现"><a href="#三、代码实现" class="headerlink" title="三、代码实现"></a>三、代码实现</h2><p>首先先写一个节点类：</p>
+<figure>
+<img src="http://img.xiajibagao.top/构建赫夫曼4.png" alt="image-20200717172440901"><figcaption aria-hidden="true">image-20200717172440901</figcaption>
+</figure>
+<h2 id="三-代码实现">三、代码实现</h2>
+<p>首先先写一个节点类：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：CreateSequence</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-07-17 17:31</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：赫夫曼树使用的节点</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> <span class="keyword">implements</span> <span class="title">Comparable</span>&lt;<span class="title">Node</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> val;</span><br><span class="line">    Node left;</span><br><span class="line">    Node right;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.val = val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 父节点的构造方法</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> left</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> right</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(Node left, Node right)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.left = left;</span><br><span class="line">        <span class="keyword">this</span>.right = right;</span><br><span class="line">        <span class="keyword">this</span>.val = left.val + right.val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;val=&quot;</span> + val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 实现排序接口，从大到小</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> o</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">compareTo</span><span class="params">(Node o)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> -(<span class="keyword">this</span>.val - o.val);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
 <p>实现一个构造赫夫曼树的方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：CreateSequence</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-07-17 17:37</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：赫夫曼树</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HuffmanTree</span> </span>&#123;</span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 创建赫夫曼树</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> arr</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Node&gt; <span class="title">createHuffmanTree</span><span class="params">(<span class="keyword">int</span>[] arr)</span></span>&#123;</span><br><span class="line">        <span class="comment">//将数组元素拆分成节点</span></span><br><span class="line">        List&lt;Node&gt; nodes = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i : arr) &#123;</span><br><span class="line">            nodes.add(<span class="keyword">new</span> Node(i));</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//构建树</span></span><br><span class="line">        <span class="keyword">while</span> (nodes.size() &gt; <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="comment">//排序</span></span><br><span class="line">            Collections.sort(nodes);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//取出最小的两个数构建树</span></span><br><span class="line">            Node left = nodes.get(nodes.size() - <span class="number">1</span>);</span><br><span class="line">            Node right = nodes.get(nodes.size() - <span class="number">2</span>);</span><br><span class="line">            Node parant = <span class="keyword">new</span> Node(left, right);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//删除两个节点</span></span><br><span class="line">            nodes.remove(left);</span><br><span class="line">            nodes.remove(right);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//将根节点添加至集合</span></span><br><span class="line">            nodes.add(parant);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> nodes;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 
       
     </div>
@@ -564,7 +570,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -586,7 +592,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -626,7 +632,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%91"><span class="nav-text">一、什么是赫夫曼树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%A6%82%E4%BD%95%E6%9E%84%E5%BB%BA%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%91"><span class="nav-text">二、如何构建赫夫曼树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-text">三、代码实现</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E4%BB%80%E4%B9%88%E6%98%AF%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%91"><span class="nav-text">一、什么是赫夫曼树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E5%A6%82%E4%BD%95%E6%9E%84%E5%BB%BA%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%91"><span class="nav-text">二、如何构建赫夫曼树</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-text">三、代码实现</span></a></li></ol></div>
             
 
           </div>

@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="此文为极客时间：MySQL实战45讲的16节order by相关内容的笔记  一、order by 的执行流程1.全字段排序假如此时有这么一张表： 123456789CREATE TABLE &#96;t&#96; (  &#96;id&#96; int(11) NOT NULL,  &#96;city&#96; varchar(16) NOT NULL,  &#96;name&#96; varchar(16) NOT NULL,  &#96;age&#96; int(11">
+<meta name="description" content="此文为极客时间：MySQL实战45讲的16节order by相关内容的笔记  一、order by 的执行流程 1.全字段排序 假如此时有这么一张表： 123456789CREATE TABLE &#96;t&#96; (  &#96;id&#96; int(11) NOT NULL,  &#96;city&#96; varchar(16) NOT NULL,  &#96;name&#96; varchar(16) NOT NULL,  &#96;age">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mysql初探(十二)：order by">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/11/15/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81%E4%BA%8C)%EF%BC%9Aorder%20by/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="此文为极客时间：MySQL实战45讲的16节order by相关内容的笔记  一、order by 的执行流程1.全字段排序假如此时有这么一张表： 123456789CREATE TABLE &#96;t&#96; (  &#96;id&#96; int(11) NOT NULL,  &#96;city&#96; varchar(16) NOT NULL,  &#96;name&#96; varchar(16) NOT NULL,  &#96;age&#96; int(11">
+<meta property="og:description" content="此文为极客时间：MySQL实战45讲的16节order by相关内容的笔记  一、order by 的执行流程 1.全字段排序 假如此时有这么一张表： 123456789CREATE TABLE &#96;t&#96; (  &#96;id&#96; int(11) NOT NULL,  &#96;city&#96; varchar(16) NOT NULL,  &#96;name&#96; varchar(16) NOT NULL,  &#96;age">
 <meta property="og:locale">
 <meta property="article:published_time" content="2020-11-14T16:00:00.000Z">
 <meta property="article:modified_time" content="2020-11-16T13:06:15.921Z">
@@ -372,7 +372,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.2k words
+                  1.2k
                 </span>
               
 
@@ -400,16 +400,16 @@
         <blockquote>
 <p>此文为极客时间：MySQL实战45讲的16节order by相关内容的笔记</p>
 </blockquote>
-<h2><span id="一-order-by-的执行流程">一、order by 的执行流程</span></h2><h3><span id="1全字段排序">1.全字段排序</span></h3><p>假如此时有这么一张表：</p>
+<h2 id="一-order-by-的执行流程">一、order by 的执行流程</h2>
+<h3 id="1全字段排序">1.全字段排序</h3>
+<p>假如此时有这么一张表：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> <span class="string">`t`</span> (</span><br><span class="line">  <span class="string">`id`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`city`</span> <span class="built_in">varchar</span>(<span class="number">16</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`name`</span> <span class="built_in">varchar</span>(<span class="number">16</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`age`</span> <span class="built_in">int</span>(<span class="number">11</span>) <span class="keyword">NOT</span> <span class="literal">NULL</span>,</span><br><span class="line">  <span class="string">`addr`</span> <span class="built_in">varchar</span>(<span class="number">128</span>) <span class="keyword">DEFAULT</span> <span class="literal">NULL</span>,</span><br><span class="line">  PRIMARY <span class="keyword">KEY</span> (<span class="string">`id`</span>),</span><br><span class="line">  <span class="keyword">KEY</span> <span class="string">`city`</span> (<span class="string">`city`</span>)</span><br><span class="line">) <span class="keyword">ENGINE</span>=<span class="keyword">InnoDB</span>;</span><br></pre></td></tr></table></figure>
-
 <p>现在要按姓名排序查询杭州1000个人的信息</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> city,<span class="keyword">name</span>,age <span class="keyword">from</span> t <span class="keyword">where</span> city=<span class="string">&#x27;杭州&#x27;</span> <span class="keyword">order</span> <span class="keyword">by</span> <span class="keyword">name</span> <span class="keyword">limit</span> <span class="number">1000</span>;</span><br></pre></td></tr></table></figure>
-
 <p>这条 sql 的执行流程如下：</p>
-<ol>
+<ol type="1">
 <li>在内存中初始化 sort_buffer，放入 city，name，age 三个字段</li>
-<li>从 city 索引树找到 city = ‘杭州’ 叶子节点存放的主键 id</li>
+<li>从 city 索引树找到 city = '杭州' 叶子节点存放的主键 id</li>
 <li>回表根据主键 id 找到数据，取出全部字段放入 sort_buffer</li>
 <li>重复上述过程，直到全部符合条件的数据都放入内存</li>
 <li>在 sort_buffer 对数据按 name 进行排序</li>
@@ -417,30 +417,33 @@
 </ol>
 <p>因为先查了全部需要字段才排序，我们把这个叫做<strong>全字段排序</strong>。</p>
 <p>不难看出，跟 join 有点像，排序也专门在内存里开辟了一块空间 sort_buffer。其中，<code>sort_buffer_size</code>参数的大小决定了 sort_buffer 的大小，<strong>如果 sort_buffer 放不下全部的字段，就必须在磁盘中创建临时文件辅助排序</strong>，这个排序使用的是归并排序，即先让分片变得有序，最后再总体进行排序。<strong>sort_buffer 越小，就会让临时文件越多</strong>。</p>
-<h3><span id="2rowid-排序">2.rowid 排序</span></h3><p>全字段排序的问题在于，如果需要查询返回的数据行数过多，那么就会导致少量的行数也会占满 sort_buffer 。</p>
-<p>为此我们可以调整 <code>max_length_for_sort_data</code> 参数，即当单行的长度超过这个值，就会只在 sort_buffer  中放入主键 id 和需要排序的字段，其他的字段等到排完序再回表查询。</p>
+<h3 id="2rowid-排序">2.rowid 排序</h3>
+<p>全字段排序的问题在于，如果需要查询返回的数据行数过多，那么就会导致少量的行数也会占满 sort_buffer 。</p>
+<p>为此我们可以调整 <code>max_length_for_sort_data</code> 参数，即当单行的长度超过这个值，就会只在 sort_buffer 中放入主键 id 和需要排序的字段，其他的字段等到排完序再回表查询。</p>
 <p>这个算法的执行流程如下：</p>
-<ol>
+<ol type="1">
 <li>在内存中初始化 sort_buffer，只放入 id，name 两个字段</li>
-<li>从 city 索引树找到 city = ‘杭州’ 叶子节点存放的主键 id</li>
+<li>从 city 索引树找到 city = '杭州' 叶子节点存放的主键 id</li>
 <li>回表根据主键 id 找到数据，<strong>只取出 id 和 name 字段放入 sort_buffer</strong></li>
 <li>重复上述过程，直到全部符合条件的数据都放入内存</li>
 <li>在 sort_buffer 对数据按 name 进行排序</li>
 <li>遍历排序结果，取前 1000 行，<strong>并按照 id 的值回到原表中取出 city、name 和 age 三个字段返回</strong>。</li>
 </ol>
 <p>因为排序的时候只拿需要排序的字段，我们可以把这个叫做 rowid 排序</p>
-<h2><span id="二-优化">二、优化</span></h2><p>我们可以看到，rowid 排序只担心单行长度过大导致 sort_buffer 一次只能放入少量数据的时候使用，因为 rowid 排序完以后还需要回表进行一次查询，会造成磁盘读，因此不会是一个优先的选择。</p>
+<h2 id="二-优化">二、优化</h2>
+<p>我们可以看到，rowid 排序只担心单行长度过大导致 sort_buffer 一次只能放入少量数据的时候使用，因为 rowid 排序完以后还需要回表进行一次查询，会造成磁盘读，因此不会是一个优先的选择。</p>
 <p>这也是 mysql 优化查询过程中的原则，即<strong>能在内存里处理就尽量在内存里处理，避免回表</strong>。</p>
 <p>排序是一个消耗颇大的操作，但是我们可以<strong>借助索引结构的有序性避免一些额外的排序过程</strong>。同样是上面的例子，我们建一个（city，name）联合索引，那么就可以保证在遍历过程中，只要 city=‘杭州’，那么 name 就一定是有序的。</p>
 <p>这样一来，查询流程就是：</p>
 <ul>
-<li>从联合索引找到第一条city=’杭州’的数据对应的主键</li>
+<li>从联合索引找到第一条city='杭州'的数据对应的主键</li>
 <li>回表找到city，name，age三个数据加入数据集</li>
-<li>重复上述过程直到查到第 1000 条记录，或者是不满足 city=’杭州’条件时循环结束</li>
+<li>重复上述过程直到查到第 1000 条记录，或者是不满足 city='杭州’条件时循环结束</li>
 </ul>
 <p>可以看到，由于索引已经确保的数据的有序性，索引就不需要加入内存中的临时表进行排序的过程了。</p>
 <p>如果只查询 city 和 name，或者为联合索引再加上 age 字段，就能实现<strong>索引覆盖，甚至不需要回表</strong>。不过考虑到维护索引的代价，这个就需要根据业务取舍了。</p>
-<h2><span id="三-总结">三、总结</span></h2><p>mysql 的 order by 分全字段排序和 rowid 排序。</p>
+<h2 id="三-总结">三、总结</h2>
+<p>mysql 的 order by 分全字段排序和 rowid 排序。</p>
 <p>全字段排序需要先查出数据放入 sort_buffer ，然后在内存中排序后返回。如果数据超过了<code>sort_buffer_size</code>参数，就会在磁盘生成临时文件，辅助进行归并排序。</p>
 <p>如果单行长度超过<code>max_length_for_sort_data</code> 参数，就会转为 rowid 排序。即只取 id 和排序字段放入内存，排序完后回表取出对应的数据。</p>
 <p>通过索引结构天然有序，可以借助合适的索引避免额外的排序过程。如果实现了索引覆盖还可以避免回表。</p>
@@ -567,7 +570,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -589,7 +592,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -629,7 +632,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">一、order by 的执行流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1.全字段排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2.rowid 排序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">二、优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">三、总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-order-by-%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">一、order by 的执行流程</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E5%85%A8%E5%AD%97%E6%AE%B5%E6%8E%92%E5%BA%8F"><span class="nav-text">1.全字段排序</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2rowid-%E6%8E%92%E5%BA%8F"><span class="nav-text">2.rowid 排序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E4%BC%98%E5%8C%96"><span class="nav-text">二、优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E6%80%BB%E7%BB%93"><span class="nav-text">三、总结</span></a></li></ol></div>
             
 
           </div>

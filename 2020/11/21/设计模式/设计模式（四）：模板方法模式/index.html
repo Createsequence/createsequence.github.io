@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="概述 在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式&#x2F;模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。  模板方法模式旨在为一些方法的主体部分提供骨架，将具体细节上的一些实现延迟到他的实现类。 JDBC 运用了模板模式。JDK 在实现 List 接口的过程中， AbstractCollection">
+<meta name="description" content="概述  在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式&#x2F;模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。  模板方法模式旨在为一些方法的主体部分提供骨架，将具体细节上的一些实现延迟到他的实现类。 JDBC 运用了模板模式。JDK 在实现 List 接口的过程中， AbstractColle">
 <meta property="og:type" content="article">
 <meta property="og:title" content="设计模式（四）：模板方法模式">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/11/21/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式&#x2F;模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。  模板方法模式旨在为一些方法的主体部分提供骨架，将具体细节上的一些实现延迟到他的实现类。 JDBC 运用了模板模式。JDK 在实现 List 接口的过程中， AbstractCollection">
+<meta property="og:description" content="概述  在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式&#x2F;模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。  模板方法模式旨在为一些方法的主体部分提供骨架，将具体细节上的一些实现延迟到他的实现类。 JDBC 运用了模板模式。JDK 在实现 List 接口的过程中， AbstractColle">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201120171820576.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201120175032833.png">
@@ -376,7 +376,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.3k words
+                  1.4k
                 </span>
               
 
@@ -401,39 +401,46 @@
       
 
       
-        <h2><span id="概述">概述</span></h2><blockquote>
+        <h2 id="概述">概述</h2>
+<blockquote>
 <p>在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式/模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。</p>
 </blockquote>
 <p>模板方法模式旨在为一些方法的主体部分提供骨架，将具体细节上的一些实现延迟到他的实现类。</p>
-<p>JDBC 运用了模板模式。JDK 在实现 List 接口的过程中， AbstractCollection 和 AbstractList  也使用了模板模式。</p>
-<h2><span id="一-简单实现">一、简单实现</span></h2><p>举个我在做项目的时候遇到的例子：</p>
+<p>JDBC 运用了模板模式。JDK 在实现 List 接口的过程中， AbstractCollection 和 AbstractList 也使用了模板模式。</p>
+<h2 id="一-简单实现">一、简单实现</h2>
+<p>举个我在做项目的时候遇到的例子：</p>
 <p>假设我们有一个简单的针对 Demo 类的文件导出类，他提供了 Excel 文档的基本导出功能：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoExcelExporter</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 导出excel</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;Demo&gt; list = getData();</span><br><span class="line">        <span class="keyword">for</span>(Demo d : list) &#123;</span><br><span class="line">        	handle(d);</span><br><span class="line">        &#125;</span><br><span class="line">        excel(list);</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 1.获取要到导出数据集</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;Demo&gt; <span class="title">getData</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">    <span class="comment">// 2.处理数据集</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(Demo demo)</span> </span>&#123;&#125;</span><br><span class="line">    <span class="comment">// 3.导出的数据集为excel文件</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">excel</span><span class="params">(List&lt;Demo&gt; list)</span> </span>&#123;&#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>现在我们需要为 Demo2 和 Demo3 这两个类也添加一个导出 Excel 文档的功能，最简单是方式就是复制黏贴，把 Demo 换成 Demo2 和 Demo3。但是这显然不是我们想要的，根据模板模式，我们可以设置一个 ExcelExporter 抽象类作为模板：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">ExcelExporter</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 导出excel</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        List&lt;T&gt; list = getData();</span><br><span class="line">        <span class="keyword">for</span>(T t : list) &#123;</span><br><span class="line">            handle(t);</span><br><span class="line">        &#125;</span><br><span class="line">        excel(list);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1.获取要到导出数据集</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;T&gt; <span class="title">getData</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2.处理数据集，改为抽象方法，由子类去实现</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(T demo)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3.导出的数据集为excel文件</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">excel</span><span class="params">(List&lt;T&gt; list)</span> </span>&#123;&#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>然后由子类去继承这个模板：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Demo类的ExcelExporter</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DemoExcelExporter</span> <span class="keyword">extends</span> <span class="title">ExcelExporter</span>&lt;<span class="title">Demo</span>&gt; </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(Demo demo)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Demo的处理逻辑</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用</span></span><br><span class="line"><span class="keyword">new</span> DemoExcelExporter().export();</span><br></pre></td></tr></table></figure>
-
 <p>其他两个类也分别创建自己的 ExcelExporter 类，通过继承模板，他们都直接获得了已经实现了大部分的逻辑的<code>export()</code>方法了，只需要自己再根据需求实现一下 <code>handle</code>方法即可。</p>
-<p><img src="http://img.xiajibagao.top/image-20201120171820576.png" alt="模板方法模式改进的ExcelExporter"></p>
-<h2><span id="二-模板的继承">二、模板的继承</span></h2><p>模板模式的强大之处在于，模板和模板之间可以通过继承来进一步增强现有的方法。</p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201120171820576.png" alt="模板方法模式改进的ExcelExporter"><figcaption aria-hidden="true">模板方法模式改进的ExcelExporter</figcaption>
+</figure>
+<h2 id="二-模板的继承">二、模板的继承</h2>
+<p>模板模式的强大之处在于，模板和模板之间可以通过继承来进一步增强现有的方法。</p>
 <p>比如我们现在希望 Demo3 不仅要导出 Excel 模板，还要导出美化排版，我们可以在 ExcelExporter 的基础上继续新增模板：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">BeautifyExportExporter</span>&lt;<span class="title">T</span>&gt; <span class="keyword">extends</span>  <span class="title">ExcelExporter</span>&lt;<span class="title">T</span>&gt;</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重写了excel方法，在导出前可以先设置一些样式</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">excel</span><span class="params">(List&lt;T&gt; list)</span> </span>&#123;</span><br><span class="line">        settingStyle();</span><br><span class="line">        <span class="keyword">super</span>.excel(list);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 自定义要设置的样式</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">settingStyle</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>现在 Demo3 不再继承 ExcelExporter ，而是去继承 BeautifyExporter：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Demo3ExcelExporter</span> <span class="keyword">extends</span> <span class="title">BeautifyExporter</span>&lt;<span class="title">Demo3</span>&gt; </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">handle</span><span class="params">(Demo3 demo)</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Demo的处理逻辑</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">settingStyle</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 设置样式</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>现在，BeautifyExporter 对 ExcelExporter 定义的逻辑进行了一定的调整，添加了可以设置样式的抽象方法，Demo3ExcelExporter 通过继承了 BeautifyExporter 获得了经过调整之后的 ExcelExporter 的逻辑和方法。</p>
-<p><img src="http://img.xiajibagao.top/image-20201120175032833.png" alt="调整之后的 ExcelExporter 的逻辑"></p>
-<h2><span id="三-模板模式的特点">三、模板模式的特点</span></h2><h3><span id="1可以修改实现仍然复用逻辑">1.可以修改实现仍然复用逻辑</span></h3><p>实际上，大多数时候我们会选择抽取工具类，比如上述的第一个例子，我们可以把 Demo 换成泛型，这样 Demo2 和 Demo3 也可以复用了。</p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201120175032833.png" alt="调整之后的 ExcelExporter 的逻辑"><figcaption aria-hidden="true">调整之后的 ExcelExporter 的逻辑</figcaption>
+</figure>
+<h2 id="三-模板模式的特点">三、模板模式的特点</h2>
+<h3 id="1可以修改实现仍然复用逻辑">1.可以修改实现仍然复用逻辑</h3>
+<p>实际上，大多数时候我们会选择抽取工具类，比如上述的第一个例子，我们可以把 Demo 换成泛型，这样 Demo2 和 Demo3 也可以复用了。</p>
 <p>但是有一个关键的问题：Demo2 和 Demo3 并不是同一个类，他们字段不同，导出中间有些的处理过程也不同，<strong>尽管他们的整体过程大体相同，但是有些地方的处理过程是不一样的</strong>。比如说 <code>getData()</code>和 <code>excel()</code> 这三个类都可用，但是 Demo 的 <code>handle()</code> 方法却不能复用在 Demo2 和 Demo3 。</p>
 <p>我们可以妥协一下，只把 <code>getData()</code>和 <code>excel()</code> 提取成公共类，但是实际上整个导出过程的三个方法是连贯的，只提取两个方法，尽管<code>export()</code>中调用的顺序是定死的，最后实现的时候还是需要重复写无数个相同逻辑的<code>export()</code>，也就是说，<strong>我们只复用的方法，而没有复用逻辑</strong>。</p>
 <p>所以根据上述的分析，我们可以看出，模板模式最大的优点在于<strong>使子类可以不改变一个算法的结构即可重定义该算法的某些步骤，这使得模板模式可以复用代码逻辑结构</strong>。因为模板父类已经定义好了整个方法执行流程，构建好了骨架和一些关键的步骤，所以子类只需要实现一些关键的步骤，并且根据需求去重写一些父类方法以调整逻辑。</p>
-<h3><span id="2扩展方便">2.扩展方便</span></h3><p>相对接口而言，如果接口是简答题，那么抽象类就是填空题。由于模板方法模式使用的是抽象类，业务的实现因此可以是“分步”的，整个功能是可以一层一层完善并且加强，或者做一些调整，这使得一套代码和逻辑可以在各个地方分层复用。</p>
+<h3 id="2扩展方便">2.扩展方便</h3>
+<p>相对接口而言，如果接口是简答题，那么抽象类就是填空题。由于模板方法模式使用的是抽象类，业务的实现因此可以是“分步”的，整个功能是可以一层一层完善并且加强，或者做一些调整，这使得一套代码和逻辑可以在各个地方分层复用。</p>
 <p>比如下图就是一个例子。</p>
-<p><img src="http://img.xiajibagao.top/image-20201120180913712.png" alt="image-20201120180913712"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201120180913712.png" alt="image-20201120180913712"><figcaption aria-hidden="true">image-20201120180913712</figcaption>
+</figure>
 
       
     </div>
@@ -464,8 +471,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/" rel="next" title="设计模式（二）：策略模式">
-                <i class="fa fa-chevron-left"></i> 设计模式（二）：策略模式
+              <a href="/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/" rel="next" title="设计模式（三）：代理模式">
+                <i class="fa fa-chevron-left"></i> 设计模式（三）：代理模式
               </a>
             
           </div>
@@ -557,7 +564,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -579,7 +586,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -619,7 +626,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">一、简单实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">二、模板的继承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">三、模板模式的特点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1.可以修改实现仍然复用逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2.扩展方便</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="nav-text">一、简单实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E6%A8%A1%E6%9D%BF%E7%9A%84%E7%BB%A7%E6%89%BF"><span class="nav-text">二、模板的继承</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E6%A8%A1%E6%9D%BF%E6%A8%A1%E5%BC%8F%E7%9A%84%E7%89%B9%E7%82%B9"><span class="nav-text">三、模板模式的特点</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E5%8F%AF%E4%BB%A5%E4%BF%AE%E6%94%B9%E5%AE%9E%E7%8E%B0%E4%BB%8D%E7%84%B6%E5%A4%8D%E7%94%A8%E9%80%BB%E8%BE%91"><span class="nav-text">1.可以修改实现仍然复用逻辑</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E6%89%A9%E5%B1%95%E6%96%B9%E4%BE%BF"><span class="nav-text">2.扩展方便</span></a></li></ol></li></ol></div>
             
 
           </div>

@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2020-12-16T12:40:28.158Z</updated>
+  <updated>2020-12-17T09:18:53.930Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -17,20 +17,63 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>如何解决next5主题目录无法跳转的问题</title>
+    <link href="http://blog.xiajibagao.top/2020/12/17/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3next5%E4%B8%BB%E9%A2%98%E7%9B%AE%E5%BD%95%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%AC%E7%9A%84%E9%97%AE%E9%A2%98/"/>
+    <id>http://blog.xiajibagao.top/2020/12/17/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3next5%E4%B8%BB%E9%A2%98%E7%9B%AE%E5%BD%95%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%AC%E7%9A%84%E9%97%AE%E9%A2%98/</id>
+    <published>2020-12-16T16:00:00.000Z</published>
+    <updated>2020-12-17T09:18:53.930Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;目前使用的 next 版本是 5.1.4 ，文章左侧的目录一直不能跳转也不能展开，按网上的办法一直没法解决，今天自己琢磨了一阵总算搞定了。&lt;/p&gt;
+&lt;p&gt;由于发现遇到这个问题的人不少，特此总结一下。&lt;/p&gt;
+&lt;p&gt;一般分为两种情况：渲染错误和超链接乱码。&lt;/p&gt;
+&lt;h2 id=&quot;一-渲染错误&quot;&gt;一、渲染错误&lt;/h2&gt;
+&lt;h3 id=&quot;1问题描述&quot;&gt;1.问题描述&lt;/h3&gt;
+&lt;p&gt;最典型的特征就是目录上的超链接为 &lt;code&gt;undefined&lt;/code&gt;，或者点击的时候报错： &lt;code&gt;Cannot read property &#39;replace&#39; of null&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;前一情况 GitHub 中已有相应的 Issues：&lt;a href=&quot;https://github.com/Haojen/hexo-theme-Anisina/issues/34&quot;&gt;根据 markdown 生成的 TOC 锚点的内容是 undefined&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;这个情况一般是 &lt;code&gt;markdown-it&lt;/code&gt; 渲染出错，渲染时候把应该加在标题的锚点加到了标题内的 sapn 标签里，导致生成目录的时候获取不到对应的锚点。&lt;/p&gt;
+&lt;p&gt;比如原本 &lt;code&gt;##一级标题&lt;/code&gt; 应该是渲染成 &lt;code&gt;&amp;lt;h2 id=&quot;一级标题&quot;&amp;gt;一级标题&amp;lt;/h2&amp;gt;&lt;/code&gt;，然后生成目录的时候扫描所有 &lt;code&gt;h2&lt;/code&gt; 标签获取 id 作为链接，但是实际上 marked-it 渲染出来的是这样的： &lt;code&gt;&amp;lt;h2&amp;gt;&amp;lt;span id=&quot;一级标题&quot;&amp;gt;一级标题&amp;lt;/span&amp;gt;&amp;lt;/h2&amp;gt;&lt;/code&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="杂七乱八" scheme="http://blog.xiajibagao.top/categories/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
+    
+    
+    <category term="杂七乱八" scheme="http://blog.xiajibagao.top/tags/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
+    
+    <category term="hexo" scheme="http://blog.xiajibagao.top/tags/hexo/"/>
+    
+  </entry>
+  
+  <entry>
     <title>java集合源码分析（六）：HashMap</title>
     <link href="http://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/"/>
     <id>http://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/</id>
     <published>2020-12-15T16:00:00.000Z</published>
-    <updated>2020-12-16T12:40:28.158Z</updated>
+    <updated>2020-12-17T06:37:51.272Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;HashMap 是 Map 接口下一个线程不安全的，基于哈希表的实现类。由于他解决哈希冲突的方式是分离链表法，也就是拉链法，因此他的数据结构是数组+链表，在 JDK8 以后，当哈希冲突严重时，HashMap</summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;HashMap 是 Map 接口下一个线程不安全的，基于哈希表的实现类。由于他解决哈希冲突的方式是分离链表法，也就是拉链法，因此他的数据结构是数组+链表，在 JDK8 以后，当哈希冲突严重时，HashMap 的链表会在一定条件下转为红黑树以优化查询性能，因此在 JDK8 以后，他的数据结构是数组+链表+红黑树。&lt;/p&gt;
+&lt;p&gt;对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式，能否存放空值；作为使用了数组作为底层结构的集合，我们还需要关注其扩容的实现；同时，针对哈希表的特性，我们还需要关注它如何通过哈希算法取模快速定位下标。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这是关于 java 集合类源码的第六篇文章。往期文章：&lt;/p&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/&quot;&gt;java集合源码分析（五）：Map与AbstractMap&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;一-hashmap-的数据结构&quot;&gt;一、HashMap 的数据结构&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201208205304527.png&quot; alt=&quot;HashMap的数据结构&quot; style=&quot;zoom:67%;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;在 JDK8 之前，HashMap 的数据结构是数组+链表。在 JDK8 以后是数组 + 链表 + 红黑树&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;在 HashMap 中，每一个 value 都被存储在一个 Node 或 TreeNode 实例中，容器中有一个 &lt;code&gt;Node[] table&lt;/code&gt; 数组成员变量，数组中的每一格称为一个“桶”。当添加元素时，根据元素的 key 通过哈希值计算得到对应下标，将 Node 类的形式存入“桶”中。如果 table 容量不足时，就会发生扩容，同时对容器内部的元素进行重哈希。&lt;/p&gt;
+&lt;p&gt;当发生哈希冲突，也就是不同元素计算得到了相同的下标时，会将节点接到“桶”的中的第一个元素后，后续操作亦同，最后就会形成链表。&lt;/p&gt;
+&lt;p&gt;在 JDK8 以后，由于考虑到&lt;strong&gt;哈希冲突严重时，“桶”中的链表会影响查询效率，因此在一定条件下，链表元素多到一定程度，Node 就会转为 TreeNode，也就是把链表转为红黑树&lt;/strong&gt;。&lt;/p&gt;</summary>
     
     
     
@@ -48,16 +91,32 @@
     <link href="http://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/"/>
     <id>http://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/</id>
     <published>2020-12-06T16:00:00.000Z</published>
-    <updated>2020-12-09T02:37:36.940Z</updated>
+    <updated>2020-12-17T06:37:59.244Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;Map 接口是 java 中两大集合接口之一，相对于 Collection，Map 接口结构规定了所有键值对形式的集合容器。同时，它与 Collection 的子接口 Set 又密切相关，Map</summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;Map 接口是 java 中两大集合接口之一，相对于 Collection，Map 接口结构规定了所有键值对形式的集合容器。同时，它与 Collection 的子接口 Set 又密切相关，Map 一部分实现依赖于 Set 集合，而 Set 集合的一些实现也依赖于 Map。&lt;/p&gt;
+&lt;p&gt;Map 接口下有四个主要实现类 TreeMap，HashMap，LinkedMap，Hashtable。基于以上四大实现类，这是他们的类关系图：&lt;/p&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201208151954095.png&quot; alt=&quot;Map 接口的类关系图&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;Map 接口的类关系图&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;与其相关的还有 Dictionary 类，这是一个已过时的早期键值对集合接口，后期的新集合都基于 Map 接口实现，唯一依赖与他的 Hashtable 因为性能原因也很少被使用，因此这个类是一个过时类。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这是关于 java 集合类源码的第五篇文章。往期文章：&lt;/p&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;一-map-接口&quot;&gt;一、Map 接口&lt;/h2&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201207201537859.png&quot; alt=&quot;image-20201207201537859&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20201207201537859&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;Map 接口就是所有键值对类型集合接口的最上层接口，他规定了一个所有 Map 类型集合应该实现的抽象方法，同时提供了一个用于视图操作的默认接口类 Entry。&lt;/p&gt;
+&lt;h3 id=&quot;1抽象方法&quot;&gt;1.抽象方法&lt;/h3&gt;</summary>
     
     
     
@@ -75,17 +134,19 @@
     <link href="http://blog.xiajibagao.top/2020/12/04/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/ArrayList%E4%B8%8ELinkedList%E9%81%8D%E5%8E%86%E6%93%8D%E4%BD%9C%E9%97%AE%E9%A2%98/"/>
     <id>http://blog.xiajibagao.top/2020/12/04/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/ArrayList%E4%B8%8ELinkedList%E9%81%8D%E5%8E%86%E6%93%8D%E4%BD%9C%E9%97%AE%E9%A2%98/</id>
     <published>2020-12-03T16:00:00.000Z</published>
-    <updated>2020-12-05T04:58:38.052Z</updated>
+    <updated>2020-12-17T06:37:48.075Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;一个 java 程序猿比较广为人知的小知识 ，是 ArrayList 和 LinkedList 最好使用迭代器删除，而不是遍历删除。&lt;/p&gt;
-&lt;p&gt;当我们尝试使用 for 循环或者 forEach</summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;一个 java 程序猿比较广为人知的小知识 ，是 ArrayList 和 LinkedList 最好使用迭代器删除，而不是遍历删除。&lt;/p&gt;
+&lt;p&gt;当我们尝试使用 for 循环或者 forEach 进行删除的时候，往往会出现一些意外的情况，导致集合全部删除失败。关于这点，我一直保持知其然不知其所以然的状态，刚好最近刚看完 ArrayList 和 LinkedList 的源码，今天这篇文章，就结合源码，总结一下 ArrayList 和 LinkedList 的几种错误删除。&lt;/p&gt;
+&lt;h2 id=&quot;一-list-集合的-fast-fail-机制&quot;&gt;一、List 集合的 fast-fail 机制&lt;/h2&gt;
+&lt;p&gt;在开始前，我们需要了解一下集合的 fast-fail 机制。&lt;/p&gt;
+&lt;p&gt;List 接口有一个 AbstractList 抽象类，List 下的所有实现类都直接或间接的继承了它。&lt;/p&gt;
+&lt;p&gt;在它的成员变量中，有一个变量叫 &lt;code&gt;modCount&lt;/code&gt;，当实现类进行结构性操作的时候——一般指会影响底层数据结构的操作，比如删除——就会+1。&lt;/p&gt;
+&lt;p&gt;在每一个迭代器创建的时候，会从外部获取当前的 &lt;code&gt;modCount&lt;/code&gt;赋给迭代器的成员变量 &lt;code&gt;expectedModCount&lt;/code&gt;，然后每次调用迭代器的 &lt;code&gt;next()&lt;/code&gt;方法，或者其他增删方法都会比较&lt;code&gt;modCount&lt;/code&gt;和&lt;code&gt;expectedModCount&lt;/code&gt;是否相等，否则就会抛出 &lt;code&gt;ConcurrentModificationException&lt;/code&gt; 异常。&lt;/p&gt;
+&lt;p&gt;这个并发修改检查可以在出现问题是时候快速抛出异常，避免可能错误的数据进入后续的操作。这也是集合操作中大部分 ConcurrentModificationException 异常的来源。&lt;/p&gt;
+&lt;h2 id=&quot;二-arraylist-的-for-循环删除&quot;&gt;二、ArrayList 的 for 循环删除&lt;/h2&gt;</summary>
     
     
     
@@ -105,16 +166,29 @@
     <link href="http://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/"/>
     <id>http://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/</id>
     <published>2020-12-02T16:00:00.000Z</published>
-    <updated>2020-12-07T11:41:36.606Z</updated>
+    <updated>2020-12-17T06:37:56.578Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List</summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，也正因如此，它也具有队列的特性与方法。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这是关于 java 集合类源码的第四篇文章。往期文章：&lt;/p&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;一-linkedlist-的类关系&quot;&gt;一、LinkedList 的类关系&lt;/h2&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201203153522364.png&quot; alt=&quot;LinkedList 的类关系&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;LinkedList 的类关系&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;LinkedList 实现了 Cloneable ，Serializable 接口，表明它可以拷贝，可以被序列化。&lt;/p&gt;
+&lt;p&gt;但是和 ArrayList 或者 Vector 相比，因为它是链表，所以无法像数组那样通过下标快速随机访问，故而没有实现 RandomAccess 接口。&lt;/p&gt;
+&lt;p&gt;他实现了 List 接口，但是也实现了 Queue 的子接口 Deque，因此除了列表，他也具备双端队列的特性。&lt;/p&gt;
+&lt;p&gt;他的父类不再是 AbstractList，而是另一个继承了 AbstractList 的抽象类 AbstractSequentialList，这个类重写了 AbstractList 的一些方法，使之更适合 LinkedList 这样的链表。&lt;/p&gt;
+&lt;h2 id=&quot;二-abstractsequentialist&quot;&gt;二、AbstractSequentiaList&lt;/h2&gt;</summary>
     
     
     
@@ -132,16 +206,28 @@
     <link href="http://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/"/>
     <id>http://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/</id>
     <published>2020-12-01T16:00:00.000Z</published>
-    <updated>2020-12-08T09:28:15.299Z</updated>
+    <updated>2020-12-17T06:37:54.019Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector</summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector 有着一样的继承关系，也都能随机访问，但是不同的是不能保证线程安全。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这是关于 java 集合类源码的第三篇文章。往期文章：&lt;/p&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;一-arraylist-的类关系&quot;&gt;一、ArrayList 的类关系&lt;/h2&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201201161347920.png&quot; alt=&quot;image-20201201161347920&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20201201161347920&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;ArrayList 实现了三个接口，继承了一个抽象类，其中 Serializable ，Cloneable 与 RandomAccess 接口都是用于标记的空接口，他的主要抽象方法来自于 List，一些实现来自于 AbstractList。&lt;/p&gt;
+&lt;h3 id=&quot;1abstractlist-与-list&quot;&gt;1.AbstractList 与 List&lt;/h3&gt;
+&lt;p&gt;ArrayList 实现了 List 接口，是 List 接口的实现类之一，他通过继承抽象类 AbstractList 获得的大部分方法的实现。&lt;/p&gt;
+&lt;p&gt;比较特别的是，理论上父类 AbstractList 已经实现类 AbstractList 接口，那么理论上 ArrayList 就已经可以通过父类获取 List 中的抽象方法了，不必再去实现 List 接口。&lt;/p&gt;
+&lt;p&gt;网上关于这个问题的答案众说纷纭，有说是为了通过共同的接口便于实现 JDK 代理，也有说是为了代码规范性与可读性的，在 Stack Overflow 上 &lt;a href=&quot;https://stackoverflow.com/questions/2165204/why-does-linkedhashsete-extend-hashsete-and-implement-sete&quot;&gt;Why does LinkedHashSet extend HashSet and implement Set&lt;/a&gt; 一个据说问过原作者的老哥给出了一个 &lt;code&gt;it was a mistake&lt;/code&gt; 的回答，但是这似乎不足以解释为什么几乎所有的容器类都有类似的行为。事实到底是怎么回事，也许只有真正的原作者知道了。&lt;/p&gt;</summary>
     
     
     
@@ -159,16 +245,24 @@
     <link href="http://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/"/>
     <id>http://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/</id>
     <published>2020-11-26T16:00:00.000Z</published>
-    <updated>2020-12-08T05:39:05.594Z</updated>
+    <updated>2020-12-17T06:37:46.332Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;List 应该接口是 Collection 最常被使用的接口了。其下的实现类皆为有序列表，其中主要分为 Vector，ArrayList，LinkedList 三个实现类，其中 Vecotr 又拥有子类</summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;List 应该接口是 Collection 最常被使用的接口了。其下的实现类皆为有序列表，其中主要分为 Vector，ArrayList，LinkedList 三个实现类，其中 Vecotr 又拥有子类 Stack。&lt;/p&gt;
+&lt;p&gt;从线程安全来说，List 下拥有线程安全的集合类 Vector；从数据结构来说，List 下拥有基于数组实现的 Vector 与 ArrayList，和基于链表实现的 LinkedList。&lt;/p&gt;
+&lt;p&gt;本篇文章暂不讨论具体的实现类，而将基于 List 接口与其抽象类 AbstractList，了解 List 接口是如何承上启下，进一步从 Collection 抽象到具体的。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;这是关于 java 集合类源码的第二篇文章。往期文章：&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;一-list-接口&quot;&gt;一、List 接口&lt;/h2&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201125163518482.png&quot; alt=&quot;List 接口的方法&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;List 接口的方法&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;List 接口继承了 Collection 接口，在 Collection 接口的基础上增加了一些方法。相对于 Collection 接口，我们可以很明显的看到，List &lt;strong&gt;中增加了非常多根据下标操作集合的方法&lt;/strong&gt;，我们可以简单粗暴的分辨一个方法的抽象方法到底来自 Collection 还是 List：参数里有下标就是来自 List，没有就是来自 Collection。&lt;/p&gt;
+&lt;p&gt;可以说，List 接口在 Collection 的基础上，&lt;strong&gt;进一步明确了 List 集合运允许根据下标快速存取的特性&lt;/strong&gt;。&lt;/p&gt;
+&lt;h3 id=&quot;1新增的方法&quot;&gt;1.新增的方法&lt;/h3&gt;</summary>
     
     
     
@@ -186,16 +280,28 @@
     <link href="http://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/"/>
     <id>http://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/</id>
     <published>2020-11-24T16:00:00.000Z</published>
-    <updated>2020-12-08T05:38:27.205Z</updated>
+    <updated>2020-12-17T06:38:01.683Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set</summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。&lt;/p&gt;
+&lt;p&gt;其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 List 部分的关系图。&lt;/p&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201126100539307.png&quot; alt=&quot;List集合的实现类关系图&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;List集合的实现类关系图&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;根据上图的类关系图，我们研究一下源码中，类与类之间的关系，方法是如何从抽象到具体的。&lt;/p&gt;
+&lt;h2 id=&quot;一-iterable-接口&quot;&gt;一、Iterable 接口&lt;/h2&gt;
+&lt;p&gt;Iterable 是最顶层的接口，继承这个接口的类可以被迭代。&lt;/p&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201125151935252.png&quot; alt=&quot;Iterable 接口的方法&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;Iterable 接口的方法&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;iterator()&lt;/code&gt;：用于获取一个迭代器。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;forEach()&lt;/code&gt; ：JDK8 新增。一个基于函数式接口实现的新迭代方法。&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Consumer&amp;lt;? &lt;span class=&quot;keyword&quot;&gt;super&lt;/span&gt; T&amp;gt; action)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Objects.requireNonNull(action);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (T t : &lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        action.accept(t);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;spliterator()&lt;/code&gt;：JDK8 新增。用于获取一个可分割迭代器。默认实现返回一个&lt;code&gt;IteratorSpliterator&lt;/code&gt;类。&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;这个跟迭代器类似，但是是用于并行迭代的，关于具体的情况可以参考一下掘金的一个讨论：&lt;a href=&quot;https://segmentfault.com/q/1010000007087438&quot;&gt;Java8里面的java.util.Spliterator接口有什么用？&lt;/a&gt;&lt;/p&gt;</summary>
     
     
     
@@ -210,20 +316,22 @@
   
   <entry>
     <title>Redis在SpringBoot的基本使用</title>
-    <link href="http://blog.xiajibagao.top/2020/11/24/Spring/Redis%E5%9C%A8SpringBoot%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/"/>
-    <id>http://blog.xiajibagao.top/2020/11/24/Spring/Redis%E5%9C%A8SpringBoot%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</id>
+    <link href="http://blog.xiajibagao.top/2020/11/24/spring/Redis%E5%9C%A8SpringBoot%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/"/>
+    <id>http://blog.xiajibagao.top/2020/11/24/spring/Redis%E5%9C%A8SpringBoot%E7%9A%84%E5%9F%BA%E6%9C%AC%E4%BD%BF%E7%94%A8/</id>
     <published>2020-11-23T16:00:00.000Z</published>
     <updated>2020-11-25T11:46:57.191Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;一-配置&quot;&gt;一、配置&lt;/span&gt;&lt;/h2&gt;&lt;h3&gt;&lt;span id=&quot;1添加依赖&quot;&gt;1.添加依赖&lt;/span&gt;&lt;/h3&gt;&lt;p&gt;在 springboot 启动器中直接添加依赖，或者创建后添加 Maven 依赖：&lt;/p&gt;
-&lt;figure</summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;一-配置&quot;&gt;一、配置&lt;/h2&gt;
+&lt;h3 id=&quot;1添加依赖&quot;&gt;1.添加依赖&lt;/h3&gt;
+&lt;p&gt;在 springboot 启动器中直接添加依赖，或者创建后添加 Maven 依赖：&lt;/p&gt;
+&lt;figure class=&quot;highlight xml&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;&amp;lt;!--spring-boot-starter-data-redis--&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;dependency&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;groupId&lt;/span&gt;&amp;gt;&lt;/span&gt;org.springframework.boot&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;groupId&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;spring-boot-starter-data-redis&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;dependency&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;&amp;lt;!--jedis--&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;dependency&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;groupId&lt;/span&gt;&amp;gt;&lt;/span&gt;redis.clients&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;groupId&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;jedis&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;artifactId&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;tag&quot;&gt;&amp;lt;&lt;span class=&quot;name&quot;&gt;version&lt;/span&gt;&amp;gt;&lt;/span&gt;3.3.0&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;version&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;tag&quot;&gt;&amp;lt;/&lt;span class=&quot;name&quot;&gt;dependency&lt;/span&gt;&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;注意，默认在springboot 1X 中默认使用的是 Jedis 客户端，而在 springboot 2X 默认使用的就是 Lettuce，我这里使用的是 2X 的版本，所以要添加 Jedis 的客户端依赖。&lt;/p&gt;
+&lt;h3 id=&quot;2配置连接池&quot;&gt;2.配置连接池&lt;/h3&gt;
+&lt;p&gt;在 springboot 配置文件中配置连接信息：&lt;/p&gt;
+&lt;figure class=&quot;highlight yml&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;attr&quot;&gt;spring:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;# redis&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;attr&quot;&gt;redis:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;# 数据库索引（默认为0）&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attr&quot;&gt;database:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attr&quot;&gt;host:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;127.0&lt;/span&gt;&lt;span class=&quot;number&quot;&gt;.0&lt;/span&gt;&lt;span class=&quot;number&quot;&gt;.1&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attr&quot;&gt;port:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;6379&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attr&quot;&gt;password:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;#- 连接超时时间（毫秒）&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attr&quot;&gt;timeout:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;10000&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;# jedis 线程池设置&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;attr&quot;&gt;jedis:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;attr&quot;&gt;pool:&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;# 连接池中的最大空闲连接&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;attr&quot;&gt;max-idle:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;8&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;# 连接池中的最小空闲连接&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;attr&quot;&gt;min-idle:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;# 连接池最大连接数（使用负值表示没有限制）&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;attr&quot;&gt;max-active:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;100&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;# 连接池最大阻塞等待时间（使用负值表示没有限制）&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;attr&quot;&gt;max-wait:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;-1&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;h3 id=&quot;3配置redistemplate&quot;&gt;3.配置RedisTemplate&lt;/h3&gt;
+&lt;p&gt;其实这个时候已经可以使用 RedisTemplate 操作 redis了，因为 Spring 已经默认提供 &lt;code&gt;RedisTemplate&amp;lt;Object, Object&amp;gt;&lt;/code&gt; 和 &lt;code&gt;RedisTemplate&amp;lt;String, String&amp;gt;&lt;/code&gt; 这两个 &lt;code&gt;RedisTemplate&amp;lt;K,V&amp;gt;&lt;/code&gt; 的两个子类供我们使用。但是前者要求作为 key 和 value 的类型必须实现 Serializable 接口，而后者需要我们在存入数据之前自己将 key 和 value 变成 string ，所以这默认的 RedisTemplate 并不是那么好用，最好自己再重新配置一个 &lt;code&gt;RedisTemplate&amp;lt;String, Object&amp;gt;&lt;/code&gt;：&lt;/p&gt;</summary>
     
     
     
@@ -244,13 +352,16 @@
     <updated>2020-11-24T12:23:29.246Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;一-背景&quot;&gt;一、背景&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;之前接手了一个 springboot</summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;一-背景&quot;&gt;一、背景&lt;/h2&gt;
+&lt;p&gt;之前接手了一个 springboot 项目。在我负责的模块中，有一块用户注册的功能，但是比较特别的是这个注册并不是重新注册，而是从以前的旧系统的数据库中同步旧数据到新系统的数据库中。由于这些用户角色来自于不同的系统，所以我需要在注册的时候先判断类型（这个类型由一个专门的枚举类提供），再去调用已经写好的同步方法同步数据。&lt;/p&gt;
+&lt;p&gt;伪代码大概是这样的：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;register&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String type, String userId, String projectId, String declareId)&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 判断用户类型&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (UserSynchronizeTyeEnum.A.type.equals(type)) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 同步A类型的数据&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (UserSynchronizeTyeEnum.A.type.equals(type)) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 同步B类型的数据&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;		&lt;span class=&quot;keyword&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; RuntimeException(&lt;span class=&quot;string&quot;&gt;&amp;quot;不存在的用户类型&amp;quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    ... ...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;由于用户的类型比较多，所以当我接手的时候已经有8个 if-esle 了，由于这个项目会逐步的跟其他平台对接，要同步的用户类型会越来越多，而且也不能排除什么时候不新增，反而要取消一部分类型的同步情况。&lt;/p&gt;
+&lt;p&gt;就这个情况来说，一方面&lt;strong&gt;每一次新增或删除类型都需要修改 if-else 上逻辑分支&lt;/strong&gt;，如果需要新增一些同步前的处理的步骤（根据经验这种情况几乎一定会出现的），&lt;strong&gt;大概率代码会直接被加在 if-else 方法里头&lt;/strong&gt;；另一方面，这个业务的需求也有相对稳定的地方：&lt;strong&gt;同步方法会不一样，但是一定会根据类型来判断&lt;/strong&gt;。出于以上考虑，我决定趁现在牵扯范围不大的时候重构一下。&lt;/p&gt;
+&lt;h2 id=&quot;二-思路&quot;&gt;二、思路&lt;/h2&gt;
+&lt;h3 id=&quot;1抽取策略接口和策略类&quot;&gt;1.抽取策略接口和策略类&lt;/h3&gt;
+&lt;p&gt;首先，由于每种用户类型的同步方法是由各模块自己提供的，其实已经算是抽出了策略，只是没有实现一个统一的策略接口。&lt;/p&gt;
+&lt;p&gt;但是我在这一步遇上了问题：&lt;/p&gt;</summary>
     
     
     
@@ -273,14 +384,49 @@
     <updated>2020-11-25T12:20:19.552Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;在模板模式（Template</summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在模板模式（Template Pattern）中，一个抽象类公开定义了执行它的方法的方式/模板。它的子类可以按需要重写方法实现，但调用将以抽象类中定义的方式进行。这种类型的设计模式属于行为型模式。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;模板方法模式旨在为一些方法的主体部分提供骨架，将具体细节上的一些实现延迟到他的实现类。&lt;/p&gt;
+&lt;p&gt;JDBC 运用了模板模式。JDK 在实现 List 接口的过程中， AbstractCollection 和 AbstractList 也使用了模板模式。&lt;/p&gt;
+&lt;h2 id=&quot;一-简单实现&quot;&gt;一、简单实现&lt;/h2&gt;
+&lt;p&gt;举个我在做项目的时候遇到的例子：&lt;/p&gt;
+&lt;p&gt;假设我们有一个简单的针对 Demo 类的文件导出类，他提供了 Excel 文档的基本导出功能：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;DemoExcelExporter&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 导出excel&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;	&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;export&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        List&amp;lt;Demo&amp;gt; list = getData();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt;(Demo d : list) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        	handle(d);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        excel(list);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 1.获取要到导出数据集&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; List&amp;lt;Demo&amp;gt; &lt;span class=&quot;title&quot;&gt;getData&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 2.处理数据集&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Demo demo)&lt;/span&gt; &lt;/span&gt;&amp;#123;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 3.导出的数据集为excel文件&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;excel&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(List&amp;lt;Demo&amp;gt; list)&lt;/span&gt; &lt;/span&gt;&amp;#123;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;现在我们需要为 Demo2 和 Demo3 这两个类也添加一个导出 Excel 文档的功能，最简单是方式就是复制黏贴，把 Demo 换成 Demo2 和 Demo3。但是这显然不是我们想要的，根据模板模式，我们可以设置一个 ExcelExporter 抽象类作为模板：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExcelExporter&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 导出excel&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;export&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        List&amp;lt;T&amp;gt; list = getData();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt;(T t : list) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            handle(t);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        excel(list);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 1.获取要到导出数据集&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; List&amp;lt;T&amp;gt; &lt;span class=&quot;title&quot;&gt;getData&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 2.处理数据集，改为抽象方法，由子类去实现&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;abstract&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;handle&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(T demo)&lt;/span&gt;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 3.导出的数据集为excel文件&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;excel&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(List&amp;lt;T&amp;gt; list)&lt;/span&gt; &lt;/span&gt;&amp;#123;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
+    
+    
+    
+    <category term="设计模式" scheme="http://blog.xiajibagao.top/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+    
+    <category term="设计模式" scheme="http://blog.xiajibagao.top/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>设计模式（三）：代理模式</title>
+    <link href="http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/"/>
+    <id>http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/</id>
+    <published>2020-11-19T16:00:00.000Z</published>
+    <updated>2020-11-20T07:47:28.585Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在代理模式（Proxy Pattern）中，一个类代表另一个类的功能。这种类型的设计模式属于结构型模式。&lt;/p&gt;
+&lt;p&gt;在代理模式中，我们创建具有现有对象的对象，以便向外界提供功能接口。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;策略模式旨在不改变被代理对象的基础上进行方法增强。&lt;/p&gt;
+&lt;p&gt;当我们一个原有的类不能满足功能，又处于职责或其他原因不便修改的时候，我们可以使用代理模式。通过代理类去调用被代理类的方法，在原方法的基础上进行各种加强，又不会改变原代码。&lt;/p&gt;
+&lt;p&gt;spring 中的 AOP 就运用了代理模式。&lt;/p&gt;
+&lt;h2 id=&quot;一-静态代理&quot;&gt;一、静态代理&lt;/h2&gt;
+&lt;p&gt;为了简单的说明代理模式，我们举个例子：&lt;/p&gt;
+&lt;p&gt;首先有一个接口，叫做购房者，然后这个类地下有一个实现类，叫做小明:&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//购房者接口&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Buyers&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 买房&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;buy&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//小明实现了购房者接口&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;XiaoMing&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Buyers&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;buy&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        System.out.println(&lt;span class=&quot;string&quot;&gt;&amp;quot;小明买了一套房&amp;quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;买房子还要货比三家，小明没时间，于是就把买房子这件事情委托给中介&lt;/p&gt;</summary>
     
     
     
@@ -299,40 +445,19 @@
     <updated>2020-11-20T06:49:31.763Z</updated>
     
     
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;在策略模式（Strategy</summary>
-        
-      
-    
-    
-    
-    <category term="设计模式" scheme="http://blog.xiajibagao.top/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
-    
-    
-    <category term="设计模式" scheme="http://blog.xiajibagao.top/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>设计模式（三）：代理模式</title>
-    <link href="http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/"/>
-    <id>http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/</id>
-    <published>2020-11-19T16:00:00.000Z</published>
-    <updated>2020-11-21T09:15:36.118Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;h2&gt;&lt;span id=&quot;概述&quot;&gt;概述&lt;/span&gt;&lt;/h2&gt;&lt;blockquote&gt;
-&lt;p&gt;在代理模式（Proxy</summary>
-        
-      
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;在策略模式（Strategy Pattern）中，一个类的行为或其算法可以在运行时更改。这种类型的设计模式属于行为型模式。&lt;/p&gt;
+&lt;p&gt;在策略模式中，我们创建表示各种策略的对象和一个行为随着策略对象改变而改变的 context 对象。策略对象改变 context 对象的执行算法。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;策略模式旨在解决不同逻辑下相同的对象执行不同策略的问题。&lt;/p&gt;
+&lt;p&gt;当我们遇到同一个方法，里面会根据需要多个逻辑的分支，分支里的行为都不同，但是都服务于同一个功能，这个时候就可以使用策略模式，将行为抽象为一个策略接口中的抽象方法，由接口的实现类——也就是策略类——去实现各中具体的行为。&lt;/p&gt;
+&lt;p&gt;策略模式也是一种比较常见且好用的设计模式，线程池的拒绝策略就使用了策略模式。&lt;/p&gt;
+&lt;h2 id=&quot;一-简单实现&quot;&gt;一、简单实现&lt;/h2&gt;
+&lt;p&gt;简单的拿一个根据情况需要导出不同文件的接口举例：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;exportFile&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String type)&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (type == &lt;span class=&quot;string&quot;&gt;&amp;quot;excel&amp;quot;&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 导出excel&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (type == &lt;span class=&quot;string&quot;&gt;&amp;quot;word&amp;quot;&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 导出word&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (type == &lt;span class=&quot;string&quot;&gt;&amp;quot;pdf&amp;quot;&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 导出pdf&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; RuntimeException(&lt;span class=&quot;string&quot;&gt;&amp;quot;错误的文件类型！&amp;quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这些分支里目的都是导出文件，但是各自有各的实现代码。换而言之，这些不同逻辑分支下的代码只有行为是不同的。现在我们将导出方法抽象成为一个策略接口中的抽象方法，将每个逻辑分支的处理代码都抽成实现策略接口的各个策略类。&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// 文件导出接口&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; interface &lt;span class=&quot;title&quot;&gt;IExportFile&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;export&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// 实现类&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExportExcel&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;IExportFile&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;export&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;comment&quot;&gt;// 导出excel&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExportWord&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;IExportFile&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;export&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;comment&quot;&gt;// 导出word&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExportPdf&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;IExportFile&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;export&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;comment&quot;&gt;// 导出pdf&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
     
     
     
@@ -351,14 +476,409 @@
     <updated>2020-11-17T09:31:08.165Z</updated>
     
     
-      
-      
-        
-        
     <summary type="html">&lt;p&gt;今天在舍友的安利下发现了一个新的宝藏，阿里的&lt;a href=&quot;http://mysql.taobao.org/monthly/&quot;&gt;数据库内核日报&lt;/a&gt;，内容之全面让小白我瞠目结舌，简单的爬了一下 mysql 相关的文章。&lt;/p&gt;
-&lt;p&gt;完整版可以直接&lt;a</summary>
-        
-      
+&lt;p&gt;完整版可以直接&lt;a href=&quot;http://xiajibagao.top/down/%E6%95%B0%E6%8D%AE%E5%BA%93%E5%86%85%E6%A0%B8%E6%9C%88%E6%8A%A5(%E6%88%AA%E6%AD%A22020%E5%B9%B411%E6%9C%8817%E6%97%A5).md&quot;&gt;点击链接下载&lt;/a&gt;。以下只是 Mysql 内容的整合：&lt;/p&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;MetadataLock子系统的优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/11/05/&quot;&gt;2014/11/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Recovery改进 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/11/03/&quot;&gt;2014/11/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;高可用支持 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/11/04/&quot;&gt;2014/11/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;在线Truncateundolog表空间 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/11/06/&quot;&gt;2014/11/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;OptimizerCostModel - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/10/01/&quot;&gt;2014/10/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Renametable死锁分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/03/06/&quot;&gt;2016/03/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;CongratulationsonMySQL8.0GA - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/05/01/&quot;&gt;2018/05/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Redolog - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/03/03/&quot;&gt;2019/03/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;tablespace源码分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/01/08/&quot;&gt;2019/01/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;TTL特性介绍 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/04/04/&quot;&gt;2018/04/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MyRocks参数介绍 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/01/09/&quot;&gt;2018/01/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;OptimizerHints - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/09/07/&quot;&gt;2020/09/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;ParallelIndexScans,OneisBetterThanTwo - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/10/03/&quot;&gt;2019/10/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;数据的读取(二) - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/12/08/&quot;&gt;2018/12/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;数据的读取(一) - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/11/05/&quot;&gt;2018/11/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;LevelCompact分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/10/08/&quot;&gt;2018/10/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;TransactionDB介绍 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/10/09/&quot;&gt;2018/10/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Memtableflush分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/09/04/&quot;&gt;2018/09/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;WritePreparedPolicy - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/08/02/&quot;&gt;2018/08/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MemTable的写入逻辑 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/08/08/&quot;&gt;2018/08/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;写入逻辑的实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/07/04/&quot;&gt;2018/07/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;ColumnFamily介绍 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/06/09/&quot;&gt;2018/06/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MANIFEST文件介绍 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/05/08/&quot;&gt;2018/05/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;WAL(WriteAheadLog)介绍 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/04/09/&quot;&gt;2018/04/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;rbtreeblockallocator - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/11/03/&quot;&gt;2016/11/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;checkpoint过程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/06/06/&quot;&gt;2016/06/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;日志子系统和崩溃恢复过程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/05/07/&quot;&gt;2016/05/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;TokuDB索引结构--FractalTree - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/04/09/&quot;&gt;2016/04/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Savepoint漫谈 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/04/10/&quot;&gt;2016/04/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;事务子系统和MVCC实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/03/01/&quot;&gt;2016/03/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;TokuDB之黑科技工具 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/02/06/&quot;&gt;2016/02/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Cachetable的工作线程和线程池 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/01/06/&quot;&gt;2016/01/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;让HotBackup更完美 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/12/06/&quot;&gt;2015/12/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;TokuDB中的行锁 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/11/09/&quot;&gt;2015/11/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;文件目录谈 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/09/10/&quot;&gt;2015/09/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;疯狂的filenum++ - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/08/08/&quot;&gt;2015/08/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;TokuDBCheckpoint机制 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/07/02/&quot;&gt;2015/07/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;TokuDB数据文件大小计算 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/06/10/&quot;&gt;2015/06/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;collation限制 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/09/09/&quot;&gt;2018/09/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;clusteredindex特性 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/07/07/&quot;&gt;2018/07/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;事务锁分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/03/07/&quot;&gt;2018/03/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;相关tools介绍 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/12/10/&quot;&gt;2017/12/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;myrocks之Bloomfilter - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/09/04/&quot;&gt;2017/09/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;myrocks写入分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/07/05/&quot;&gt;2017/07/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MyRocks之memtable切换与刷盘 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/06/08/&quot;&gt;2017/06/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;fastdataload - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/05/09/&quot;&gt;2017/05/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;myrocks监控信息 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/03/10/&quot;&gt;2017/03/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;myrocks之备份恢复 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/02/02/&quot;&gt;2017/02/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;myrocksindexconditionpushdown - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/01/02/&quot;&gt;2017/01/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;myrocks统计信息 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/12/02/&quot;&gt;2016/12/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;myrocks之事务处理 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/11/02/&quot;&gt;2016/11/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;datadictionary分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/10/05/&quot;&gt;2016/10/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;GTID启动优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/12/09/&quot;&gt;2014/12/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB物理行中null值的存储的推断与验证 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/08/07/&quot;&gt;2016/08/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL5.7的JSON实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/01/03/&quot;&gt;2016/01/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL数据库SYSCPU高的可能性分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/05/02/&quot;&gt;2015/05/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;RDS三节点企业版的高可用体系 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/03/03/&quot;&gt;2020/03/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MYSQL开源软件源码阅读小技巧 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/12/03/&quot;&gt;2019/12/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;复制性能改进过程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/01/05/&quot;&gt;2015/01/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQLindex_condition_pushdown - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/03/05/&quot;&gt;2015/03/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBBufferPool并发控制 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/05/06/&quot;&gt;2020/05/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBmutex实现分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/03/05/&quot;&gt;2020/03/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB的统计信息 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/03/08/&quot;&gt;2020/03/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;RedoLogging动态开关 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/08/03/&quot;&gt;2020/08/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0新的火山模型执行器 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/07/01/&quot;&gt;2020/07/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;semi-join四个执行strategy - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/07/04/&quot;&gt;2020/07/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBbtreelatch优化历程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/06/02/&quot;&gt;2020/06/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Attachabletransaction - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/06/03/&quot;&gt;2020/06/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Linkbuf - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/06/04/&quot;&gt;2020/06/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;一致性协议underthehood - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/09/02/&quot;&gt;2020/09/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;binlog拉取速度的控制 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/07/09/&quot;&gt;2015/07/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.6并行复制实现分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/08/09/&quot;&gt;2015/08/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL表定义缓存 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/08/10/&quot;&gt;2015/08/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBWarmup特性 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/10/06/&quot;&gt;2014/10/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;再议MySQL的故障恢复 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/12/04/&quot;&gt;2018/12/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;RDSMySQL参数调优最佳实践 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/12/04/&quot;&gt;2015/12/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;innodb_additional_mem_pool_size - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/04/01/&quot;&gt;2016/04/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;thread_concurrency - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/09/05/&quot;&gt;2014/09/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;timed_mutexes - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/08/01/&quot;&gt;2014/08/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;innodb_flush_log_at_trx_commit - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/08/02/&quot;&gt;2014/08/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;relayfetch备库优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/09/08/&quot;&gt;2015/09/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL的字段数据存储格式 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/02/05/&quot;&gt;2020/02/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;HybridDBforMySQL数据压缩 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/07/08/&quot;&gt;2017/07/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;对字符集和字符序支持的实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/03/06/&quot;&gt;2017/03/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Sphinx源码剖析(三) - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/10/06/&quot;&gt;2017/10/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Sphinx源码剖析（二） - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/04/03/&quot;&gt;2017/04/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Sphinx源码剖析（一） - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/11/05/&quot;&gt;2016/11/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBhistorylist无法降到0的原因 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/04/04/&quot;&gt;2019/04/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB行锁分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/05/04/&quot;&gt;2018/05/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;create_timeinstatus - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/09/04/&quot;&gt;2014/09/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB隐式锁功能解析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/09/06/&quot;&gt;2020/09/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;truncatetable在大bufferpool下的优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/08/01/&quot;&gt;2020/08/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;INNODBUNDOLOG分配 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/08/02/&quot;&gt;2020/08/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBBufferPage生命周期 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/08/04/&quot;&gt;2020/08/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBUNDOLOG写入 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/08/05/&quot;&gt;2020/08/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB数据文件简述 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/08/06/&quot;&gt;2020/08/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBredologthreadcpuusage - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/07/05/&quot;&gt;2020/07/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;基于GTID复制实现的工作原理 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/05/09/&quot;&gt;2020/05/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0WindowFunctions剖析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/04/04/&quot;&gt;2020/04/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Performance_schema内存分配 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/04/05/&quot;&gt;2020/04/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;手动分析InnoDBB+Tree结构 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/04/06/&quot;&gt;2020/04/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0LockManager - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/04/09/&quot;&gt;2020/04/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0InstantAddColumn功能解析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/03/01/&quot;&gt;2020/03/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Latch持有分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/03/07/&quot;&gt;2020/03/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;排序实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/03/09/&quot;&gt;2020/03/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;庖丁解InnoDB之REDOLOG - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/02/01/&quot;&gt;2020/02/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBBufferPool浅析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/02/02/&quot;&gt;2020/02/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0heaptable介绍 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/02/04/&quot;&gt;2020/02/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MYSQLBinlogCache详解 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/02/06/&quot;&gt;2020/02/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;二级索引分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/01/01/&quot;&gt;2020/01/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;X-EngineOnlineDDL - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/01/02/&quot;&gt;2020/01/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBredolog之writeahead - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/01/05/&quot;&gt;2020/01/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnodbWAL物理格式 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/01/06/&quot;&gt;2020/01/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;动态元信息持久化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/12/01/&quot;&gt;2019/12/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Binlogencryption浅析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/12/02/&quot;&gt;2019/12/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;多线程调试工具DEBUG_SYNC的源码实现和使用 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/12/04/&quot;&gt;2019/12/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBParallelreadofindex - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/12/05/&quot;&gt;2019/12/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;RDS三节点企业版一致性协议 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/11/06/&quot;&gt;2019/11/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;RDS三节点企业版Learner只读实例 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/11/07/&quot;&gt;2019/11/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Innodb表空间 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/10/01/&quot;&gt;2019/10/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;POLARDB并行查询加速全程详解 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/10/02/&quot;&gt;2019/10/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;SequenceEngine - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/10/05/&quot;&gt;2019/10/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;临时表改进 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/09/01/&quot;&gt;2019/09/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;初探ClonePlugin - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/09/02/&quot;&gt;2019/09/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;网络模块优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/09/03/&quot;&gt;2019/09/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Multi-ValuedIndexes简述 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/09/04/&quot;&gt;2019/09/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0Innodbredologrecord源码分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/08/03/&quot;&gt;2019/08/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;clone_plugin - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/08/05/&quot;&gt;2019/08/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;ROLLUP功能用法和实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/08/08/&quot;&gt;2019/08/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;BufferPool漫谈 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/07/03/&quot;&gt;2019/07/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;CTE(CommonTableExpressions) - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/07/06/&quot;&gt;2019/07/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;安全及权限改进相关 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/06/01/&quot;&gt;2019/06/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;说说InnoDBLogSystem的隐藏参数 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/06/07/&quot;&gt;2019/06/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;CHECKCONSTRAINT - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/06/08/&quot;&gt;2019/06/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;通过SQL管理UNDOTABLESPACE - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/05/04/&quot;&gt;2019/05/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;SkipScanRange - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/05/06/&quot;&gt;2019/05/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;临时表那些事儿 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/04/01/&quot;&gt;2019/04/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;新的事务锁调度VATS简介 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/04/06/&quot;&gt;2019/04/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;增加系统文件追踪spaceID和物理文件的映射 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/04/07/&quot;&gt;2019/04/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0DescendingIndex - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/03/07/&quot;&gt;2019/03/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL状态信息Status实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/03/09/&quot;&gt;2019/03/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InspectingtheContentofaMySQLHistogram - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/02/02/&quot;&gt;2019/02/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Thedesignofmysql8.0redolog - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/02/05/&quot;&gt;2019/02/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBMVCC相关实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/11/04/&quot;&gt;2018/11/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;CostModel,直方图及优化器开销优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/10/02/&quot;&gt;2018/10/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;B+树并发控制机制的前世今生 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/09/01/&quot;&gt;2018/09/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;IO_CACHE源码解析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/09/03/&quot;&gt;2018/09/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;主库binlog概览 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/08/01/&quot;&gt;2018/08/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;WAL那些事儿 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/07/01/&quot;&gt;2018/07/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB表空间加密 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/04/01/&quot;&gt;2018/04/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB数据页解析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/04/03/&quot;&gt;2018/04/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;INFORMATION_SCHEMA系统表的实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/02/08/&quot;&gt;2018/02/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;GroupReplication内核解析之二 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/01/01/&quot;&gt;2018/01/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL内核对读写分离的支持 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/01/02/&quot;&gt;2018/01/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB事务系统 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/12/01/&quot;&gt;2017/12/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Innodb锁子系统浅析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/12/02/&quot;&gt;2017/12/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;DROPTABLE之binlog解析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/11/02/&quot;&gt;2017/11/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;TokuDBhot-index机制 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/11/08/&quot;&gt;2017/11/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBminitransation - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/10/03/&quot;&gt;2017/10/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;GroupReplication内核解析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/08/01/&quot;&gt;2017/08/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB崩溃恢复 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/07/01/&quot;&gt;2017/07/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;从节点可更新机制 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/06/03/&quot;&gt;2017/06/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBBufferPool - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/05/01/&quot;&gt;2017/05/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBIO子系统 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/03/01/&quot;&gt;2017/03/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB同步机制 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/01/01/&quot;&gt;2017/01/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Infobright列存数据库 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/12/01/&quot;&gt;2016/12/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;ColumnCompression浅析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/11/04/&quot;&gt;2016/11/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBCOUNT(*)优化(?) - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/06/10/&quot;&gt;2016/06/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;基于InnoDB的物理复制实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/05/01/&quot;&gt;2016/05/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB文件系统之文件物理结构 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/02/01/&quot;&gt;2016/02/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB文件系统之IO系统和内存管理 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/02/02/&quot;&gt;2016/02/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB事务锁系统简介 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/01/01/&quot;&gt;2016/01/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB事务子系统介绍 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/12/01/&quot;&gt;2015/12/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB全文索引简介 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/10/01/&quot;&gt;2015/10/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBAdaptivehashindex介绍 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/09/01/&quot;&gt;2015/09/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Innodbchangebuffer介绍 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/07/01/&quot;&gt;2015/07/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBindexlock前世今生 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/07/05/&quot;&gt;2015/07/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQLlogicalread-ahead - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/07/08/&quot;&gt;2015/07/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB崩溃恢复过程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/06/01/&quot;&gt;2015/06/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBredolog漫游 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/05/01/&quot;&gt;2015/05/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBundolog漫游 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/04/01/&quot;&gt;2015/04/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;PageCache优化管理 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/09/01/&quot;&gt;2020/09/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;CloudDBASQL优化建议之统计信息获取 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/10/02/&quot;&gt;2017/10/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL常见SQL错误用法 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/03/03/&quot;&gt;2017/03/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;条件下推到物化表 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/07/08/&quot;&gt;2016/07/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.7.6InnoDBpageflush优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/03/02/&quot;&gt;2015/03/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBbufferpoolflush策略漫谈 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/02/01/&quot;&gt;2015/02/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;GroupCommit优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/01/01/&quot;&gt;2015/01/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;启用GTID场景的性能问题及优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/01/03/&quot;&gt;2015/01/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.7Innodb事务系统 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/12/01/&quot;&gt;2014/12/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;threadpool原理分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/12/03/&quot;&gt;2014/12/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;并行复制外建约束问题 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/12/04/&quot;&gt;2014/12/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;BulkLoadforCREATEINDEX - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/12/07/&quot;&gt;2014/12/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;hash_scan算法的实现解析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/11/07/&quot;&gt;2014/11/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;LOCK_active_mi/LOCK_msp_map优化思路 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/02/03/&quot;&gt;2017/02/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;弱序内存模型导致的死锁问题 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/01/03/&quot;&gt;2020/01/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;UK包含NULL值备库延迟分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/01/04/&quot;&gt;2018/01/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Errorinmunmap()&quot;Cannotallocatememory&quot; - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/01/05/&quot;&gt;2018/01/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;字符集相关变量介绍及binlog中字符集相关缺陷分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/01/07/&quot;&gt;2018/01/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;信号处理机制分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/10/10/&quot;&gt;2017/10/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;showbinarylogs灵异事件 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/09/03/&quot;&gt;2017/09/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBcrash - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/06/05/&quot;&gt;2017/06/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.7mysql_upgrade元数据锁等待 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/04/10/&quot;&gt;2017/04/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;event_scheduler慢日志记错 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/01/05/&quot;&gt;2017/01/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.6中ORDERBY+LIMIT错选执行计划 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/12/08/&quot;&gt;2016/12/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;备库1206错误问题说明 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/07/10/&quot;&gt;2016/07/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;left-join多表导致crash - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/05/10/&quot;&gt;2016/05/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;并行复制外键约束问题二 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/04/04/&quot;&gt;2016/04/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL外键异常分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/11/06/&quot;&gt;2015/11/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;ORDER/GROUPBY导致mysqldcrash - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/11/08/&quot;&gt;2015/11/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;orderbylimit造成优化器选择索引错误 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/11/10/&quot;&gt;2015/11/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;startslavecrash诊断分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/10/05/&quot;&gt;2015/10/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;删除索引导致表无法打开 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/10/06/&quot;&gt;2015/10/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;BUG几例 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/09/03/&quot;&gt;2015/09/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;建表过程中crash造成重建表失败 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/09/05/&quot;&gt;2015/09/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;唯一键约束失效 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/06/02/&quot;&gt;2015/06/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;ALTERIGNORETABLE导致主备不一致 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/06/03/&quot;&gt;2015/06/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;任性的normalshutdown - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/06/07/&quot;&gt;2015/06/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.6与5.5InnoDB不兼容导致crash - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/05/03/&quot;&gt;2015/05/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQLDDLBUG - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/05/06/&quot;&gt;2015/05/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;临时表操作导致主备不一致 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/05/08/&quot;&gt;2015/05/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;连接断开导致XA事务丢失 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/04/05/&quot;&gt;2015/04/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;GTID下slave_net_timeout值太小问题 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/04/06/&quot;&gt;2015/04/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Relaylog中GTIDgroup完整性检测 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/04/07/&quot;&gt;2015/04/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;删被引用索引导致crash - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/04/09/&quot;&gt;2015/04/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;pidfile丢失问题分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/03/03/&quot;&gt;2015/03/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;DROPDATABASE外键约束的GTIDBUG - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/03/06/&quot;&gt;2015/03/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;变量修改导致binlog错误 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/02/07/&quot;&gt;2015/02/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB自增列重复值问题 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/01/04/&quot;&gt;2015/01/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;mysqlclientcrash一例 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/01/07/&quot;&gt;2015/01/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;设置gtid_purged破坏AUTO_POSITION复制协议 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/01/08/&quot;&gt;2015/01/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;replicatefilter和GTID一起使用的问题 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/01/09/&quot;&gt;2015/01/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Openedtablesblockreadonly - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/12/08/&quot;&gt;2014/12/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;OPTIMIZE不存在的表 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/11/01/&quot;&gt;2014/11/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;SIGHUP导致binlog写错 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/11/02/&quot;&gt;2014/11/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;binlog重放失败 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/10/03/&quot;&gt;2014/10/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;从库OOM - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/10/04/&quot;&gt;2014/10/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;崩溃恢复失败 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/10/05/&quot;&gt;2014/10/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;GTID和DELAYED - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/09/01/&quot;&gt;2014/09/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;GTID和binlog_checksum - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/09/03/&quot;&gt;2014/09/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;auto_increment - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/09/06/&quot;&gt;2014/09/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Count(Distinct)ERROR - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/08/03/&quot;&gt;2014/08/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;mysqldumpBUFFEROVERFLOW - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/08/04/&quot;&gt;2014/08/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;longsemaphorewaits - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/08/05/&quot;&gt;2014/08/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;bug分析两例 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/09/06/&quot;&gt;2016/09/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;ConnectionControl - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/05/08/&quot;&gt;2020/05/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;undrop-for-innodb - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/11/01/&quot;&gt;2017/11/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;告别frm文件 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/10/07/&quot;&gt;2014/10/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;DDLfastfail - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/01/02/&quot;&gt;2015/01/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL哈希连接实现介绍 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/11/02/&quot;&gt;2019/11/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.7中Derivedtable变形记 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/03/05/&quot;&gt;2017/03/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;CTE执行过程与实现原理 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/02/06/&quot;&gt;2017/02/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;审计日志实用案例分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/07/07/&quot;&gt;2016/07/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;X-Engine并行扫描 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/04/03/&quot;&gt;2020/04/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;RDS三节点企业版热点组提交 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/02/03/&quot;&gt;2020/02/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0redolog写入性能问题分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/01/04/&quot;&gt;2020/01/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;今天你并行了吗？---洞察PolarDB8.0之并行查询 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/11/01/&quot;&gt;2019/11/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;性能分析的大杀器—Optimizertrace - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/11/03/&quot;&gt;2019/11/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;X-EngineMySQLRDS用户的新选择 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/10/04/&quot;&gt;2019/10/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;StatementOutline - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/07/01/&quot;&gt;2019/07/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;RDSMySQL8.0语句级并发控制 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/06/02/&quot;&gt;2019/06/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;通过ResourceGroup来控制线程计算资源 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/05/05/&quot;&gt;2019/05/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;如何使用C++实现MySQL用户定义函数 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/02/08/&quot;&gt;2019/02/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL多队列线程池优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/02/09/&quot;&gt;2019/02/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL中的IO共享操作 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/01/09/&quot;&gt;2019/01/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;性能问题多维度诊断 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/11/08/&quot;&gt;2018/11/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0CTE和窗口函数的用法 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/11/09/&quot;&gt;2018/11/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;一个TPC-C测试工具sqlbench使用 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/07/09/&quot;&gt;2018/07/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;难以置信，MySQL也可以无损自由切换 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/06/03/&quot;&gt;2018/06/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;在线收缩UNDOTablespace - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/02/09/&quot;&gt;2018/02/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;一个“异常”的索引选择 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/12/06/&quot;&gt;2017/12/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;如何索引JSON字段 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/12/09/&quot;&gt;2017/12/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;什么时候该升级内存规格 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/11/04/&quot;&gt;2017/11/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;分区表基本类型 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/11/09/&quot;&gt;2017/11/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;空间优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/06/08/&quot;&gt;2016/06/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;RDS只读实例延迟分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/04/08/&quot;&gt;2016/04/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;RDSMySQL线上实例insert慢常见原因分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/09/07/&quot;&gt;2018/09/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/05/05/&quot;&gt;2020/05/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;内部XA和组提交 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/05/07/&quot;&gt;2020/05/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB读写锁实现分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/04/02/&quot;&gt;2020/04/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;slowlog&lt;/code&gt;与&lt;code&gt;CSV&lt;/code&gt;引擎 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/07/08/&quot;&gt;2019/07/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;聚合函数（AggregateFunction）的实现过程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/05/02/&quot;&gt;2019/05/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;LinkBuf设计与实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/05/08/&quot;&gt;2019/05/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;CHECKTABLE实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/03/05/&quot;&gt;2019/03/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0Functionalindex的实现过程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2019/02/06/&quot;&gt;2019/02/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Innodb缓冲池刷脏的多线程实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/09/02/&quot;&gt;2018/09/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;连接与认证过程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/08/07/&quot;&gt;2018/08/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0原子DDL的实现过程续 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/07/02/&quot;&gt;2018/07/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;binlogcrashrecovery - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/07/05/&quot;&gt;2018/07/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;changemasterto - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/05/09/&quot;&gt;2018/05/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;协议模块浅析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/04/05/&quot;&gt;2018/04/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB的readview，回滚段和purge过程简介 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/03/01/&quot;&gt;2018/03/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;原子DDL的实现过程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/03/02/&quot;&gt;2018/03/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;常用SQL语句的MDL加锁源码分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/02/01/&quot;&gt;2018/02/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;权限浅析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/02/03/&quot;&gt;2018/02/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;新连接的建立 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/02/07/&quot;&gt;2018/02/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBLRUList刷脏改进之路 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/11/05/&quot;&gt;2017/11/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Innodb引擎Redo日志存储格式简介 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/09/07/&quot;&gt;2017/09/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;一条insert语句的执行过程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/09/10/&quot;&gt;2017/09/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQLreplicationpartialtransaction - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/08/03/&quot;&gt;2017/08/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;mysql认证阶段漫游 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/08/05/&quot;&gt;2017/08/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;内存分配机制 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/08/06/&quot;&gt;2017/08/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;SHUTDOWN过程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/08/09/&quot;&gt;2017/08/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB异步IO工作流程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/07/10/&quot;&gt;2017/07/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Tokudb序列化和反序列化过程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/06/01/&quot;&gt;2017/06/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBRepeatableRead隔离级别之大不同 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/06/07/&quot;&gt;2017/06/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL半同步复制数据一致性分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/04/01/&quot;&gt;2017/04/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQLBINLOG半同步复制数据安全性分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/03/07/&quot;&gt;2017/03/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;词法分析及其性能优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/02/04/&quot;&gt;2017/02/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;无法revoke单库或单表权限 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/10/06/&quot;&gt;2016/10/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;QueryCache并发处理 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/08/09/&quot;&gt;2016/08/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;网络通信模块浅析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/07/04/&quot;&gt;2016/07/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;QueryCache内部剖析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/07/09/&quot;&gt;2016/07/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB伙伴内存分配系统实现分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2020/09/04/&quot;&gt;2020/09/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;PerconaXtraBackup备份原理 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/03/07/&quot;&gt;2016/03/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;一些流行引擎存储格式简介 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/10/04/&quot;&gt;2017/10/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB对binlog_format的限制 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/08/04/&quot;&gt;2018/08/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0对WAL的设计修改 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/06/01/&quot;&gt;2018/06/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;8.0WriteSet并行复制 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/06/04/&quot;&gt;2018/06/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL8.0资源组(ResourceGroups) - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/05/03/&quot;&gt;2018/05/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL的预编译功能 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/04/07/&quot;&gt;2018/04/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;(deleted)临时空间 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/04/08/&quot;&gt;2018/04/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;innodb_buffer_pool_size在线修改 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/03/06/&quot;&gt;2018/03/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;LOGICAL_CLOCK并行复制原理及实现分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/12/03/&quot;&gt;2017/12/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL5.7外部XAReplication实现及缺陷分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/11/06/&quot;&gt;2017/11/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;数据一样checksum不一样 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/10/08/&quot;&gt;2017/10/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;浅谈MySQL5.7XA事务改进 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/09/05/&quot;&gt;2017/09/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;利用gdb跟踪MDL加锁过程 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/09/06/&quot;&gt;2017/09/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;到底是谁执行了FTWL - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/08/04/&quot;&gt;2017/08/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;commontableexpression - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/04/05/&quot;&gt;2017/04/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.7errorlog时区和系统时区不同 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/01/09/&quot;&gt;2017/01/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;直方图的实现与分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/10/09/&quot;&gt;2016/10/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;执行计划缓存设计与实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/09/04/&quot;&gt;2016/09/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL5.7新特性系列四 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/08/01/&quot;&gt;2016/08/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MyRocks简介 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/08/03/&quot;&gt;2016/08/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL5.7新特性系列三 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/07/01/&quot;&gt;2016/07/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.7代价模型浅析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/07/02/&quot;&gt;2016/07/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;innodb锁分裂继承与迁移 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/06/01/&quot;&gt;2016/06/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL5.7新特性系列二 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/06/02/&quot;&gt;2016/06/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;内部临时表 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/06/07/&quot;&gt;2016/06/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL5.7新特性系列一 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/05/02/&quot;&gt;2016/05/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;innodbbufferpool相关特性 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/05/04/&quot;&gt;2016/05/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBtransactionhistory - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/02/03/&quot;&gt;2016/02/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;线程池 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/02/09/&quot;&gt;2016/02/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;优化器MRR&amp;amp;BKA - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/01/04/&quot;&gt;2016/01/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;droptable的优化 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/01/07/&quot;&gt;2016/01/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;IndexConditionPushdown(ICP) - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/12/08/&quot;&gt;2015/12/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;企业版特性一览 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/12/10/&quot;&gt;2015/12/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;StatementDigest - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/11/02/&quot;&gt;2015/11/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MDL实现分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/11/04/&quot;&gt;2015/11/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;跟踪Metadatalock - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/10/02/&quot;&gt;2015/10/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL权限存储与管理 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/10/10/&quot;&gt;2015/10/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.6并行复制恢复实现 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/09/07/&quot;&gt;2015/09/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.6并行复制事件分发机制 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/09/09/&quot;&gt;2015/09/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;OnlineDDL工具gh-ost支持阿里云RDS - &lt;a href=&quot;http://mysql.taobao.org/monthly/2018/05/02/&quot;&gt;2018/05/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MariaDB10.2前瞻 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/09/03/&quot;&gt;2016/09/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDBPageCompression - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/08/01/&quot;&gt;2015/08/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL5.6.26ReleaseNote解读 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/08/03/&quot;&gt;2015/08/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MariaDBInnoDB表空间碎片整理 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/08/05/&quot;&gt;2015/08/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL内存分配支持NUMA - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/07/06/&quot;&gt;2015/07/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MariaDBRole体系 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/06/09/&quot;&gt;2015/06/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.6.23InnoDB相关Bugfix - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/02/02/&quot;&gt;2015/02/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MariaDB10.2GA - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/06/10/&quot;&gt;2017/06/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;OracleOpenWorld2016见闻 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/10/02/&quot;&gt;2016/10/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;PerconaLive2016见闻 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/10/03/&quot;&gt;2016/10/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MariaDBDeveloperMeeting2016 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/10/04/&quot;&gt;2016/10/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;OOW2015总结MySQL篇 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/11/01/&quot;&gt;2015/11/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;AliSQL那些事儿 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/09/01/&quot;&gt;2016/09/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL的那些网络超时错误 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/05/04/&quot;&gt;2017/05/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;备库Seconds_Behind_Master计算 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/03/09/&quot;&gt;2016/03/09/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL锁问题最佳实践 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/03/10/&quot;&gt;2016/03/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;mysqldumptips两则 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/02/10/&quot;&gt;2016/02/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;物理备份死锁分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/01/05/&quot;&gt;2016/01/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;GTID不一致分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2016/01/08/&quot;&gt;2016/01/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQL优化器range的代价计算 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/11/07/&quot;&gt;2015/11/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;索引过滤性太差引起CPU飙高分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/10/03/&quot;&gt;2015/10/03/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;openfilelimits - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/08/07/&quot;&gt;2015/08/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;外键删除bug分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/07/07/&quot;&gt;2015/07/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;浮点型的显示问题 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/07/10/&quot;&gt;2015/07/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;MySQLSort分页 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/06/04/&quot;&gt;2015/06/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;binlogevent中的errorcode - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/06/05/&quot;&gt;2015/06/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB预读VSOracle多块读 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/05/04/&quot;&gt;2015/05/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;setnames都做了什么 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/05/07/&quot;&gt;2015/05/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;binlog位点刷新策略 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/05/10/&quot;&gt;2015/05/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;UPDATE交换列单表和多表的区别 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/04/08/&quot;&gt;2015/04/08/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;GTID下auto_position=0时数据不一致 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/04/10/&quot;&gt;2015/04/10/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;并发Replaceinto导致的死锁分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/03/01/&quot;&gt;2015/03/01/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;usingfilesortVSusingtemporary - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/03/04/&quot;&gt;2015/03/04/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;lower_case_table_names使用问题 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/03/07/&quot;&gt;2015/03/07/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;InnoDB丢失自增值 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/02/05/&quot;&gt;2015/02/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.5和5.6时间类型兼容问题 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/02/06/&quot;&gt;2015/02/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;binlogevent有序性 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/12/05/&quot;&gt;2014/12/05/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;server_id为0的Rotate - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/12/06/&quot;&gt;2014/12/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;text字段数 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/10/02/&quot;&gt;2014/10/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;key分区算法演变分析 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2015/01/06/&quot;&gt;2015/01/06/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;5.6GTID和存储引擎那会事 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2014/12/02/&quot;&gt;2014/12/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;GTID和升级 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/05/08/&quot;&gt;2014/09/02/&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;索引篇 - &lt;a href=&quot;http://mysql.taobao.org/monthly/2017/02/05/&quot;&gt;2017/02/05/&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+</summary>
     
     
     
@@ -379,16 +899,21 @@
     <updated>2020-11-16T13:06:33.086Z</updated>
     
     
-      
-      
-        
-        
     <summary type="html">&lt;blockquote&gt;
 &lt;p&gt;此文为极客时间：MySQL实战45讲的39节的学习笔记&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2&gt;&lt;span</summary>
-        
-      
+&lt;h2 id=&quot;一-自增值的保存方式&quot;&gt;一、自增值的保存方式&lt;/h2&gt;
+&lt;p&gt;我们前面提到过，自增主键的连续性使得表在空间上排列的更紧密，提高了空间利用率，避免了页分裂。实际上，自增主键大部分情况下可以保证连续性，但是也有例外的时候。&lt;/p&gt;
+&lt;p&gt;当我们创建表的时候，表结构会存储在 .frm 文件中，但是并不会一起保存自增值。&lt;strong&gt;MyISAM 引擎将自增值保存在数据文件&lt;/strong&gt;，而 innodb 在 mysql8.0 之前只会&lt;strong&gt;将自增值保存在内存&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;也就是说，对于 innodb 引擎来说，每次重启后，都需要&lt;strong&gt;寻找表中最大的自增值 X，将 X+1 作为新的自增值&lt;/strong&gt;，如果当前最大值为 10，自增值就会是11，如果删除了自增值为 10 的行，那么此时重启数据库，新插入的行自增值就会变成11，当自增值是主键的时候，相当于从新增变成了更新。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;而 8.0 以后，innodb 会将自增值的变更记录到 redo log，重启以后依靠日志重做&lt;/strong&gt;。&lt;/p&gt;
+&lt;h2 id=&quot;二-自增值的自增机制&quot;&gt;二、自增值的自增机制&lt;/h2&gt;
+&lt;p&gt;在 mysql 中，如果字段 id 被定义为 AUTO_INCREMENT，那么插入时：&lt;/p&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;如果插入数据时 id 字段指定为 &lt;strong&gt;0、null 或未指定值&lt;/strong&gt;，那么就把这个表当前的 AUTO_INCREMENT 值填到自增字段；&lt;/li&gt;
+&lt;li&gt;如果插入数据时 id 字段指定了具体的值，就直接使用语句里指定的值。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;根据要插入的值和当前自增值的大小关系，自增值的变更结果也会有所不同。假设，某次要插入的值是 X，当前的自增值是 Y。&lt;/p&gt;</summary>
     
     
     
@@ -407,16 +932,25 @@
     <updated>2020-11-16T13:06:15.921Z</updated>
     
     
-      
-      
-        
-        
     <summary type="html">&lt;blockquote&gt;
 &lt;p&gt;此文为极客时间：MySQL实战45讲的16节order by相关内容的笔记&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2&gt;&lt;span id=&quot;一-order-by-的执行流程&quot;&gt;一、order by</summary>
-        
-      
+&lt;h2 id=&quot;一-order-by-的执行流程&quot;&gt;一、order by 的执行流程&lt;/h2&gt;
+&lt;h3 id=&quot;1全字段排序&quot;&gt;1.全字段排序&lt;/h3&gt;
+&lt;p&gt;假如此时有这么一张表：&lt;/p&gt;
+&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`t`&lt;/span&gt; (&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`id`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`city`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;varchar&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;16&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`name`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;varchar&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;16&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`age`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`addr`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;varchar&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;128&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;DEFAULT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  PRIMARY &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`id`&lt;/span&gt;),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`city`&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`city`&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;) &lt;span class=&quot;keyword&quot;&gt;ENGINE&lt;/span&gt;=&lt;span class=&quot;keyword&quot;&gt;InnoDB&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;现在要按姓名排序查询杭州1000个人的信息&lt;/p&gt;
+&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;select&lt;/span&gt; city,&lt;span class=&quot;keyword&quot;&gt;name&lt;/span&gt;,age &lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; t &lt;span class=&quot;keyword&quot;&gt;where&lt;/span&gt; city=&lt;span class=&quot;string&quot;&gt;&amp;#x27;杭州&amp;#x27;&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;order&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;by&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;limit&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;1000&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这条 sql 的执行流程如下：&lt;/p&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;在内存中初始化 sort_buffer，放入 city，name，age 三个字段&lt;/li&gt;
+&lt;li&gt;从 city 索引树找到 city = &#39;杭州&#39; 叶子节点存放的主键 id&lt;/li&gt;
+&lt;li&gt;回表根据主键 id 找到数据，取出全部字段放入 sort_buffer&lt;/li&gt;
+&lt;li&gt;重复上述过程，直到全部符合条件的数据都放入内存&lt;/li&gt;
+&lt;li&gt;在 sort_buffer 对数据按 name 进行排序&lt;/li&gt;
+&lt;li&gt;按照排序结果取前 1000 行返回&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;因为先查了全部需要字段才排序，我们把这个叫做&lt;strong&gt;全字段排序&lt;/strong&gt;。&lt;/p&gt;</summary>
     
     
     
@@ -435,16 +969,23 @@
     <updated>2020-11-16T13:00:52.799Z</updated>
     
     
-      
-      
-        
-        
     <summary type="html">&lt;blockquote&gt;
 &lt;p&gt;此文为极客时间：MySQL实战45讲的 34、35节join相关内容的笔记&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2&gt;&lt;span id=&quot;一-join的查询流程&quot;&gt;一、Join的查询流程&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;假设我们有表 t1 和表</summary>
-        
-      
+&lt;h2 id=&quot;一-join的查询流程&quot;&gt;一、Join的查询流程&lt;/h2&gt;
+&lt;p&gt;假设我们有表 t1 和表 t2，他们都有字段 a，b，其中 t1 有 100条数据，而 t2 有1000条数据。&lt;/p&gt;
+&lt;p&gt;我们要执行这么一条sql：&lt;/p&gt;
+&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;select&lt;/span&gt; * &lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; t1 &lt;span class=&quot;keyword&quot;&gt;join&lt;/span&gt; t2 &lt;span class=&quot;keyword&quot;&gt;on&lt;/span&gt; t2.a = t1.a&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;执行流程就是会这样的：&lt;/p&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;先取出 t1 的一条数据 R；&lt;/li&gt;
+&lt;li&gt;然后根据 R 的 a 字段 去 t2 表里找复合条件的数据；&lt;/li&gt;
+&lt;li&gt;找到以后，就和 R 的数据拼起来作为结果集的一部分；&lt;/li&gt;
+&lt;li&gt;重复以上步骤，直到遍历完 t1 最后一条数据。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;其中，被驱动表的关联条件是否有索引对性能有着很大的影响。&lt;/p&gt;
+&lt;h2 id=&quot;二-关联条件有索引&quot;&gt;二、关联条件有索引&lt;/h2&gt;
+&lt;h3 id=&quot;1njl算法&quot;&gt;1.NJL算法&lt;/h3&gt;</summary>
     
     
     
@@ -463,16 +1004,18 @@
     <updated>2020-11-16T13:00:44.200Z</updated>
     
     
-      
-      
-        
-        
     <summary type="html">&lt;blockquote&gt;
 &lt;p&gt;此文为极客时间：MySQL实战45讲的14节count相关内容的笔记&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2&gt;&lt;span id=&quot;一-count的查询过程&quot;&gt;一、count的查询过程&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;count()</summary>
-        
-      
+&lt;h2 id=&quot;一-count的查询过程&quot;&gt;一、count的查询过程&lt;/h2&gt;
+&lt;p&gt;count() 函数用于查询数据的数量，不同的引擎有不同的实现。&lt;/p&gt;
+&lt;p&gt;在 MySAM 引擎会专门记录表的总数；而在 innodb 中，由于 MVCC 的原因，在统计数量的时候需要一行一行的判断当前数据是否对查询的事务的可见的。此外，&lt;code&gt;show table status&lt;/code&gt;的 Rows 字段也能获取表的总条数，但是这只是预估值，实际上并不准确。&lt;/p&gt;
+&lt;p&gt;因此，表的遍历是无法避免的，但是 innodb 也有针对此做出优化：&lt;/p&gt;
+&lt;p&gt;主键索引树的叶子节点是数据行，而普通索引树的叶子节点是主键，针对 count 操作遍历那颗树都是一样的，因此查询的时候回找到最小的那颗索引树进行遍历。&lt;/p&gt;
+&lt;h2 id=&quot;二-计数操作的实现&quot;&gt;二、计数操作的实现&lt;/h2&gt;
+&lt;p&gt;计数这个功能通过 redis 也可以实现，即在 redis 中设定一个值用于计数，但是在遇到异常停止服务后不免会遇到数据丢失的问题。&lt;/p&gt;
+&lt;p&gt;如果结合 mysql 来做，即 redis 更新数据后再变更数据库里的数据，读取的时候直接从 redis 读，这样虽然一定程度避免了数据丢失的问题，但是却有可能导致数据不一致。举个例子：&lt;/p&gt;
+&lt;p&gt;现在计数是5，我们要为计数+1&lt;/p&gt;</summary>
     
     
     
@@ -491,16 +1034,28 @@
     <updated>2020-11-16T12:58:39.420Z</updated>
     
     
-      
-      
-        
-        
     <summary type="html">&lt;blockquote&gt;
 &lt;p&gt;此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2&gt;&lt;span id=&quot;一-读写锁堵塞&quot;&gt;一、读写锁堵塞&lt;/span&gt;&lt;/h2&gt;&lt;p&gt;前面在锁这块介绍了元数据锁（MDL</summary>
-        
-      
+&lt;h2 id=&quot;一-读写锁堵塞&quot;&gt;一、读写锁堵塞&lt;/h2&gt;
+&lt;p&gt;前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：&lt;/p&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201111201636187.png&quot; alt=&quot;image-20201111201636187&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20201111201636187&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;现在等待队列中有四个 session 要获取锁：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;由于 sessionA 和 sessionB 都是读操作，读读不互斥，因此两个 session 都持有读锁；&lt;/li&gt;
+&lt;li&gt;sessionA 和 sessionB 还未释放，此时 sessionC 要获取写锁，由于读写互斥，此时 sessionC 发生堵塞；&lt;/li&gt;
+&lt;li&gt;由于写锁的获取优先级高于读锁，sessionC 的写锁没获取到，后面其他 session 的读锁也无法获取到。此时 sessionD 堵塞；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;上面是一个很典型的读写锁堵塞的场景。但是实际测试的时候，会出现 sessionC 和 sessionD 都堵塞了，但是将 sessionA 和 sessionB 提交以后，sessionC 仍然保持堵塞状态，必须等 sessionD 也提交以后，才会继续执行。也就说，sessionD 好像发生了一个插队的现象。&lt;/p&gt;
+&lt;h2 id=&quot;二-锁降级&quot;&gt;二、锁降级&lt;/h2&gt;
+&lt;p&gt;我们知道 mysql 有一个 online ddl，即 执行 ddl 的时候不会直接锁表导致无法执行其他查询的操作。其实这涉及到一个锁降级的概念。即原本流程是：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;拿写锁&lt;/li&gt;
+&lt;li&gt;做 DDL&lt;/li&gt;
+&lt;li&gt;释放锁&lt;/li&gt;
+&lt;/ul&gt;</summary>
     
     
     
@@ -519,44 +1074,28 @@
     <updated>2020-11-16T12:58:54.378Z</updated>
     
     
-      
-      
-        
-        
     <summary type="html">&lt;blockquote&gt;
 &lt;p&gt;此文为极客时间：MySQL实战45讲的 21、30、40节锁相关部分的总结&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;h2&gt;&lt;span</summary>
-        
-      
-    
-    
-    
-    <category term="mysql" scheme="http://blog.xiajibagao.top/categories/mysql/"/>
-    
-    
-    <category term="mysql" scheme="http://blog.xiajibagao.top/tags/mysql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Mysql初探(七)：全局锁，表锁，行锁，间隙锁</title>
-    <link href="http://blog.xiajibagao.top/2020/11/03/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%83)%EF%BC%9A%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81%EF%BC%8C%E9%97%B4%E9%9A%99%E9%94%81/"/>
-    <id>http://blog.xiajibagao.top/2020/11/03/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%83)%EF%BC%9A%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81%EF%BC%8C%E9%97%B4%E9%9A%99%E9%94%81/</id>
-    <published>2020-11-02T16:00:00.000Z</published>
-    <updated>2020-11-16T13:00:09.529Z</updated>
-    
-    
-      
-      
-        
-        
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;此文为极客时间：MySQL实战45讲的 6、7、20 节锁相关部分的总结&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2&gt;&lt;span id=&quot;一-全局锁&quot;&gt;一、全局锁&lt;/span&gt;&lt;/h2&gt;&lt;h3&gt;&lt;span</summary>
-        
-      
+&lt;h2 id=&quot;间隙锁的加锁原则&quot;&gt;间隙锁的加锁原则&lt;/h2&gt;
+&lt;p&gt;间隙锁加锁的情况，&lt;strong&gt;包含了两个“原则”、两个“优化”和一个“bug”。&lt;/strong&gt;&lt;/p&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;原则 1：加锁的基本单位是 next-key lock。即间隙锁+行锁（前开后闭区间）。&lt;/li&gt;
+&lt;li&gt;原则 2：查找过程中访问到的对象才会加锁。&lt;/li&gt;
+&lt;li&gt;优化 1：索引上的等值查询，给&lt;strong&gt;唯一索引加锁&lt;/strong&gt;的时候，next-key lock 退化为行锁。&lt;/li&gt;
+&lt;li&gt;优化 2：索引上的等值查询，向右遍历时且最后一个值不满足等值条件的时候，next-key lock 退化为间隙锁。&lt;/li&gt;
+&lt;li&gt;一个 bug：唯一索引上的范围查询会访问到不满足条件的第一个值为止。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;以下面的表为例：&lt;/p&gt;
+&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`t`&lt;/span&gt; (&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;string&quot;&gt;`id`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;string&quot;&gt;`c`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;DEFAULT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;string&quot;&gt;`d`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;DEFAULT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    PRIMARY &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`id`&lt;/span&gt;),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`c`&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`c`&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;) &lt;span class=&quot;keyword&quot;&gt;ENGINE&lt;/span&gt;=&lt;span class=&quot;keyword&quot;&gt;InnoDB&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;insert&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;into&lt;/span&gt; t &lt;span class=&quot;keyword&quot;&gt;values&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;0&lt;/span&gt;),(&lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;5&lt;/span&gt;),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;(&lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;10&lt;/span&gt;),(&lt;span class=&quot;number&quot;&gt;15&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;15&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;15&lt;/span&gt;),(&lt;span class=&quot;number&quot;&gt;20&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;20&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;20&lt;/span&gt;),(&lt;span class=&quot;number&quot;&gt;25&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;25&lt;/span&gt;,&lt;span class=&quot;number&quot;&gt;25&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;我们需要注意一下，c 是加了索引的，而 d 没有。直观点就是下图：&lt;/p&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201108173043844.png&quot; alt=&quot;image-20201108173043844&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20201108173043844&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;h2 id=&quot;一唯一索引等值查询间隙锁&quot;&gt;一.唯一索引等值查询间隙锁&lt;/h2&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201108173614816.png&quot; alt=&quot;等值查询的间隙锁&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;等值查询的间隙锁&lt;/figcaption&gt;
+&lt;/figure&gt;</summary>
     
     
     

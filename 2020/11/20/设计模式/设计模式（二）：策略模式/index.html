@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="概述 在策略模式（Strategy Pattern）中，一个类的行为或其算法可以在运行时更改。这种类型的设计模式属于行为型模式。 在策略模式中，我们创建表示各种策略的对象和一个行为随着策略对象改变而改变的 context 对象。策略对象改变 context 对象的执行算法。  策略模式旨在解决不同逻辑下相同的对象执行不同策略的问题。 当我们遇到同一个方法，里面会根据需要多个逻辑的分支，分支里的行为">
+<meta name="description" content="概述  在策略模式（Strategy Pattern）中，一个类的行为或其算法可以在运行时更改。这种类型的设计模式属于行为型模式。 在策略模式中，我们创建表示各种策略的对象和一个行为随着策略对象改变而改变的 context 对象。策略对象改变 context 对象的执行算法。  策略模式旨在解决不同逻辑下相同的对象执行不同策略的问题。 当我们遇到同一个方法，里面会根据需要多个逻辑的分支">
 <meta property="og:type" content="article">
 <meta property="og:title" content="设计模式（二）：策略模式">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 在策略模式（Strategy Pattern）中，一个类的行为或其算法可以在运行时更改。这种类型的设计模式属于行为型模式。 在策略模式中，我们创建表示各种策略的对象和一个行为随着策略对象改变而改变的 context 对象。策略对象改变 context 对象的执行算法。  策略模式旨在解决不同逻辑下相同的对象执行不同策略的问题。 当我们遇到同一个方法，里面会根据需要多个逻辑的分支，分支里的行为">
+<meta property="og:description" content="概述  在策略模式（Strategy Pattern）中，一个类的行为或其算法可以在运行时更改。这种类型的设计模式属于行为型模式。 在策略模式中，我们创建表示各种策略的对象和一个行为随着策略对象改变而改变的 context 对象。策略对象改变 context 对象的执行算法。  策略模式旨在解决不同逻辑下相同的对象执行不同策略的问题。 当我们遇到同一个方法，里面会根据需要多个逻辑的分支">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201120131208948.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201120140547234.png">
@@ -376,7 +376,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.2k words
+                  2.3k
                 </span>
               
 
@@ -401,41 +401,46 @@
       
 
       
-        <h2><span id="概述">概述</span></h2><blockquote>
+        <h2 id="概述">概述</h2>
+<blockquote>
 <p>在策略模式（Strategy Pattern）中，一个类的行为或其算法可以在运行时更改。这种类型的设计模式属于行为型模式。</p>
 <p>在策略模式中，我们创建表示各种策略的对象和一个行为随着策略对象改变而改变的 context 对象。策略对象改变 context 对象的执行算法。</p>
 </blockquote>
 <p>策略模式旨在解决不同逻辑下相同的对象执行不同策略的问题。</p>
 <p>当我们遇到同一个方法，里面会根据需要多个逻辑的分支，分支里的行为都不同，但是都服务于同一个功能，这个时候就可以使用策略模式，将行为抽象为一个策略接口中的抽象方法，由接口的实现类——也就是策略类——去实现各中具体的行为。</p>
 <p>策略模式也是一种比较常见且好用的设计模式，线程池的拒绝策略就使用了策略模式。</p>
-<h2><span id="一-简单实现">一、简单实现</span></h2><p>简单的拿一个根据情况需要导出不同文件的接口举例：</p>
+<h2 id="一-简单实现">一、简单实现</h2>
+<p>简单的拿一个根据情况需要导出不同文件的接口举例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exportFile</span><span class="params">(String type)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (type == <span class="string">&quot;excel&quot;</span>) &#123;</span><br><span class="line">        <span class="comment">// 导出excel</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type == <span class="string">&quot;word&quot;</span>) &#123;</span><br><span class="line">        <span class="comment">// 导出word</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type == <span class="string">&quot;pdf&quot;</span>) &#123;</span><br><span class="line">        <span class="comment">// 导出pdf</span></span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;错误的文件类型！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>这些分支里目的都是导出文件，但是各自有各的实现代码。换而言之，这些不同逻辑分支下的代码只有行为是不同的。现在我们将导出方法抽象成为一个策略接口中的抽象方法，将每个逻辑分支的处理代码都抽成实现策略接口的各个策略类。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 文件导出接口</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> interface <span class="title">IExportFile</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">export</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 实现类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExportExcel</span> <span class="keyword">implements</span> <span class="title">IExportFile</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="comment">// 导出excel</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExportWord</span> <span class="keyword">implements</span> <span class="title">IExportFile</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="comment">// 导出word</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExportPdf</span> <span class="keyword">implements</span> <span class="title">IExportFile</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="comment">// 导出pdf</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>然后调用的时候直接将接口实现类作为参数传入：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 改造原有方法，将策略接口的实现作为参数传入</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exportFile</span><span class="params">(String type)</span></span>&#123;</span><br><span class="line">    IExportFile exportFile;</span><br><span class="line">    <span class="keyword">if</span> (type == <span class="string">&quot;excel&quot;</span>) &#123;</span><br><span class="line">        exportFile = <span class="keyword">new</span> ExportExcel();</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type == <span class="string">&quot;word&quot;</span>) &#123;</span><br><span class="line">        exportFile = <span class="keyword">new</span> ExportWord();</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type == <span class="string">&quot;pdf&quot;</span>) &#123;</span><br><span class="line">        exportFile = <span class="keyword">new</span> ExportPdf();</span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;错误的文件类型！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    exportFile.export();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>我们可以看到，原本耦合在调用方法里的行为被解放出来了，通过为策略接口更换策略类，我们可以很方便的切换行为。</p>
-<p><img src="http://img.xiajibagao.top/image-20201120131208948.png" alt="策略模式改进原有方法"></p>
-<h2><span id="二-策略池与上下文对象">二、策略池与上下文对象</span></h2><p><strong>策略池</strong></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201120131208948.png" alt="策略模式改进原有方法"><figcaption aria-hidden="true">策略模式改进原有方法</figcaption>
+</figure>
+<h2 id="二-策略池与上下文对象">二、策略池与上下文对象</h2>
+<p><strong>策略池</strong></p>
 <p>根据上文的简单例子，我们将具体的策略通过策略接口与调用方法耦合了，但是我们不难发现，现在的<strong>实现仍然需要通过大量的 if-else 判断去选择执行策略</strong>。</p>
 <p>实际上，我们可以这么考虑，代码被封装到实现类里以后，实际上一个<strong>策略跟对应的判断条件实际上就是一种 key 和 value 之间的映射关系</strong>了，我们可以根据这个思路，换一个更简洁一些的方式去替换 if-else 的代码：比如<strong>将条件字段与策略类放入 Map 集合实现的一个策略池中，直接通过 key 去获取对应的策略类</strong>。</p>
 <p>还是基于上述导出接口的例子：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 策略池</span></span><br><span class="line"><span class="keyword">static</span> Map&lt;String,IExportFile&gt; exportStrategyPool = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">    exportStrategyPool.put(<span class="string">&quot;excel&quot;</span>, <span class="keyword">new</span> ExportExcel());</span><br><span class="line">    exportStrategyPool.put(<span class="string">&quot;word&quot;</span>, <span class="keyword">new</span> ExportWord());</span><br><span class="line">    exportStrategyPool.put(<span class="string">&quot;pdf&quot;</span>, <span class="keyword">new</span> ExportPdf());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 导出文件</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exportFile</span><span class="params">(String type)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!exportStrategyPool.containsKey(type)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;错误的文件类型！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    IExportFile exportFile = exportStrategyPool.get(type);</span><br><span class="line">    exportFile.export();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>我们可以看到，通过策略池，我们直接简化了大量的 if-else 代码。</p>
-<p>实际上，<strong>考虑到实现类是无状态的，那么策略类和策略池都应该是单例的</strong>，因此，这里使用了饿汉式去创建策略池，这里同样有许多优化的地方：比如可以手动创建改为通过反射自动装填策略类；可以创建枚举类或者将条件作为常量来规范策略的对应关系；如果在 spring 项目中，也可以考虑通过 spring 去创建……</p>
+<p>实际上，<strong>考虑到实现类是无状态的，那么策略类和策略池都应该是单例的</strong>，因此，这里使用了饿汉式去创建策略池，这里同样有许多优化的地方：比如可以手动创建改为通过反射自动装填策略类；可以创建枚举类或者将条件作为常量来规范策略的对应关系；如果在 spring 项目中，也可以考虑通过 spring 去创建......</p>
 <p>这些的都可以根据需求进行优化的，但是核心仍然是在调用前<strong>建立条件与策略的映射关系</strong>。</p>
-<p><img src="http://img.xiajibagao.top/image-20201120140547234.png" alt="策略池的实现"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201120140547234.png" alt="策略池的实现"><figcaption aria-hidden="true">策略池的实现</figcaption>
+</figure>
 <p><strong>上下文对象</strong></p>
 <p>现在，出于优化 if-else 的原因，我们为导出方法加入了策略池，但是这个类的其他方法未必用得到，为此我们不妨将整个策略池和导出方法都封装到另一个单独的类里，只提供一个带条件参数的方法。现在策略池归上下文对象管理了，那么这个<strong>上下文对象也应该是单例的</strong>，就个人观点，单独放到一个独立的 Service 和对应一个实现类，由 spring 管理应该是比较合适的。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// FileExporter 屏蔽了方法的具体实现</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileExporter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Map&lt;String,IExportFile&gt; exportStrategyPool;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">FileExporter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        exportStrategyPool = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        exportStrategyPool.put(<span class="string">&quot;excel&quot;</span>, FileExporter::exportExcel);</span><br><span class="line">        exportStrategyPool.put(<span class="string">&quot;word&quot;</span>, FileExporter::exportWord);</span><br><span class="line">        exportStrategyPool.put(<span class="string">&quot;pdf&quot;</span>, FileExporter::exportPdf);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 导出文件</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exportFile</span><span class="params">(String type)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!exportStrategyPool.containsKey(type)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;错误的文件类型！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        IExportFile exportFile = exportStrategyPool.get(type);</span><br><span class="line">        exportFile.export();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用</span></span><br><span class="line"><span class="keyword">new</span> FileExporter().exportFile(<span class="string">&quot;word&quot;</span>);</span><br></pre></td></tr></table></figure>
-
 <p>通过 FileExporter 这个承上启下的上下文对象，我们屏蔽了具体代码的实现，同时通过“人”去调用“行为”这个逻辑也更符合面向对象的思想。</p>
-<p><img src="http://img.xiajibagao.top/image-20201120141054014.png" alt="上下文对象"></p>
-<h2><span id="三-配合函数式接口使用">三、配合函数式接口使用</span></h2><p>策略模式+策略池的手段已经可以解决传统 if-else 的大多数问题了，但是他也随之带来了两个问题：</p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201120141054014.png" alt="上下文对象"><figcaption aria-hidden="true">上下文对象</figcaption>
+</figure>
+<h2 id="三-配合函数式接口使用">三、配合函数式接口使用</h2>
+<p>策略模式+策略池的手段已经可以解决传统 if-else 的大多数问题了，但是他也随之带来了两个问题：</p>
 <ul>
 <li>一个方法要用到的策略会产生大量实现类；</li>
 <li>业务逻辑被分散到了各个实现类，无法方便的总览。</li>
@@ -445,19 +450,18 @@
 <p>还是以上文的文件导出接口为例：</p>
 <p>当我们完成这个功能以后，我们会在原来的基础上多处一个上下文对象，一个策略接口，<strong>以及 n 多个实现接口的策略类</strong>，一个策略对应一个策略实现类的问题是导致类数量膨胀的原因，因此我们可以将策略接口替换为函数式接口，这样就可以在需要的时<strong>直接通过 Lambda 表达式传入实现类，避免新建类</strong>。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将原本的IExportFile改为函数式接口</span></span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">IExportFile</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">export</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 在策略池阶段直接放入匿名实现类</span></span><br><span class="line"><span class="keyword">static</span> Map&lt;String,IExportFile&gt; exportStrategyPool = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"><span class="keyword">static</span> &#123;</span><br><span class="line">    exportStrategyPool.put(<span class="string">&quot;excel&quot;</span>, () -&gt; System.out.println(<span class="string">&quot;excel&quot;</span>));</span><br><span class="line">    exportStrategyPool.put(<span class="string">&quot;word&quot;</span>, () -&gt; System.out.println(<span class="string">&quot;excel&quot;</span>));</span><br><span class="line">    exportStrategyPool.put(<span class="string">&quot;pdf&quot;</span>, () -&gt; System.out.println(<span class="string">&quot;excel&quot;</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>当然，实际工作中的方法肯定比区区一句 <code>System.out.println()</code>要复杂的多，我们不可能集中在策略池里写实现。这个问题也很好解决，我们可以将具体的方法抽出来放到一个实现类里，比 service 的实现类，或者上下文对象中：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">FileExporter</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Map&lt;String,IExportFile&gt; exportStrategyPool;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">FileExporter</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        exportStrategyPool = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">        exportStrategyPool.put(<span class="string">&quot;excel&quot;</span>, <span class="keyword">this</span>::exportExcel);</span><br><span class="line">        exportStrategyPool.put(<span class="string">&quot;word&quot;</span>, <span class="keyword">this</span>::exportWord);</span><br><span class="line">        exportStrategyPool.put(<span class="string">&quot;pdf&quot;</span>, <span class="keyword">this</span>::exportPdf);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 导出文件</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exportFile</span><span class="params">(String type)</span></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!exportStrategyPool.containsKey(type)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;错误的文件类型！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        IExportFile exportFile = exportStrategyPool.get(type);</span><br><span class="line">        exportFile.export();</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    <span class="comment">// 导出的策略</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exportExcel</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;导出excel&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exportWord</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;导出word&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exportPdf</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;导出pdf&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>现在，业务代码可以都放在一个类里面了，总览起来也非常方便。</p>
-<h2><span id="四-总结">四、总结</span></h2><p>通过策略模式，我们可以做到：</p>
-<ol>
+<h2 id="四-总结">四、总结</h2>
+<p>通过策略模式，我们可以做到：</p>
+<ol type="1">
 <li>通过将行为抽象为一个策略接口，具体的行为作为接口的实现类，来分离方法和逻辑分支中的代码；</li>
 <li>通过策略池来避免大量的 if-else 判断；</li>
 <li>通过将策略池和方法封装到上下文对象来对外部屏蔽底层的实现；</li>
 </ol>
 <p>对于策略模式带来的策略类过多，业务逻辑分散的问题：</p>
-<ol>
+<ol type="1">
 <li>将策略接口改为函数式接口，省去创建实现类，直接通过 Lambda 表达式直接传入匿名实现类；</li>
 <li>在上述基础上，将实现方法统一写在一个类里，策略池在创建时通过 Lambda 表达式把类中的方法传入策略池。</li>
 </ol>
@@ -491,8 +495,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/" rel="next" title="设计模式（三）：代理模式">
-                <i class="fa fa-chevron-left"></i> 设计模式（三）：代理模式
+              <a href="/2020/11/17/mysql/%E8%B5%84%E6%BA%90%E6%8E%A8%E8%8D%90%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E5%86%85%E6%A0%B8%E6%9C%88%E6%8A%A5/" rel="next" title="资源推荐：数据库内核月报">
+                <i class="fa fa-chevron-left"></i> 资源推荐：数据库内核月报
               </a>
             
           </div>
@@ -501,8 +505,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/11/21/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E6%A8%A1%E6%9D%BF%E6%96%B9%E6%B3%95%E6%A8%A1%E5%BC%8F/" rel="prev" title="设计模式（四）：模板方法模式">
-                设计模式（四）：模板方法模式 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/" rel="prev" title="设计模式（三）：代理模式">
+                设计模式（三）：代理模式 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -584,7 +588,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -606,7 +610,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -646,7 +650,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">一、简单实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">二、策略池与上下文对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">三、配合函数式接口使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">四、总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="nav-text">一、简单实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E7%AD%96%E7%95%A5%E6%B1%A0%E4%B8%8E%E4%B8%8A%E4%B8%8B%E6%96%87%E5%AF%B9%E8%B1%A1"><span class="nav-text">二、策略池与上下文对象</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E9%85%8D%E5%90%88%E5%87%BD%E6%95%B0%E5%BC%8F%E6%8E%A5%E5%8F%A3%E4%BD%BF%E7%94%A8"><span class="nav-text">三、配合函数式接口使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B-%E6%80%BB%E7%BB%93"><span class="nav-text">四、总结</span></a></li></ol></div>
             
 
           </div>

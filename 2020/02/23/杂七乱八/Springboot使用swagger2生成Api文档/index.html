@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="概述之前开发项目的时候，需要写API文档，项目小接口少的时候一份word就能简单应付，但是随着项目的API的增加，对API文档的维护工作就会越来越繁琐，为此引入能自动生成RESTful接口文档的Swagger2框架就变得理所当然。 作为一个能够自动生成API文档的框架，其最大的优点有两个：  接口文档在线能够自动生成，文档随接口变动实时更新，节省维护成本   支持类似spring RESTful插">
+<meta name="description" content="概述 之前开发项目的时候，需要写API文档，项目小接口少的时候一份word就能简单应付，但是随着项目的API的增加，对API文档的维护工作就会越来越繁琐，为此引入能自动生成RESTful接口文档的Swagger2框架就变得理所当然。 作为一个能够自动生成API文档的框架，其最大的优点有两个：  接口文档在线能够自动生成，文档随接口变动实时更新，节省维护成本 支持类似spring REST">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Springboot使用swagger2生成Api文档">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/02/23/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/Springboot%E4%BD%BF%E7%94%A8swagger2%E7%94%9F%E6%88%90Api%E6%96%87%E6%A1%A3/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述之前开发项目的时候，需要写API文档，项目小接口少的时候一份word就能简单应付，但是随着项目的API的增加，对API文档的维护工作就会越来越繁琐，为此引入能自动生成RESTful接口文档的Swagger2框架就变得理所当然。 作为一个能够自动生成API文档的框架，其最大的优点有两个：  接口文档在线能够自动生成，文档随接口变动实时更新，节省维护成本   支持类似spring RESTful插">
+<meta property="og:description" content="概述 之前开发项目的时候，需要写API文档，项目小接口少的时候一份word就能简单应付，但是随着项目的API的增加，对API文档的维护工作就会越来越繁琐，为此引入能自动生成RESTful接口文档的Swagger2框架就变得理所当然。 作为一个能够自动生成API文档的框架，其最大的优点有两个：  接口文档在线能够自动生成，文档随接口变动实时更新，节省维护成本 支持类似spring REST">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/swagger2.jpg">
 <meta property="og:image" content="http://img.xiajibagao.top/model.jpg">
@@ -376,7 +376,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.5k words
+                  1.5k
                 </span>
               
 
@@ -401,169 +401,181 @@
       
 
       
-        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>之前开发项目的时候，需要写API文档，项目小接口少的时候一份word就能简单应付，但是随着项目的API的增加，对API文档的维护工作就会越来越繁琐，为此引入能自动生成RESTful接口文档的Swagger2框架就变得理所当然。</p>
+        <h2 id="概述">概述</h2>
+<p>之前开发项目的时候，需要写API文档，项目小接口少的时候一份word就能简单应付，但是随着项目的API的增加，对API文档的维护工作就会越来越繁琐，为此引入能自动生成RESTful接口文档的Swagger2框架就变得理所当然。</p>
 <p>作为一个能够自动生成API文档的框架，其最大的优点有两个：</p>
-<ol>
-<li>接口文档在线能够自动生成，文档随接口变动实时更新，节省维护成本 </li>
-<li> 支持类似spring RESTful插件那样的在线接口测试，不依赖第三方工具</li>
+<ol type="1">
+<li>接口文档在线能够自动生成，文档随接口变动实时更新，节省维护成本</li>
+<li>支持类似spring RESTful插件那样的在线接口测试，不依赖第三方工具</li>
 </ol>
-<h2 id="一、举个例子？"><a href="#一、举个例子？" class="headerlink" title="一、举个例子？"></a>一、举个例子？</h2><p>假设现在有一个TestController接口，里面有几个简单的API，通过swagger的注解添加接口描述</p>
+<h2 id="一-举个例子">一、举个例子？</h2>
+<p>假设现在有一个TestController接口，里面有几个简单的API，通过swagger的注解添加接口描述</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Api(value = &quot;Api-test&quot;, description = &quot;测试接口&quot;)</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/test/&quot;)</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestController</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@ApiOperation(&quot;获取回复&quot;)</span></span><br><span class="line">    <span class="meta">@GetMapping(&quot;aiTalk&quot;)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">test</span><span class="params">(String str)</span></span>&#123;</span><br><span class="line">        str.replace(<span class="string">&quot;吗？&quot;</span>,<span class="string">&quot;&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> str;</span><br><span class="line">    &#125;</span><br><span class="line">	</span><br><span class="line">    ... ... <span class="comment">//下同，不再赘述</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>启动项目后访问特定页面即可看到以Controller分类的API文档，点击展开以，根据注解的详细程度，会有传入参数，返回类型等详细说明，除此之外，还会有类似springREST插件那样的在线测试功能</p>
 <p><img src="http://img.xiajibagao.top/swagger2.jpg"></p>
-<h2 id="二、如何在项目中引入swagger2？"><a href="#二、如何在项目中引入swagger2？" class="headerlink" title="二、如何在项目中引入swagger2？"></a>二、如何在项目中引入swagger2？</h2><h3 id="1-引入Maven依赖"><a href="#1-引入Maven依赖" class="headerlink" title="1.引入Maven依赖"></a>1.引入Maven依赖</h3><figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--swagger--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.springfox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>springfox-swagger-ui<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.springfox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>springfox-swagger2<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="2-在springboot配置使用Swagger"><a href="#2-在springboot配置使用Swagger" class="headerlink" title="2.在springboot配置使用Swagger"></a>2.在springboot配置使用Swagger</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：huang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-02-23 13:22</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：配置swagger2</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfiguration</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">adminApiConfig</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2)</span><br><span class="line">            .groupName(<span class="string">&quot;huangApi&quot;</span>)</span><br><span class="line">            .apiInfo(adminApiInfo())</span><br><span class="line">            .select()</span><br><span class="line">            .paths(Predicates.and(PathSelectors.regex(<span class="string">&quot;/.*&quot;</span>)))</span><br><span class="line">            .build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> ApiInfo <span class="title">adminApiInfo</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ApiInfoBuilder()</span><br><span class="line">            .title(<span class="string">&quot;简单课程表-API文档&quot;</span>)</span><br><span class="line">            .description(<span class="string">&quot;本文档描述了简单课程表系统的接口定义&quot;</span>)</span><br><span class="line">            .version(<span class="string">&quot;1.0&quot;</span>)</span><br><span class="line">            .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="3-访问页面"><a href="#3-访问页面" class="headerlink" title="3.访问页面"></a>3.访问页面</h3><p>启动项目，访问 <a target="_blank" rel="noopener" href="http://localhost:8080/swagger-ui.html#/">http://localhost:8080/swagger-ui.html#/</a> 即可</p>
-<h2 id="三、swagger2注解"><a href="#三、swagger2注解" class="headerlink" title="三、swagger2注解"></a>三、swagger2注解</h2><h3 id="1-Api注解"><a href="#1-Api注解" class="headerlink" title="1.@Api注解"></a>1.@Api注解</h3><p> <strong>用在请求的类上，表示对类的说明</strong> </p>
+<h2 id="二-如何在项目中引入swagger2">二、如何在项目中引入swagger2？</h2>
+<h3 id="1引入maven依赖">1.引入Maven依赖</h3>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--swagger--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.springfox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>springfox-swagger-ui<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>io.springfox<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>springfox-swagger2<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.9.2<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2在springboot配置使用swagger">2.在springboot配置使用Swagger</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：huang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-02-23 13:22</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：配置swagger2</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@EnableSwagger2</span></span><br><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SwaggerConfiguration</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Docket <span class="title">adminApiConfig</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Docket(DocumentationType.SWAGGER_2)</span><br><span class="line">            .groupName(<span class="string">&quot;huangApi&quot;</span>)</span><br><span class="line">            .apiInfo(adminApiInfo())</span><br><span class="line">            .select()</span><br><span class="line">            .paths(Predicates.and(PathSelectors.regex(<span class="string">&quot;/.*&quot;</span>)))</span><br><span class="line">            .build();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> ApiInfo <span class="title">adminApiInfo</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ApiInfoBuilder()</span><br><span class="line">            .title(<span class="string">&quot;简单课程表-API文档&quot;</span>)</span><br><span class="line">            .description(<span class="string">&quot;本文档描述了简单课程表系统的接口定义&quot;</span>)</span><br><span class="line">            .version(<span class="string">&quot;1.0&quot;</span>)</span><br><span class="line">            .build();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3访问页面">3.访问页面</h3>
+<p>启动项目，访问 http://localhost:8080/swagger-ui.html#/ 即可</p>
+<h2 id="三-swagger2注解">三、swagger2注解</h2>
+<h3 id="1api注解">1.@Api注解</h3>
+<p><strong>用在请求的类上，表示对类的说明</strong></p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>属性</th>
 <th>作用</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr class="odd">
 <td>value</td>
 <td>描述类的作用</td>
 </tr>
-<tr>
+<tr class="even">
 <td>tags</td>
 <td>说明该类的作用，非空时将覆盖value的值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>protocols</td>
 <td>设置特定协议，例：http， https， ws， wss</td>
 </tr>
-<tr>
+<tr class="even">
 <td>hidden</td>
 <td>默认为false， 配置为true 将在文档中隐藏</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>实例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Api(value = &quot;Api-test&quot;, tags = &quot;测试接口&quot;)</span></span><br><span class="line"><span class="meta">@RequestMapping(&quot;/test/&quot;)</span></span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TestController</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="2-ApiOperation注解"><a href="#2-ApiOperation注解" class="headerlink" title="2.  @ApiOperation注解"></a>2.  @ApiOperation注解</h3><p> <strong>用在请求的方法上，说明方法的用途、作用</strong>  </p>
+<h3 id="2-apioperation注解">2. <span class="citation" data-cites="ApiOperation注解">@ApiOperation注解</span></h3>
+<p><strong>用在请求的方法上，说明方法的用途、作用</strong></p>
 <table>
+<colgroup>
+<col style="width: 14%">
+<col style="width: 85%">
+</colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>属性</th>
 <th>作用</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr class="odd">
 <td>value</td>
 <td>描述方法的作用</td>
 </tr>
-<tr>
+<tr class="even">
 <td>tags</td>
 <td>说明该方法的作用，非空时将覆盖value的值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>response</td>
 <td>返回对象类型（如果该对象类有@ApiModel属性会在文档的Model中列出）</td>
 </tr>
-<tr>
+<tr class="even">
 <td>httpMethod</td>
-<td>指定HTTP方法，”GET”, “HEAD”, “POST”, “PUT”, “DELETE”, “OPTIONS” and “PATCH”</td>
+<td>指定HTTP方法，"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS" and "PATCH"</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>hidden</td>
 <td>默认为false， 配置为true 将在文档中隐藏</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>实例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiOperation(value = &quot;获取课程表&quot;,response = CourseSchedule.class, httpMethod = &quot;GET&quot;)</span></span><br><span class="line"><span class="meta">@RequestMapping(method = RequestMethod.GET, path =  &quot;getCourseSchedule&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> CourseSchedule <span class="title">getCourseSchedule</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> CourseSchedule();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="3-ApiImplicitParams注解"><a href="#3-ApiImplicitParams注解" class="headerlink" title="3.  @ApiImplicitParams注解"></a>3.  @ApiImplicitParams注解</h3><p>@ApiImplicitParam注解，用在@ApiImplicitParams注解中，表示一组参数的说明</p>
-<p>@ApiParam注解，用在单个参数上，是对单个参数的说明</p>
+<h3 id="3-apiimplicitparams注解">3. <span class="citation" data-cites="ApiImplicitParams注解">@ApiImplicitParams注解</span></h3>
+<p><span class="citation" data-cites="ApiImplicitParam注解">@ApiImplicitParam注解</span>，用在@ApiImplicitParams注解中，表示一组参数的说明</p>
+<p><span class="citation" data-cites="ApiParam注解">@ApiParam注解</span>，用在单个参数上，是对单个参数的说明</p>
 <table>
+<colgroup>
+<col style="width: 16%">
+<col style="width: 83%">
+</colgroup>
 <thead>
-<tr>
+<tr class="header">
 <th>属性</th>
 <th>作用</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr class="odd">
 <td>value</td>
 <td>参数的说明</td>
 </tr>
-<tr>
+<tr class="even">
 <td>name</td>
 <td>参数名，参数名称可以覆盖方法参数名称，路径参数必须与方法参数一致</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>required</td>
 <td>参数是否必须传，默认为false(路径参数必填)</td>
 </tr>
-<tr>
+<tr class="even">
 <td>defaultValue</td>
 <td>参数的默认值</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>paramType</td>
 <td>参数应该怎么传给接口：<br>1.“header”对应spring@RequestHeader注解标记的参数；<br>2.“query”对应spring@RequestParam注解标记的参数；<br>3.“path”对应spring@PathVariable注解标记的参数；<br></td>
 </tr>
-<tr>
+<tr class="even">
 <td>dataType</td>
 <td>参数类型</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>实例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@ApiImplicitParams(&#123;</span></span><br><span class="line"><span class="meta">    @ApiImplicitParam(name = &quot;str&quot;, value = &quot;字符串&quot;, required = false, dataType = &quot;String&quot;, paramType = &quot;query&quot;),</span></span><br><span class="line"><span class="meta">    @ApiImplicitParam(name = &quot;id&quot;, value = &quot;id&quot;, required = true, dataType = &quot;Integer&quot;, paramType = &quot;query&quot;)</span></span><br><span class="line"><span class="meta">&#125;)</span></span><br><span class="line"><span class="meta">@GetMapping(path =  &quot;call&quot;)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Result <span class="title">call</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="meta">@ApiParam(name = &quot;str&quot;, value = &quot;字符串&quot;, required = false)</span> String str,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="meta">@ApiParam(name = &quot;id&quot;, value = &quot;id&quot;, required = true)</span> Integer id)</span></span>&#123;</span><br><span class="line">    <span class="keyword">return</span> Result.success(<span class="string">&quot;吱一声以表示项目运行&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="4-ApiModel注解"><a href="#4-ApiModel注解" class="headerlink" title="4.  @ApiModel注解"></a>4.  @ApiModel注解</h3><p>  <strong>用在请求的类上，表示对类的说明</strong> </p>
-<p> <strong>@ApiModelProperty注解</strong></p>
+<h3 id="4-apimodel注解">4. <span class="citation" data-cites="ApiModel注解">@ApiModel注解</span></h3>
+<p><strong>用在请求的类上，表示对类的说明</strong></p>
+<p><strong><span class="citation" data-cites="ApiModelProperty注解">@ApiModelProperty注解</span></strong></p>
 <p><strong>用在被@ApiModel标记了的类的属性上，用于描述类的属性</strong></p>
-<p> 注：此注解一般用于响应类上，比如使用@RequestBody注解直接接收对象作为参数的时候，多用于创建或更新</p>
+<p>注：此注解一般用于响应类上，比如使用@RequestBody注解直接接收对象作为参数的时候，多用于创建或更新</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>属性</th>
 <th>作用</th>
 </tr>
 </thead>
-<tbody><tr>
+<tbody>
+<tr class="odd">
 <td>value</td>
 <td>此属性的简要说明</td>
 </tr>
-<tr>
+<tr class="even">
 <td>name</td>
 <td>允许覆盖属性名称</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>allowableValues</td>
-<td>限制参数的可接受值，有以下几种：<br>1.以逗号分隔的列表<br/>2.范围值<br/>3.设置最小值/最大值</td>
+<td>限制参数的可接受值，有以下几种：<br>1.以逗号分隔的列表<br>2.范围值<br>3.设置最小值/最大值</td>
 </tr>
-<tr>
+<tr class="even">
 <td>example</td>
 <td>属性的示例</td>
 </tr>
-</tbody></table>
+</tbody>
+</table>
 <p>实例：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：huang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2019-12-11 12:38</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：考试安排实体类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="meta">@ApiModel(&quot;考试安排实体类&quot;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExamSchedule</span></span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiModelProperty(&quot;课程名称&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String courseName;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiModelProperty(&quot;考场&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String examClassroom;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiModelProperty(&quot;考试时间&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String examDate;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiModelProperty(&quot;当前时间&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String date;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ApiModelProperty(&quot;当前学期&quot;)</span></span><br><span class="line">    <span class="keyword">private</span> String nowDate;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>另外，如果被标记的类有被 @ApiOperation注解的response属性引用的话，在文档页面的Model可以看到</p>
+<p>另外，如果被标记的类有被 <span class="citation" data-cites="ApiOperation注解的response属性引用的话">@ApiOperation注解的response属性引用的话</span>，在文档页面的Model可以看到</p>
 <p><img src="http://img.xiajibagao.top/model.jpg"></p>
-<h2 id="四、使用knife4j对swagger进行增强"><a href="#四、使用knife4j对swagger进行增强" class="headerlink" title="四、使用knife4j对swagger进行增强"></a>四、使用knife4j对swagger进行增强</h2><h3 id="1-什么是knife4？"><a href="#1-什么是knife4？" class="headerlink" title="1.什么是knife4？"></a>1.什么是knife4？</h3><p>knife4j是为JavaMVC框架集成Swagger生成Api文档的增强解决方案 ，在Swagger的基础上进行了各方面的增强，比如接口排序，一键导出markdown，word，pdf等功能，以及一个逻辑更加清晰而美观的功能，最重要的是，这些实用功能不需要改动任何原有的注释或者代码，只需要加一个依赖！tql！！！</p>
-<p>地址： <a target="_blank" rel="noopener" href="https://doc.xiaominfo.com/">https://doc.xiaominfo.com/</a> </p>
-<h3 id="2-简单使用"><a href="#2-简单使用" class="headerlink" title="2.简单使用"></a>2.简单使用</h3><p>在原有swagger2依赖下引入knife4j依赖</p>
+<h2 id="四-使用knife4j对swagger进行增强">四、使用knife4j对swagger进行增强</h2>
+<h3 id="1什么是knife4">1.什么是knife4？</h3>
+<p>knife4j是为JavaMVC框架集成Swagger生成Api文档的增强解决方案 ，在Swagger的基础上进行了各方面的增强，比如接口排序，一键导出markdown，word，pdf等功能，以及一个逻辑更加清晰而美观的功能，最重要的是，这些实用功能不需要改动任何原有的注释或者代码，只需要加一个依赖！tql！！！</p>
+<p>地址： https://doc.xiaominfo.com/</p>
+<h3 id="2简单使用">2.简单使用</h3>
+<p>在原有swagger2依赖下引入knife4j依赖</p>
 <figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--使用knife4j对swagger进行增强--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>com.github.xiaoymin<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>knife4j-spring-boot-starter<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
 <p>然后就可以用了！</p>
-<p>没错，原本的 <a target="_blank" rel="noopener" href="http://localhost:8080/swagger-ui.html#/">http://localhost:8080/swagger-ui.html#/</a> 页面访问完全不受影响，但是通过<a target="_blank" rel="noopener" href="http://localhost:8080/doc.html%E5%8D%B3%E5%8F%AF%E8%AE%BF%E9%97%AEknife4j%E5%8A%A0%E5%BC%BA%E5%90%8E%E7%9A%84%E9%A1%B5%E9%9D%A2%EF%BC%8C%E6%95%88%E6%9E%9C%E5%A6%82%E4%B8%8B%EF%BC%9A">http://localhost:8080/doc.html即可访问knife4j加强后的页面，效果如下：</a></p>
+<p>没错，原本的 http://localhost:8080/swagger-ui.html#/ 页面访问完全不受影响，但是通过http://localhost:8080/doc.html即可访问knife4j加强后的页面，效果如下：</p>
 <p><img src="http://img.xiajibagao.top/knife.jpg"></p>
 
       
@@ -688,7 +700,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -710,7 +722,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -750,7 +762,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90%EF%BC%9F"><span class="nav-text">一、举个例子？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E5%A6%82%E4%BD%95%E5%9C%A8%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%BC%95%E5%85%A5swagger2%EF%BC%9F"><span class="nav-text">二、如何在项目中引入swagger2？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BC%95%E5%85%A5Maven%E4%BE%9D%E8%B5%96"><span class="nav-text">1.引入Maven依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%9C%A8springboot%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8Swagger"><span class="nav-text">2.在springboot配置使用Swagger</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E8%AE%BF%E9%97%AE%E9%A1%B5%E9%9D%A2"><span class="nav-text">3.访问页面</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81swagger2%E6%B3%A8%E8%A7%A3"><span class="nav-text">三、swagger2注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-Api%E6%B3%A8%E8%A7%A3"><span class="nav-text">1.@Api注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-ApiOperation%E6%B3%A8%E8%A7%A3"><span class="nav-text">2.  @ApiOperation注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-ApiImplicitParams%E6%B3%A8%E8%A7%A3"><span class="nav-text">3.  @ApiImplicitParams注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-ApiModel%E6%B3%A8%E8%A7%A3"><span class="nav-text">4.  @ApiModel注解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E4%BD%BF%E7%94%A8knife4j%E5%AF%B9swagger%E8%BF%9B%E8%A1%8C%E5%A2%9E%E5%BC%BA"><span class="nav-text">四、使用knife4j对swagger进行增强</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFknife4%EF%BC%9F"><span class="nav-text">1.什么是knife4？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-text">2.简单使用</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E4%B8%BE%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="nav-text">一、举个例子？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E5%A6%82%E4%BD%95%E5%9C%A8%E9%A1%B9%E7%9B%AE%E4%B8%AD%E5%BC%95%E5%85%A5swagger2"><span class="nav-text">二、如何在项目中引入swagger2？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E5%BC%95%E5%85%A5maven%E4%BE%9D%E8%B5%96"><span class="nav-text">1.引入Maven依赖</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E5%9C%A8springboot%E9%85%8D%E7%BD%AE%E4%BD%BF%E7%94%A8swagger"><span class="nav-text">2.在springboot配置使用Swagger</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E8%AE%BF%E9%97%AE%E9%A1%B5%E9%9D%A2"><span class="nav-text">3.访问页面</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-swagger2%E6%B3%A8%E8%A7%A3"><span class="nav-text">三、swagger2注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1api%E6%B3%A8%E8%A7%A3"><span class="nav-text">1.@Api注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-apioperation%E6%B3%A8%E8%A7%A3"><span class="nav-text">2. @ApiOperation注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-apiimplicitparams%E6%B3%A8%E8%A7%A3"><span class="nav-text">3. @ApiImplicitParams注解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-apimodel%E6%B3%A8%E8%A7%A3"><span class="nav-text">4. @ApiModel注解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B-%E4%BD%BF%E7%94%A8knife4j%E5%AF%B9swagger%E8%BF%9B%E8%A1%8C%E5%A2%9E%E5%BC%BA"><span class="nav-text">四、使用knife4j对swagger进行增强</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E4%BB%80%E4%B9%88%E6%98%AFknife4"><span class="nav-text">1.什么是knife4？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="nav-text">2.简单使用</span></a></li></ol></li></ol></div>
             
 
           </div>

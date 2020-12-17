@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="此文为极客时间：MySQL实战45讲的23节日志相关部分的学习总结  一、持久化的过程从总的来看，日志一般分为两部分：内存中易遗失的缓存日志和磁盘上持久化的日志文件。 一次事务中，日志先被写入内存，存放在 cache&#x2F;buffer 中，然后事务结束以后准备持久化：先写入磁盘的 page cache 中，这个过程叫做 write ，他仍然是内存操作，只不过从 mysql 的内存去了操作系统的内存，">
+<meta name="description" content="此文为极客时间：MySQL实战45讲的23节日志相关部分的学习总结  一、持久化的过程 从总的来看，日志一般分为两部分：内存中易遗失的缓存日志和磁盘上持久化的日志文件。 一次事务中，日志先被写入内存，存放在 cache&#x2F;buffer 中，然后事务结束以后准备持久化：先写入磁盘的 page cache 中，这个过程叫做 write ，他仍然是内存操作，只不过从 mysql 的内存去了操作">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mysql初探(二)：日志的文件是如何保证不丢失的">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/10/27/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="此文为极客时间：MySQL实战45讲的23节日志相关部分的学习总结  一、持久化的过程从总的来看，日志一般分为两部分：内存中易遗失的缓存日志和磁盘上持久化的日志文件。 一次事务中，日志先被写入内存，存放在 cache&#x2F;buffer 中，然后事务结束以后准备持久化：先写入磁盘的 page cache 中，这个过程叫做 write ，他仍然是内存操作，只不过从 mysql 的内存去了操作系统的内存，">
+<meta property="og:description" content="此文为极客时间：MySQL实战45讲的23节日志相关部分的学习总结  一、持久化的过程 从总的来看，日志一般分为两部分：内存中易遗失的缓存日志和磁盘上持久化的日志文件。 一次事务中，日志先被写入内存，存放在 cache&#x2F;buffer 中，然后事务结束以后准备持久化：先写入磁盘的 page cache 中，这个过程叫做 write ，他仍然是内存操作，只不过从 mysql 的内存去了操作">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201116192502318.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201116172850486.png">
@@ -380,7 +380,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.6k words
+                  2.7k
                 </span>
               
 
@@ -408,56 +408,76 @@
         <blockquote>
 <p>此文为极客时间：MySQL实战45讲的23节日志相关部分的学习总结</p>
 </blockquote>
-<h2><span id="一-持久化的过程">一、持久化的过程</span></h2><p>从总的来看，日志一般分为两部分：内存中<strong>易遗失的缓存日志</strong>和磁盘上<strong>持久化的日志文件</strong>。</p>
+<h2 id="一-持久化的过程">一、持久化的过程</h2>
+<p>从总的来看，日志一般分为两部分：内存中<strong>易遗失的缓存日志</strong>和磁盘上<strong>持久化的日志文件</strong>。</p>
 <p>一次事务中，日志<strong>先被写入内存</strong>，存放在 cache/buffer 中，然后事务结束以后准备持久化：<strong>先写入磁盘的 page cache 中，这个过程叫做 write</strong> ，他仍然是内存操作，只不过从 mysql 的内存去了操作系统的内存，所以比较快；<strong>然后再调用操作系统的方法来写入磁盘，这个过程叫做 fsync ，是真正的持久化过程</strong>，比较耗费时间。</p>
 <p>这个过程，我们可以简单的理解为下图：</p>
-<p><img src="http://img.xiajibagao.top/image-20201116192502318.png" alt="日志的持久化过程"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201116192502318.png" alt="日志的持久化过程"><figcaption aria-hidden="true">日志的持久化过程</figcaption>
+</figure>
 <p>基于以上的概念，我们了解一下 binlog 和 redo log 的持久化策略。</p>
-<h2><span id="二-binlog-的持久化">二、binlog 的持久化</span></h2><h3><span id="1文件结构">1.文件结构</span></h3><p>系统给 binlog cache 分配了一片内存，<strong>每个线程独享一块内存</strong>，参数 <code>binlog_cache_size</code> 用于控制单个线程内 binlog cache 所占内存的大小。如果超过了这个参数规定的大小，就要暂存到磁盘。</p>
-<p><img src="http://img.xiajibagao.top/image-20201116172850486.png" alt="binlog 写盘状态"></p>
+<h2 id="二-binlog-的持久化">二、binlog 的持久化</h2>
+<h3 id="1文件结构">1.文件结构</h3>
+<p>系统给 binlog cache 分配了一片内存，<strong>每个线程独享一块内存</strong>，参数 <code>binlog_cache_size</code> 用于控制单个线程内 binlog cache 所占内存的大小。如果超过了这个参数规定的大小，就要暂存到磁盘。</p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201116172850486.png" alt="binlog 写盘状态"><figcaption aria-hidden="true">binlog 写盘状态</figcaption>
+</figure>
 <p>每个线程有自己 binlog cache，但是共用同一份 binlog 文件。这样是因为 binlog 的执行是不允许打断的，事务必须完成后完整的写入日志，不能也不允许出现像 redo log 那样两阶段提交只完成了一个阶段就能刷盘的情况。</p>
-<h3><span id="2刷盘策略">2.刷盘策略</span></h3><p>当事务执行的时候，会<strong>先把日志写到内存里的 binlog cache 中，然后事务提交以后再调用 fsync 写入磁盘的 log file 上</strong>。由于一个事务的 binlog 不能拆开，因此每次写入都代表一次事务提交。</p>
+<h3 id="2刷盘策略">2.刷盘策略</h3>
+<p>当事务执行的时候，会<strong>先把日志写到内存里的 binlog cache 中，然后事务提交以后再调用 fsync 写入磁盘的 log file 上</strong>。由于一个事务的 binlog 不能拆开，因此每次写入都代表一次事务提交。</p>
 <ul>
 <li>图中的 write，指的就是指把日志写入到文件系统的 page cache，并没有把数据持久化到磁盘，所以速度比较快。</li>
 <li>图中的 fsync，才是将数据持久化到磁盘的操作。一般情况下，我们认为 fsync() 才占磁盘的 IOPS。</li>
 </ul>
 <p>write 和 fsync 的时机，是由参数 <code>sync_binlog</code> 控制的：</p>
-<ol>
+<ol type="1">
 <li>sync_binlog=0 的时候，表示每次提交事务都<strong>只 write，不 fsync</strong>；</li>
 <li>sync_binlog=1 的时候，表示每次提交事务<strong>都会执行 fsync</strong>；</li>
 <li>sync_binlog=N(N&gt;1) 的时候，表示<strong>每次提交事务都 write，但累积 N 个事务后才 fsync</strong>。</li>
 </ol>
 <p>因此，在出现 IO 瓶颈的场景里，将 sync_binlog 设置成一个比较大的值，可以提升性能。在实际的业务场景中，考虑到丢失日志量的可控性，一般不建议将这个参数设成 0，比较常见的是将其设置为 100~1000 中的某个数值。</p>
 <p>但是，将 sync_binlog 设置为 N，对应的风险是：如果主机发生异常重启，会丢失最近 N 个事务的 binlog 日志。</p>
-<h2><span id="三-redo-log-的持久化">三、redo log 的持久化</span></h2><h3><span id="1刷盘策略">1.刷盘策略</span></h3><p>和 binlog 相同，在事务未提交前，生成的日志也会先放在内存，不过不同于 <strong>binlog 存放在 binlog cache，redo log 存放在了 redo log buffer</strong>。</p>
+<h2 id="三-redo-log-的持久化">三、redo log 的持久化</h2>
+<h3 id="1刷盘策略">1.刷盘策略</h3>
+<p>和 binlog 相同，在事务未提交前，生成的日志也会先放在内存，不过不同于 <strong>binlog 存放在 binlog cache，redo log 存放在了 redo log buffer</strong>。</p>
 <p>在 mysql 的运行过程中，redo log 的数据可能存在三种状态：</p>
-<p><img src="http://img.xiajibagao.top/image-20201116175630245.png" alt="image-20201116175630245"> </p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201116175630245.png" alt="image-20201116175630245"><figcaption aria-hidden="true">image-20201116175630245</figcaption>
+</figure>
 <p>这三种状态分别是：</p>
-<ol>
+<ol type="1">
 <li>红色：存在 redo log buffer 中，物理上是在 MySQL 进程内存中，就是图中的红色部分；</li>
 <li>黄色：写到磁盘 (write)，但是没有持久化（fsync)，物理上是在文件系统的 page cache 里面，也就是图中的黄色部分；</li>
 <li>绿色：持久化到磁盘，对应的是 hard disk，也就是图中的绿色部分。</li>
 </ol>
 <p>为了控制 redo log 的写入策略，InnoDB 提供了 innodb_flush_log_at_trx_commit 参数，它有三种可能取值：</p>
-<ol>
+<ol type="1">
 <li>设置为 0 的时候，表示每次事务提交时都<strong>只是把 redo log 留在 redo log buffer 中</strong> ;</li>
 <li>设置为 1 的时候，表示每次事务提交时<strong>都将 redo log 直接持久化到磁盘</strong>；</li>
 <li>设置为 2 的时候，表示每次事务提交时都<strong>只是把 redo log 写到 page cache，由后台线程一秒sync一次</strong>。</li>
 </ol>
 <p>一般情况下，不建议设置为0，如果需要的话可以设置为2，因为实际上 redo log 写到 page cache 也很快，而且只留在 redo log buffer 中风险太大，万一数据库崩溃就没法起到重做的效果了。</p>
-<h3><span id="2未提交事务写入磁盘的情况">2.未提交事务写入磁盘的情况</span></h3><p>正如前文提到的，innodb 有一个两阶段提交机制，因此在事务未提交的时候，日志是有可能直接在 prepare 阶段就被 write 的：</p>
-<ol>
+<h3 id="2未提交事务写入磁盘的情况">2.未提交事务写入磁盘的情况</h3>
+<p>正如前文提到的，innodb 有一个两阶段提交机制，因此在事务未提交的时候，日志是有可能直接在 prepare 阶段就被 write 的：</p>
+<ol type="1">
 <li>InnoDB 有一个后台线程，<strong>每隔 1 秒，就会把 redo log buffer 中的日志刷盘</strong>；</li>
 <li>redo log buffer 占<strong>用的空间即将达到 innodb_log_buffer_size 一半</strong>的时候，后台线程会主动刷盘；</li>
 <li><strong>并发事务提交</strong>的时候，先提交的那个事务会将 redo log buffer 中的日志全部刷盘。这个行为取决于 <code>innodb_flush_log_at_trx_commit</code> 参数，<strong>当该参数为 1 的时候，就会发生这种情况</strong>。</li>
 </ol>
 <p>由于当数据库崩溃后一个事务要同时有 prepare 阶段的 redo log 和 binlog 的记录才会被重做，因此一般情况下，我们会同时设置 <code>sync_binlog</code> 和 <code>innodb_flush_log_at_trx_commit</code> 参数为1，也就是一次事务刷两次盘： binlog 一次，redo log 一次。</p>
-<h3><span id="3-组提交">3. 组提交</span></h3><p>按照上文的逻辑，当设置“双1”配置的时候，实际上要刷盘的次数就会两倍与看到的 TPS，但是事实并非如此。</p>
+<h3 id="3-组提交">3. 组提交</h3>
+<p>按照上文的逻辑，当设置“双1”配置的时候，实际上要刷盘的次数就会两倍与看到的 TPS，但是事实并非如此。</p>
 <p>当事务提交的时候，会通过<strong>日志逻辑序列号（LSN）</strong>来记录一条日志的长度，通过日志的长度确定事务的起始点和结束点。</p>
 <p>假如我们现在有三个日志等待提交：</p>
-<p><img src="http://img.xiajibagao.top/image-20201116200506743.png" alt="image-20201116200506743"></p>
-<p><img src="http://img.xiajibagao.top/image-20201116200520213.png" alt="image-20201116200520213"></p>
-<p><img src="http://img.xiajibagao.top/image-20201116200601118.png" alt="image-20201116200601118"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201116200506743.png" alt="image-20201116200506743"><figcaption aria-hidden="true">image-20201116200506743</figcaption>
+</figure>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201116200520213.png" alt="image-20201116200520213"><figcaption aria-hidden="true">image-20201116200520213</figcaption>
+</figure>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201116200601118.png" alt="image-20201116200601118"><figcaption aria-hidden="true">image-20201116200601118</figcaption>
+</figure>
 <p>以上三张图就是三个事务的提交过程。我们可以看到：</p>
 <ul>
 <li>trx1 是第一个到达的，会被选为这组的 leader；</li>
@@ -467,23 +487,27 @@
 </ul>
 <p>所以，<strong>一次组提交里面，组员越多</strong>，节约磁盘 IOPS 的效果越好。但如果只有单线程压测，那就只能老老实实地一个事务对应一次持久化操作了。</p>
 <p>在并发更新场景下，第一个事务写完 redo log buffer 以后，接下来这个 fsync 越晚调用，组员可能越多，节约 IOPS 的效果就越好。为此，mysql 在两阶段提交做了一个优化：</p>
-<p><img src="http://img.xiajibagao.top/image-20201116200841655.png" alt="image-20201116200841655"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201116200841655.png" alt="image-20201116200841655"><figcaption aria-hidden="true">image-20201116200841655</figcaption>
+</figure>
 <p>我们可以看到，<strong>在 redo log 一阶段提交的时候，并没有在 write 完以后立刻就调用 fsync 刷盘，而是等到 binlog 的 write 结束以后才刷盘；binlog 则等 redo log 一阶段刷盘以后才刷盘</strong>，因此可以减少 IOPS 的消耗。</p>
 <p>不过通常情况下第 3 步执行得会很快，所以 binlog 的 write 和 fsync 间的间隔时间短，导致能集合到一起持久化的 binlog 比较少，因此 binlog 的组提交的效果通常不如 redo log 的效果那么好。</p>
 <p>如果你<strong>想提升 binlog 组提交的效果</strong>，可以通过设置 binlog_group_commit_sync_delay 和 binlog_group_commit_sync_no_delay_count 来实现。</p>
-<ol>
+<ol type="1">
 <li><code>binlog_group_commit_sync_delay</code> 参数，表示延迟多少微秒后才调用 fsync;</li>
 <li><code>binlog_group_commit_sync_no_delay_count</code> 参数，表示累积多少次以后才调用 fsync。</li>
 </ol>
 <p>这两个条件是或的关系，也就是说<strong>只要有一个满足条件就会调用 fsync</strong>。</p>
 <p>所以，当 <code>binlog_group_commit_sync_delay</code> 设置为 0 的时候，<code>binlog_group_commit_sync_no_delay_count</code> 也无效了。</p>
-<h3><span id="4-redo-log-提交策略的选择">4. redo log 提交策略的选择</span></h3><p>适当的刷盘策略可以降低 IO 带来的性能压力。结合以上的内容，我们可以有以下三种策略：</p>
-<ol>
+<h3 id="4-redo-log-提交策略的选择">4. redo log 提交策略的选择</h3>
+<p>适当的刷盘策略可以降低 IO 带来的性能压力。结合以上的内容，我们可以有以下三种策略：</p>
+<ol type="1">
 <li>增大<code>binlog_group_commit_sync_no_delay_count</code>和<code>binlog_group_commit_sync_delay</code> 参数，减少 binlog 刷盘次数，提高组提交的效果，但是这样虽然不会丢失数据，却会增加响应的时间；</li>
 <li>增大 <code>sync_binlog</code> ，但是这样万一数据库崩溃会丢失 binlog 日志；</li>
 <li>将<code>innodb_flush_log_at_trx_commit</code> 设置为 2，但是这样数据库崩溃会丢失数据，无法重做。</li>
 </ol>
-<h2><span id="四-总结">四、总结</span></h2><p><strong>持久化过程</strong></p>
+<h2 id="四-总结">四、总结</h2>
+<p><strong>持久化过程</strong></p>
 <p>日志的持久化分为三步：</p>
 <ul>
 <li>写入内存里的 buffer/cache 中，此时仍然归于 mysql 进程；</li>
@@ -494,13 +518,13 @@
 <p>所有线程持久化同一个 binlog 日志文件，但是每个线程都有自己的 binlog cache，这是因为 binlog 必须保证每一次写入都是完整的事务。而 redo log 存在两阶段提交，并且需要 prepare 阶段的 redo log 来重做，所以允许未提交的事务被 write，因此线程共享一个 redo log buffer 和 redo log 日志文件。</p>
 <p><strong>刷盘策略</strong></p>
 <p>binlog 无论 <code>sync_binlog</code>参数怎么设置，都必须要 write：</p>
-<ol>
+<ol type="1">
 <li>sync_binlog=0 的时候，表示每次提交事务都<strong>只 write，不 fsync</strong>；</li>
 <li>sync_binlog=1 的时候，表示每次提交事务<strong>都会执行 fsync</strong>；</li>
 <li>sync_binlog=N(N&gt;1) 的时候，表示<strong>每次提交事务都 write，但累积 N 个事务后才 fsync</strong>。</li>
 </ol>
 <p>redo log 通过 <code>innodb_flush_log_at_trx_commit</code> 参数控制：</p>
-<ol>
+<ol type="1">
 <li>设置为 0 的时候，表示每次事务提交时都<strong>只是把 redo log 留在 redo log buffer 中</strong> ;</li>
 <li>设置为 1 的时候，表示每次事务提交时<strong>都将 redo log 直接持久化到磁盘</strong>；</li>
 <li>设置为 2 的时候，表示每次事务提交时都<strong>只是把 redo log 写到 page cache</strong>。</li>
@@ -508,7 +532,7 @@
 <p><strong>组提交</strong></p>
 <p>mysql 通过日志逻辑序列号（LSN）去根据事务数据长度来记录事务在日志中的开始和结束位置。因此，假如有三个并发事务先后准备写入，第一个被 fsync 的日志可以作为 leader，直接携带从一号到三号事务的 LSN 去刷盘，这样后两个事务就不必再单独刷盘，减少的写磁盘的次数。</p>
 <p>针对组提交，二阶段提交进行了优化，redo log 的 write 以后，会等到 binlog 的 wirte 后才调用 fsync，binlog 再等 redo log 的 fsync 完成后才进行 fsync。不过由于时间太短， binlog 的组提交效果不显著，可以通过增大：</p>
-<ol>
+<ol type="1">
 <li><code>binlog_group_commit_sync_delay</code> 参数，表示延迟多少微秒后才调用 fsync;</li>
 <li><code>binlog_group_commit_sync_no_delay_count</code> 参数，表示累积多少次以后才调用 fsync。</li>
 </ol>
@@ -636,7 +660,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -658,7 +682,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -698,7 +722,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">一、持久化的过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">二、binlog 的持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1.文件结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2.刷盘策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">三、redo log 的持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1.刷盘策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2.未提交事务写入磁盘的情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">3. 组提交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">4. redo log 提交策略的选择</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">四、总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E6%8C%81%E4%B9%85%E5%8C%96%E7%9A%84%E8%BF%87%E7%A8%8B"><span class="nav-text">一、持久化的过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-binlog-%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-text">二、binlog 的持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84"><span class="nav-text">1.文件结构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E5%88%B7%E7%9B%98%E7%AD%96%E7%95%A5"><span class="nav-text">2.刷盘策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-redo-log-%E7%9A%84%E6%8C%81%E4%B9%85%E5%8C%96"><span class="nav-text">三、redo log 的持久化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E5%88%B7%E7%9B%98%E7%AD%96%E7%95%A5"><span class="nav-text">1.刷盘策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E6%9C%AA%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A1%E5%86%99%E5%85%A5%E7%A3%81%E7%9B%98%E7%9A%84%E6%83%85%E5%86%B5"><span class="nav-text">2.未提交事务写入磁盘的情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%BB%84%E6%8F%90%E4%BA%A4"><span class="nav-text">3. 组提交</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-redo-log-%E6%8F%90%E4%BA%A4%E7%AD%96%E7%95%A5%E7%9A%84%E9%80%89%E6%8B%A9"><span class="nav-text">4. redo log 提交策略的选择</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B-%E6%80%BB%E7%BB%93"><span class="nav-text">四、总结</span></a></li></ol></div>
             
 
           </div>

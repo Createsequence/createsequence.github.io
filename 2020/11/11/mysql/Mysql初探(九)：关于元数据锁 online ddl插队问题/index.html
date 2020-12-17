@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结  一、读写锁堵塞前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：  现在等待队列中有四个 session 要获取锁：  由于 sessionA 和 sessionB 都是读操作，读读不互斥，因此两个 session 都持有读锁； sessionA 和">
+<meta name="description" content="此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结  一、读写锁堵塞 前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：  image-20201111201636187  现在等待队列中有四个 session 要获取锁：  由于 sessionA 和 sessionB 都是读操作，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mysql初探(九)：关于元数据锁 online ddl插队问题">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/11/11/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B9%9D)%EF%BC%9A%E5%85%B3%E4%BA%8E%E5%85%83%E6%95%B0%E6%8D%AE%E9%94%81%20online%20ddl%E6%8F%92%E9%98%9F%E9%97%AE%E9%A2%98/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结  一、读写锁堵塞前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：  现在等待队列中有四个 session 要获取锁：  由于 sessionA 和 sessionB 都是读操作，读读不互斥，因此两个 session 都持有读锁； sessionA 和">
+<meta property="og:description" content="此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结  一、读写锁堵塞 前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：  image-20201111201636187  现在等待队列中有四个 session 要获取锁：  由于 sessionA 和 sessionB 都是读操作，">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201111201636187.png">
 <meta property="article:published_time" content="2020-11-10T16:00:00.000Z">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  621 words
+                  623
                 </span>
               
 
@@ -402,8 +402,11 @@
         <blockquote>
 <p>此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结</p>
 </blockquote>
-<h2><span id="一-读写锁堵塞">一、读写锁堵塞</span></h2><p>前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：</p>
-<p><img src="http://img.xiajibagao.top/image-20201111201636187.png" alt="image-20201111201636187"></p>
+<h2 id="一-读写锁堵塞">一、读写锁堵塞</h2>
+<p>前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：</p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201111201636187.png" alt="image-20201111201636187"><figcaption aria-hidden="true">image-20201111201636187</figcaption>
+</figure>
 <p>现在等待队列中有四个 session 要获取锁：</p>
 <ul>
 <li>由于 sessionA 和 sessionB 都是读操作，读读不互斥，因此两个 session 都持有读锁；</li>
@@ -411,7 +414,8 @@
 <li>由于写锁的获取优先级高于读锁，sessionC 的写锁没获取到，后面其他 session 的读锁也无法获取到。此时 sessionD 堵塞；</li>
 </ul>
 <p>上面是一个很典型的读写锁堵塞的场景。但是实际测试的时候，会出现 sessionC 和 sessionD 都堵塞了，但是将 sessionA 和 sessionB 提交以后，sessionC 仍然保持堵塞状态，必须等 sessionD 也提交以后，才会继续执行。也就说，sessionD 好像发生了一个插队的现象。</p>
-<h2><span id="二-锁降级">二、锁降级</span></h2><p>我们知道 mysql 有一个 online ddl，即 执行 ddl 的时候不会直接锁表导致无法执行其他查询的操作。其实这涉及到一个锁降级的概念。即原本流程是：</p>
+<h2 id="二-锁降级">二、锁降级</h2>
+<p>我们知道 mysql 有一个 online ddl，即 执行 ddl 的时候不会直接锁表导致无法执行其他查询的操作。其实这涉及到一个锁降级的概念。即原本流程是：</p>
 <ul>
 <li>拿写锁</li>
 <li>做 DDL</li>
@@ -549,7 +553,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -571,7 +575,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -611,7 +615,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">一、读写锁堵塞</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">二、锁降级</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E8%AF%BB%E5%86%99%E9%94%81%E5%A0%B5%E5%A1%9E"><span class="nav-text">一、读写锁堵塞</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E9%94%81%E9%99%8D%E7%BA%A7"><span class="nav-text">二、锁降级</span></a></li></ol></div>
             
 
           </div>

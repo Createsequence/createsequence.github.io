@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="一、什么是递归所谓递归，简单点来说，就是一个函数直接或间接调用自身的一种方法，它通常把一个大型复杂的问题层层转化为一个与原问题相似的规模较小的问题来求解。 引用知乎大佬的例子：  我们可以把” 递归 “比喻成 “查字典 “，当你查一个词，发现这个词的解释中某个词仍然不懂，于是你开始查这第二个词。 可惜，第二个词里仍然有不懂的词，于是查第三个词，这样查下去，直到有一个词的解释是你完全能看懂的，那么递">
+<meta name="description" content="一、什么是递归 所谓递归，简单点来说，就是一个函数直接或间接调用自身的一种方法，它通常把一个大型复杂的问题层层转化为一个与原问题相似的规模较小的问题来求解。 引用知乎大佬的例子：  我们可以把” 递归 “比喻成 “查字典 “，当你查一个词，发现这个词的解释中某个词仍然不懂，于是你开始查这第二个词。 可惜，第二个词里仍然有不懂的词，于是查第三个词，这样查下去，直到有一个词的解释是你完全能看">
 <meta property="og:type" content="article">
 <meta property="og:title" content="数据结构与算法（六）：递归">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%E9%80%92%E5%BD%92/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="一、什么是递归所谓递归，简单点来说，就是一个函数直接或间接调用自身的一种方法，它通常把一个大型复杂的问题层层转化为一个与原问题相似的规模较小的问题来求解。 引用知乎大佬的例子：  我们可以把” 递归 “比喻成 “查字典 “，当你查一个词，发现这个词的解释中某个词仍然不懂，于是你开始查这第二个词。 可惜，第二个词里仍然有不懂的词，于是查第三个词，这样查下去，直到有一个词的解释是你完全能看懂的，那么递">
+<meta property="og:description" content="一、什么是递归 所谓递归，简单点来说，就是一个函数直接或间接调用自身的一种方法，它通常把一个大型复杂的问题层层转化为一个与原问题相似的规模较小的问题来求解。 引用知乎大佬的例子：  我们可以把” 递归 “比喻成 “查字典 “，当你查一个词，发现这个词的解释中某个词仍然不懂，于是你开始查这第二个词。 可惜，第二个词里仍然有不懂的词，于是查第三个词，这样查下去，直到有一个词的解释是你完全能看">
 <meta property="og:locale">
 <meta property="article:published_time" content="2020-06-25T16:00:00.000Z">
 <meta property="article:modified_time" content="2020-10-27T02:03:39.781Z">
@@ -372,7 +372,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  738 words
+                  738
                 </span>
               
 
@@ -397,7 +397,8 @@
       
 
       
-        <h2 id="一、什么是递归"><a href="#一、什么是递归" class="headerlink" title="一、什么是递归"></a>一、什么是递归</h2><p>所谓递归，简单点来说，就是一个函数直接或间接调用自身的一种方法，它通常把一个大型复杂的问题层层转化为一个与原问题相似的规模较小的问题来求解。</p>
+        <h2 id="一-什么是递归">一、什么是递归</h2>
+<p>所谓递归，简单点来说，就是一个函数直接或间接调用自身的一种方法，它通常把一个大型复杂的问题层层转化为一个与原问题相似的规模较小的问题来求解。</p>
 <p>引用知乎大佬的例子：</p>
 <blockquote>
 <p>我们可以把” 递归 “比喻成 “查字典 “，当你查一个词，发现这个词的解释中某个词仍然不懂，于是你开始查这第二个词。</p>
@@ -406,32 +407,30 @@
 <p>我们把查字典理解成一个函数<code>search()&#123;&#125;</code>，而“明白了”就是停止条件。</p>
 <p>按这个思路，那这个流程就是这样的：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">search</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">//如果明白了就停止函数</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="string">&quot;明白了&quot;</span>)&#123;</span><br><span class="line">       <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//没明白调用自己继续查</span></span><br><span class="line">    search();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
 <p>我们举个简单的例子：</p>
 <p>要计算阶乘<code>1*2*3*.....*(n-1)*n</code>，代码如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">mult</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//终止条件，当n=1时直接返回1</span></span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">1</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> n;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//计算n*(n-1).....</span></span><br><span class="line">    <span class="keyword">return</span> n * mult(n - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="二、递归和栈的关系"><a href="#二、递归和栈的关系" class="headerlink" title="二、递归和栈的关系"></a>二、递归和栈的关系</h2><blockquote>
+<h2 id="二-递归和栈的关系">二、递归和栈的关系</h2>
+<blockquote>
 <p>递归的过程就是出入栈的过程</p>
 </blockquote>
 <p>递归的问题实际上都能拆分成出入栈问题，我们可以举上面计算<code>1*2*3*.....*(n-1)*n</code>这个例子来理解一下：</p>
 <p>如果n=4，那么过程就是这样：</p>
-<ol>
+<ol type="1">
 <li>mult(4)调用了mult(3)</li>
 <li>mult(3)调用了mult(2)</li>
 <li>mult(2)调用了mult(1)</li>
 <li>到了mult(1)时满足了终止条件，返回结果</li>
 </ol>
 <p>用出入栈的思维理解：</p>
-<ol>
-<li>步骤1-3都是一个入栈过程，mult(4)计算得出结果后入栈，然后运行mult(3)得出结果，然后在入栈……以此类推</li>
+<ol type="1">
+<li>步骤1-3都是一个入栈过程，mult(4)计算得出结果后入栈，然后运行mult(3)得出结果，然后在入栈......以此类推</li>
 <li>当到达n=1的停止条件时递归停止不再入栈，此时栈深度就是4，这也叫递归深度</li>
-<li>满足停止条件后出栈，mult(1)的结果出栈，与mult(2)的结果出栈相乘，再与随后出栈的mult(3)的结果相乘…..以此类推</li>
+<li>满足停止条件后出栈，mult(1)的结果出栈，与mult(2)的结果出栈相乘，再与随后出栈的mult(3)的结果相乘.....以此类推</li>
 </ol>
 <p>递归的本质就是栈的出入过程，所以实际上当深度过深，超过了jvm规定允许的栈最大深度的时候，就会出现栈溢出的问题，也就是java里的<code>StackOverflowError</code></p>
-<h2 id="三、递归的使用条件"><a href="#三、递归的使用条件" class="headerlink" title="三、递归的使用条件"></a>三、递归的使用条件</h2><p>那么，我们是时候可以使用递归来解决问题呢：</p>
+<h2 id="三-递归的使用条件">三、递归的使用条件</h2>
+<p>那么，我们是时候可以使用递归来解决问题呢：</p>
 <ul>
 <li>当问题可以拆分为子问题，并且子问题与原问题解决方法相同</li>
 <li>有一个明确的程序停止条件</li>
@@ -467,8 +466,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E8%BF%B7%E5%AE%AB%E5%9B%9E%E6%BA%AF%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/" rel="next" title="数据结构与算法（七）：迷宫回溯和八皇后问题">
-                <i class="fa fa-chevron-left"></i> 数据结构与算法（七）：迷宫回溯和八皇后问题
+              <a href="/2020/06/25/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%A0%88%E4%B8%8E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%E8%AE%A1%E7%AE%97%E5%99%A8%E5%8A%9F%E8%83%BD/" rel="next" title="数据结构与算法（五）：递归和栈实现简单计算器">
+                <i class="fa fa-chevron-left"></i> 数据结构与算法（五）：递归和栈实现简单计算器
               </a>
             
           </div>
@@ -477,8 +476,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/06/27/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E7%AE%97%E6%B3%95%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6/" rel="prev" title="算法时间复杂度">
-                算法时间复杂度 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E8%BF%B7%E5%AE%AB%E5%9B%9E%E6%BA%AF%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/" rel="prev" title="数据结构与算法（七）：迷宫回溯和八皇后问题">
+                数据结构与算法（七）：迷宫回溯和八皇后问题 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -560,7 +559,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -582,7 +581,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -622,7 +621,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E9%80%92%E5%BD%92"><span class="nav-text">一、什么是递归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%80%92%E5%BD%92%E5%92%8C%E6%A0%88%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-text">二、递归和栈的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E9%80%92%E5%BD%92%E7%9A%84%E4%BD%BF%E7%94%A8%E6%9D%A1%E4%BB%B6"><span class="nav-text">三、递归的使用条件</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E4%BB%80%E4%B9%88%E6%98%AF%E9%80%92%E5%BD%92"><span class="nav-text">一、什么是递归</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E9%80%92%E5%BD%92%E5%92%8C%E6%A0%88%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-text">二、递归和栈的关系</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E9%80%92%E5%BD%92%E7%9A%84%E4%BD%BF%E7%94%A8%E6%9D%A1%E4%BB%B6"><span class="nav-text">三、递归的使用条件</span></a></li></ol></div>
             
 
           </div>

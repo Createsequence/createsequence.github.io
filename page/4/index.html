@@ -287,7 +287,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/19/Spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/09/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -306,7 +306,187 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/08/19/Spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/" itemprop="url">SpringAOP知识小结</a></h1>
+                <a class="post-title-link" href="/2020/09/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/" itemprop="url">设计模式（一）：工厂模式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-09-26T00:00:00+08:00">
+                2020-09-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" itemprop="url" rel="index">
+                    <span itemprop="name">设计模式</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.6k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<blockquote>
+<p>工厂模式（Factory Pattern）属于创建型模式，它提供了一种创建对象的最佳方式。 在工厂模式中，我们在创建对象时不会对客户端暴露创建逻辑，并且是通过使用一个共同的接口来指向新创建的对象。</p>
+</blockquote>
+<p>工厂模式旨在与解决接口实现类选择这一类问题，让实例创建的代码使用实例的方法解耦。</p>
+<p>当我们需要根据不同的明确条件下创建不同的实例的时候，就可以使用工厂模式。</p>
+<p>工厂模式分为三类：</p>
+<ul>
+<li>工厂方法模式：一个工厂生产固定的一个类。</li>
+<li>简单/静态工厂模式：一个工厂生产固定种类的多个类。</li>
+<li>抽象工厂模式：一个抽象工厂生产一</li>
+</ul>
+<h2 id="一-工厂方法模式">一、工厂方法模式</h2>
+<p>假设我们有一个导出报表的抽象类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 文件导出接口</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Exporter</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">export</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>他现在有一个Excel导出实现类：</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/09/26/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B7%A5%E5%8E%82%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/19/spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/19/spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/" itemprop="url">SpringAOP知识小结</a></h1>
         
 
         <div class="post-meta">
@@ -372,7 +552,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.9k words
+                  3k
                 </span>
               
 
@@ -398,17 +578,24 @@
 
       
         
-          
-          概述提起Spring，必然就会联想到AOP（面向切面编程）和IOC（控制反转）这两个词，众所周知，Spring框架对这两种思想进行了很好的实现。
-在这篇文章，我将大致的介绍Spring对AOP这思想的实现流程。
-对于AOP，关注的两个问题：
-
-什么是是AOP/IOC？
-AOP/IOC解决了什么问题？
-          ...
+          <h2 id="概述">概述</h2>
+<p>提起Spring，必然就会联想到AOP（面向切面编程）和IOC（控制反转）这两个词，众所周知，Spring框架对这两种思想进行了很好的实现。</p>
+<p>在这篇文章，我将大致的介绍Spring对AOP这思想的实现流程。</p>
+<p>对于AOP，关注的两个问题：</p>
+<ul>
+<li>什么是是AOP/IOC？</li>
+<li>AOP/IOC解决了什么问题？</li>
+</ul>
+<h2 id="一-什么是aop">一、什么是AOP</h2>
+<blockquote>
+<p>Aspect oriented programming 面向切面编程，AOP 是 OOP（面向对象编程）的一种延续。</p>
+</blockquote>
+<p>我们知道，根据面向对象编程的思想，对于一些具有相同属性和方法的类，我们可以抽象出他们共同部分作为一个父类，然后这些子类通过继承来获得他们共同的属性。比如<code>Cat</code>类和<code>Dog</code>都有<code>eat()</code>方法，那么我们可以将<code>eat()</code>方法抽象到他们的父类<code>Animal</code>，让他们去继承父类。</p>
+<p>我们管这个抽取成类的方法叫做<strong>纵向抽取</strong>。</p>
+<p>而如果他们的父类的方法中有相同方法，那么就直接抽取成公共方法。，但是有一些一开始就耦合到业务逻辑里的重复代码，比如下面统计方法执行时间的方法：</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/08/19/Spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/#more" rel="contents">
+            <a class="btn" href="/2020/08/19/spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -544,7 +731,7 @@ AOP/IOC解决了什么问题？
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.1k words
+                  2.2k
                 </span>
               
 
@@ -570,12 +757,19 @@ AOP/IOC解决了什么问题？
 
       
         
-          
-          概述我们知道，一个对象在可以被使用之前必须要被正确地实例化。而实例化实际指的就是以一个java类为模板创建对象/实例的过程。比如说常见的 Person = new Person()代码就是一个将Person类实例化并创建引用的过程。
-对于类的实例化，我们关注两个问题：
-
-如何实例化？（类的四种实例化
-          ...
+          <h2 id="概述">概述</h2>
+<p>我们知道，一个对象在可以被使用之前必须要被正确地实例化。而实例化实际指的就是以一个java类为模板创建对象/实例的过程。比如说常见的 <code>Person = new Person()</code>代码就是一个将Person类实例化并创建引用的过程。</p>
+<p>对于类的实例化，我们关注两个问题：</p>
+<ul>
+<li>如何实例化？（类的四种实例化方式）</li>
+<li>什么时候实例化？（类的一个初始化过程和对象的三个初始化过程）</li>
+</ul>
+<h2 id="一-类的四种实例化方式">一、类的四种实例化方式</h2>
+<h3 id="1使用new关键字">1.使用new关键字</h3>
+<p>这也是最常见最简单的创建对象的方法。通过这种方法，我们可以借助类的构造函数实例化对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Parent p = <span class="keyword">new</span> Parent();</span><br></pre></td></tr></table></figure>
+<h3 id="2使用newinstance方法">2.使用newInstance()方法</h3>
+<p>我们可以先通过类的全限定名获取类，然后通过Class类的<code>newInstance()</code>方法去调用类的<strong>无参构造方法</strong>创建一个对象：</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2020/08/13/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E7%B1%BB%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96/#more" rel="contents">
@@ -714,7 +908,7 @@ AOP/IOC解决了什么问题？
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.4k words
+                  1.4k
                 </span>
               
 
@@ -740,183 +934,29 @@ AOP/IOC解决了什么问题？
 
       
         
-          
-          概述虚拟机设计团队把类加载阶段中的“通过一个类的全限定名来获取描述此类的二进制字节流”这个动作放到Java虚拟机外部去实现，以便让应用程序自己决定如何去获取所需要的类。实现这个动作的代码模块称为类加载器。
-对于类加载，我们关注两个方面的问题：
-
-JVM定义的三个类加载器（Bootstrap，Exte
-          ...
+          <h2 id="概述">概述</h2>
+<p>虚拟机设计团队把类加载阶段中的“<strong>通过一个类的全限定名来获取描述此类的二进制字节流</strong>”这个动作放到Java虚拟机外部去实现，以便让应用程序自己决定如何去获取所需要的类。<strong>实现这个动作的代码模块称为类加载器。</strong></p>
+<p>对于类加载，我们关注两个方面的问题：</p>
+<ul>
+<li>JVM定义的三个类加载器（Bootstrap，Extension，System）</li>
+<li>双亲委派模型（机制，JDBC违背案例）</li>
+</ul>
+<h2 id="一-类加载器">一、类加载器</h2>
+<p>JVM使用以下三种类型的类加载器：</p>
+<ul>
+<li><p><strong>启动类（Bootstrap）类加载器</strong>：</p>
+<p>这个类存放在<java_home>，无法被Java程序直接引用；</java_home></p></li>
+<li><p><strong>扩展（Extension）类加载器</strong>：</p>
+<p>这个类加载器负责加载<java_home>，开发者可以直接使用；</java_home></p></li>
+<li><p><strong>引用程序（Application）类加载器</strong>：</p>
+<p>这个类加载器是ClassLoader中的getSystemClassLoader（）方法的返回值，所以<strong>一般也称它为系统类加载器</strong>，负责加载用户类路径上所指定的类库。开发者可以直接使用。</p></li>
+</ul>
+<p>从java虚拟机的角度来说，一种是启动类加载器，是JVM的一部分；另一种是其他类加载器，独立于JVM，全部继承自抽象类java.lang.ClassLoader。只有其他类加载器程序员才能自己使用。</p>
+<h2 id="二-双亲委派模型">二、双亲委派模型</h2>
+<h3 id="1什么是双亲委派模型">1.什么是双亲委派模型</h3>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2020/08/12/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/" itemprop="url">String类小结</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-11T00:00:00+08:00">
-                2020-08-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4.3k words
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          概述java 的 String 类可以说是日常中使用的最多的类，但是大多数时候都只是简单的拼接或者调用 API，只知其然不知其所以然。为了改变这个情况，我决定结合网上的资料，参考源码，深入一点去了解 String 这个熟悉的陌生人。
-要第一时间了解一个类，没有什么比官方的javaDoc文档更直观的了
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1052,7 +1092,7 @@ JVM定义的三个类加载器（Bootstrap，Exte
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3k words
+                  3k
                 </span>
               
 
@@ -1078,14 +1118,211 @@ JVM定义的三个类加载器（Bootstrap，Exte
 
       
         
-          
-          概述我们知道java代码会被编译为.class文件，这里class文件中的类信息最终还是需要jvm加载以后才能使用。
-事实上，虚拟机把描述类的数据从Class文件加载到内存，并对数据进行校验，转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型的过程就是虚拟机的类加载机制。
-对于jvm类的加
-          ...
+          <h2 id="概述">概述</h2>
+<p>我们知道java代码会被编译为.class文件，这里class文件中的类信息最终还是需要jvm加载以后才能使用。</p>
+<p>事实上，虚拟机把描述类的数据<strong>从Class文件加载到内存，并对数据进行校验，转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型的过程就是虚拟机的类加载机制</strong>。</p>
+<p>对于jvm类的加载机制，我们主要关注两个问题：</p>
+<ul>
+<li>类的加载时机？(初始化的五种情况)</li>
+<li>类的加载过程？（类的五个加载过程）</li>
+</ul>
+<h2 id="一-类的加载时机">一、类的加载时机</h2>
+<h3 id="1类的生命周期">1.类的生命周期</h3>
+<p>类从被加载到虚拟机内存中开始，到卸载出内存为止，整个生命周期包括<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。其中验证、准备、解析统称为<strong>连接</strong>。</p>
+<figure>
+<img src="http://img.xiajibagao.top/类加载的时机.png" alt="类加载的时机"><figcaption aria-hidden="true">类加载的时机</figcaption>
+</figure>
+<p>值得一提的是，加载，验证，准备，初始化和卸载是固定的，<strong>但是解析阶段不是：它在一定情况下可以在初始化后再开始，以支持java语言的动态绑定</strong>。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2020/08/11/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/" itemprop="url">String类小结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-11T00:00:00+08:00">
+                2020-08-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4.3k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>java 的 String 类可以说是日常中使用的最多的类，但是大多数时候都只是简单的拼接或者调用 API，只知其然不知其所以然。为了改变这个情况，我决定结合网上的资料，参考源码，深入一点去了解 String 这个熟悉的陌生人。</p>
+<p>要第一时间了解一个类，没有什么比官方的javaDoc文档更直观的了：</p>
+<blockquote>
+<p>String类表示字符串。Java程序中的所有字符串文本（如“abc”）都作为此类的实例实现。</p>
+<p><strong>字符串是常量；它们的值在创建后不能更改</strong>。字符串缓冲区支持可变字符串。<strong>因为字符串对象是不可变的，所以可以共享它们</strong>。</p>
+<p>类字符串包括用于检查序列的单个字符、比较字符串、搜索字符串、提取子字符串以及创建字符串副本的方法，其中所有字符都转换为大写或小写。大小写映射基于Character类指定的Unicode标准版本。</p>
+<p><strong>Java语言提供了对字符串连接运算符（+）以及将其他对象转换为字符串的特殊支持。字符串连接是通过<code>StringBuilder</code>（或<code>StringBuffer</code>）类及其<code>append</code>方法实现的。字符串转换是通过<code>toString</code>方法实现的</strong>，由Object定义并由Java中的所有类继承。有关字符串连接和转换的更多信息，请参阅Gosling、Joy和Steele，Java语言规范。</p>
+<p>除非另有说明，否则向此类中的构造函数或方法传递null参数将导致引发<code>NullPointerException</code>。 字符串表示UTF-16格式的字符串，其中补充字符由代理项对表示（有关详细信息，请参阅<code>Character</code>类中的Unicode字符表示部分）。索引值引用字符代码单位，因此补充字符在字符串中使用两个位置。</p>
+<p>除了处理Unicode代码单元（即字符值）的方法外，String类还提供了处理Unicode代码点（即字符）的方法。</p>
+</blockquote>
+<p>根据文档，对于String类，我们关注三个问题：</p>
+<ul>
+<li>String对象的不可变性（为什么是不可变的，这么设计的必要性）</li>
+<li>String对象的创建方式（两种创建方式，字符串常量池）</li>
+<li>String对象的拼接（StringBuffer，StringBuilder，加号拼接的本质）</li>
+</ul>
+<h2 id="一-string对象的不可变性">一、String对象的不可变性</h2>
+<h3 id="1string为什么是不可变的">1.String为什么是不可变的</h3>
+<p>文档中提到：</p>
+<blockquote>
+<p>字符串是常量；它们的值在创建后不能更改。</p>
+</blockquote>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1221,7 +1458,7 @@ JVM定义的三个类加载器（Bootstrap，Exte
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.8k words
+                  2.8k
                 </span>
               
 
@@ -1247,10 +1484,20 @@ JVM定义的三个类加载器（Bootstrap，Exte
 
       
         
-          
-          概述我们知道自动的垃圾回收机制是Java语言一个特点，它让我们在写程序的时候不再需要考虑内存管理问题。内存管理实际上就是分配内存和回收内存这两个问题，在上一篇文章我大概介绍了jvm是如何划分内存空间以合理的分配内存的，而这篇文章就介绍一下jvm是如何回收内存的。
-对于线程私有的程序计数器，虚拟机栈和
-          ...
+          <h2 id="概述">概述</h2>
+<p>我们知道自动的垃圾回收机制是Java语言一个特点，它让我们在写程序的时候不再需要考虑内存管理问题。内存管理实际上就是<strong>分配内存</strong>和<strong>回收内存</strong>这两个问题，在<a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/13447923.html">上一篇文章</a>我大概介绍了jvm是如何划分内存空间以合理的分配内存的，而这篇文章就介绍一下jvm是如何回收内存的。</p>
+<p>对于线程私有的程序计数器，虚拟机栈和本地方法栈三块数据区域而言，生命周期是和线程绑定的，线程结束时自然就回收内存了；而对于栈，每一个方法代表每一个栈帧，方法结束的时候就出栈，这时内存也跟着回收了。这些区域的内存回收都是具有确定性的，而堆就不同。</p>
+<p>我们知道，堆主要用与存放对象实例，而只有运行时才知道要创建那些对象，而只有对象完全不被使用时才能回收其占用的内存空间。对于这块内容，我们需要明确三个问题：</p>
+<ul>
+<li><strong>哪些对象可以回收？</strong>（引用计数法、可达性算法）</li>
+<li><strong>这些内存什么时候回收？</strong>（新生代、老年代、永久代，MinorGC和FullGC）</li>
+<li><strong>这些内存怎么回收？</strong>（三种垃圾收集算法和分代收集算法，七种垃圾收集器）</li>
+</ul>
+<h2 id="一-判断对象是否可回收">一、判断对象是否可回收</h2>
+<p>我们要判断对象是否可以回收，最有效的方式就是判断这个对象是否正在被别的对象引用。针对这个问题，有两种算法：<strong>引用计数算法</strong>和<strong>可达性分析算法</strong>。</p>
+<h3 id="1引用计数算法">1.引用计数算法</h3>
+<p><strong>引用计数算法是通过判断对象的引用数量来决定对象是否可以被回收</strong>。</p>
+<p>简单的来说，就是为每一个对象实例配置一个计数器：</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2020/08/10/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/#more" rel="contents">
@@ -1389,7 +1636,7 @@ JVM定义的三个类加载器（Bootstrap，Exte
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2k words
+                  2k
                 </span>
               
 
@@ -1415,17 +1662,24 @@ JVM定义的三个类加载器（Bootstrap，Exte
 
       
         
-          
-          概述我们知道java代码先编译为.class文件，然后再将.class文件交由jvm执行。在程序运行的这一过程中，jvm会将其管理的内存空间划分为不同的区域，这些区域各有各的用途，我们将其分为五类：
-
-方法区
-堆
-虚拟机栈
-本地方法栈
-程序计数器
-
-其中方法区和堆是线程共享的，随jvm启动和停止而创
-          ...
+          <h2 id></h2>
+<h2 id="概述">概述</h2>
+<p>我们知道java代码先编译为.class文件，然后再将.class文件交由jvm执行。在程序运行的这一过程中，jvm会将其管理的内存空间划分为不同的区域，这些区域各有各的用途，我们将其分为五类：</p>
+<ol type="1">
+<li>方法区</li>
+<li>堆</li>
+<li>虚拟机栈</li>
+<li>本地方法栈</li>
+<li>程序计数器</li>
+</ol>
+<p>其中方法区和堆是线程共享的，随jvm启动和停止而创建和销毁；</p>
+<p>而虚拟机栈、本地方法栈和程序计数器则是线程私有的，随线程的创建和结束而创建和销毁。</p>
+<figure>
+<img src="http://img.xiajibagao.top/jvm内存体系.png" alt="jvm内存体系"><figcaption aria-hidden="true">jvm内存体系</figcaption>
+</figure>
+<h2 id="一-线程隔离数据区">一、线程隔离数据区</h2>
+<p>包括程序计数器，虚拟机栈，本地方法栈三部分，是线程私有的数据区。</p>
+<h3 id="1程序计数器">1.程序计数器</h3>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2020/08/09/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9Ajvm%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/#more" rel="contents">
@@ -1564,7 +1818,7 @@ JVM定义的三个类加载器（Bootstrap，Exte
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  1.3k words
+                  1.3k
                 </span>
               
 
@@ -1590,12 +1844,25 @@ JVM定义的三个类加载器（Bootstrap，Exte
 
       
         
-          
-          概述以前一鳞半爪的了解过 java 的参数传递方式是什么样的，后面粗略的了解了一鳞半爪以后有了大概的印象：“传参数就是值传递，传对象就是引用传递”，今天同事说起这件事，他却说 java 只有值传递。抱着疑问，我专门查了相关资料和文章，发现我原来的理解确实有问题。
-这里先放结论：
-
-java中参数的传
-          ...
+          <h2 id="概述">概述</h2>
+<p>以前一鳞半爪的了解过 java 的参数传递方式是什么样的，后面粗略的了解了一鳞半爪以后有了大概的印象：“传参数就是值传递，传对象就是引用传递”，今天同事说起这件事，他却说 java 只有值传递。抱着疑问，我专门查了相关资料和文章，发现我原来的理解确实有问题。</p>
+<p>这里先放结论：</p>
+<ul>
+<li>java中参数的传递可以理解为<strong>都是值传递</strong></li>
+<li>基础数据类型传递的是<strong>值的拷贝</strong></li>
+<li>对象类型是共享对象传递，传递的是<strong>地址的拷贝</strong></li>
+</ul>
+<h2 id="一-形参和实参">一、形参和实参</h2>
+<p>要理解参数的传递就必须先理解形参和实参：</p>
+<ul>
+<li><p>形参：就是形式参数，用于<strong>定义方法的时候使用的参数</strong>，是用来接收调用者传递的参数的。</p>
+<p>形参只有在方法被调用的时候，虚拟机才会分配内存单元，在方法调用结束之后便会释放所分配的内存单元。</p>
+<p>因此,<strong>形参只在方法内部有效</strong>，所以针对引用对象的改动也无法影响到方法外。</p></li>
+<li><p>实参：就是实际参数，用于调用时<strong>传递给方法的参数</strong>。</p></li>
+</ul>
+<p>举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">( String[] args )</span> </span>&#123;</span><br><span class="line">    String string = <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line">    <span class="comment">//string是实际参数</span></span><br><span class="line">    sout(string);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sout</span><span class="params">(String str)</span></span>&#123;</span><br><span class="line">    <span class="comment">//str为形式参数</span></span><br><span class="line">    System.out.println(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="二-值传递和引用传递与共享对象传递">二、值传递和引用传递与共享对象传递</h2>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2020/08/05/java/java%E6%98%AF%E5%80%BC%E4%BC%A0%E9%80%92%E8%BF%98%E6%98%AF%E5%BC%95%E7%94%A8%E4%BC%A0%E9%80%92/#more" rel="contents">
@@ -1734,7 +2001,7 @@ java中参数的传
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.2k words
+                  2.3k
                 </span>
               
 
@@ -1760,187 +2027,25 @@ java中参数的传
 
       
         
-          
-          一、什么是图1.概述首先，我们已经在之前学习过了树这种数据结构，树能反映一对多的关系，但是却无法反映多对多的关系，因此我们引入了图这种数据结构。
-对于图，其节点也可以叫做顶点，每个节点具有零或者多个相连节点，每个节点之间的连接称为边，从一个节点到达另一个节点路线都称为路径。
-
-以上图为例，其中：
-
-
-          ...
+          <h2 id="一-什么是图">一、什么是图</h2>
+<h3 id="1概述">1.概述</h3>
+<p>首先，我们已经在之前学习过了树这种数据结构，树能反映一对多的关系，但是却无法反映多对多的关系，因此我们引入了图这种数据结构。</p>
+<p>对于图，其节点也可以叫做<strong>顶点</strong>，每个节点具有<strong>零或者多个相连节点</strong>，每个节点之间的连接称为<strong>边</strong>，从一个节点到达另一个节点路线都称为<strong>路径</strong>。</p>
+<figure>
+<img src="http://img.xiajibagao.top/图.png" alt="image-20200804155639505"><figcaption aria-hidden="true">image-20200804155639505</figcaption>
+</figure>
+<p>以上图为例，其中：</p>
+<ul>
+<li>无向图：顶点之间连接没有方向。比如从A到C，可是A -&gt; B -&gt; C，也可以是A -&gt; D -&gt; B -&gt; C。</li>
+<li>有向图：顶点之间连接有方向。如果A到B，必须是A -&gt; B，不能是B -&gt; A</li>
+<li>带权图：边带有权值。</li>
+</ul>
+<h3 id="2树与图的关系">2.树与图的关系</h3>
+<p>实际上，对于有向图还分为两种情况，即图中含环或者图中不含环的单向图，其中含环的图可以从某个顶点出发最终返回原点。</p>
+<p>结合对图的定义，我们不难发现，<strong>树也可以理解为不含有环的单向图</strong>，是图的子集。</p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2020/08/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E5%85%AB%EF%BC%89%EF%BC%9A%E5%9B%BE/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/07/25/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%83%EF%BC%89%EF%BC%9AB%E6%A0%91%EF%BC%8CB+%E6%A0%91/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/07/25/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%83%EF%BC%89%EF%BC%9AB%E6%A0%91%EF%BC%8CB+%E6%A0%91/" itemprop="url">数据结构与算法（十七）：B树，B+树</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-25T00:00:00+08:00">
-                2020-07-25
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  996 words
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-          一、什么是多路查找树二叉树有诸多便利之处，但是当二叉树节点极多时，二叉树的构建速度就会受影响，而且过高的层数也会导致对树的操作效率降低。
-
-
-对于树的查找而言，树的高度决定了查找的时间下限，但是同样数量的节点，如果要高度小那每一层容纳的节点就要多，而二叉树每一层固定的节点数导致的高度难以降低，为此每
-          ...
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/07/25/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%83%EF%BC%89%EF%BC%9AB%E6%A0%91%EF%BC%8CB+%E6%A0%91/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1982,7 +2087,7 @@ java中参数的传
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/3/">prev</a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/">next</a>
+    <a class="extend prev" rel="prev" href="/page/3/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/3/">3</a><span class="page-number current">4</span><a class="page-number" href="/page/5/">5</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/5/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2032,7 +2137,7 @@ java中参数的传
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2054,7 +2159,7 @@ java中参数的传
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

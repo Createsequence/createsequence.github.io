@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="此文为极客时间：MySQL实战45讲的39节的学习笔记  一、自增值的保存方式我们前面提到过，自增主键的连续性使得表在空间上排列的更紧密，提高了空间利用率，避免了页分裂。实际上，自增主键大部分情况下可以保证连续性，但是也有例外的时候。 当我们创建表的时候，表结构会存储在 .frm 文件中，但是并不会一起保存自增值。MyISAM 引擎将自增值保存在数据文件，而 innodb 在 mysql8.0">
+<meta name="description" content="此文为极客时间：MySQL实战45讲的39节的学习笔记  一、自增值的保存方式 我们前面提到过，自增主键的连续性使得表在空间上排列的更紧密，提高了空间利用率，避免了页分裂。实际上，自增主键大部分情况下可以保证连续性，但是也有例外的时候。 当我们创建表的时候，表结构会存储在 .frm 文件中，但是并不会一起保存自增值。MyISAM 引擎将自增值保存在数据文件，而 innodb 在 mys">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mysql初探(十三)：自增主键，自增锁">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/11/16/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81%E4%B8%89)%EF%BC%9A%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%EF%BC%8C%E8%87%AA%E5%A2%9E%E9%94%81/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="此文为极客时间：MySQL实战45讲的39节的学习笔记  一、自增值的保存方式我们前面提到过，自增主键的连续性使得表在空间上排列的更紧密，提高了空间利用率，避免了页分裂。实际上，自增主键大部分情况下可以保证连续性，但是也有例外的时候。 当我们创建表的时候，表结构会存储在 .frm 文件中，但是并不会一起保存自增值。MyISAM 引擎将自增值保存在数据文件，而 innodb 在 mysql8.0">
+<meta property="og:description" content="此文为极客时间：MySQL实战45讲的39节的学习笔记  一、自增值的保存方式 我们前面提到过，自增主键的连续性使得表在空间上排列的更紧密，提高了空间利用率，避免了页分裂。实际上，自增主键大部分情况下可以保证连续性，但是也有例外的时候。 当我们创建表的时候，表结构会存储在 .frm 文件中，但是并不会一起保存自增值。MyISAM 引擎将自增值保存在数据文件，而 innodb 在 mys">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201112202134714.png">
 <meta property="article:published_time" content="2020-11-15T16:00:00.000Z">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.6k words
+                  2.6k
                 </span>
               
 
@@ -402,53 +402,59 @@
         <blockquote>
 <p>此文为极客时间：MySQL实战45讲的39节的学习笔记</p>
 </blockquote>
-<h2><span id="一-自增值的保存方式">一、自增值的保存方式</span></h2><p>我们前面提到过，自增主键的连续性使得表在空间上排列的更紧密，提高了空间利用率，避免了页分裂。实际上，自增主键大部分情况下可以保证连续性，但是也有例外的时候。</p>
+<h2 id="一-自增值的保存方式">一、自增值的保存方式</h2>
+<p>我们前面提到过，自增主键的连续性使得表在空间上排列的更紧密，提高了空间利用率，避免了页分裂。实际上，自增主键大部分情况下可以保证连续性，但是也有例外的时候。</p>
 <p>当我们创建表的时候，表结构会存储在 .frm 文件中，但是并不会一起保存自增值。<strong>MyISAM 引擎将自增值保存在数据文件</strong>，而 innodb 在 mysql8.0 之前只会<strong>将自增值保存在内存</strong>。</p>
 <p>也就是说，对于 innodb 引擎来说，每次重启后，都需要<strong>寻找表中最大的自增值 X，将 X+1 作为新的自增值</strong>，如果当前最大值为 10，自增值就会是11，如果删除了自增值为 10 的行，那么此时重启数据库，新插入的行自增值就会变成11，当自增值是主键的时候，相当于从新增变成了更新。</p>
 <p><strong>而 8.0 以后，innodb 会将自增值的变更记录到 redo log，重启以后依靠日志重做</strong>。</p>
-<h2><span id="二-自增值的自增机制">二、自增值的自增机制</span></h2><p>在 mysql 中，如果字段 id 被定义为 AUTO_INCREMENT，那么插入时：</p>
-<ol>
+<h2 id="二-自增值的自增机制">二、自增值的自增机制</h2>
+<p>在 mysql 中，如果字段 id 被定义为 AUTO_INCREMENT，那么插入时：</p>
+<ol type="1">
 <li>如果插入数据时 id 字段指定为 <strong>0、null 或未指定值</strong>，那么就把这个表当前的 AUTO_INCREMENT 值填到自增字段；</li>
 <li>如果插入数据时 id 字段指定了具体的值，就直接使用语句里指定的值。</li>
 </ol>
 <p>根据要插入的值和当前自增值的大小关系，自增值的变更结果也会有所不同。假设，某次要插入的值是 X，当前的自增值是 Y。</p>
-<ol>
+<ol type="1">
 <li>如果 X&lt;Y，那么这个表的自增值不变；</li>
 <li>如果 X≥Y，就需要<strong>把当前自增值修改为新的自增值</strong>。</li>
 </ol>
-<p>其中，有 <code>auto_increment_offset</code> 和 <code>auto_increment_increment</code> ，分别表示自增值的<strong>初始值</strong>和自增的<strong>步长</strong>，一般默认为1，如果是在一些特殊的情况下：比如双 master 的结构下，就会将其中一个库的 <code>auto_increment_offset</code>  设置为2，让一个库的自增 id 都是奇数，另一个库的自增 id 都是偶数，避免两个库生成的主键发生冲突。</p>
+<p>其中，有 <code>auto_increment_offset</code> 和 <code>auto_increment_increment</code> ，分别表示自增值的<strong>初始值</strong>和自增的<strong>步长</strong>，一般默认为1，如果是在一些特殊的情况下：比如双 master 的结构下，就会将其中一个库的 <code>auto_increment_offset</code> 设置为2，让一个库的自增 id 都是奇数，另一个库的自增 id 都是偶数，避免两个库生成的主键发生冲突。</p>
 <p>当需要自增的时候，会在<code>auto_increment_offset</code> 的基础上，累加<code>auto_increment_increment</code> ，直到找到第一个比插入值 X 大的数作为新的自增值。</p>
-<h2><span id="三-自增锁和释放策略">三、自增锁和释放策略</span></h2><p>为了在并发条件下维护自增值的有序性，mysql 引入自增锁。在 mysql 5.1.22 之前的版本，当有需要获取自增值的 sql ——而不是事务——要执行的时候，就会<strong>为计数器加一个表锁，在锁释放前这张表不会有新的 sql 能获得到新的值</strong>。很显然，这个和表的读写锁一样，在<strong>大量 sql 同时请求的时候比较容易发生堵塞</strong>。</p>
+<h2 id="三-自增锁和释放策略">三、自增锁和释放策略</h2>
+<p>为了在并发条件下维护自增值的有序性，mysql 引入自增锁。在 mysql 5.1.22 之前的版本，当有需要获取自增值的 sql ——而不是事务——要执行的时候，就会<strong>为计数器加一个表锁，在锁释放前这张表不会有新的 sql 能获得到新的值</strong>。很显然，这个和表的读写锁一样，在<strong>大量 sql 同时请求的时候比较容易发生堵塞</strong>。</p>
 <p>mysql 在5.1.22 版本引入了一个新策略，新增参数 <code>innodb_autoinc_lock_mode</code>，默认值是 1。</p>
-<ol>
+<ol type="1">
 <li>设置为 0：表示采用之前 MySQL 5.0 版本的策略，即<strong>语句执行结束后才释放锁</strong>；</li>
-<li>设置为 1：分两种情况<ul>
+<li>设置为 1：分两种情况
+<ul>
 <li><strong>普通 insert 语句，自增锁在申请之后就马上释放</strong>；</li>
 <li>类似 insert … select 这样的<strong>批量插入数据的语句，自增锁还是要等语句结束后才被释放</strong>；</li>
-</ul>
-</li>
+</ul></li>
 <li>设置为 2：所有的申请自增主键的动作都是<strong>申请后就释放锁</strong>。</li>
 </ol>
-<p>这个策略的疑问在于，为什么 insert … select 不可以直接使用第三种策略，申请以后就释放？</p>
+<p>这个策略的疑问在于，为什么 insert ... select 不可以直接使用第三种策略，申请以后就释放？</p>
 <p>假如现在有以下的时序图：</p>
-<p><img src="http://img.xiajibagao.top/image-20201112202134714.png" alt="自增锁的加锁策略"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201112202134714.png" alt="自增锁的加锁策略"><figcaption aria-hidden="true">自增锁的加锁策略</figcaption>
+</figure>
 <p>假如在第三个时刻：</p>
-<ol>
+<ol type="1">
 <li>sessionB 已经写入了（1,1,1）和（2,2,2）；</li>
 <li>此时 sessionA 写入了 （3,5,5）；</li>
 <li>sessionB 继续写入（4,3,3）和（5,4,4）；</li>
 </ol>
 <p>也就是说，在表 t 上的数据应该是（1,1,1）（2,2,2）（3,3,3）（4,4,4），但是写到表 t2 变成了（1,1,1）（2,2,2）3,5,5）（4,3,3）（5,4,4）</p>
 <p>考虑到 sessionB 的语义并没有强制要求 t2 与 t1 相同，所以这不是大问题，但是这样的行为反应到 binlog 就有问题了：</p>
-<p>一般情况下，binlog 默认为 statement ，即记录 sql，在<strong>实际上两个 sql 是并行执行的，但是在 binlog 上是串行写入</strong>的，不管是谁先谁后，使用 binlog 恢复的备份里，<strong>表 t2 的数据都会和原来的数据库不一致</strong>。 </p>
-<p>发生这个问题的根本原因在于 <strong>sessionB 的 insert…select 这一条语句批量插入数据的 id 是不连续的</strong>，如果要避免这个问题，有两个办法：</p>
+<p>一般情况下，binlog 默认为 statement ，即记录 sql，在<strong>实际上两个 sql 是并行执行的，但是在 binlog 上是串行写入</strong>的，不管是谁先谁后，使用 binlog 恢复的备份里，<strong>表 t2 的数据都会和原来的数据库不一致</strong>。</p>
+<p>发生这个问题的根本原因在于 <strong>sessionB 的 insert...select 这一条语句批量插入数据的 id 是不连续的</strong>，如果要避免这个问题，有两个办法：</p>
 <ul>
-<li>从根本上解决：让 insert…select 拿到的自增值一定是连续的，方案就是<strong>让锁等 sql 执行完才提交</strong>；</li>
+<li>从根本上解决：让 insert...select 拿到的自增值一定是连续的，方案就是<strong>让锁等 sql 执行完才提交</strong>；</li>
 <li>解决出问题的人：<strong>把 binlog 改为 row</strong>，直接记录数据的变化，避免恢复备份是数据出错。</li>
 </ul>
 <p>为了并发性能考虑，一般情况下，都选择 <strong><code>binlog_format = row</code></strong> + <strong><code>innodb_autoinc_lock_mode = 2</code></strong> 的模式。</p>
-<h2><span id="四-事务回滚导致自增不连续">四、事务回滚导致自增不连续</span></h2><p>一般情况下，以自增值为主键的表插入一条 id 为 null 的记录的过程如下：</p>
-<ol>
+<h2 id="四-事务回滚导致自增不连续">四、事务回滚导致自增不连续</h2>
+<p>一般情况下，以自增值为主键的表插入一条 id 为 null 的记录的过程如下：</p>
+<ol type="1">
 <li>执行器调用 innodb 引擎，写入一行；</li>
 <li>innodb 发现没指定主键，获取要插入的表的自增值；</li>
 <li>将自增值赋给要插入的新数据作为主键；</li>
@@ -459,31 +465,36 @@
 <p>实际上，事务回滚理论上应该回滚完全部的数据，但是却没有回滚自增值，是为了性能上的考虑：</p>
 <p>假如事务A和事务B分别申请了2和3这两个值作为id，现在自增值为4，<strong>如果事务A发生回滚，而事务B提交了，此时就会出现自增值回滚为2，但是已经出现了id=3的数据</strong>，那么下一条插入的数据就会因此id=3这个主键冲突而插入失败。</p>
 <p>如果要解决这个问题，那么方法有两种：</p>
-<ol>
+<ol type="1">
 <li>每次插入前扫描一下主键，是否存在同值，有就跳过；</li>
 <li>把自增锁从语句级别扩大到事务级别，必须先等上一个事务提交，下一个事务的 sql 才能获取新的自增值；</li>
 </ol>
 <p>这两种方法都非常影响性能，所以 mysql 事务回滚不会回滚自增值，<strong>自增值只能保证递增有序，不能保证连续。</strong></p>
-<h2><span id="五-批量插入的申请策略">五、批量插入的申请策略</span></h2><p>insert..select 语句之所以需要加锁，是因为<strong>无法确定到底要插入多少条数据</strong>，对于 insert……values (),(),() 这样语句来说，由于一开始就能确定有多少条要插入，可以直接申请对应数量的自增值。</p>
-<p>实际上，mysql 针对 insert…select 这样不确定数量的批量插入也有申请自增id的策略：</p>
-<ol>
+<h2 id="五-批量插入的申请策略">五、批量插入的申请策略</h2>
+<p>insert..select 语句之所以需要加锁，是因为<strong>无法确定到底要插入多少条数据</strong>，对于 insert......values (),(),() 这样语句来说，由于一开始就能确定有多少条要插入，可以直接申请对应数量的自增值。</p>
+<p>实际上，mysql 针对 insert...select 这样不确定数量的批量插入也有申请自增id的策略：</p>
+<ol type="1">
 <li>语句执行过程中，第一次申请自增 id，会分配 1 个；</li>
 <li>1 个用完以后，这个语句第二次申请自增 id，会分配 2 个；</li>
 <li>2 个用完以后，还是这个语句，第三次申请自增 id，会分配 4 个；</li>
 <li>依此类推，同一个语句去申请自增 id，<strong>每次申请到的自增 id 个数都是上一次的两倍</strong>。</li>
 </ol>
-<p>我们举个例子：假如 sessionA 要执行 insert…select 语句，需要插入四次。在第三次申请 id 的时候，自增 id 就会变成 2 + 4 = 6，如果这个时候来了另一个 sessionB 要插入数据，就会直接插入 7，等到 sessionB 提交了以后，sessionA 第四次要申请的时候，自增id就会从8开始，也就说，<strong>4和5这个id就被跳过了，这也会导致出现自增主键的“空洞”</strong>。</p>
-<h2><span id="六-总结">六、总结</span></h2><h3><span id="1自增主键保存和增长策略">1.自增主键保存和增长策略</span></h3><p>mysql 8.0 之前自增值保存在内存里，重启以后会获取表的最大值，在最大值基础上+1。8.0 之后可以通过 redo log 重做获得最新的自增值。</p>
+<p>我们举个例子：假如 sessionA 要执行 insert...select 语句，需要插入四次。在第三次申请 id 的时候，自增 id 就会变成 2 + 4 = 6，如果这个时候来了另一个 sessionB 要插入数据，就会直接插入 7，等到 sessionB 提交了以后，sessionA 第四次要申请的时候，自增id就会从8开始，也就说，<strong>4和5这个id就被跳过了，这也会导致出现自增主键的“空洞”</strong>。</p>
+<h2 id="六-总结">六、总结</h2>
+<h3 id="1自增主键保存和增长策略">1.自增主键保存和增长策略</h3>
+<p>mysql 8.0 之前自增值保存在内存里，重启以后会获取表的最大值，在最大值基础上+1。8.0 之后可以通过 redo log 重做获得最新的自增值。</p>
 <p><code>auto_increment_offset</code> 和 <code>auto_increment_increment</code> 分别表示自增值的初始值和自增的步长，当插入记录已经指明了自增值的时候，则会直接使用插入值，并且比较该值与最新初始值的大小，如果初始值小，则会累加步长直到比插入值大位置，反正就不改变初始值，下次插入还用它。</p>
 <p>事务回滚不会回滚自增值，这样做是为了避免先进行的事务回滚，导致自增值回滚后小于最新数据自增id，下一次插入可能会出现主键冲突。</p>
-<h3><span id="2自增锁的加锁策略">2.自增锁的加锁策略</span></h3><p>mysql 针对自增锁有三种策略，根据<code>innodb_autoinc_lock_mode</code>设置：</p>
+<h3 id="2自增锁的加锁策略">2.自增锁的加锁策略</h3>
+<p>mysql 针对自增锁有三种策略，根据<code>innodb_autoinc_lock_mode</code>设置：</p>
 <ul>
 <li>设置为 0 ：语句结束后释放自增锁；</li>
 <li>设置为 1：普通 insert 申请后立刻释放； insert … select 这样批量插入的语句会等到执行完后才释放；</li>
 <li>设置为 2：不分普通和批量插入，语句获取锁后都立刻释放锁；</li>
 </ul>
 <p>当有插入的 sql 和批量插入并发写的时候，可能会出现自增主键连续，但是 binlog 备份恢复出来的数据库跟原库不一致，这种情况最好选择 <code>statement + innodb_autoinc_lock_mode = 2</code></p>
-<h3><span id="3自增主键不一致的可能性">3.自增主键不一致的可能性</span></h3><p>mysql 针对确定数量的批量插入是可以直接申请一大批自增值的，但是针对不确定的插入，会每次插入都申请两倍于上一次插入申请的数量的自增主键。</p>
+<h3 id="3自增主键不一致的可能性">3.自增主键不一致的可能性</h3>
+<p>mysql 针对确定数量的批量插入是可以直接申请一大批自增值的，但是针对不确定的插入，会每次插入都申请两倍于上一次插入申请的数量的自增主键。</p>
 <p>综上，主键不自增有可能有两种情况：</p>
 <ul>
 <li>插入失败，事务回滚导致申请了的自增值没用上；</li>
@@ -612,7 +623,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -634,7 +645,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -674,7 +685,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">一、自增值的保存方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">二、自增值的自增机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">三、自增锁和释放策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">四、事务回滚导致自增不连续</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">五、批量插入的申请策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link"><span class="nav-text">六、总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">1.自增主键保存和增长策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">2.自增锁的加锁策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link"><span class="nav-text">3.自增主键不一致的可能性</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E8%87%AA%E5%A2%9E%E5%80%BC%E7%9A%84%E4%BF%9D%E5%AD%98%E6%96%B9%E5%BC%8F"><span class="nav-text">一、自增值的保存方式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E8%87%AA%E5%A2%9E%E5%80%BC%E7%9A%84%E8%87%AA%E5%A2%9E%E6%9C%BA%E5%88%B6"><span class="nav-text">二、自增值的自增机制</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E8%87%AA%E5%A2%9E%E9%94%81%E5%92%8C%E9%87%8A%E6%94%BE%E7%AD%96%E7%95%A5"><span class="nav-text">三、自增锁和释放策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B-%E4%BA%8B%E5%8A%A1%E5%9B%9E%E6%BB%9A%E5%AF%BC%E8%87%B4%E8%87%AA%E5%A2%9E%E4%B8%8D%E8%BF%9E%E7%BB%AD"><span class="nav-text">四、事务回滚导致自增不连续</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94-%E6%89%B9%E9%87%8F%E6%8F%92%E5%85%A5%E7%9A%84%E7%94%B3%E8%AF%B7%E7%AD%96%E7%95%A5"><span class="nav-text">五、批量插入的申请策略</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD-%E6%80%BB%E7%BB%93"><span class="nav-text">六、总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%E4%BF%9D%E5%AD%98%E5%92%8C%E5%A2%9E%E9%95%BF%E7%AD%96%E7%95%A5"><span class="nav-text">1.自增主键保存和增长策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E8%87%AA%E5%A2%9E%E9%94%81%E7%9A%84%E5%8A%A0%E9%94%81%E7%AD%96%E7%95%A5"><span class="nav-text">2.自增锁的加锁策略</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%E4%B8%8D%E4%B8%80%E8%87%B4%E7%9A%84%E5%8F%AF%E8%83%BD%E6%80%A7"><span class="nav-text">3.自增主键不一致的可能性</span></a></li></ol></li></ol></div>
             
 
           </div>
