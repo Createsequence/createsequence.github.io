@@ -7671,4 +7671,40 @@
         <tag>java集合容器</tag>
       </tags>
   </entry>
+  <entry>
+    <title>next5主题自定义摘要</title>
+    <url>/2020/12/21/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/next5%E4%B8%BB%E9%A2%98%E8%87%AA%E5%AE%9A%E4%B9%89%E6%91%98%E8%A6%81/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>最近 next6 折腾了一段时间，最后还是回到了 next5，但是添加阅读全文按钮以后，默认的摘要生成不太方便，于是就把注意打到了 js 上。</p>
+<p>这里整理一下 next5 生成摘要的方法。</p>
+<h2 id="一-yaml">一、yaml</h2>
+<p>这个是 hexo 自带的，通过直接在 yaml 里面配置</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">next5主题自定义摘要</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2020-12-21</span></span><br><span class="line"><span class="attr">tags:</span> [<span class="string">杂七乱八</span>]</span><br><span class="line"><span class="attr">categories:</span> [<span class="string">杂七乱八</span>]</span><br><span class="line"><span class="attr">description:</span> <span class="string">这里是一段摘要</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
+<p>不过加完以后， next 会默认在文章详情页面的发布信息下也生成摘要，个人觉得不是很美观。</p>
+<h2 id="二-文章截断">二、文章截断</h2>
+<p>这个是 next 自带的，可以通过在文章中插入：</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line"><span class="xml"><span class="comment">&lt;!-- more --&gt;</span></span></span><br></pre></td></tr></table></figure>
+<p>在标签之前的部分会作为文章摘要展示，优点是文章详情页面不会再另外展示，比较没关，但是缺点是需要手动一个一个添加，有些老文章没有加摘要还需要手动添加，不太方便。</p>
+<h2 id="三-自动截断">三、自动截断</h2>
+<p>在 hexo 的配置文件中添加如下配置：</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">auto_excerpt:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">length:</span> <span class="number">200</span></span><br></pre></td></tr></table></figure>
+<p>即可自动生成文章摘要。这种方式优点在于方便，但是长度不固定，而且因为带样式的缘故，可能页面会不是很协调。</p>
+<p>在 next6 以后这种方式就不是默认支持的了，需要另外安装插件使用。</p>
+<h2 id="四-js-截取摘要">四、js 截取摘要</h2>
+<p>顾名思义，自己写 js 截断，这种方法和自动截断差不多，但是相对比较自由。个人比较习惯博客园那样不带样式的自动摘要，但是折腾来折腾去貌似都没弄出来这个效果于是决定用自己的渣渣 js 写一个。</p>
+<p>首先根据渲染出来的页面，写好对应截取文本的 js：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">getAbstract();</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 截取摘要</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getAbstract</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">let</span> posts = <span class="built_in">document</span>.getElementById(<span class="string">&#x27;posts&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">document</span>.getElementsByTagName(<span class="string">&#x27;article&#x27;</span>).length &lt;= <span class="number">1</span>) &#123;</span><br><span class="line">        <span class="built_in">console</span>.log(<span class="string">&quot;不在主页！&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> ;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">let</span> arts = posts.getElementsByClassName(<span class="string">&quot;post-body&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i &lt; arts.length; i++) &#123;</span><br><span class="line">        <span class="keyword">let</span> dom = arts[i];</span><br><span class="line">        <span class="keyword">let</span> content = dom.innerText</span><br><span class="line">            .substring(<span class="number">0</span>, <span class="number">250</span>)  + <span class="string">&quot;......&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">let</span> readAll = dom.getElementsByClassName(<span class="string">&quot;post-button&quot;</span>)[<span class="number">0</span>];</span><br><span class="line">        dom.innerHTML = content;</span><br><span class="line">        dom.appendChild(readAll);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该文件命名为 abstract.js，并且放在 <code>themes\next\source\js\src</code>下。</p>
+<p>然后找到 <code>\themes\next\layout</code>目录下的 <code>_layout.swig</code>文件，会看到很多通过 include 语法引入的组件，拉到最底下，在 body 标签之前添加 script ：</p>
+<figure class="highlight javascript"><table><tr><td class="code"><pre><span class="line">&lt;!-- 引入目录截取js --&gt;</span><br><span class="line">&lt;script type=<span class="string">&quot;text/javascript&quot;</span> src=<span class="string">&quot;/js/src/abstract.js&quot;</span>&gt;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<p>当然，这个也可以写在那些被 include 引入的组件里头，效果是一样的。</p>
+<p>最后 <code>hexo clean &amp;&amp; hexo g &amp;&amp; hexo s</code>三连查看效果即可。</p>
+]]></content>
+      <categories>
+        <category>杂七乱八</category>
+      </categories>
+      <tags>
+        <tag>杂七乱八</tag>
+      </tags>
+  </entry>
 </search>
