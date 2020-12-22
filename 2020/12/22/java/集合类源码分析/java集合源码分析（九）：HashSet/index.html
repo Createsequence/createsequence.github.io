@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT" />
+  <meta name="keywords" content="java,java集合容器," />
 
 
 
@@ -81,15 +81,21 @@
 
 
 
-<meta name="description" content="路漫漫其修远兮，吾将上下而求索">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Createsequence&#39;s Blog">
-<meta property="og:url" content="http://blog.xiajibagao.top/tags/tomcat/index.html">
+<meta name="description" content="概述 HashSet 是 Set 接口下一个不允许重复但允许 null、无序并且线程不安全的集合。它基于 HashMap 实现。 从数据结构来说，他与 HashMap 相同，但是由于 HashSet 借助 HashMap 的 key 来存储数据，因而 HashMap 的 value 在 HashSet 中无意义。  这是关于 java 集合类源码的第九篇文章。往期文章：   java">
+<meta property="og:type" content="article">
+<meta property="og:title" content="java集合源码分析（九）：HashSet与TreeSet.md">
+<meta property="og:url" content="http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9AHashSet/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="路漫漫其修远兮，吾将上下而求索">
+<meta property="og:description" content="概述 HashSet 是 Set 接口下一个不允许重复但允许 null、无序并且线程不安全的集合。它基于 HashMap 实现。 从数据结构来说，他与 HashMap 相同，但是由于 HashSet 借助 HashMap 的 key 来存储数据，因而 HashMap 的 value 在 HashSet 中无意义。  这是关于 java 集合类源码的第九篇文章。往期文章：   java">
 <meta property="og:locale">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20201208205304527.png">
+<meta property="article:published_time" content="2020-12-21T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-12-22T09:33:35.569Z">
 <meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="java">
+<meta property="article:tag" content="java集合容器">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.xiajibagao.top/image-20201208205304527.png">
 
 
 
@@ -119,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="http://blog.xiajibagao.top/tags/tomcat/"/>
+  <link rel="canonical" href="http://blog.xiajibagao.top/2020/12/22/java/集合类源码分析/java集合源码分析（九）：HashSet/"/>
 
 
 
 
 
-  <title>标签: tomcat | Createsequence's Blog</title>
+  <title>java集合源码分析（九）：HashSet与TreeSet.md | Createsequence's Blog</title>
   
 
 
@@ -144,7 +150,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -272,54 +278,229 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>tomcat<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9AHashSet/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85tomcat/" itemprop="url">
-              
-                <span itemprop="name">linux下安装tomcat</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">java集合源码分析（九）：HashSet与TreeSet.md</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated"
-              datetime="2019-07-24T00:00:00+08:00"
-              content="2019-07-24" >
-          07-24
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-22T00:00:00+08:00">
+                2020-12-22
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
+                    <span itemprop="name">java集合容器</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  864
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="概述">概述</h2>
+<p>HashSet 是 Set 接口下一个不允许重复但允许 null、无序并且线程不安全的集合。它基于 HashMap 实现。</p>
+<p>从数据结构来说，他与 HashMap 相同，但是由于 HashSet 借助 HashMap 的 key 来存储数据，因而 HashMap 的 value 在 HashSet 中无意义。</p>
+<p><img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;"></p>
+<p>这是关于 java 集合类源码的第九篇文章。往期文章：</p>
+<blockquote>
+<ol type="1">
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
+</li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/">java集合源码分析（四）：LinkedList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/">java集合源码分析（六）：HashMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/21/java/集合类源码分析/java集合源码分析（七）：LinkedHashMap/">java集合源码分析（七）：LinkedHashMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/22/java/集合类源码分析/java集合源码分析（八）：Set与AbstracSet/">java集合源码分析（八）：Set与AbstractSet</a></li>
+</ol>
+</blockquote>
+<h2 id="一-数据结构">一、数据结构</h2>
+<p>HashSet 基于 HashMap 实现，也就是说，HashSet 用于存储数据的容器实际上就是一个 HashMap 实例。（关于 HashMap 的数据结构，可以参考前文<a href="https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/">java集合源码分析（六）：HashMap</a>中的第一部分。）</p>
+<p>HashSet 使用 HashMap 的 key 作为存储数据的位置，而 value 的位置使用一个默认的全局空对象填充。大部分方法通过直接包装调用 HashMap 的来实现，也就是说，我们可以把 HashSet 看成 HashMap 的一个大号包装器——或者说适配器类。</p>
+<h2 id="二-成员变量">二、成员变量</h2>
+<p>由于直接基于 HashMap 实现，因而 HashSet 中只提供两个成员变量，一个 map 用于存放 HashMap 实例，一个 PRESENT 用于作为填充 value 的空对象。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> HashMap&lt;E,Object&gt; map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object PRESENT = <span class="keyword">new</span> Object();</span><br></pre></td></tr></table></figure>
+<h2 id="三-构造方法">三、构造方法</h2>
+<p>HashSet 提供了五个构造方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashSet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashSet</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">    map = <span class="keyword">new</span> HashMap&lt;&gt;(Math.max((<span class="keyword">int</span>) (c.size()/.<span class="number">75f</span>) + <span class="number">1</span>, <span class="number">16</span>));</span><br><span class="line">    addAll(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashSet</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">    map = <span class="keyword">new</span> HashMap&lt;&gt;(initialCapacity, loadFactor);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashSet</span><span class="params">(<span class="keyword">int</span> initialCapacity)</span> </span>&#123;</span><br><span class="line">    map = <span class="keyword">new</span> HashMap&lt;&gt;(initialCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">HashSet(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor, <span class="keyword">boolean</span> dummy) &#123;</span><br><span class="line">    map = <span class="keyword">new</span> LinkedHashMap&lt;&gt;(initialCapacity, loadFactor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>没什么好说的，比较值得注意的是直接传入 Collection 集合的构造方法，这个方法取 HashMap 的默认容量16与传入容量除以默认负载系数的最大值，避免插入过程发生一次额外的扩容。</p>
+<h2 id="四-成员方法">四、成员方法</h2>
+<p>Set 接口继承了 Collection 接口，但是 Set 接口并未提供一些新的抽象方法。因而 HashSet 内部的方法基本都重写自 AbstractCollection 抽象类，并且实现都是基于 HashMap 方法的再包装。</p>
+<p>也正由于此，HashSet 集合元素允许 null 但是不允许重复，因为 HashMap 的 key 允许有一个 null，并且不允许重复。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.size();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.isEmpty();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">contains</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.containsKey(o);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.put(e, PRESENT)==<span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.remove(o)==PRESENT;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    map.clear();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">clone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        HashSet&lt;E&gt; newSet = (HashSet&lt;E&gt;) <span class="keyword">super</span>.clone();</span><br><span class="line">        newSet.map = (HashMap&lt;E, Object&gt;) map.clone();</span><br><span class="line">        <span class="keyword">return</span> newSet;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> InternalError(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="五-总结">五、总结</h2>
+<p>HashSet 基于 HashMap 实现，并且使用 HashMap 的 key 作为存储容器，将对应的 value 以一个 Object 对象常量进行充填。</p>
+<p>HashSet 中的元素无序、不允许重复、允许一个 null 的特性皆来源于 HashMap 的 key 的特性。</p>
+<p>实际上，HashSet 中的方法都来自于 Collection 接口，而真正的实现都来自于 HashMap，从这个角度来看，HashSet 其实就是 HashMap 与 Collection 接口之间的一种适配器。</p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/java/" rel="tag"># java</a>
+          
+            <a href="/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/" rel="tag"># java集合容器</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/12/21/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/next5%E4%B8%BB%E9%A2%98%E8%87%AA%E5%AE%9A%E4%B9%89%E6%91%98%E8%A6%81/" rel="next" title="next5主题自定义摘要">
+                <i class="fa fa-chevron-left"></i> next5主题自定义摘要
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/" rel="prev" title="java集合源码分析（八）：Set与AbstractSet">
+                java集合源码分析（八）：Set与AbstractSet <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -327,6 +508,10 @@
 
 
           
+
+  
+
+
 
         </div>
         
@@ -347,8 +532,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -419,6 +613,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">一、数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F"><span class="nav-text">二、成员变量</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95"><span class="nav-text">三、构造方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B-%E6%88%90%E5%91%98%E6%96%B9%E6%B3%95"><span class="nav-text">四、成员方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94-%E6%80%BB%E7%BB%93"><span class="nav-text">五、总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -557,6 +767,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 

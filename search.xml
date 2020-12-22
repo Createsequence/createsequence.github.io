@@ -7767,4 +7767,52 @@ Attempts to allocate larger arrays may result in OutOfMemoryError</p>
         <tag>java集合容器</tag>
       </tags>
   </entry>
+  <entry>
+    <title>java集合源码分析（九）：HashSet与TreeSet.md</title>
+    <url>/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9AHashSet/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>HashSet 是 Set 接口下一个不允许重复但允许 null、无序并且线程不安全的集合。它基于 HashMap 实现。</p>
+<p>从数据结构来说，他与 HashMap 相同，但是由于 HashSet 借助 HashMap 的 key 来存储数据，因而 HashMap 的 value 在 HashSet 中无意义。</p>
+<p><img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;"></p>
+<p>这是关于 java 集合类源码的第九篇文章。往期文章：</p>
+<blockquote>
+<ol type="1">
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
+</li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/">java集合源码分析（四）：LinkedList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/">java集合源码分析（六）：HashMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/21/java/集合类源码分析/java集合源码分析（七）：LinkedHashMap/">java集合源码分析（七）：LinkedHashMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/22/java/集合类源码分析/java集合源码分析（八）：Set与AbstracSet/">java集合源码分析（八）：Set与AbstractSet</a></li>
+</ol>
+</blockquote>
+<h2 id="一-数据结构">一、数据结构</h2>
+<p>HashSet 基于 HashMap 实现，也就是说，HashSet 用于存储数据的容器实际上就是一个 HashMap 实例。（关于 HashMap 的数据结构，可以参考前文<a href="https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/">java集合源码分析（六）：HashMap</a>中的第一部分。）</p>
+<p>HashSet 使用 HashMap 的 key 作为存储数据的位置，而 value 的位置使用一个默认的全局空对象填充。大部分方法通过直接包装调用 HashMap 的来实现，也就是说，我们可以把 HashSet 看成 HashMap 的一个大号包装器——或者说适配器类。</p>
+<h2 id="二-成员变量">二、成员变量</h2>
+<p>由于直接基于 HashMap 实现，因而 HashSet 中只提供两个成员变量，一个 map 用于存放 HashMap 实例，一个 PRESENT 用于作为填充 value 的空对象。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">transient</span> HashMap&lt;E,Object&gt; map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> Object PRESENT = <span class="keyword">new</span> Object();</span><br></pre></td></tr></table></figure>
+<h2 id="三-构造方法">三、构造方法</h2>
+<p>HashSet 提供了五个构造方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashSet</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    map = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashSet</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">    map = <span class="keyword">new</span> HashMap&lt;&gt;(Math.max((<span class="keyword">int</span>) (c.size()/.<span class="number">75f</span>) + <span class="number">1</span>, <span class="number">16</span>));</span><br><span class="line">    addAll(c);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashSet</span><span class="params">(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor)</span> </span>&#123;</span><br><span class="line">    map = <span class="keyword">new</span> HashMap&lt;&gt;(initialCapacity, loadFactor);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashSet</span><span class="params">(<span class="keyword">int</span> initialCapacity)</span> </span>&#123;</span><br><span class="line">    map = <span class="keyword">new</span> HashMap&lt;&gt;(initialCapacity);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">HashSet(<span class="keyword">int</span> initialCapacity, <span class="keyword">float</span> loadFactor, <span class="keyword">boolean</span> dummy) &#123;</span><br><span class="line">    map = <span class="keyword">new</span> LinkedHashMap&lt;&gt;(initialCapacity, loadFactor);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>没什么好说的，比较值得注意的是直接传入 Collection 集合的构造方法，这个方法取 HashMap 的默认容量16与传入容量除以默认负载系数的最大值，避免插入过程发生一次额外的扩容。</p>
+<h2 id="四-成员方法">四、成员方法</h2>
+<p>Set 接口继承了 Collection 接口，但是 Set 接口并未提供一些新的抽象方法。因而 HashSet 内部的方法基本都重写自 AbstractCollection 抽象类，并且实现都是基于 HashMap 方法的再包装。</p>
+<p>也正由于此，HashSet 集合元素允许 null 但是不允许重复，因为 HashMap 的 key 允许有一个 null，并且不允许重复。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.size();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.isEmpty();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">contains</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.containsKey(o);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.put(e, PRESENT)==<span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> map.remove(o)==PRESENT;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clear</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    map.clear();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">clone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        HashSet&lt;E&gt; newSet = (HashSet&lt;E&gt;) <span class="keyword">super</span>.clone();</span><br><span class="line">        newSet.map = (HashMap&lt;E, Object&gt;) map.clone();</span><br><span class="line">        <span class="keyword">return</span> newSet;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> InternalError(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="五-总结">五、总结</h2>
+<p>HashSet 基于 HashMap 实现，并且使用 HashMap 的 key 作为存储容器，将对应的 value 以一个 Object 对象常量进行充填。</p>
+<p>HashSet 中的元素无序、不允许重复、允许一个 null 的特性皆来源于 HashMap 的 key 的特性。</p>
+<p>实际上，HashSet 中的方法都来自于 Collection 接口，而真正的实现都来自于 HashMap，从这个角度来看，HashSet 其实就是 HashMap 与 Collection 接口之间的一种适配器。</p>
+]]></content>
+      <categories>
+        <category>java集合容器</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>java集合容器</tag>
+      </tags>
+  </entry>
 </search>
