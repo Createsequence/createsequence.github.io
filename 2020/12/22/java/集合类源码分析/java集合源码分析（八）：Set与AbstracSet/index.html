@@ -81,22 +81,22 @@
 
 
 
-<meta name="description" content="概述 Set 接口是 Collection 接口下三大子接口之一。其下实现类都为元素不可重复的，不保证线程安全的集合。他有两个主要实现，即无序的 HashSet 与有序的 TreeSet。 Set 相对 List 集合与 Queue 集合不同之处在于，他的实现类需要依赖与 Map 集合的实现类密切相关。这体现在以下两点：  HashSet 实际依赖于 HashMap，他使用 HashMap 的 k">
+<meta name="description" content="概述 Set 接口是 Collection 接口下三大子接口之一。其下实现类都为元素不可重复的，不保证线程安全的集合。他有两个主要实现，即无序的 HashSet 与有序的 TreeSet。 Set 相对 List 集合与 Queue 集合不同之处在于，他的实现类需要依赖与 Map 集合的实现类密切相关。这体现在以下两点：  HashSet 实际依赖于 HashMap，他使用 HashMap">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java集合源码分析（八）：Set与AbstractSet">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 Set 接口是 Collection 接口下三大子接口之一。其下实现类都为元素不可重复的，不保证线程安全的集合。他有两个主要实现，即无序的 HashSet 与有序的 TreeSet。 Set 相对 List 集合与 Queue 集合不同之处在于，他的实现类需要依赖与 Map 集合的实现类密切相关。这体现在以下两点：  HashSet 实际依赖于 HashMap，他使用 HashMap 的 k">
+<meta property="og:description" content="概述 Set 接口是 Collection 接口下三大子接口之一。其下实现类都为元素不可重复的，不保证线程安全的集合。他有两个主要实现，即无序的 HashSet 与有序的 TreeSet。 Set 相对 List 集合与 Queue 集合不同之处在于，他的实现类需要依赖与 Map 集合的实现类密切相关。这体现在以下两点：  HashSet 实际依赖于 HashMap，他使用 HashMap">
 <meta property="og:locale">
-<meta property="og:image" content="d:%5C%E4%BB%A3%E7%A0%81%E5%8F%8Ajar%E5%8C%85%5C%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%5Cjava%E7%9B%B8%E5%85%B3%5Cjava%E9%9B%86%E5%90%88%5CSet%E5%AE%9E%E7%8E%B0%E7%B1%BB%5Cimage-20201222152520801.png">
-<meta property="og:image" content="d:%5C%E4%BB%A3%E7%A0%81%E5%8F%8Ajar%E5%8C%85%5C%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%5Cjava%E7%9B%B8%E5%85%B3%5Cjava%E9%9B%86%E5%90%88%5CSet%E5%AE%9E%E7%8E%B0%E7%B1%BB%5Cimage-20201222155937401.png">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20201222152520801.png">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20201222155937401.png">
 <meta property="article:published_time" content="2020-12-21T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-12-22T08:28:55.954Z">
+<meta property="article:modified_time" content="2020-12-22T08:50:10.381Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="java集合容器">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="d:%5C%E4%BB%A3%E7%A0%81%E5%8F%8Ajar%E5%8C%85%5C%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%5Cjava%E7%9B%B8%E5%85%B3%5Cjava%E9%9B%86%E5%90%88%5CSet%E5%AE%9E%E7%8E%B0%E7%B1%BB%5Cimage-20201222152520801.png">
+<meta name="twitter:image" content="http://img.xiajibagao.top/image-20201222152520801.png">
 
 
 
@@ -408,17 +408,20 @@
 <li>HashSet 实际依赖于 HashMap，他使用 HashMap 的 key 作为存储容器。TreeSet 同理，依赖于 TreeMap实现。</li>
 <li>Map 集合中的 keySet 与 EntrySet 视图集合往往以实现了 Set 接口的内部类出现在 Map 的实现类中。</li>
 </ul>
-<p><img src="D:%5C%E4%BB%A3%E7%A0%81%E5%8F%8Ajar%E5%8C%85%5C%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%5Cjava%E7%9B%B8%E5%85%B3%5Cjava%E9%9B%86%E5%90%88%5CSet%E5%AE%9E%E7%8E%B0%E7%B1%BB%5Cimage-20201222152520801.png" alt="image-20201222152520801"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201222152520801.png" alt="image-20201222152520801"><figcaption aria-hidden="true">image-20201222152520801</figcaption>
+</figure>
 <p>这是关于 java 集合类源码的第八篇文章。往期文章：</p>
 <blockquote>
-<ol>
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/">java集合源码分析（四）：LinkedList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/">java集合源码分析（六）：HashMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/21/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ALinkedHashMap/">java集合源码分析（七）：LinkedHashMap</a></li>
+<ol type="1">
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
+</li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/">java集合源码分析（四）：LinkedList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/">java集合源码分析（六）：HashMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/21/java/集合类源码分析/java集合源码分析（七）：LinkedHashMap/">java集合源码分析（七）：LinkedHashMap</a></li>
 </ol>
 </blockquote>
 <h2 id="一-set-接口的类关系">一、Set 接口的类关系</h2>
@@ -435,8 +438,10 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 1.返回小于指定值的最大元素</span></span><br><span class="line"><span class="function">E <span class="title">lower</span><span class="params">(E e)</span></span>;</span><br><span class="line"><span class="comment">// 2.返回小于等于指定的最大元素</span></span><br><span class="line"><span class="function">E <span class="title">floor</span><span class="params">(E e)</span></span>;</span><br><span class="line"><span class="comment">// 3.返回大于指定的最小元素</span></span><br><span class="line"><span class="function">E <span class="title">higher</span><span class="params">(E e)</span></span>;</span><br><span class="line"><span class="comment">// 4.返回大于等于指定值的最小元素</span></span><br><span class="line"><span class="function">E <span class="title">ceiling</span><span class="params">(E e)</span></span>;</span><br><span class="line"><span class="comment">// 5.获取并删除最大或最小元素</span></span><br><span class="line"><span class="function">E <span class="title">pollFirst</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">E <span class="title">pollLast</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 6.获取升序迭代器</span></span><br><span class="line"><span class="function">Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 7.获取降序迭代器或降序视图</span></span><br><span class="line"><span class="function">NavigableSet&lt;E&gt; <span class="title">descendingSet</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">Iterator&lt;E&gt; <span class="title">descendingIterator</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 8.获取指定范围内的视图</span></span><br><span class="line"><span class="function">SortedSet&lt;E&gt; <span class="title">subSet</span><span class="params">(E fromElement, E toElement)</span></span>;</span><br><span class="line"><span class="function">SortedSet&lt;E&gt; <span class="title">headSet</span><span class="params">(E toElement)</span></span>;</span><br><span class="line"><span class="function">SortedSet&lt;E&gt; <span class="title">tailSet</span><span class="params">(E fromElement)</span></span>;</span><br><span class="line"><span class="comment">// 9.获取指定范围内的视图，并且可以选择开闭区间</span></span><br><span class="line"><span class="function">NavigableSet&lt;E&gt; <span class="title">subSet</span><span class="params">(E fromElement, <span class="keyword">boolean</span> fromInclusive,</span></span></span><br><span class="line"><span class="function"><span class="params">                           E toElement,   <span class="keyword">boolean</span> toInclusive)</span></span>;</span><br><span class="line"><span class="function">NavigableSet&lt;E&gt; <span class="title">subSet</span><span class="params">(E fromElement, <span class="keyword">boolean</span> fromInclusive,</span></span></span><br><span class="line"><span class="function"><span class="params">                           E toElement,   <span class="keyword">boolean</span> toInclusive)</span></span>;</span><br><span class="line"><span class="function">NavigableSet&lt;E&gt; <span class="title">headSet</span><span class="params">(E toElement, <span class="keyword">boolean</span> inclusive)</span></span>;</span><br><span class="line"><span class="function">NavigableSet&lt;E&gt; <span class="title">tailSet</span><span class="params">(E fromElement, <span class="keyword">boolean</span> inclusive)</span></span>;</span><br></pre></td></tr></table></figure>
 <p>值得一提的是，TreeSet 实现了 SortedSet 与 NavigableSet 接口，同时，它依赖的 TreeMap 也实现了相应的 SortedMap 和 NavigableMap 接口。</p>
 <h2 id="二-set-接口的方法">二、Set 接口的方法</h2>
-<p><img src="D:%5C%E4%BB%A3%E7%A0%81%E5%8F%8Ajar%E5%8C%85%5C%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%5Cjava%E7%9B%B8%E5%85%B3%5Cjava%E9%9B%86%E5%90%88%5CSet%E5%AE%9E%E7%8E%B0%E7%B1%BB%5Cimage-20201222155937401.png" alt="image-20201222155937401"></p>
-<p>set 接口不包含任何默认实现，也没有重写 Collection 中的任何方法，因而它提供的抽象方法与 Collection 相同。具体可以参考前文<a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a>中的第二部分。</p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201222155937401.png" alt="image-20201222155937401"><figcaption aria-hidden="true">image-20201222155937401</figcaption>
+</figure>
+<p>set 接口不包含任何默认实现，也没有重写 Collection 中的任何方法，因而它提供的抽象方法与 Collection 相同。具体可以参考前文<a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a>中的第二部分。</p>
 <h2 id="三-abstractset">三、AbstractSet</h2>
 <p>AbstractSet 是实现了 Set 接口，并且继承了 AbstractCollection 的抽象类。他为 Set 接口提供了其父类接口 Collection 中的实现类，并且提供了 <code>equlas()</code>，<code>removeAll()</code>，<code>hashCode()</code>三个方法的重写/实现。</p>
 <h2 id="1equlashashcode">1.equlas/hashCode</h2>
