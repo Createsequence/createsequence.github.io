@@ -287,6 +287,178 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85mysql/" itemprop="url">linux下安装mysql</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-24T00:00:00+08:00">
+                2019-07-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/linux/" itemprop="url" rel="index">
+                    <span itemprop="name">linux</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  470
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="1安装">1.安装</h2>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#获取安装用的Yum Repository</span></span><br><span class="line"><span class="string">wget</span> <span class="string">-i</span> <span class="string">-c</span> <span class="string">http://dev.mysql.com/get/mysql57-community-release-el7-10.noarch.rpm</span></span><br><span class="line"><span class="string">yum</span> <span class="string">-y</span> <span class="string">install</span> <span class="string">mysql57-community-release-el7-10.noarch.rpm</span></span><br><span class="line"><span class="comment">#安装MySQL服务</span></span><br><span class="line"><span class="string">yum</span> <span class="string">-y</span> <span class="string">install</span> <span class="string">mysql-community-server</span></span><br><span class="line"><span class="comment">#查看版本</span></span><br><span class="line"><span class="string">mysql</span> <span class="string">-v</span></span><br><span class="line"><span class="comment">#启动mysql</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">start</span> <span class="string">mysqld.service</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#找回初始密码并登录  jWTAeq-DF9tJ</span></span><br><span class="line"><span class="string">grep</span> <span class="string">&#x27;temporary password&#x27;</span> <span class="string">/var/log/mysqld.log</span></span><br><span class="line"><span class="string">mysql</span> <span class="string">-uroot</span> <span class="string">-p</span></span><br><span class="line"><span class="comment">#注意;找不到初始密码及其他情况参考下文&quot;修改密码&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#使用初始密码登录后需要先修改一次密码后才能操作</span></span><br><span class="line"><span class="string">ALTER</span> <span class="string">USER</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;localhost&#x27;</span> <span class="string">IDENTIFIED</span> <span class="string">BY</span> <span class="string">&#x27;新密码&#x27;</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#为避免Repository每次yum操作都会自动更新</span></span><br><span class="line"><span class="string">yum</span> <span class="string">-y</span> <span class="string">remove</span> <span class="string">mysql57-community-release-el7-10.noarch</span></span><br></pre></td></tr></table></figure>
+<h2 id="2修改密码">2.修改密码</h2>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#1.找回密码</span></span><br><span class="line"><span class="string">grep</span> <span class="string">&#x27;temporary password&#x27;</span> <span class="string">/var/log/mysqld.log</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#2.强制修改密码</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">stop</span> <span class="string">mysqld</span> <span class="comment">#停止服务</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">set-environment</span> <span class="string">MYSQLD_OPTS=&quot;--skip-grant-tables&quot;</span> <span class="comment">#跳过密码</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">start</span> <span class="string">mysqld</span> <span class="comment">#启动服务</span></span><br><span class="line"><span class="string">mysql</span> <span class="string">-u</span> <span class="string">root</span> <span class="comment">#登录</span></span><br><span class="line"><span class="string">UPDATE</span> <span class="string">mysql.user</span> <span class="string">SET</span> <span class="string">authentication_string</span> <span class="string">=</span> <span class="string">PASSWORD(&#x27;新密码&#x27;)</span> <span class="string">WHERE</span> <span class="string">User</span> <span class="string">=</span> <span class="string">&#x27;root&#x27;</span> <span class="string">AND</span> <span class="string">Host</span> <span class="string">=</span> <span class="string">&#x27;localhost&#x27;</span><span class="string">;</span> <span class="comment">#设置新密码</span></span><br><span class="line"><span class="string">FLUSH</span> <span class="string">PRIVILEGES;</span> <span class="comment">#刷新权限</span></span><br><span class="line"><span class="string">quit</span> <span class="comment">#退出</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#3.用操作系统账号修改密码</span></span><br><span class="line"><span class="string">mysql</span> <span class="string">-uroot</span> <span class="string">-p</span> <span class="comment">#使用centos账号密码登录</span></span><br><span class="line"><span class="string">UPDATE</span> <span class="string">mysql.user</span> <span class="string">SET</span> <span class="string">authentication_string</span> <span class="string">=</span> <span class="string">PASSWORD(&#x27;新密码&#x27;)</span> <span class="string">WHERE</span> <span class="string">User</span> <span class="string">=</span> <span class="string">&#x27;root&#x27;</span> <span class="string">AND</span> <span class="string">Host</span> <span class="string">=</span> <span class="string">&#x27;localhost&#x27;</span><span class="string">;</span> <span class="comment">#设置新密码</span></span><br><span class="line"><span class="string">FLUSH</span> <span class="string">PRIVILEGES;</span> <span class="comment">#刷新权限</span></span><br><span class="line"><span class="string">quit</span> <span class="comment">#退出</span></span><br></pre></td></tr></table></figure>
+<h2 id="3修改远程连接权限">3.修改远程连接权限</h2>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#选择mysql</span></span><br><span class="line"><span class="string">use</span> <span class="string">mysql;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#授权远程连接</span></span><br><span class="line"><span class="string">GRANT</span> <span class="string">ALL</span> <span class="string">PRIVILEGES</span> <span class="string">ON</span> <span class="string">*.*</span> <span class="string">TO</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;%&#x27;</span> <span class="string">IDENTIFIED</span> <span class="string">BY</span> <span class="string">&#x27;YYBrhr_2018&#x27;</span> <span class="string">WITH</span> <span class="string">GRANT</span> <span class="string">OPTION;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#注意：如果navicat远程连接报1521错误</span></span><br><span class="line"><span class="string">GRANT</span> <span class="string">ALL</span> <span class="string">ON</span> <span class="string">*.*</span> <span class="string">TO</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;%&#x27;;</span> <span class="comment">#远程连接授权</span></span><br><span class="line"><span class="string">ALTER</span> <span class="string">USER</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;%&#x27;</span> <span class="string">IDENTIFIED</span> <span class="string">BY</span> <span class="string">&#x27;password&#x27;</span> <span class="string">PASSWORD</span> <span class="string">EXPIRE</span> <span class="string">NEVER;</span> <span class="comment">#更改加密规则</span></span><br><span class="line"><span class="string">ALTER</span> <span class="string">USER</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;%&#x27;</span> <span class="string">IDENTIFIED</span> <span class="string">WITH</span> <span class="string">mysql_native_password</span> <span class="string">BY</span> <span class="string">&#x27;123456&#x27;</span><span class="string">;</span> <span class="comment">#更改密码</span></span><br><span class="line"><span class="string">FLUSH</span> <span class="string">PRIVILEGES;</span> <span class="comment">#刷新权限</span></span><br></pre></td></tr></table></figure>
+<p>注意，这一步需要小心，在自己的服务器或者内网的服务器就算了，如果是在外网的生产服务器上，务必先咨询同事。</p>
+
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85mysql/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85tomcat/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -679,7 +851,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">72</span>
+                  <span class="site-state-item-count">73</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

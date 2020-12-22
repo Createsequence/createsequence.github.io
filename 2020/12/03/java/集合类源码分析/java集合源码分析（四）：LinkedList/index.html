@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="概述 LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，也正因如此，它也具有队列的特性与方法。  这是关于 java 集合类源码的第四篇文章。往期文章：  java集合源码分析（一）：Collection 与">
+<meta name="description" content="概述 LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，也正因如此，它也具有队列的特性与方法。  这是关于 java 集合类源码的第四篇文章。往期文章：  java集合源码分析（一）：Collection 与 Abstr">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java集合源码分析（四）：LinkedList">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，也正因如此，它也具有队列的特性与方法。  这是关于 java 集合类源码的第四篇文章。往期文章：  java集合源码分析（一）：Collection 与">
+<meta property="og:description" content="概述 LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，也正因如此，它也具有队列的特性与方法。  这是关于 java 集合类源码的第四篇文章。往期文章：  java集合源码分析（一）：Collection 与 Abstr">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201203153522364.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201203193013775.png">
@@ -94,7 +94,7 @@
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201204133037473.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201204133141521.png">
 <meta property="article:published_time" content="2020-12-02T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-12-17T06:37:56.578Z">
+<meta property="article:modified_time" content="2020-12-22T08:14:47.451Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="java集合容器">
@@ -408,27 +408,22 @@
 <p>LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，也正因如此，它也具有队列的特性与方法。</p>
 <blockquote>
 <p>这是关于 java 集合类源码的第四篇文章。往期文章：</p>
-<ol type="1">
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
-</li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<ol>
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
 </ol>
 </blockquote>
 <h2 id="一-linkedlist-的类关系">一、LinkedList 的类关系</h2>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201203153522364.png" alt="LinkedList 的类关系"><figcaption aria-hidden="true">LinkedList 的类关系</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201203153522364.png" alt="LinkedList 的类关系"></p>
 <p>LinkedList 实现了 Cloneable ，Serializable 接口，表明它可以拷贝，可以被序列化。</p>
 <p>但是和 ArrayList 或者 Vector 相比，因为它是链表，所以无法像数组那样通过下标快速随机访问，故而没有实现 RandomAccess 接口。</p>
 <p>他实现了 List 接口，但是也实现了 Queue 的子接口 Deque，因此除了列表，他也具备双端队列的特性。</p>
 <p>他的父类不再是 AbstractList，而是另一个继承了 AbstractList 的抽象类 AbstractSequentialList，这个类重写了 AbstractList 的一些方法，使之更适合 LinkedList 这样的链表。</p>
 <h2 id="二-abstractsequentialist">二、AbstractSequentiaList</h2>
 <p>要了解 LinkedList，绕不过去他的父类 AbstractSequentiaList 抽象类。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201203193013775.png" alt="AbstractSequentiaList 的方法"><figcaption aria-hidden="true">AbstractSequentiaList 的方法</figcaption>
-</figure>
-<p>从模板方法模式的角度理解，AbstractSequentiaList 是 AbstractList 之后的又一层模板，他进一步实现了 AbstractList 中的某些关键方法，同时也会调整原先的一些算法逻辑。</p>
+<p><img src="http://img.xiajibagao.top/image-20201203193013775.png" alt="AbstractSequentiaList 的方法"></p>
+<p>从模板方法模式的角度理解，AbstractSequentiaList  是 AbstractList 之后的又一层模板，他进一步实现了 AbstractList 中的某些关键方法，同时也会调整原先的一些算法逻辑。</p>
 <p>而事实也是如此，对于链表来说，迭代必然和数组是不同的。而 AbstractList 原本提供两个方法 <code>iterator()</code> 与 <code>listIterator()</code>，他们分别用来获取两个不同的迭代器 Itr 与 ListItr ，在 AbstractSequentiaList 里将 <code>iterator()</code> 与 <code>listIterator()</code>方法统一起来，并且将 <code>listIterator()</code> 变成了一个抽象方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> listIterator();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> ListIterator&lt;E&gt; <span class="title">listIterator</span><span class="params">(<span class="keyword">int</span> index)</span></span>;</span><br></pre></td></tr></table></figure>
 <p>这样一来，继承 AbstractSequentiaList 的类就必须重新实现 <code>listIterator()</code>方法，保证获取迭代器的行为是由子类自己决定的。</p>
@@ -440,9 +435,7 @@
 <h3 id="1基本变量">1.基本变量</h3>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 序列化id</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">876323262645176354L</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 集合中元素的格式</span></span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> size = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
 <h3 id="2双向双端链表">2.双向/双端链表</h3>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201204154129934.png" alt="LinkedList 的结构"><figcaption aria-hidden="true">LinkedList 的结构</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201204154129934.png" alt="LinkedList 的结构"></p>
 <p>LinkedList 底层实现是一个双向的双端链表，因此他具有一个节点内部类 Node ，类内持有前驱节点与后继节点的指针，LinkedList 类内持有整个链表的头尾指针：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// 头指针</span></span><br><span class="line"><span class="keyword">transient</span> Node&lt;E&gt; first;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 尾指针</span></span><br><span class="line"><span class="keyword">transient</span> Node&lt;E&gt; last;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 值</span></span><br><span class="line">    E item;</span><br><span class="line">    <span class="comment">// 前驱节点</span></span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line">    <span class="comment">// 后继节点</span></span><br><span class="line">    Node&lt;E&gt; prev;</span><br><span class="line">	</span><br><span class="line">    Node(Node&lt;E&gt; prev, E element, Node&lt;E&gt; next) &#123;</span><br><span class="line">        <span class="keyword">this</span>.item = element;</span><br><span class="line">        <span class="keyword">this</span>.next = next;</span><br><span class="line">        <span class="keyword">this</span>.prev = prev;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="四-构造方法">四、构造方法</h2>
@@ -503,7 +496,7 @@
 <h3 id="7clear">7.clear</h3>
 <p>LinkedList 的 <code>clear()</code>就是把所有节点的引用关系清除，用注释的话来说：</p>
 <blockquote>
-<p>Clearing all of the links between nodes is "unnecessary", but:helps a generational GC if the discarded nodes inhabit more than one generation ；is sure to free memory even if there is a reachable Iterator</p>
+<p>Clearing all of the links between nodes is “unnecessary”, but:helps a generational GC if the discarded nodes inhabit more than one generation ；is sure to free memory even if there is a reachable Iterator</p>
 <p>清除节点之间的所有链接是“不必要的”，但是：</p>
 <p>1.如果被丢弃的节点驻留在多个代中，那么这样有助于分代 GC；</p>
 <p>2.如果存在可访问的迭代器，也不妨碍释放内存；</p>
@@ -514,13 +507,9 @@
 <h2 id="八-来自-deque接口的方法">八、来自 Deque接口的方法</h2>
 <p>Deque 接口的实现类都是双端队列，因此他操作方法总是同时存在从队头或者队尾两个版本：</p>
 <p>我们可以简单粗暴的理解：但凡方法名带 Last 或者 Firs 的方法，基本都是由 Deque 提供的。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201204133037473.png" alt="Deque 的方法"><figcaption aria-hidden="true">Deque 的方法</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201204133037473.png" alt="Deque 的方法"></p>
 <p>由于只要规定好从只从队头操作，那么这个结构同样也可以实现栈的效果，因此 Deque 的实现类也常用于代替 Stack 类，即List接口下老旧的 Vector 实现类的子类 Stack 类。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201204133141521.png" alt="stack 对应的方法"><figcaption aria-hidden="true">stack 对应的方法</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201204133141521.png" alt="stack 对应的方法"></p>
 <p>换句话说，LinkedList 实现了 Deque 接口，所以他既有队列该有的方法，也有栈该有的方法。</p>
 <h3 id="1add-offer-push">1.add / offer / push</h3>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 插到队首</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    addFirst(e);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addFirst</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    linkFirst(e);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offerFirst</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    addFirst(e);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 插到队尾</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addLast</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    linkLast(e);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offerLast</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    addLast(e);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -533,12 +522,15 @@
 <p>LinkedList 实现了 Cloneable 结构，所以他自然有 <code>clone()</code>方法可用。在 LinkedList，<code>clone()</code>分为了两步：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 拷贝 LinkedList 对象本身</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> LinkedList&lt;E&gt; <span class="title">superClone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> (LinkedList&lt;E&gt;) <span class="keyword">super</span>.clone();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> InternalError(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将自己的节点放入拷贝得到的 LinkedList 对象</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">clone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    LinkedList&lt;E&gt; clone = superClone();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 让克隆得到的集合回到初始状态</span></span><br><span class="line">    clone.first = clone.last = <span class="keyword">null</span>;</span><br><span class="line">    clone.size = <span class="number">0</span>;</span><br><span class="line">    clone.modCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重新添加节点</span></span><br><span class="line">    <span class="keyword">for</span> (Node&lt;E&gt; x = first; x != <span class="keyword">null</span>; x = x.next)</span><br><span class="line">        clone.add(x.item);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> clone;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="十-总结">十、总结</h2>
+<p><strong>数据结构</strong></p>
 <p>LinkedList 底层实现基于双向的双端链表，他无法像 ArrayList 那样直接随机通过索引去访问元素，每一次获取迭代器或者节点，都需要通过 <code>node()</code>方法遍历整个链表。</p>
+<p>LinkedList 实现了 Deque 接口，因此可以把它当成队列或者栈使用。实际上，他也提供了对应的同名方法。</p>
+<p><strong>迭代优化</strong></p>
 <p>尽管 LinkedList 针对这个问题做了优化，在遍历之前，通过位运算获取当前链表长度的一半，借此判断要获取的节点在链表前半截还是后半节，以选择从头还是尾开始遍历，保证了最坏情况下也只需要遍历一半的节点就能找到目标节点。</p>
 <p>因此，如非必要，最好不要通过下标去删除 LinkedList 中的元素，或者尽量在一次循环中完成所有操作。</p>
+<p><strong>迭代操作</strong></p>
 <p>LinkedList 的迭代器创建的时候就会获取 <code>modCount</code>，所以在迭代器里调用非迭代器自带的结构性操作方法，都会导致在下一次调用迭代器的结构性操作方法的时候抛出 <code>ConcurrentModificationException</code>异常。</p>
 <p>LinkedList 在 for 循环中删除元素，同 ArrayList 一样，会因为索引“偏移”导致漏删，解决方式也是倒序删除或者其他不会导致索引“偏移”的方法——当然，考虑到性能问题，最好不要在 for 循环去操作 LinkedList。</p>
-<p>LinkedList 实现了 Deque 接口，因此可以把它当成队列或者栈使用。实际上，他也提供了对应的同名方法。</p>
 
       
     </div>
@@ -664,7 +656,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">72</span>
+                  <span class="site-state-item-count">73</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

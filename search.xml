@@ -4660,28 +4660,28 @@
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。</p>
 <p>其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 List 部分的关系图。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201126100539307.png" alt="List集合的实现类关系图"><figcaption aria-hidden="true">List集合的实现类关系图</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201126100539307.png" alt="List集合的实现类关系图"></p>
 <p>根据上图的类关系图，我们研究一下源码中，类与类之间的关系，方法是如何从抽象到具体的。</p>
 <h2 id="一-iterable-接口">一、Iterable 接口</h2>
 <p>Iterable 是最顶层的接口，继承这个接口的类可以被迭代。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201125151935252.png" alt="Iterable 接口的方法"><figcaption aria-hidden="true">Iterable 接口的方法</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201125151935252.png" alt="Iterable 接口的方法"></p>
 <ul>
-<li><p><code>iterator()</code>：用于获取一个迭代器。</p></li>
-<li><p><code>forEach()</code> ：JDK8 新增。一个基于函数式接口实现的新迭代方法。</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">forEach</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> T&gt; action)</span> </span>&#123;</span><br><span class="line">    Objects.requireNonNull(action);</span><br><span class="line">    <span class="keyword">for</span> (T t : <span class="keyword">this</span>) &#123;</span><br><span class="line">        action.accept(t);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p><code>spliterator()</code>：JDK8 新增。用于获取一个可分割迭代器。默认实现返回一个<code>IteratorSpliterator</code>类。</p></li>
+<li>
+<p><code>iterator()</code>：用于获取一个迭代器。</p>
+</li>
+<li>
+<p><code>forEach()</code> ：JDK8 新增。一个基于函数式接口实现的新迭代方法。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">forEach</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> T&gt; action)</span> </span>&#123;</span><br><span class="line">    Objects.requireNonNull(action);</span><br><span class="line">    <span class="keyword">for</span> (T t : <span class="keyword">this</span>) &#123;</span><br><span class="line">        action.accept(t);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p><code>spliterator()</code>：JDK8 新增。用于获取一个可分割迭代器。默认实现返回一个<code>IteratorSpliterator</code>类。</p>
+</li>
 </ul>
 <p>这个跟迭代器类似，但是是用于并行迭代的，关于具体的情况可以参考一下掘金的一个讨论：<a href="https://segmentfault.com/q/1010000007087438">Java8里面的java.util.Spliterator接口有什么用？</a></p>
 <h2 id="二-collection-接口">二、Collection 接口</h2>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201125154357523.png" alt="Collection 接口的方法"><figcaption aria-hidden="true">Collection 接口的方法</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201125154357523.png" alt="Collection 接口的方法"></p>
 <p>Collection 是集合容器的顶级接口，他继承了 Iterable 接口，即凡是 Collection 的实现类都可以迭代，List 也是 Collection 的子接口，因此也拥有此特性。</p>
-<p>可以看到， Collection 接口提供了十九个抽象方法，这些方法的命名都很直观的反应的这些方法的功能。通过这些方法规定了 Collection的实现类的一些基本特性：<strong>可迭代，可转化为数组，可对节点进行添加删除，集合间可以合并或者互相过滤，可以使用 Stream 进行流式处理。</strong></p>
+<p>可以看到，  Collection 接口提供了十九个抽象方法，这些方法的命名都很直观的反应的这些方法的功能。通过这些方法规定了 Collection的实现类的一些基本特性：<strong>可迭代，可转化为数组，可对节点进行添加删除，集合间可以合并或者互相过滤，可以使用 Stream 进行流式处理。</strong></p>
 <h3 id="1抽象方法">1.抽象方法</h3>
 <p>我们可以根据功能简单的分类介绍一下 Collection 接口提供的方法。</p>
 <p><strong>判断类：</strong></p>
@@ -4701,10 +4701,16 @@
 </ul>
 <p><strong>辅助类：</strong></p>
 <ul>
-<li><p><code>size()</code>：获取集合的长度。如果长度超过 Integer.MAX_VALU 就返回 Integer.MAX_VALU；</p></li>
-<li><p><code>iterator()</code>：获取集合的迭代器；</p></li>
-<li><p><code>toArray()</code>：返回一个包含此集合中所有元素的<strong>新数组实例</strong>。因为是新实例，所以对原数组的操作不会影响新数组，反之亦然；</p>
-<p>它有一多态方法参数为<code>T[]</code>，此时调用 <code>toArray()</code>会将内部数组中的元素全部放入指定数组，如果结束后指定数组还有剩余空间，那剩余空间都放入null。</p></li>
+<li>
+<p><code>size()</code>：获取集合的长度。如果长度超过 Integer.MAX_VALU 就返回 Integer.MAX_VALU；</p>
+</li>
+<li>
+<p><code>iterator()</code>：获取集合的迭代器；</p>
+</li>
+<li>
+<p><code>toArray()</code>：返回一个包含此集合中所有元素的<strong>新数组实例</strong>。因为是新实例，所以对原数组的操作不会影响新数组，反之亦然；</p>
+<p>它有一多态方法参数为<code>T[]</code>，此时调用 <code>toArray()</code>会将内部数组中的元素全部放入指定数组，如果结束后指定数组还有剩余空间，那剩余空间都放入null。</p>
+</li>
 </ul>
 <h3 id="2jdk8-新增抽象方法">2.JDK8 新增抽象方法</h3>
 <p>此外，在 JDK8 中新增了四个抽象方法，他们都提供了默认实现：</p>
@@ -4759,7 +4765,8 @@
 <p>可能有人会疑问，<code>MAX_ARRAY_SIZE</code>应该就是允许扩容的最大大小了，为什么还可以扩容到<code>Integer.MAX_VALUE</code>？</p>
 <p>实际上，根据 JavaDoc 的解释：</p>
 <blockquote>
-<p>Some VMs reserve some header words in an array. Attempts to allocate larger arrays may result in OutOfMemoryError</p>
+<p>Some VMs reserve some header words in an array.<br>
+Attempts to allocate larger arrays may result in OutOfMemoryError</p>
 </blockquote>
 <p>一些 JVM 可能会用数组头存放一些关于数组的数据，一般情况下，最好不要直接可以扩容到<code>Integer.MAX_VALUE</code>，因此扩容到<code>Integer.MAX_VALUE-8</code>就是理论上允许的最大值了，但是如果真的大到了这个地步，就只能特殊情况特殊对待，试试看可不可以扩容到<code>Integer.MAX_VALUE</code>，如果再大就要溢出了。</p>
 <h3 id="6clear">6.clear</h3>
@@ -4772,11 +4779,13 @@
 <p><strong>Collection</strong></p>
 <p>Collection 接口类是 List ，Queue，Set 三大子接口的父接口，他继承了 Iterable 接口，因而所有 Collection 的实现类都可以迭代。</p>
 <p>Collection 中提供了规定了实现类应该实现的大部分增删方法，但是并没有规定关于如何使用下标进行操作的方法。</p>
+<p><strong>实现类的equlas与hashCode方法</strong></p>
 <p>值得注意的是，他重规定了 <code>equlas()</code> 和 <code>hashCode()</code>的方法，因此 Collection 的实现类的这两个方法不再跟 Object 类一样了。</p>
 <p><strong>AbstractCollection</strong></p>
 <p>AbstractCollection 是实现 Collection 接口的一个抽象类，JDK 在这里使用了模板方法模式，Collection 的实现类可以通过继承 AbstractCollection 获得绝大部分实现好的方法。</p>
 <p>在 AbstractCollection 中，为<code>add()</code>抽象方法提供了不支持的实现：即实现了方法，但是调用却会抛出 <code>UnsupportedOperationException</code>。根据推测，这跟 JDK8 接口默认实现的特性一样，是为了让子类可以有选择性的去实现接口的抽象方法，不必即使不需要该方法，也必须提供一个无意义的空实现。</p>
 <p>AbstractCollection 提供了对添加复数节点，替换、删除的单数和复数节点的方法实现，在这些实现里，因为做了null判断，因此是默认是支持传入的元素为null，或者集合中含有为null的元素，但是不允许传入的集合为null。</p>
+<p><strong>扩容</strong></p>
 <p>AbstractCollection 在集合转数组的 <code>toArrays()</code> 中提供了关于扩容的初步实现：一般情况下<code>新容量=旧容量 + (旧容量/2 + 1)</code>，如果新容量大于 MAX_ARRAY_SIZE，就会使用 <code>旧容量+1</code>去做判断，如果已经溢出则抛OOM溢出，大于 MAX_ARRAY_SIZE 就使用 Integer.MAX_VALUE 作为新容量，否则就使用 MAX_ARRY_SIZE。</p>
 ]]></content>
       <categories>
@@ -6147,12 +6156,10 @@
 <p>本篇文章暂不讨论具体的实现类，而将基于 List 接口与其抽象类 AbstractList，了解 List 接口是如何承上启下，进一步从 Collection 抽象到具体的。</p>
 <blockquote>
 <p>这是关于 java 集合类源码的第二篇文章。往期文章：</p>
-<p><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></p>
+<p><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></p>
 </blockquote>
 <h2 id="一-list-接口">一、List 接口</h2>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201125163518482.png" alt="List 接口的方法"><figcaption aria-hidden="true">List 接口的方法</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201125163518482.png" alt="List 接口的方法"></p>
 <p>List 接口继承了 Collection 接口，在 Collection 接口的基础上增加了一些方法。相对于 Collection 接口，我们可以很明显的看到，List <strong>中增加了非常多根据下标操作集合的方法</strong>，我们可以简单粗暴的分辨一个方法的抽象方法到底来自 Collection 还是 List：参数里有下标就是来自 List，没有就是来自 Collection。</p>
 <p>可以说，List 接口在 Collection 的基础上，<strong>进一步明确了 List 集合运允许根据下标快速存取的特性</strong>。</p>
 <h3 id="1新增的方法">1.新增的方法</h3>
@@ -6169,7 +6176,7 @@
 <h3 id="2同名的新方法">2.同名的新方法</h3>
 <ul>
 <li><code>add()</code>：添加元素。List 中的 <code>add()</code> 参数的（int，E），而 Collection 中的 <code>add()</code> 参数是 E，<strong>因此 List 集合中同时存在指定下标和不指定下标两种添加方式</strong>；</li>
-<li><code>remove()</code>：删除指定下标的元素。注意，List 的 <code>remove()</code> 参数是 int ，而 Collection 中的 `<code>remove()</code> 参数是 Objce，也就是说，<strong>List 中同时存在根据元素是否相等和根据元素下标删除元素两种方式</strong>。</li>
+<li><code>remove()</code>：删除指定下标的元素。注意，List 的 <code>remove()</code> 参数是 int ，而 Collection 中的 ``remove()` 参数是 Objce，也就是说，<strong>List 中同时存在根据元素是否相等和根据元素下标删除元素两种方式</strong>。</li>
 </ul>
 <h3 id="3重写的方法">3.重写的方法</h3>
 <ul>
@@ -6197,22 +6204,20 @@
 </ul>
 <p>视图类 SubList 和 RandomAccessSubList：</p>
 <ul>
-<li><code>subList()</code>：获取视图类，会自动根据实现类是否继承 RandomAccess 而返回 SubList 或 RandomAccessSubList。</li>
+<li><code>subList()</code>：获取视图类，会自动根据实现类是否继承 RandomAccess 而返回 SubList  或 RandomAccessSubList。</li>
 </ul>
 <p>这些内部类同样被一些其他的方法所依赖，所以要全面的了解 AbstractList 方法的实现，就需要先了解这些内部类的作用和实现原理。</p>
 <h2 id="三-sublist方法与内部类">三、subList方法与内部类</h2>
 <p><code>subList()</code>算是一个比较常用的方法了，在 List 接口的规定中，这个方法应该返回一个当前集合的一部分的视图：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;E&gt; <span class="title">subList</span><span class="params">(<span class="keyword">int</span> fromIndex, <span class="keyword">int</span> toIndex)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 是否是实现了RandomAccess接口的类</span></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">this</span> <span class="keyword">instanceof</span> RandomAccess ?</span><br><span class="line">            <span class="comment">// 是就返回一个可以随机访问的内部类RandomAccessSubList</span></span><br><span class="line">            <span class="keyword">new</span> RandomAccessSubList&lt;&gt;(<span class="keyword">this</span>, fromIndex, toIndex) :</span><br><span class="line">            <span class="comment">// 否则返回一个普通内部类SubList</span></span><br><span class="line">            <span class="keyword">new</span> SubList&lt;&gt;(<span class="keyword">this</span>, fromIndex, toIndex));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里涉及到 RandomAccessSubList 和 SubList 这个内部类，其中，RandomAccessSubList 类是 SubList 类的子类，但是实现了 RandomAccess 接口。</p>
+<p>这里涉及到 RandomAccessSubList 和 SubList 这个内部类，其中，RandomAccessSubList 类是 SubList  类的子类，但是实现了 RandomAccess 接口。</p>
 <h3 id="1sublist-内部类">1.SubList 内部类</h3>
 <p>我们可以简单的把 SubList 和 AbstractList 理解为装饰器模式的一种实现，就像 SynchronizedList 和 List 接口的实现类一样。SubList 内部类通过对 AbstractList 的方法进行了再一次的封装，把对 AbstractList 的操作转变为了对 “视图的操作”。</p>
 <p>通过对原有的 AbstractList 进行包装，将原本对 AbstractList 操作的方法改为了对 SubList 的操作的方法，是适配器模式思想的一种体现。</p>
 <p>我们先看看 SubList 这个类的成员变量和构造方法：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SubList</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractList</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 把外部类AbstractList作为成员变量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AbstractList&lt;E&gt; l;</span><br><span class="line">    <span class="comment">// 表示视图的起始位置（偏移量）</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> offset;</span><br><span class="line">    <span class="comment">// SubList视图的长度</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> size;</span><br><span class="line"></span><br><span class="line">    SubList(AbstractList&lt;E&gt; list, <span class="keyword">int</span> fromIndex, <span class="keyword">int</span> toIndex) &#123;</span><br><span class="line">        <span class="keyword">if</span> (fromIndex &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">&quot;fromIndex = &quot;</span> + fromIndex);</span><br><span class="line">        <span class="keyword">if</span> (toIndex &gt; list.size())</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">&quot;toIndex = &quot;</span> + toIndex);</span><br><span class="line">        <span class="keyword">if</span> (fromIndex &gt; toIndex)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;fromIndex(&quot;</span> + fromIndex +</span><br><span class="line">                                               <span class="string">&quot;) &gt; toIndex(&quot;</span> + toIndex + <span class="string">&quot;)&quot;</span>);</span><br><span class="line">        <span class="comment">// 获取外部类的引用</span></span><br><span class="line">        <span class="comment">// 这也是为什么操作视图或者外部类都会影响对方的原因，因为都操作内存中的同一个实例</span></span><br><span class="line">        l = list;</span><br><span class="line">        <span class="comment">// 获取当前视图在外部类中的起始下标</span></span><br><span class="line">        offset = fromIndex;</span><br><span class="line">        <span class="comment">// 当前视图的长度就是外部类截取的视图长度</span></span><br><span class="line">        size = toIndex - fromIndex;</span><br><span class="line">        <span class="keyword">this</span>.modCount = l.modCount;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>我们可以参考图片理解一下：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201126114026855.png" alt="image-20201126114026855"><figcaption aria-hidden="true">image-20201126114026855</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201126114026855.png" alt="image-20201126114026855"></p>
 <p>然后 subList 里面的方法就很好理解了：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">set</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 检查下标是否越界</span></span><br><span class="line">    rangeCheck(index);</span><br><span class="line">    <span class="comment">// 判断是存在并发修改</span></span><br><span class="line">    checkForComodification();</span><br><span class="line">    <span class="comment">// 把元素添加到偏移量+视图下标的位置</span></span><br><span class="line">    <span class="keyword">return</span> l.set(index+offset, element);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>其他方法都差不多，这里便不再多费笔墨了。</p>
@@ -6260,10 +6265,8 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (lastRet &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span><br><span class="line">    checkForComodification();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 调用删除方法</span></span><br><span class="line">        AbstractList.<span class="keyword">this</span>.remove(lastRet);</span><br><span class="line">        <span class="keyword">if</span> (lastRet &lt; cursor)</span><br><span class="line">		   <span class="comment">// 因为删除了当前第i个节点，所以i+1个节点就会变成第i个节点，</span></span><br><span class="line">            <span class="comment">// 调用next()以后cursor会+1，因此如果不让cursor-1,就会,next()以后跳过原本的第i+1个节点</span></span><br><span class="line">            <span class="comment">// 拿上面的例子来说，你要删除abc，但是在删除a以后会跳过b直接删除c</span></span><br><span class="line">            cursor--;</span><br><span class="line">        <span class="comment">// 最近一个操作的节点被删除了，故重置为-1</span></span><br><span class="line">        lastRet = -<span class="number">1</span>;</span><br><span class="line">        <span class="comment">// 因为调用了外部类的remove方法，所以会改变modCount值，迭代器里也要获取最新的modCount</span></span><br><span class="line">        expectedModCount = modCount;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IndexOutOfBoundsException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>至于<code>hasNext()</code>方法没啥好说的，如果 <code>cursor</code>已经跟集合的长度一样长了，说明就已经迭代到底了。</p>
 <h3 id="2listitr-迭代器">2.ListItr 迭代器</h3>
-<p>ListItr 继承了 Itr 类，并且实现了 ListIterator 接口。其中，ListIterator 接口又继承了 Iterator 接口。他们的类关系图是这样的：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201126204925206.png" alt="ListIterator 的类关系图"><figcaption aria-hidden="true">ListIterator 的类关系图</figcaption>
-</figure>
+<p>ListItr 继承了 Itr 类，并且实现了 ListIterator 接口。其中，ListIterator  接口又继承了 Iterator 接口。他们的类关系图是这样的：</p>
+<p><img src="http://img.xiajibagao.top/image-20201126204925206.png" alt="ListIterator 的类关系图"></p>
 <p>ListIterator 接口在 Iterator 接口的基础上，主要提供了六个新的抽象方法：</p>
 <ul>
 <li><code>hasPrevious()</code>：是否有前驱节点；</li>
@@ -6283,10 +6286,8 @@
 <p>注意，现在现在 AbstractList 的 <code>add(int index, E e)</code>仍然还不被支持，<code>add(E e)</code>只是定义了通过 <code>add(int index, E e)</code>把元素添加到队尾的逻辑。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 不指定下标的add，默认逻辑为添加到队尾</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    add(size(), e);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>关于 AbstractList 和 AbstractCollection 中 <code>add()</code>方法之间的关系是这样的：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201126110250536.png" alt="add方法的实现逻辑"><figcaption aria-hidden="true">add方法的实现逻辑</figcaption>
-</figure>
-<p>AbstractList 这里的 <code>add(E e)</code>就非常有模板方模式提到的“抽象类规定算法骨架”这个感觉了。AbstractCollection 接口提供了 <code>add(E e)</code>的初步实现（尽管只是抛异常），然后到了 AbstractList 中就完善了 <code>add(E e)</code>方法的逻辑——通过调用 <code>add(int index,E e)</code>方法把元素插到队尾，但是具体的 <code>add(int index,E e)</code>怎么实现再交给子类决定。</p>
+<p><img src="http://img.xiajibagao.top/image-20201126110250536.png" alt="add方法的实现逻辑"></p>
+<p>AbstractList 这里的 <code>add(E e)</code>就非常有模板方模式提到的“抽象类规定算法骨架”这个感觉了。AbstractCollection 接口提供了 <code>add(E e)</code>的初步实现（尽管只是抛异常），然后到了 AbstractList 中就完善了 <code>add(E e)</code>方法的逻辑——通过调用 <code>add(int index,E e)</code>方法把元素插到队尾，但是具体的  <code>add(int index,E e)</code>怎么实现再交给子类决定。</p>
 <h3 id="2indexoflastindexof">2.indexOf/LastIndexOf</h3>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">indexOf</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    ListIterator&lt;E&gt; it = listIterator();</span><br><span class="line">    <span class="keyword">if</span> (o==<span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (it.hasNext())</span><br><span class="line">            <span class="keyword">if</span> (it.next()==<span class="keyword">null</span>)</span><br><span class="line">                <span class="keyword">return</span> it.previousIndex();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (it.hasNext())</span><br><span class="line">            <span class="keyword">if</span> (o.equals(it.next()))</span><br><span class="line">                <span class="keyword">return</span> it.previousIndex();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lastIndexOf</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    ListIterator&lt;E&gt; it = listIterator(size());</span><br><span class="line">    <span class="keyword">if</span> (o==<span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (it.hasPrevious())</span><br><span class="line">            <span class="keyword">if</span> (it.previous()==<span class="keyword">null</span>)</span><br><span class="line">                <span class="keyword">return</span> it.nextIndex();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (it.hasPrevious())</span><br><span class="line">            <span class="keyword">if</span> (o.equals(it.previous()))</span><br><span class="line">                <span class="keyword">return</span> it.nextIndex();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="3addall">3.addAll</h3>
@@ -6314,11 +6315,16 @@
 <p>我们可以写个测试看看：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">List&lt;String&gt; list1 = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">list1.add(<span class="string">&quot;a&quot;</span>);</span><br><span class="line">System.out.println(list1.hashCode()); <span class="comment">// 128</span></span><br><span class="line">list1.add(<span class="string">&quot;c&quot;</span>);</span><br><span class="line">System.out.println(list1.hashCode()); <span class="comment">// 4067</span></span><br></pre></td></tr></table></figure>
 <h2 id="七-总结">七、总结</h2>
+<p><strong>List</strong></p>
 <p>List 接口继承了 Collection 接口，新增方法的特点主要体现在可以通过下标去操作节点，可以说大部分下标可以作为参数的方法都是 List 中添加的方法。</p>
+<p><strong>AbstractList</strong></p>
 <p>AbstractList 是实现了 List 的抽象类，他实现了 List 接口中的大部分方法，同时他继承了 AbstractCollection ，沿用了一些 AbstractCollection 中的实现。这两个抽象类可以看成是模板方法模式的一种体现。</p>
 <p>他提供了下标版的 <code>add()</code>，<code>remove()</code>，<code>set()</code>的空实现。</p>
+<p><strong>迭代器</strong></p>
 <p>AbstractList 内部提供两个迭代器，Itr 和 ListItr，Itr 实现了 <code>Iterator</code>接口，实现了基本的迭代删除，而 ListItr 实现了<code>ListIterator</code>，在前者的基础上增加了迭代中添加修改，以及反向迭代的相关方法，并且可以从指定的位置开始创建迭代器。</p>
-<p>AbstractList 的 SubList 可以看成 AbstractList 的包装类，他在实例化的时候会把外部类实例的引用赋值给成员变量，同名的操作方法还仍然是调用 AbstractList 的，但是基于下标的调用会在默认参数的基础上加上步长，以实现对“视图”的操作，这是适配器模式思想的一种体现。</p>
+<p><strong>视图集合SubList</strong></p>
+<p>AbstractList 的 SubList 可以看成 AbstractList 的包装类，他在实例化的时候会把外部类实例的引用赋值给成员变量，同名的操作方法还仍然是调用 AbstractList  的，但是基于下标的调用会在默认参数的基础上加上步长，以实现对“视图”的操作，这是适配器模式思想的一种体现。</p>
+<p><strong>并发修改检查机制fast-fail</strong></p>
 <p>AbstractList 引入了并发修改下 fast-fail 的机制，在内部维护一个成员变量 <code>modelCount</code>，默认为零，每次结构性修改都会让其+1。在迭代过程中会默认检查 <code>modelCount</code>是否符合预期值，否则抛出异常。值得注意的是，这个需要实现类的配合，在实现 <code>add()</code>等方法的时候要让 <code>modelCount</code>+1。对于一些实现类，在迭代中删除可能会抛出 <code>ConcurrentModificationExceptions</code>，就是这方面的问题。</p>
 <p>AbstractList 重写了 <code>hashCode()</code>方法，不再直接获取实例的 HashCode 值，而遍历集合，根据每一个元素的 HashCode 计算集合的 HashCode，这样保证了内容不同的相同集合不会得到相同的 HashCode。</p>
 ]]></content>
@@ -6532,27 +6538,22 @@
 <p>LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，也正因如此，它也具有队列的特性与方法。</p>
 <blockquote>
 <p>这是关于 java 集合类源码的第四篇文章。往期文章：</p>
-<ol type="1">
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
-</li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<ol>
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
 </ol>
 </blockquote>
 <h2 id="一-linkedlist-的类关系">一、LinkedList 的类关系</h2>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201203153522364.png" alt="LinkedList 的类关系"><figcaption aria-hidden="true">LinkedList 的类关系</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201203153522364.png" alt="LinkedList 的类关系"></p>
 <p>LinkedList 实现了 Cloneable ，Serializable 接口，表明它可以拷贝，可以被序列化。</p>
 <p>但是和 ArrayList 或者 Vector 相比，因为它是链表，所以无法像数组那样通过下标快速随机访问，故而没有实现 RandomAccess 接口。</p>
 <p>他实现了 List 接口，但是也实现了 Queue 的子接口 Deque，因此除了列表，他也具备双端队列的特性。</p>
 <p>他的父类不再是 AbstractList，而是另一个继承了 AbstractList 的抽象类 AbstractSequentialList，这个类重写了 AbstractList 的一些方法，使之更适合 LinkedList 这样的链表。</p>
 <h2 id="二-abstractsequentialist">二、AbstractSequentiaList</h2>
 <p>要了解 LinkedList，绕不过去他的父类 AbstractSequentiaList 抽象类。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201203193013775.png" alt="AbstractSequentiaList 的方法"><figcaption aria-hidden="true">AbstractSequentiaList 的方法</figcaption>
-</figure>
-<p>从模板方法模式的角度理解，AbstractSequentiaList 是 AbstractList 之后的又一层模板，他进一步实现了 AbstractList 中的某些关键方法，同时也会调整原先的一些算法逻辑。</p>
+<p><img src="http://img.xiajibagao.top/image-20201203193013775.png" alt="AbstractSequentiaList 的方法"></p>
+<p>从模板方法模式的角度理解，AbstractSequentiaList  是 AbstractList 之后的又一层模板，他进一步实现了 AbstractList 中的某些关键方法，同时也会调整原先的一些算法逻辑。</p>
 <p>而事实也是如此，对于链表来说，迭代必然和数组是不同的。而 AbstractList 原本提供两个方法 <code>iterator()</code> 与 <code>listIterator()</code>，他们分别用来获取两个不同的迭代器 Itr 与 ListItr ，在 AbstractSequentiaList 里将 <code>iterator()</code> 与 <code>listIterator()</code>方法统一起来，并且将 <code>listIterator()</code> 变成了一个抽象方法：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> listIterator();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> ListIterator&lt;E&gt; <span class="title">listIterator</span><span class="params">(<span class="keyword">int</span> index)</span></span>;</span><br></pre></td></tr></table></figure>
 <p>这样一来，继承 AbstractSequentiaList 的类就必须重新实现 <code>listIterator()</code>方法，保证获取迭代器的行为是由子类自己决定的。</p>
@@ -6564,9 +6565,7 @@
 <h3 id="1基本变量">1.基本变量</h3>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 序列化id</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">long</span> serialVersionUID = <span class="number">876323262645176354L</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 集合中元素的格式</span></span><br><span class="line"><span class="keyword">transient</span> <span class="keyword">int</span> size = <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
 <h3 id="2双向双端链表">2.双向/双端链表</h3>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201204154129934.png" alt="LinkedList 的结构"><figcaption aria-hidden="true">LinkedList 的结构</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201204154129934.png" alt="LinkedList 的结构"></p>
 <p>LinkedList 底层实现是一个双向的双端链表，因此他具有一个节点内部类 Node ，类内持有前驱节点与后继节点的指针，LinkedList 类内持有整个链表的头尾指针：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/// 头指针</span></span><br><span class="line"><span class="keyword">transient</span> Node&lt;E&gt; first;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 尾指针</span></span><br><span class="line"><span class="keyword">transient</span> Node&lt;E&gt; last;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 值</span></span><br><span class="line">    E item;</span><br><span class="line">    <span class="comment">// 前驱节点</span></span><br><span class="line">    Node&lt;E&gt; next;</span><br><span class="line">    <span class="comment">// 后继节点</span></span><br><span class="line">    Node&lt;E&gt; prev;</span><br><span class="line">	</span><br><span class="line">    Node(Node&lt;E&gt; prev, E element, Node&lt;E&gt; next) &#123;</span><br><span class="line">        <span class="keyword">this</span>.item = element;</span><br><span class="line">        <span class="keyword">this</span>.next = next;</span><br><span class="line">        <span class="keyword">this</span>.prev = prev;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="四-构造方法">四、构造方法</h2>
@@ -6627,7 +6626,7 @@
 <h3 id="7clear">7.clear</h3>
 <p>LinkedList 的 <code>clear()</code>就是把所有节点的引用关系清除，用注释的话来说：</p>
 <blockquote>
-<p>Clearing all of the links between nodes is "unnecessary", but:helps a generational GC if the discarded nodes inhabit more than one generation ；is sure to free memory even if there is a reachable Iterator</p>
+<p>Clearing all of the links between nodes is “unnecessary”, but:helps a generational GC if the discarded nodes inhabit more than one generation ；is sure to free memory even if there is a reachable Iterator</p>
 <p>清除节点之间的所有链接是“不必要的”，但是：</p>
 <p>1.如果被丢弃的节点驻留在多个代中，那么这样有助于分代 GC；</p>
 <p>2.如果存在可访问的迭代器，也不妨碍释放内存；</p>
@@ -6638,13 +6637,9 @@
 <h2 id="八-来自-deque接口的方法">八、来自 Deque接口的方法</h2>
 <p>Deque 接口的实现类都是双端队列，因此他操作方法总是同时存在从队头或者队尾两个版本：</p>
 <p>我们可以简单粗暴的理解：但凡方法名带 Last 或者 Firs 的方法，基本都是由 Deque 提供的。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201204133037473.png" alt="Deque 的方法"><figcaption aria-hidden="true">Deque 的方法</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201204133037473.png" alt="Deque 的方法"></p>
 <p>由于只要规定好从只从队头操作，那么这个结构同样也可以实现栈的效果，因此 Deque 的实现类也常用于代替 Stack 类，即List接口下老旧的 Vector 实现类的子类 Stack 类。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201204133141521.png" alt="stack 对应的方法"><figcaption aria-hidden="true">stack 对应的方法</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201204133141521.png" alt="stack 对应的方法"></p>
 <p>换句话说，LinkedList 实现了 Deque 接口，所以他既有队列该有的方法，也有栈该有的方法。</p>
 <h3 id="1add-offer-push">1.add / offer / push</h3>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 插到队首</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    addFirst(e);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addFirst</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    linkFirst(e);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offerFirst</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    addFirst(e);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 插到队尾</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addLast</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    linkLast(e);</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">offerLast</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    addLast(e);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -6657,12 +6652,15 @@
 <p>LinkedList 实现了 Cloneable 结构，所以他自然有 <code>clone()</code>方法可用。在 LinkedList，<code>clone()</code>分为了两步：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 拷贝 LinkedList 对象本身</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> LinkedList&lt;E&gt; <span class="title">superClone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> (LinkedList&lt;E&gt;) <span class="keyword">super</span>.clone();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (CloneNotSupportedException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> InternalError(e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将自己的节点放入拷贝得到的 LinkedList 对象</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">clone</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    LinkedList&lt;E&gt; clone = superClone();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 让克隆得到的集合回到初始状态</span></span><br><span class="line">    clone.first = clone.last = <span class="keyword">null</span>;</span><br><span class="line">    clone.size = <span class="number">0</span>;</span><br><span class="line">    clone.modCount = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重新添加节点</span></span><br><span class="line">    <span class="keyword">for</span> (Node&lt;E&gt; x = first; x != <span class="keyword">null</span>; x = x.next)</span><br><span class="line">        clone.add(x.item);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> clone;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="十-总结">十、总结</h2>
+<p><strong>数据结构</strong></p>
 <p>LinkedList 底层实现基于双向的双端链表，他无法像 ArrayList 那样直接随机通过索引去访问元素，每一次获取迭代器或者节点，都需要通过 <code>node()</code>方法遍历整个链表。</p>
+<p>LinkedList 实现了 Deque 接口，因此可以把它当成队列或者栈使用。实际上，他也提供了对应的同名方法。</p>
+<p><strong>迭代优化</strong></p>
 <p>尽管 LinkedList 针对这个问题做了优化，在遍历之前，通过位运算获取当前链表长度的一半，借此判断要获取的节点在链表前半截还是后半节，以选择从头还是尾开始遍历，保证了最坏情况下也只需要遍历一半的节点就能找到目标节点。</p>
 <p>因此，如非必要，最好不要通过下标去删除 LinkedList 中的元素，或者尽量在一次循环中完成所有操作。</p>
+<p><strong>迭代操作</strong></p>
 <p>LinkedList 的迭代器创建的时候就会获取 <code>modCount</code>，所以在迭代器里调用非迭代器自带的结构性操作方法，都会导致在下一次调用迭代器的结构性操作方法的时候抛出 <code>ConcurrentModificationException</code>异常。</p>
 <p>LinkedList 在 for 循环中删除元素，同 ArrayList 一样，会因为索引“偏移”导致漏删，解决方式也是倒序删除或者其他不会导致索引“偏移”的方法——当然，考虑到性能问题，最好不要在 for 循环去操作 LinkedList。</p>
-<p>LinkedList 实现了 Deque 接口，因此可以把它当成队列或者栈使用。实际上，他也提供了对应的同名方法。</p>
 ]]></content>
       <categories>
         <category>java集合容器</category>
@@ -7093,16 +7091,13 @@
 <p>ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector 有着一样的继承关系，也都能随机访问，但是不同的是不能保证线程安全。</p>
 <blockquote>
 <p>这是关于 java 集合类源码的第三篇文章。往期文章：</p>
-<ol type="1">
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
-</li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<ol>
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
 </ol>
 </blockquote>
 <h2 id="一-arraylist-的类关系">一、ArrayList 的类关系</h2>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201201161347920.png" alt="image-20201201161347920"><figcaption aria-hidden="true">image-20201201161347920</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201201161347920.png" alt="image-20201201161347920"></p>
 <p>ArrayList 实现了三个接口，继承了一个抽象类，其中 Serializable ，Cloneable 与 RandomAccess 接口都是用于标记的空接口，他的主要抽象方法来自于 List，一些实现来自于 AbstractList。</p>
 <h3 id="1abstractlist-与-list">1.AbstractList 与 List</h3>
 <p>ArrayList 实现了 List 接口，是 List 接口的实现类之一，他通过继承抽象类 AbstractList 获得的大部分方法的实现。</p>
@@ -7176,9 +7171,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span>[] arr1 = &#123;<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>&#125;;</span><br><span class="line"><span class="keyword">int</span>[] arr2 = &#123;<span class="number">6</span>, <span class="number">7</span>, <span class="number">8</span>, <span class="number">9</span>, <span class="number">10</span>&#125;;</span><br><span class="line">System.arraycopy(arr1, <span class="number">0</span>, arr2, <span class="number">0</span>, <span class="number">2</span>);</span><br><span class="line"><span class="comment">// arr2 = &#123;1，2，8，9，10&#125;</span></span><br></pre></td></tr></table></figure>
 <h3 id="1扩容">1.扩容</h3>
 <p>虽然在 AbstractCollection 抽象类中已经有了简单的扩容方法 <code>finishToArray()</code>，但是 ArrayList 没有继续使用它，而是自己重新实现了扩容的过程。ArrayList 的扩容过程一般发生在新增元素上。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201201194637410.png" alt="会引起ArrayList扩容的方法"><figcaption aria-hidden="true">会引起ArrayList扩容的方法</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201201194637410.png" alt="会引起ArrayList扩容的方法"></p>
 <p>我们以 <code>add()</code> 方法为例：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 判断新元素加入后，集合是否需要扩容</span></span><br><span class="line">    ensureCapacityInternal(size + <span class="number">1</span>);</span><br><span class="line">    elementData[size++] = e;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p><strong>（1）检查是否初次扩容</strong></p>
@@ -7197,11 +7190,9 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">hugeCapacity</span><span class="params">(<span class="keyword">int</span> minCapacity)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 是否发生溢出</span></span><br><span class="line">    <span class="keyword">if</span> (minCapacity &lt; <span class="number">0</span>) <span class="comment">// overflow</span></span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> OutOfMemoryError</span><br><span class="line">        (<span class="string">&quot;Required array size too large&quot;</span>);</span><br><span class="line">    <span class="comment">// 判断最终大小是MAX_ARRAY_SIZE还是Integer.MAX_VALUE</span></span><br><span class="line">    <span class="keyword">return</span> (minCapacity &gt; MAX_ARRAY_SIZE) ?</span><br><span class="line">        Integer.MAX_VALUE :</span><br><span class="line">    MAX_ARRAY_SIZE;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>ArrayList 的 <code>hugeCapacity()</code>与 <code>AbstractCollection</code>抽象类中的 <code>hugeCapacity()</code>是完全一样的，当 <code>minCapacity &gt; MAX_ARRAY_SIZE</code>的情况成立的时候，说明现在的当前元素个数<code>size</code>容量已经等于 <code>MAX_ARRAY_SIZE</code>，数组已经极大了，这个时候再进行拷贝操作会非常消耗性能，因此最后一次扩容会直接扩到 <code>Integer.MAX_VALUE</code>，如果再大就只能溢出了。</p>
 <p>以下是扩容的流程图：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201202203515729.png" alt="ArrayList 的扩容流程"><figcaption aria-hidden="true">ArrayList 的扩容流程</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201202203515729.png" alt="ArrayList 的扩容流程"></p>
 <h3 id="2缩容">2.缩容</h3>
-<p>除了扩容，ArrayList 还提供了缩容的方法 <code>trimToSize()</code>，但是这个方法不被任何其他内部方法调用，只能由程序猿自己去调用，主动让 ArrayList 瘦身，因此在日常使用中并不是很常见。</p>
+<p>除了扩容，ArrayList 还提供了缩容的方法  <code>trimToSize()</code>，但是这个方法不被任何其他内部方法调用，只能由程序猿自己去调用，主动让 ArrayList 瘦身，因此在日常使用中并不是很常见。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">trimToSize</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 结构性操作，modCount+1</span></span><br><span class="line">    modCount++;</span><br><span class="line">    <span class="comment">// 判断当前元素个数是否小于当前底层数组的长度</span></span><br><span class="line">    <span class="keyword">if</span> (size &lt; elementData.length) &#123;</span><br><span class="line">        <span class="comment">// 如果长度为0，就变为EMPTY_ELEMENTDATA空数组</span></span><br><span class="line">        elementData = (size == <span class="number">0</span>)</span><br><span class="line">            ? EMPTY_ELEMENTDATA</span><br><span class="line">            <span class="comment">// 否则就把容量缩小为当前的元素个数</span></span><br><span class="line">            : Arrays.copyOf(elementData, size);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="3测试">3.测试</h3>
 <p>我们可以借助反射，来看看 ArrayList 的扩容和缩容过程：</p>
@@ -7213,9 +7204,7 @@
 <h3 id="1add">1.add</h3>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 如果需要就先扩容</span></span><br><span class="line">    ensureCapacityInternal(size + <span class="number">1</span>);</span><br><span class="line">    <span class="comment">// 添加到当前位置的下一位</span></span><br><span class="line">    elementData[size++] = e;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 若 index &gt; size || index &lt; 0 则抛 IndexOutOfBoundsException 异常</span></span><br><span class="line">    rangeCheckForAdd(index);</span><br><span class="line">    <span class="comment">// 如果需要就先扩容</span></span><br><span class="line">    ensureCapacityInternal(size + <span class="number">1</span>);</span><br><span class="line">    <span class="comment">// 把原本 index 下标以后的元素集体后移一位,为新插入的数组腾位置</span></span><br><span class="line">    System.arraycopy(elementData, index, elementData, index + <span class="number">1</span>,</span><br><span class="line">                     size - index);</span><br><span class="line">    elementData[index] = element;</span><br><span class="line">    size++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>添加的原理比较简单，实际上就是如果不指定下标就插到数组尾部，否则就先创建一个新数组，然后把旧数组的数据移动到新数组，并且在这个过程中提前在新数组上留好要插入的元素的空位，最后再把元素插入数组。后面的增删操作基本都是这个原理。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201202134807874.png" alt="ArrayList 的新增"><figcaption aria-hidden="true">ArrayList 的新增</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201202134807874.png" alt="ArrayList 的新增"></p>
 <h3 id="2addall">2.addAll</h3>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">addAll</span><span class="params">(Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 将新集合的数组取出</span></span><br><span class="line">    Object[] a = c.toArray();</span><br><span class="line">    <span class="keyword">int</span> numNew = a.length;</span><br><span class="line">    <span class="comment">// 如有必要就扩容</span></span><br><span class="line">    ensureCapacityInternal(size + numNew);</span><br><span class="line">    <span class="comment">// 将新数组拼接到原数组的尾部</span></span><br><span class="line">    System.arraycopy(a, <span class="number">0</span>, elementData, size, numNew);</span><br><span class="line">    size += numNew;</span><br><span class="line">    <span class="keyword">return</span> numNew != <span class="number">0</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">addAll</span><span class="params">(<span class="keyword">int</span> index, Collection&lt;? extends E&gt; c)</span> </span>&#123;</span><br><span class="line">    rangeCheckForAdd(index);</span><br><span class="line"></span><br><span class="line">    Object[] a = c.toArray();</span><br><span class="line">    <span class="keyword">int</span> numNew = a.length;</span><br><span class="line">    <span class="comment">// 先扩容</span></span><br><span class="line">    ensureCapacityInternal(size + numNew);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 判断是否需要移动原数组</span></span><br><span class="line">    <span class="keyword">int</span> numMoved = size - index;</span><br><span class="line">    <span class="keyword">if</span> (numMoved &gt; <span class="number">0</span>)</span><br><span class="line">        <span class="comment">// 则将原本 index 下标以后的元素移到 index + numNew 的位置</span></span><br><span class="line">        System.arraycopy(elementData, index, elementData, index + numNew,</span><br><span class="line">                         numMoved);</span><br><span class="line"></span><br><span class="line">    System.arraycopy(a, <span class="number">0</span>, elementData, index, numNew);</span><br><span class="line">    size += numNew;</span><br><span class="line">    <span class="keyword">return</span> numNew != <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="3get">3.get</h3>
@@ -7235,15 +7224,11 @@
 <p>这两个方法都依赖于 <code>batchRemove()</code>方法：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">batchRemove</span><span class="params">(Collection&lt;?&gt; c, <span class="keyword">boolean</span> complement)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">final</span> Object[] elementData = <span class="keyword">this</span>.elementData;</span><br><span class="line">    <span class="keyword">int</span> r = <span class="number">0</span>, w = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">boolean</span> modified = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 1.遍历本集合</span></span><br><span class="line">        <span class="keyword">for</span> (; r &lt; size; r++)</span><br><span class="line">            <span class="comment">// 如果新增集合存在与本集合存在相同的元素，有两种情况</span></span><br><span class="line">            <span class="comment">// 1.removeAll，complement=false：直接跳过该元素</span></span><br><span class="line">            <span class="comment">// 2.retainAll，complement=true：把新元素插入原集合头部</span></span><br><span class="line">            <span class="keyword">if</span> (c.contains(elementData[r]) == complement)</span><br><span class="line">                elementData[w++] = elementData[r];</span><br><span class="line">    &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">        <span class="comment">// 2.如果上述操作中发生异常，则判断是否已经完成本集合的遍历</span></span><br><span class="line">        <span class="keyword">if</span> (r != size) &#123;</span><br><span class="line">            System.arraycopy(elementData, r,</span><br><span class="line">                             elementData, w,</span><br><span class="line">                             size - r);</span><br><span class="line">            w += size - r;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (w != size) &#123;</span><br><span class="line">            <span class="comment">// 3.将数组剩下的位置都改为null</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = w; i &lt; size; i++)</span><br><span class="line">                elementData[i] = <span class="keyword">null</span>;</span><br><span class="line">            modCount += size - w;</span><br><span class="line">            size = w;</span><br><span class="line">            modified = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> modified;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>上述这三个过程可能有点难一点理解，我们假设这是 <code>retailAll()</code>，因此 <code>complement=true</code>，执行流程是这样的：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201202154625429.png" alt="batchRemove 的执行逻辑"><figcaption aria-hidden="true">batchRemove 的执行逻辑</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201202154625429.png" alt="batchRemove 的执行逻辑"></p>
 <p>同理，如果是<code>removeAll()</code>，那么 w 就会始终为0，最后就会把 elementData 的所有位置都设置为 null。</p>
 <p>也就是说，在遍历过程中如果不发生异常，就会跳过第二步，直接进入第三步。</p>
 <p>当然，这是没有发生异常的情况，因此遍历完成后 <code>r = size</code>，那么如果遍历到 <code>r = 2</code>，也就是进入 if 分支后，程序发生了异常，尚未完成遍历就进入了 finallly 块，就会先进入第二步，也就是下面的流程：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201202202927612.png" alt="batchRemove 发生异常时的执行逻辑"><figcaption aria-hidden="true">batchRemove 发生异常时的执行逻辑</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201202202927612.png" alt="batchRemove 发生异常时的执行逻辑"></p>
 <p>最终数组会变为 {C，C，D，null} ，只有最后一个 D 被删除。</p>
 <h3 id="4removeif">4.removeIf</h3>
 <p>这个是 JDK8 以后的新增方法：</p>
@@ -7254,7 +7239,7 @@
 <p>这也是一个 JDK8 新增的方法：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">replaceAll</span><span class="params">(UnaryOperator&lt;E&gt; operator)</span> </span>&#123;</span><br><span class="line">    Objects.requireNonNull(operator);</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> expectedModCount = modCount;</span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> size = <span class="keyword">this</span>.size;</span><br><span class="line">    <span class="comment">// 遍历，并使用lambda表达式传入的匿名函数处理每一个元素</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i=<span class="number">0</span>; modCount == expectedModCount &amp;&amp; i &lt; size; i++) &#123;</span><br><span class="line">        elementData[i] = operator.apply((E) elementData[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (modCount != expectedModCount) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">    modCount++;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="七-迭代">七、迭代</h2>
-<h3 id="1iterator-listiterator">1.iterator / listIterator</h3>
+<h3 id="1iterator-listiterator">1.iterator /  listIterator</h3>
 <p>ArrayList 重新实现了自己的迭代器，而不是继续使用 AbstractList 提供的迭代器。</p>
 <p>和 AbstracList 一样，ArrayList 实现的迭代器内部类仍然是基础迭代器 Itr 和加强的迭代器 ListItr，他和 AbstractList 中的两个同名内部类基本一样，但是针对 ArrayList 的特性对方法做了一些调整：比如一些地方取消了对内部方法的调用，直接对 elementData 下标进行操作等。</p>
 <p>这一块可以参考上篇文章，或者看看源码，这里就不赘述了。</p>
@@ -7311,15 +7296,22 @@
 <h3 id="6isempty">6.isEmpty</h3>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> size == <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="九-总结">九、总结</h2>
+<p><strong>数据结构</strong></p>
 <p>ArrayList 底层是 Object[] 数组，被 RandomAccess 接口标记，具有根据下标高速随机访问的功能；</p>
+<p><strong>扩容缩容</strong></p>
 <p>ArrayList 扩容是扩大1.5倍，只有构造方法指定初始容量为0时，才会在第一次扩容出现小于10的容量，否则第一次扩容后的容量必然大于等于10；</p>
 <p>ArrayList 有缩容方法<code>trimToSize()</code>，但是自身不会主动调用。当调用后，容量会缩回实际元素数量，最小会缩容至默认容量10；</p>
 <p>ArrayList 的添加可能会因为扩容导致数组“膨胀”，同理，不是所有的删除都会引起数组“缩水”：当删除的元素是队尾元素，或者<code>clear()</code>方法都只会把下标对应的地方设置为null，而不会真正的删除数组这个位置；</p>
+<p><strong>迭代中的操作</strong></p>
 <p>ArrayList 在循环中删除——准确的讲，是任何会引起 <code>modCount</code>变化的结构性操作——可能会引起意外：</p>
 <ul>
-<li><p>在 <code>forEach()</code>删除元素会抛<code>ConcurrentModificationException</code>异常，因为 <code>forEach()</code>在循环开始前就获取了 <code>modCount</code>，每次循环都会比较旧 <code>modCount</code>和最新的 <code>modCount</code>，如果循环进行了会使<code>modCount</code>变动的操作，就会在下一次循环开始前抛异常；</p></li>
-<li><p>在 for 循环里删除实际上是以步长为2对节点进行删除，因为删除时数组“缩水”导致原本要删除的下一下标对应的节点，却落到了当前被删除的节点对应的下标位置，导致被跳过。</p>
-<p>如果从队尾反向删除，就不会引起数组“缩水”，因此是正常的。</p></li>
+<li>
+<p>在 <code>forEach()</code>删除元素会抛<code>ConcurrentModificationException</code>异常，因为 <code>forEach()</code>在循环开始前就获取了 <code>modCount</code>，每次循环都会比较旧 <code>modCount</code>和最新的 <code>modCount</code>，如果循环进行了会使<code>modCount</code>变动的操作，就会在下一次循环开始前抛异常；</p>
+</li>
+<li>
+<p>在 for 循环里删除实际上是以步长为2对节点进行删除，因为删除时数组“缩水”导致原本要删除的下一下标对应的节点，却落到了当前被删除的节点对应的下标位置，导致被跳过。</p>
+<p>如果从队尾反向删除，就不会引起数组“缩水”，因此是正常的。</p>
+</li>
 </ul>
 ]]></content>
       <categories>
@@ -7338,17 +7330,16 @@
 <p>对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式，能否存放空值；作为使用了数组作为底层结构的集合，我们还需要关注其扩容的实现；同时，针对哈希表的特性，我们还需要关注它如何通过哈希算法取模快速定位下标。</p>
 <blockquote>
 <p>这是关于 java 集合类源码的第六篇文章。往期文章：</p>
-<ol type="1">
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
-</li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/">java集合源码分析（四）：LinkedList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
+<ol>
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/">java集合源码分析（四）：LinkedList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
 </ol>
 </blockquote>
 <h2 id="一-hashmap-的数据结构">一、HashMap 的数据结构</h2>
-<p><img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;"></p>
+<img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;">
 <p><strong>在 JDK8 之前，HashMap 的数据结构是数组+链表。在 JDK8 以后是数组 + 链表 + 红黑树</strong>。</p>
 <p>在 HashMap 中，每一个 value 都被存储在一个 Node 或 TreeNode 实例中，容器中有一个 <code>Node[] table</code> 数组成员变量，数组中的每一格称为一个“桶”。当添加元素时，根据元素的 key 通过哈希值计算得到对应下标，将 Node 类的形式存入“桶”中。如果 table 容量不足时，就会发生扩容，同时对容器内部的元素进行重哈希。</p>
 <p>当发生哈希冲突，也就是不同元素计算得到了相同的下标时，会将节点接到“桶”的中的第一个元素后，后续操作亦同，最后就会形成链表。</p>
@@ -7377,7 +7368,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(Map&lt;? extends K, ? extends V&gt; m)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.loadFactor = DEFAULT_LOAD_FACTOR;</span><br><span class="line">    putMapEntries(m, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里涉及到一个将合并集合的方法 <code>putMapEntries()</code>，<code>putAll()</code>方法也是基于这个方法实现的。由于添加还涉及到扩容以及其他方法，这里暂不介绍，等下面再详细的了解。</p>
 <h2 id="四-hashmap的内部类">四、HashMap的内部类</h2>
-<p>基于前文<a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a>中第五部分 “AbstractMap 的视图”里对 AbstractMap 的分析，我们知道，HashMap 作为继承了 AbstractMap 的子类，因此它内部会拥有三个集合视图</p>
+<p>基于前文<a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a>中第五部分 “AbstractMap 的视图”里对 AbstractMap 的分析，我们知道，HashMap 作为继承了 AbstractMap 的子类，因此它内部会拥有三个集合视图</p>
 <ul>
 <li>存放 key 的 Set 集合：<code>Set&lt;K&gt; keySet</code></li>
 <li>存放 value 的 Collection 集合：<code>Collection&lt;V&gt; valuse</code></li>
@@ -7390,7 +7381,7 @@
 <p><code>3种视图容器 + 1种迭代器抽象类 + 3种视图容器的迭代器 + 1种并行迭代器抽象类 + 3种视图容器对应的并行迭代器 + 1种Entry实现类 + 1种Entry的红黑树节点实现类</code></p>
 <p>总计 13 种内部类</p>
 <h3 id="1-node-treenode">1. Node / TreeNode</h3>
-<p><img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom: 50%;"></p>
+<img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom: 50%;">
 <p>Node 是 HashMap 中的节点类，在 JDK8 之前对应的是 Entry 类。他是 Map 接口中 Entry 的实现类。</p>
 <p>在 HashMap 中数组的每一个位置都是一个“桶”，而“桶”中存放的就是带有数据的节点对象 Node。当哈希冲突时，多个 Node 会在同一个“桶”中形成链表。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 节点的hashcode</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="comment">// key</span></span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    <span class="comment">// value</span></span><br><span class="line">    V value;</span><br><span class="line">    <span class="comment">// 下一节点</span></span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -7398,13 +7389,13 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">LinkedHashMap</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 父节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; parent;</span><br><span class="line">    <span class="comment">// 左子节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; left;</span><br><span class="line">    <span class="comment">// 右子节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; right;</span><br><span class="line">    <span class="comment">// 前驱节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; prev;</span><br><span class="line">    <span class="comment">// 是否为红色节点</span></span><br><span class="line">    <span class="keyword">boolean</span> red;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>值得一提的是，TreeNode 继承了 LinkedHashMap.Entry 类，但是 LinkedHashMap.Entry 类又继承了 HashMap.Node，因此，实际上 TreeNode 也是 Node 类的子类，这是 Node 转变为 TreeNode 的结构基础。</p>
 <p>另外，TreeNode 尽管是树，但是他仍然通过 prev 维持了隐式的链表结构，理论上每一个节点都可以获取他上一次插入的节点，这仍然可以理解为单向链表。</p>
-<h3 id="2-keyset-keyiterator">2. KeySet / KeyIterator</h3>
+<h3 id="2-keyset-keyiterator">2.  KeySet / KeyIterator</h3>
 <p><code>Set&lt;K&gt; keySet</code> 是在 AbstractMap 中已经定义好了变量，它是一个存放 key 的集合，HashMap 的哈希算法保证了 key 的唯一性，这恰好也符合 Set 集合的特征。在 HashMap 中，<strong>为其提供了实现类 KeySet</strong> 。</p>
-<p>KeySet 继承了 AbstractSet 抽象类，并且直接使用 HashMap 中的方法去实现了抽象类中的大多数抽象方法。值得一提的是，他实现的 <code>iterator()</code><strong>返回的也是 HashMap 的一个内部类 KeyIterator</strong>。</p>
-<h3 id="3-values-valueiterator">3. Values / ValueIterator</h3>
+<p>KeySet  继承了 AbstractSet 抽象类，并且直接使用 HashMap 中的方法去实现了抽象类中的大多数抽象方法。值得一提的是，他实现的 <code>iterator()</code><strong>返回的也是 HashMap 的一个内部类 KeyIterator</strong>。</p>
+<h3 id="3-values-valueiterator">3. Values  /  ValueIterator</h3>
 <p>和 KeySet 类一样，<strong>Values 也是给 AbstractMap 中的 <code>Collection&lt;V&gt; values</code> 提供的实现类</strong>，他继承了 AbstractCollection 抽象类，并且使用 HashMap 的方法实现了大部分抽象方法。</p>
 <p>同样的，它的<code>iterator()</code>返回的也是 HashMap 的一个<strong>内部类 ValueIterator</strong>。</p>
-<h3 id="4-entryset-entryiterator">4. EntrySet / EntryIterator</h3>
+<h3 id="4-entryset-entryiterator">4. EntrySet  /  EntryIterator</h3>
 <p>A<strong>bstractMap 中有一个留给子类去实现的核心抽象方法 <code>entrySet()</code>，而 EntrySet 就是为了实现该方法而创建的类</strong>。它继承了 <code>AbstractSet&lt;Map.Entry&lt;K,V&gt;&gt;</code>，<strong>表示的是容器中的一对键值对对象</strong>。在注释中，作者将其称为视图。</p>
 <p>通过 EntrySet 类，我们就可以<strong>像 Collection 的 toArray 一样，将 Map 以 Set 集合视图的形式表现出来</strong>。</p>
 <p>同样的，作为一个 AbstractSet 的实现类，HashMap 也专门为其实现了一个<strong>内部迭代器类 EntryIterator</strong> 。EntrySet 的<code>iterator()</code>方法返回的就是该类。</p>
@@ -7425,9 +7416,7 @@
 <p>这是来自知乎大佬一个非常详细的回答：<a href="https://www.zhihu.com/question/20733617/answer/32513376">JDK 源码中 HashMap 的 hash 方法原理是什么？ - 知乎</a>；</p>
 <p>这里我简单的概括一下：</p>
 <p>该方法实际上是一个“扰动函数”，作用是对<code>Object.hashCode()</code>获取到的 hash 值进行<strong>高低位混淆</strong>。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201209140746276.png" alt="HashMap的哈希算法"><figcaption aria-hidden="true">HashMap的哈希算法</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201209140746276.png" alt="HashMap的哈希算法"></p>
 <p>我们可以看到，<strong>符号右移16位后，新二进制数的前16位都为0，后16位就是原始 hashcode 的高16位</strong>。</p>
 <p><strong>将原始 hashcode 与 位运算得到的二进制数再进行异或运算以后，我们就得到的 hash 前16全部都为1，后16位则同时混淆了高16位和低16位的特征，进一步增加了随机性。</strong></p>
 <p>现在我们得到了 key 的 hashcode，这是计算下标的基础。</p>
@@ -7437,9 +7426,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">    ... ...</span><br><span class="line">    <span class="comment">// n 即为当前数组长度</span></span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">            n = (tab = resize()).length;</span><br><span class="line">    <span class="comment">// 根据 n 与 hash 计算插入下标</span></span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    </span><br><span class="line">    ... ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>也就是说，当通过扰动函数<code>hash()</code>获取到了已经混淆高低位的 key 的 hashcode 以后， <strong>会将其与数组长度-1进行与运算</strong>：<code>(n - 1) &amp; hash</code>。</p>
 <p>以默认是容量16为例，它转换为二进制数是 10000，而 （16-1）转换为二进制数就是 1111，补零以后它与 <code>hash()</code> 计算得到的 hashcode 进行与运算过程如下：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201209142455463.png" alt="与运算取模"><figcaption aria-hidden="true">与运算取模</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201209142455463.png" alt="与运算取模"></p>
 <p>在这个过程，之前留下的两个问题就得到了解答：</p>
 <h4 id="为什么容量需要是2的幂">为什么容量需要是2的幂？</h4>
 <p>我们可以看到，按位的与运算只有 1&amp;1 = 1，<strong>由于数组长度转为二进制只有4位，所有高于4位的位数都为0，因此运算结果高于4位的位置也都会是0，这里巧妙的实现了取模的效果，数组长度起到了低位掩码的作用。这也整是为什么 HashMap 的容量要是2的幂的原因。</strong></p>
@@ -7448,7 +7435,7 @@
 <p>我们举个例子：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>key</th>
 <th>hashCode</th>
 <th>不混淆取后四位</th>
@@ -7456,19 +7443,19 @@
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>808321199</td>
 <td>110000001011100000000010101111</td>
 <td>1111</td>
 <td>0001</td>
 </tr>
-<tr class="even">
+<tr>
 <td>7015199</td>
 <td>11010110000101100011111</td>
 <td>1111</td>
 <td>0100</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>9999</td>
 <td>10011100001111</td>
 <td>1111</td>
@@ -7524,7 +7511,7 @@
 <h4 id="扩容的大小">扩容的大小</h4>
 <p>扩容的时候，分为两种情况：已经扩容过，还未扩容过。</p>
 <p>我们仅针对获取新容量 <code>newCap</code> 与新扩容阈值 <code>newThr</code> 这段代码逻辑，画出大致流程图：</p>
-<p><img src="http://img.xiajibagao.top/未命名文件.jpg" alt="未命名文件" style="zoom:50%;"></p>
+<img src="http://img.xiajibagao.top/未命名文件.jpg" alt="未命名文件" style="zoom:50%;">
 <p>这里比较需要注意的是，<strong>当 oldCap 已经大于等于理论最大值的时候，会在设置 <code>newThr=Integer.MAX_VALUE</code>后直接返回，不会执行后序扩容过程</strong>。</p>
 <p>另外，当新扩容阈值被设置为 <code>Integer.MAX_VALUE</code>以后，<strong>由于该值已经是最大的整数值了，所以设置为该值以后 HashMap 就不会再触发扩容了</strong>。</p>
 <h3 id="3重哈希过程">3.重哈希过程</h3>
@@ -7537,7 +7524,7 @@
 <p>以初始容量 <code>oldCap = 16,newCap = 32</code> 为例，我们先看看他的换算过程：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th></th>
 <th>十进制 Cap</th>
 <th>二进制 Cap</th>
@@ -7546,14 +7533,14 @@
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td><strong>oldCap</strong></td>
 <td>16</td>
 <td>10000</td>
 <td>1111</td>
 <td>15</td>
 </tr>
-<tr class="even">
+<tr>
 <td><strong>newCap</strong></td>
 <td>32</td>
 <td>100000</td>
@@ -7565,7 +7552,7 @@
 <p>以上述数据为基础，我们模拟下面三个 key 在扩容过程中的计算：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>key</th>
 <th>hash</th>
 <th>(oldCap-1) &amp; hash</th>
@@ -7574,21 +7561,21 @@
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>808321199</td>
 <td>110000001011100000000010101111</td>
 <td>1111（15）</td>
 <td>0</td>
 <td>01111（15）</td>
 </tr>
-<tr class="even">
+<tr>
 <td>7015199</td>
 <td>11010110000101100011111</td>
 <td>1111（15）</td>
 <td>10000</td>
 <td>11111（31）</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>9999</td>
 <td>10011100001111</td>
 <td>1111（15）</td>
@@ -7597,7 +7584,7 @@
 </tr>
 </tbody>
 </table>
-<p>不难看出，<strong>只有当 <code>oldCap &amp; hash &gt; 0</code>的时候元素才需要移动</strong>，而由于容量必然是2的冥，每次扩容新容量都是旧容量的两倍，换成二进制，相同的 hash 值与运算算出来的坐标总是多1，因此相当于每次需要移动的距离都是旧容量。</p>
+<p>不难看出，<strong>只有当 <code>oldCap &amp; hash &gt; 0 </code>的时候元素才需要移动</strong>，而由于容量必然是2的冥，每次扩容新容量都是旧容量的两倍，换成二进制，相同的 hash 值与运算算出来的坐标总是多1，因此相当于每次需要移动的距离都是旧容量。</p>
 <p><strong>也就是说，如果 <code>oldCap &amp; hash &gt; 0</code>，那么就有 <code>新坐标=原下标+oldCap</code></strong>，这个逻辑对应的代码就是 <code>newTab[j + oldCap] = hiHead;</code>这一行。</p>
 <p>这样做的好处显而易见，<strong>少移动一些元素可以减少扩容的性能消耗，同时同一桶中的元素也有可能在重哈希之后被移动，使得哈希冲突得以在扩容后减缓，元素散列更均匀。</strong></p>
 <h2 id="八-hashmap-获取元素">八、HashMap 获取元素</h2>
@@ -7640,15 +7627,18 @@
 <p>我们暂且只关注链化的判断条件，也就是在 <code>removeTreeNode()</code>中的这一段代码：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 根节点为null，根节点的左或右子节点为null，根节点左子节点的左子节点为null</span></span><br><span class="line"><span class="keyword">if</span> (root == <span class="keyword">null</span> || root.right == <span class="keyword">null</span> ||</span><br><span class="line">    (rl = root.left) == <span class="keyword">null</span> || rl.left == <span class="keyword">null</span>) &#123;</span><br><span class="line">    tab[index] = first.untreeify(map);  <span class="comment">// too small</span></span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>也就是说，如果可能存在的最小红黑树如下：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201217204231973.png" alt="删除中可能存在的最小红黑树"><figcaption aria-hidden="true">删除中可能存在的最小红黑树</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201217204231973.png" alt="删除中可能存在的最小红黑树"></p>
 <p>可以看到，此时树共有四个及节点，需要再删除一个节点才会导致链化，也就是说，在 remove 中，触发链化的最小树可能只有3个节点，而最大树需要考虑到变色和平衡，是十个（待考证）。</p>
 <p>也就是说，和网上所说的小于6就链化不同，<strong>在删除中，链化触发值是一个范围，在 [3,10] 之间</strong>。</p>
 <h3 id="3红黑树在扩容过程的链化">3.红黑树在扩容过程的链化</h3>
 <p>我们知道，扩容经过重哈希有可能会拆分链表，树也一样。在扩容时， <code>split()</code>方法会对红黑树进行拆分，以便重哈希后变更位置，在里头有这么一段逻辑：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 左头结点不为空，并且长度小于链化阈值 6</span></span><br><span class="line"><span class="keyword">if</span> (lc &lt;= UNTREEIFY_THRESHOLD)</span><br><span class="line">    <span class="comment">// 将红黑树转为链表</span></span><br><span class="line">    tab[index] = loHead.untreeify(map);</span><br><span class="line"><span class="keyword">else</span> &#123;</span><br><span class="line">    tab[index] = loHead;</span><br><span class="line">    <span class="keyword">if</span> (hiHead != <span class="keyword">null</span>) <span class="comment">// (else is already treeified)</span></span><br><span class="line">        loHead.treeify(tab);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在扩容时，是否链化的标准就是<strong>树中元素个数是否小于链化阈值6</strong>。</p>
+<h3 id="4为什么会存在两套链化逻辑">4.为什么会存在两套链化逻辑？</h3>
+<p>关于为什么要选择不同的链化标准，网上也没有比较确定的答案，这里说说个人的猜测。</p>
+<p>首先，不管是树化还是链化都比较消耗性能，应该需要尽量避免的，这个是前提条件。</p>
+<p>链表的树化条件决定了当红黑树存在时，容器必然是比较大的，而容量越大，下一次扩容要达到扩容阈值就越难，换句话说，触发扩容的概率就越小。因而扩容本身就是一个低频操作，要在扩容的时候恰好因为重哈希导致树被拆分的概率就更小了，此时链化的判定条件就可以严格点，因此只要小于6就链化。</p>
+<p>而删除是一个比较频繁的，而且带有主观意向的操作，很可能你一次删除的多个节点在哈希值刚好是连续的，也就是说，多次删除恰好删除的是同一颗树上的节点的概率是比较大的，因此，判断条件就应该尽可能不那么严格，避免频繁的触发链化。</p>
 <h2 id="十-hashmap-的迭代">十、HashMap 的迭代</h2>
 <p>由于 Map 集合本质上表示的是一组键值对之间的映射关系，并且 HashMap 的数据结构是数组+链表/树，因此 HashMap 集合并无法直接像 Collection 接口的实现类那样直接迭代。</p>
 <p>而在本文的第四部分，我们了解了 HashMap 中的几个主要内部类，其中四大视图类就是其中三个集合视图的 KeySet，Values，EntrySet，与一个键值对视图 Entry。当我们要迭代 HashMap 的时候，就需要通过迭代三个集合视图来实现，并且通过 key，value 或者 Entry 对象来接受迭代得到的对象。</p>
@@ -7692,12 +7682,77 @@
 <p>其中，长度之所以是2的冥，就是为了在此处将长度作为哈希值的低位掩码，巧妙实现取模效果。</p>
 <p><strong>扩容重哈希</strong></p>
 <p>假如从16扩容到32，扩容前通过<code>(n-1) &amp; hash</code> 取模是取后4位，而扩容后取后5位，因为01111和1111没区别，<strong>所以如果多出来这一位是0，那么最后用新长度去与运算得到的坐标是不变的，那么就不用移动</strong>。否则，多出来这一位相当于多了10000，<strong>转为十进制就是在原基础上加16，也就是加上了原桶数组的长度，那么直接在原基础上移动原桶数组长度就行了</strong>。</p>
+<p>也就是说，一个桶中的链表，在扩容后可能会被拆成两条分散在两个桶中。</p>
 <p><strong>迭代</strong></p>
 <p>HashMap 本身有迭代器 <code>HashIterator</code>，但是没有 <code>iterator()</code>方法，所以无法直接通过增强 for 循环或者获取迭代器进行迭代，只能借助三个视图集合的迭代器或增强 for 来迭代器。但是视图迭代器本身也是 <code>HashIterator</code>子类，因此视图本身只是空集合，它的迭代能力来自于它们自己的迭代器的父类<code>HashIterator</code>。</p>
 <p>HashMap 和他的三个集合视图都重写了 <code>forEach()</code>方法，所以可以通过 <code>forEach()</code>迭代器。</p>
 <p>HashMap 也实现了 fast-fail 机制，因此最好不要在迭代的时候进行结构性操作。</p>
 <p><strong>equals和hashCode方法</strong></p>
 <p>HashMap 在<code>get()</code>和<code>set()</code>的时候都会通过 <code>Object.equals()</code> 和 <code>Object.hashCode()</code> 方法来确定唯一 key。由于默认使用的 Object 的实现比较是内存地址，因此使用自建对象作为 key 会很不方便，因此需要重写两个方法。但是由于校验唯一性的时候两个方法都会用到，因此若要重写<code>equals()</code>和<code>hashCode()</code>必须同时重写两个方法，不能重写其中一个。</p>
+]]></content>
+      <categories>
+        <category>java集合容器</category>
+      </categories>
+      <tags>
+        <tag>java</tag>
+        <tag>java集合容器</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>java集合源码分析（八）：Set与AbstractSet</title>
+    <url>/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>Set 接口是 Collection 接口下三大子接口之一。其下实现类都为元素不可重复的，不保证线程安全的集合。他有两个主要实现，即无序的 HashSet 与有序的 TreeSet。</p>
+<p>Set 相对 List 集合与 Queue 集合不同之处在于，他的实现类需要依赖与 Map 集合的实现类密切相关。这体现在以下两点：</p>
+<ul>
+<li>HashSet 实际依赖于 HashMap，他使用 HashMap 的 key 作为存储容器。TreeSet 同理，依赖于 TreeMap实现。</li>
+<li>Map 集合中的 keySet 与 EntrySet 视图集合往往以实现了 Set 接口的内部类出现在 Map 的实现类中。</li>
+</ul>
+<p><img src="D:%5C%E4%BB%A3%E7%A0%81%E5%8F%8Ajar%E5%8C%85%5C%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%5Cjava%E7%9B%B8%E5%85%B3%5Cjava%E9%9B%86%E5%90%88%5CSet%E5%AE%9E%E7%8E%B0%E7%B1%BB%5Cimage-20201222152520801.png" alt="image-20201222152520801"></p>
+<p>这是关于 java 集合类源码的第八篇文章。往期文章：</p>
+<blockquote>
+<ol>
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/">java集合源码分析（四）：LinkedList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/">java集合源码分析（六）：HashMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/21/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ALinkedHashMap/">java集合源码分析（七）：LinkedHashMap</a></li>
+</ol>
+</blockquote>
+<h2 id="一-set-接口的类关系">一、Set 接口的类关系</h2>
+<h3 id="1父接口">1.父接口</h3>
+<p>Set 接口继承了 Collection 接口，而 Collection 接口又继承了 Iterable 接口，这表明 Set 集合具有 Collection 的通性，是一维的元素集合，并且可以使用迭代器或者 <code>forEach()</code> 迭代。</p>
+<p>Set 接口存在一个抽象实现类 AbstractSet，该类继承了 AbstractCollection 抽象类，为 Set 接口提供了大部分抽象方法的实现。</p>
+<h3 id="2子接口">2.子接口</h3>
+<p>Set 接口还存在子接口，即 SortedSet 与 NavigableSet 接口。这两者都表明实现类是可以根据自然顺序或者比较器排序从而维持有序的集合，并且提供了相关的边界操作方法。</p>
+<p><strong>SortedSet</strong></p>
+<p>先说 SortedSet，SortedSet是一个可排序的 Set 集合类接口，<strong>里面提供了一系列的边界操作——比如查找所有小于或者大于某个值的元素——的抽象方法</strong>。实现该接口的实现类中存放的元素必须可以通过比较器或者 <code>equlas()</code>方法对元素进行排序。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 1.返回一个比较器。若要使用自然排序则实现需要返回null</span></span><br><span class="line">Comparator&lt;? <span class="keyword">super</span> E&gt; comparator();</span><br><span class="line"><span class="comment">// 2.返回一个视图集合。同List实现类的SubList</span></span><br><span class="line"><span class="function">SortedSet&lt;E&gt; <span class="title">subSet</span><span class="params">(E fromElement, E toElement)</span></span>;</span><br><span class="line"><span class="comment">// 3.获取大于或小于某个值的所有元素</span></span><br><span class="line"><span class="function">SortedSet&lt;E&gt; <span class="title">headSet</span><span class="params">(E toElement)</span></span>;</span><br><span class="line"><span class="function">SortedSet&lt;E&gt; <span class="title">tailSet</span><span class="params">(E fromElement)</span></span>;</span><br><span class="line"><span class="comment">// 4.获取最大或最小元素</span></span><br><span class="line"><span class="function">E <span class="title">first</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">E <span class="title">last</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
+<p><strong>NavigableSet</strong></p>
+<p>而 NavigableMap 接口是 SortedMap 的子接口，<strong>他在 SortedMap 的基础上进一步提供了更细化的边界操作的抽象方法</strong>，比如 SortedMap 提供了 <code>headMap()</code>用于获取所有大于指定值的元素，NavigableMap 就另外再提供 <code>higherXXX()</code>方法用于获取所有大于指定值的元素中的最小元素。</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 1.返回小于指定值的最大元素</span></span><br><span class="line"><span class="function">E <span class="title">lower</span><span class="params">(E e)</span></span>;</span><br><span class="line"><span class="comment">// 2.返回小于等于指定的最大元素</span></span><br><span class="line"><span class="function">E <span class="title">floor</span><span class="params">(E e)</span></span>;</span><br><span class="line"><span class="comment">// 3.返回大于指定的最小元素</span></span><br><span class="line"><span class="function">E <span class="title">higher</span><span class="params">(E e)</span></span>;</span><br><span class="line"><span class="comment">// 4.返回大于等于指定值的最小元素</span></span><br><span class="line"><span class="function">E <span class="title">ceiling</span><span class="params">(E e)</span></span>;</span><br><span class="line"><span class="comment">// 5.获取并删除最大或最小元素</span></span><br><span class="line"><span class="function">E <span class="title">pollFirst</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">E <span class="title">pollLast</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 6.获取升序迭代器</span></span><br><span class="line"><span class="function">Iterator&lt;E&gt; <span class="title">iterator</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 7.获取降序迭代器或降序视图</span></span><br><span class="line"><span class="function">NavigableSet&lt;E&gt; <span class="title">descendingSet</span><span class="params">()</span></span>;</span><br><span class="line"><span class="function">Iterator&lt;E&gt; <span class="title">descendingIterator</span><span class="params">()</span></span>;</span><br><span class="line"><span class="comment">// 8.获取指定范围内的视图</span></span><br><span class="line"><span class="function">SortedSet&lt;E&gt; <span class="title">subSet</span><span class="params">(E fromElement, E toElement)</span></span>;</span><br><span class="line"><span class="function">SortedSet&lt;E&gt; <span class="title">headSet</span><span class="params">(E toElement)</span></span>;</span><br><span class="line"><span class="function">SortedSet&lt;E&gt; <span class="title">tailSet</span><span class="params">(E fromElement)</span></span>;</span><br><span class="line"><span class="comment">// 9.获取指定范围内的视图，并且可以选择开闭区间</span></span><br><span class="line"><span class="function">NavigableSet&lt;E&gt; <span class="title">subSet</span><span class="params">(E fromElement, <span class="keyword">boolean</span> fromInclusive,</span></span></span><br><span class="line"><span class="function"><span class="params">                           E toElement,   <span class="keyword">boolean</span> toInclusive)</span></span>;</span><br><span class="line"><span class="function">NavigableSet&lt;E&gt; <span class="title">subSet</span><span class="params">(E fromElement, <span class="keyword">boolean</span> fromInclusive,</span></span></span><br><span class="line"><span class="function"><span class="params">                           E toElement,   <span class="keyword">boolean</span> toInclusive)</span></span>;</span><br><span class="line"><span class="function">NavigableSet&lt;E&gt; <span class="title">headSet</span><span class="params">(E toElement, <span class="keyword">boolean</span> inclusive)</span></span>;</span><br><span class="line"><span class="function">NavigableSet&lt;E&gt; <span class="title">tailSet</span><span class="params">(E fromElement, <span class="keyword">boolean</span> inclusive)</span></span>;</span><br></pre></td></tr></table></figure>
+<p>值得一提的是，TreeSet 实现了 SortedSet 与 NavigableSet 接口，同时，它依赖的 TreeMap 也实现了相应的 SortedMap 和 NavigableMap 接口。</p>
+<h2 id="二-set-接口的方法">二、Set 接口的方法</h2>
+<p><img src="D:%5C%E4%BB%A3%E7%A0%81%E5%8F%8Ajar%E5%8C%85%5C%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%5Cjava%E7%9B%B8%E5%85%B3%5Cjava%E9%9B%86%E5%90%88%5CSet%E5%AE%9E%E7%8E%B0%E7%B1%BB%5Cimage-20201222155937401.png" alt="image-20201222155937401"></p>
+<p>set 接口不包含任何默认实现，也没有重写 Collection 中的任何方法，因而它提供的抽象方法与 Collection 相同。具体可以参考前文<a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a>中的第二部分。</p>
+<h2 id="三-abstractset">三、AbstractSet</h2>
+<p>AbstractSet 是实现了 Set 接口，并且继承了 AbstractCollection 的抽象类。他为 Set 接口提供了其父类接口 Collection 中的实现类，并且提供了 <code>equlas()</code>，<code>removeAll()</code>，<code>hashCode()</code>三个方法的重写/实现。</p>
+<h2 id="1equlashashcode">1.equlas/hashCode</h2>
+<p><strong>equals</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 是否同一对象</span></span><br><span class="line">    <span class="keyword">if</span> (o == <span class="keyword">this</span>)</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 是否为Set集合</span></span><br><span class="line">    <span class="keyword">if</span> (!(o <span class="keyword">instanceof</span> Set))</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    Collection&lt;?&gt; c = (Collection&lt;?&gt;) o;</span><br><span class="line">    <span class="comment">// 长度是否相等</span></span><br><span class="line">    <span class="keyword">if</span> (c.size() != size())</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 调用containsAll(c)比较集合</span></span><br><span class="line">        <span class="keyword">return</span> containsAll(c);</span><br><span class="line">    &#125; <span class="keyword">catch</span> (ClassCastException unused)   &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (NullPointerException unused) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>hashCode</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">hashCode</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> h = <span class="number">0</span>;</span><br><span class="line">    Iterator&lt;E&gt; i = iterator();</span><br><span class="line">    <span class="comment">// 集合hashcode为元素hashcode之和</span></span><br><span class="line">    <span class="keyword">while</span> (i.hasNext()) &#123;</span><br><span class="line">        E obj = i.next();</span><br><span class="line">        <span class="keyword">if</span> (obj != <span class="keyword">null</span>)</span><br><span class="line">            h += obj.hashCode();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> h;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="2removeall">2.removeAll</h2>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">removeAll</span><span class="params">(Collection&lt;?&gt; c)</span> </span>&#123;</span><br><span class="line">    Objects.requireNonNull(c);</span><br><span class="line">    <span class="keyword">boolean</span> modified = <span class="keyword">false</span>;</span><br><span class="line">	<span class="comment">// 迭代较小的结合</span></span><br><span class="line">    <span class="keyword">if</span> (size() &gt; c.size()) &#123;</span><br><span class="line">        <span class="keyword">for</span> (Iterator&lt;?&gt; i = c.iterator(); i.hasNext(); )</span><br><span class="line">            modified |= remove(i.next());</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">for</span> (Iterator&lt;?&gt; i = iterator(); i.hasNext(); ) &#123;</span><br><span class="line">            <span class="keyword">if</span> (c.contains(i.next())) &#123;</span><br><span class="line">                i.remove();</span><br><span class="line">                modified = <span class="keyword">true</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> modified;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="四-总结">四、总结</h2>
+<p><strong>Set 接口</strong></p>
+<p>Set 接口是 Collection 下一个不可重复，线程不安全的集合，主要有 HashSet 与 TreeSet 两大实现类，分别依赖于 Map 接口下 HashMap 与 TreeMap 实现。</p>
+<p>Set 继承了 Collection 接口，因而 Set 集合可以通过 <code>forEach()</code>或者迭代器迭代。</p>
+<p>Set 接口存在子接口 SortedSet 与孙子接口 NavigableSet，规定了实现该接口的类可以根据自然顺序或者比较器排序保证顺序。</p>
+<p><strong>AbstractSet 抽象类</strong></p>
+<p>AbstractSet 抽象类继承了 Collection 抽象类，实现了 Set 接口。由于 Set 接口没有除 Collction 接口提供的方法以外的新抽象方法，故 Set 接口的大部分实现有其父类 AbstractCollection 提供，AbstractSet 只实现了 <code>removeAll()</code>，<code>equlas()</code>与 <code>hashCode()</code>方法。</p>
 ]]></content>
       <categories>
         <category>java集合容器</category>

@@ -81,19 +81,19 @@
 
 
 
-<meta name="description" content="概述 List 应该接口是 Collection 最常被使用的接口了。其下的实现类皆为有序列表，其中主要分为 Vector，ArrayList，LinkedList 三个实现类，其中 Vecotr 又拥有子类 Stack。 从线程安全来说，List 下拥有线程安全的集合类 Vector；从数据结构来说，List 下拥有基于数组实现的 Vector 与 ArrayList，和基于链表实现的 Li">
+<meta name="description" content="概述 List 应该接口是 Collection 最常被使用的接口了。其下的实现类皆为有序列表，其中主要分为 Vector，ArrayList，LinkedList 三个实现类，其中 Vecotr 又拥有子类 Stack。 从线程安全来说，List 下拥有线程安全的集合类 Vector；从数据结构来说，List 下拥有基于数组实现的 Vector 与 ArrayList，和基于链表实现的 Link">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java集合源码分析（二）：List与AbstractList">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 List 应该接口是 Collection 最常被使用的接口了。其下的实现类皆为有序列表，其中主要分为 Vector，ArrayList，LinkedList 三个实现类，其中 Vecotr 又拥有子类 Stack。 从线程安全来说，List 下拥有线程安全的集合类 Vector；从数据结构来说，List 下拥有基于数组实现的 Vector 与 ArrayList，和基于链表实现的 Li">
+<meta property="og:description" content="概述 List 应该接口是 Collection 最常被使用的接口了。其下的实现类皆为有序列表，其中主要分为 Vector，ArrayList，LinkedList 三个实现类，其中 Vecotr 又拥有子类 Stack。 从线程安全来说，List 下拥有线程安全的集合类 Vector；从数据结构来说，List 下拥有基于数组实现的 Vector 与 ArrayList，和基于链表实现的 Link">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201125163518482.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201126114026855.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201126204925206.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201126110250536.png">
 <meta property="article:published_time" content="2020-11-26T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-12-17T06:37:46.332Z">
+<meta property="article:modified_time" content="2020-12-22T08:12:09.108Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="java">
 <meta property="article:tag" content="java集合容器">
@@ -409,12 +409,10 @@
 <p>本篇文章暂不讨论具体的实现类，而将基于 List 接口与其抽象类 AbstractList，了解 List 接口是如何承上启下，进一步从 Collection 抽象到具体的。</p>
 <blockquote>
 <p>这是关于 java 集合类源码的第二篇文章。往期文章：</p>
-<p><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></p>
+<p><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></p>
 </blockquote>
 <h2 id="一-list-接口">一、List 接口</h2>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201125163518482.png" alt="List 接口的方法"><figcaption aria-hidden="true">List 接口的方法</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201125163518482.png" alt="List 接口的方法"></p>
 <p>List 接口继承了 Collection 接口，在 Collection 接口的基础上增加了一些方法。相对于 Collection 接口，我们可以很明显的看到，List <strong>中增加了非常多根据下标操作集合的方法</strong>，我们可以简单粗暴的分辨一个方法的抽象方法到底来自 Collection 还是 List：参数里有下标就是来自 List，没有就是来自 Collection。</p>
 <p>可以说，List 接口在 Collection 的基础上，<strong>进一步明确了 List 集合运允许根据下标快速存取的特性</strong>。</p>
 <h3 id="1新增的方法">1.新增的方法</h3>
@@ -431,7 +429,7 @@
 <h3 id="2同名的新方法">2.同名的新方法</h3>
 <ul>
 <li><code>add()</code>：添加元素。List 中的 <code>add()</code> 参数的（int，E），而 Collection 中的 <code>add()</code> 参数是 E，<strong>因此 List 集合中同时存在指定下标和不指定下标两种添加方式</strong>；</li>
-<li><code>remove()</code>：删除指定下标的元素。注意，List 的 <code>remove()</code> 参数是 int ，而 Collection 中的 `<code>remove()</code> 参数是 Objce，也就是说，<strong>List 中同时存在根据元素是否相等和根据元素下标删除元素两种方式</strong>。</li>
+<li><code>remove()</code>：删除指定下标的元素。注意，List 的 <code>remove()</code> 参数是 int ，而 Collection 中的 ``remove()` 参数是 Objce，也就是说，<strong>List 中同时存在根据元素是否相等和根据元素下标删除元素两种方式</strong>。</li>
 </ul>
 <h3 id="3重写的方法">3.重写的方法</h3>
 <ul>
@@ -459,22 +457,20 @@
 </ul>
 <p>视图类 SubList 和 RandomAccessSubList：</p>
 <ul>
-<li><code>subList()</code>：获取视图类，会自动根据实现类是否继承 RandomAccess 而返回 SubList 或 RandomAccessSubList。</li>
+<li><code>subList()</code>：获取视图类，会自动根据实现类是否继承 RandomAccess 而返回 SubList  或 RandomAccessSubList。</li>
 </ul>
 <p>这些内部类同样被一些其他的方法所依赖，所以要全面的了解 AbstractList 方法的实现，就需要先了解这些内部类的作用和实现原理。</p>
 <h2 id="三-sublist方法与内部类">三、subList方法与内部类</h2>
 <p><code>subList()</code>算是一个比较常用的方法了，在 List 接口的规定中，这个方法应该返回一个当前集合的一部分的视图：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> List&lt;E&gt; <span class="title">subList</span><span class="params">(<span class="keyword">int</span> fromIndex, <span class="keyword">int</span> toIndex)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 是否是实现了RandomAccess接口的类</span></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">this</span> <span class="keyword">instanceof</span> RandomAccess ?</span><br><span class="line">            <span class="comment">// 是就返回一个可以随机访问的内部类RandomAccessSubList</span></span><br><span class="line">            <span class="keyword">new</span> RandomAccessSubList&lt;&gt;(<span class="keyword">this</span>, fromIndex, toIndex) :</span><br><span class="line">            <span class="comment">// 否则返回一个普通内部类SubList</span></span><br><span class="line">            <span class="keyword">new</span> SubList&lt;&gt;(<span class="keyword">this</span>, fromIndex, toIndex));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这里涉及到 RandomAccessSubList 和 SubList 这个内部类，其中，RandomAccessSubList 类是 SubList 类的子类，但是实现了 RandomAccess 接口。</p>
+<p>这里涉及到 RandomAccessSubList 和 SubList 这个内部类，其中，RandomAccessSubList 类是 SubList  类的子类，但是实现了 RandomAccess 接口。</p>
 <h3 id="1sublist-内部类">1.SubList 内部类</h3>
 <p>我们可以简单的把 SubList 和 AbstractList 理解为装饰器模式的一种实现，就像 SynchronizedList 和 List 接口的实现类一样。SubList 内部类通过对 AbstractList 的方法进行了再一次的封装，把对 AbstractList 的操作转变为了对 “视图的操作”。</p>
 <p>通过对原有的 AbstractList 进行包装，将原本对 AbstractList 操作的方法改为了对 SubList 的操作的方法，是适配器模式思想的一种体现。</p>
 <p>我们先看看 SubList 这个类的成员变量和构造方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">SubList</span>&lt;<span class="title">E</span>&gt; <span class="keyword">extends</span> <span class="title">AbstractList</span>&lt;<span class="title">E</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 把外部类AbstractList作为成员变量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AbstractList&lt;E&gt; l;</span><br><span class="line">    <span class="comment">// 表示视图的起始位置（偏移量）</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span> offset;</span><br><span class="line">    <span class="comment">// SubList视图的长度</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> size;</span><br><span class="line"></span><br><span class="line">    SubList(AbstractList&lt;E&gt; list, <span class="keyword">int</span> fromIndex, <span class="keyword">int</span> toIndex) &#123;</span><br><span class="line">        <span class="keyword">if</span> (fromIndex &lt; <span class="number">0</span>)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">&quot;fromIndex = &quot;</span> + fromIndex);</span><br><span class="line">        <span class="keyword">if</span> (toIndex &gt; list.size())</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IndexOutOfBoundsException(<span class="string">&quot;toIndex = &quot;</span> + toIndex);</span><br><span class="line">        <span class="keyword">if</span> (fromIndex &gt; toIndex)</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> IllegalArgumentException(<span class="string">&quot;fromIndex(&quot;</span> + fromIndex +</span><br><span class="line">                                               <span class="string">&quot;) &gt; toIndex(&quot;</span> + toIndex + <span class="string">&quot;)&quot;</span>);</span><br><span class="line">        <span class="comment">// 获取外部类的引用</span></span><br><span class="line">        <span class="comment">// 这也是为什么操作视图或者外部类都会影响对方的原因，因为都操作内存中的同一个实例</span></span><br><span class="line">        l = list;</span><br><span class="line">        <span class="comment">// 获取当前视图在外部类中的起始下标</span></span><br><span class="line">        offset = fromIndex;</span><br><span class="line">        <span class="comment">// 当前视图的长度就是外部类截取的视图长度</span></span><br><span class="line">        size = toIndex - fromIndex;</span><br><span class="line">        <span class="keyword">this</span>.modCount = l.modCount;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>我们可以参考图片理解一下：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201126114026855.png" alt="image-20201126114026855"><figcaption aria-hidden="true">image-20201126114026855</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201126114026855.png" alt="image-20201126114026855"></p>
 <p>然后 subList 里面的方法就很好理解了：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">set</span><span class="params">(<span class="keyword">int</span> index, E element)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 检查下标是否越界</span></span><br><span class="line">    rangeCheck(index);</span><br><span class="line">    <span class="comment">// 判断是存在并发修改</span></span><br><span class="line">    checkForComodification();</span><br><span class="line">    <span class="comment">// 把元素添加到偏移量+视图下标的位置</span></span><br><span class="line">    <span class="keyword">return</span> l.set(index+offset, element);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>其他方法都差不多，这里便不再多费笔墨了。</p>
@@ -522,10 +518,8 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">remove</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (lastRet &lt; <span class="number">0</span>)</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException();</span><br><span class="line">    checkForComodification();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 调用删除方法</span></span><br><span class="line">        AbstractList.<span class="keyword">this</span>.remove(lastRet);</span><br><span class="line">        <span class="keyword">if</span> (lastRet &lt; cursor)</span><br><span class="line">		   <span class="comment">// 因为删除了当前第i个节点，所以i+1个节点就会变成第i个节点，</span></span><br><span class="line">            <span class="comment">// 调用next()以后cursor会+1，因此如果不让cursor-1,就会,next()以后跳过原本的第i+1个节点</span></span><br><span class="line">            <span class="comment">// 拿上面的例子来说，你要删除abc，但是在删除a以后会跳过b直接删除c</span></span><br><span class="line">            cursor--;</span><br><span class="line">        <span class="comment">// 最近一个操作的节点被删除了，故重置为-1</span></span><br><span class="line">        lastRet = -<span class="number">1</span>;</span><br><span class="line">        <span class="comment">// 因为调用了外部类的remove方法，所以会改变modCount值，迭代器里也要获取最新的modCount</span></span><br><span class="line">        expectedModCount = modCount;</span><br><span class="line">    &#125; <span class="keyword">catch</span> (IndexOutOfBoundsException e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> ConcurrentModificationException();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>至于<code>hasNext()</code>方法没啥好说的，如果 <code>cursor</code>已经跟集合的长度一样长了，说明就已经迭代到底了。</p>
 <h3 id="2listitr-迭代器">2.ListItr 迭代器</h3>
-<p>ListItr 继承了 Itr 类，并且实现了 ListIterator 接口。其中，ListIterator 接口又继承了 Iterator 接口。他们的类关系图是这样的：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201126204925206.png" alt="ListIterator 的类关系图"><figcaption aria-hidden="true">ListIterator 的类关系图</figcaption>
-</figure>
+<p>ListItr 继承了 Itr 类，并且实现了 ListIterator 接口。其中，ListIterator  接口又继承了 Iterator 接口。他们的类关系图是这样的：</p>
+<p><img src="http://img.xiajibagao.top/image-20201126204925206.png" alt="ListIterator 的类关系图"></p>
 <p>ListIterator 接口在 Iterator 接口的基础上，主要提供了六个新的抽象方法：</p>
 <ul>
 <li><code>hasPrevious()</code>：是否有前驱节点；</li>
@@ -545,10 +539,8 @@
 <p>注意，现在现在 AbstractList 的 <code>add(int index, E e)</code>仍然还不被支持，<code>add(E e)</code>只是定义了通过 <code>add(int index, E e)</code>把元素添加到队尾的逻辑。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 不指定下标的add，默认逻辑为添加到队尾</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span> </span>&#123;</span><br><span class="line">    add(size(), e);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>关于 AbstractList 和 AbstractCollection 中 <code>add()</code>方法之间的关系是这样的：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201126110250536.png" alt="add方法的实现逻辑"><figcaption aria-hidden="true">add方法的实现逻辑</figcaption>
-</figure>
-<p>AbstractList 这里的 <code>add(E e)</code>就非常有模板方模式提到的“抽象类规定算法骨架”这个感觉了。AbstractCollection 接口提供了 <code>add(E e)</code>的初步实现（尽管只是抛异常），然后到了 AbstractList 中就完善了 <code>add(E e)</code>方法的逻辑——通过调用 <code>add(int index,E e)</code>方法把元素插到队尾，但是具体的 <code>add(int index,E e)</code>怎么实现再交给子类决定。</p>
+<p><img src="http://img.xiajibagao.top/image-20201126110250536.png" alt="add方法的实现逻辑"></p>
+<p>AbstractList 这里的 <code>add(E e)</code>就非常有模板方模式提到的“抽象类规定算法骨架”这个感觉了。AbstractCollection 接口提供了 <code>add(E e)</code>的初步实现（尽管只是抛异常），然后到了 AbstractList 中就完善了 <code>add(E e)</code>方法的逻辑——通过调用 <code>add(int index,E e)</code>方法把元素插到队尾，但是具体的  <code>add(int index,E e)</code>怎么实现再交给子类决定。</p>
 <h3 id="2indexoflastindexof">2.indexOf/LastIndexOf</h3>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">indexOf</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    ListIterator&lt;E&gt; it = listIterator();</span><br><span class="line">    <span class="keyword">if</span> (o==<span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (it.hasNext())</span><br><span class="line">            <span class="keyword">if</span> (it.next()==<span class="keyword">null</span>)</span><br><span class="line">                <span class="keyword">return</span> it.previousIndex();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (it.hasNext())</span><br><span class="line">            <span class="keyword">if</span> (o.equals(it.next()))</span><br><span class="line">                <span class="keyword">return</span> it.previousIndex();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">lastIndexOf</span><span class="params">(Object o)</span> </span>&#123;</span><br><span class="line">    ListIterator&lt;E&gt; it = listIterator(size());</span><br><span class="line">    <span class="keyword">if</span> (o==<span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">while</span> (it.hasPrevious())</span><br><span class="line">            <span class="keyword">if</span> (it.previous()==<span class="keyword">null</span>)</span><br><span class="line">                <span class="keyword">return</span> it.nextIndex();</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">while</span> (it.hasPrevious())</span><br><span class="line">            <span class="keyword">if</span> (o.equals(it.previous()))</span><br><span class="line">                <span class="keyword">return</span> it.nextIndex();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="3addall">3.addAll</h3>
@@ -576,11 +568,16 @@
 <p>我们可以写个测试看看：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list1 = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">list1.add(<span class="string">&quot;a&quot;</span>);</span><br><span class="line">System.out.println(list1.hashCode()); <span class="comment">// 128</span></span><br><span class="line">list1.add(<span class="string">&quot;c&quot;</span>);</span><br><span class="line">System.out.println(list1.hashCode()); <span class="comment">// 4067</span></span><br></pre></td></tr></table></figure>
 <h2 id="七-总结">七、总结</h2>
+<p><strong>List</strong></p>
 <p>List 接口继承了 Collection 接口，新增方法的特点主要体现在可以通过下标去操作节点，可以说大部分下标可以作为参数的方法都是 List 中添加的方法。</p>
+<p><strong>AbstractList</strong></p>
 <p>AbstractList 是实现了 List 的抽象类，他实现了 List 接口中的大部分方法，同时他继承了 AbstractCollection ，沿用了一些 AbstractCollection 中的实现。这两个抽象类可以看成是模板方法模式的一种体现。</p>
 <p>他提供了下标版的 <code>add()</code>，<code>remove()</code>，<code>set()</code>的空实现。</p>
+<p><strong>迭代器</strong></p>
 <p>AbstractList 内部提供两个迭代器，Itr 和 ListItr，Itr 实现了 <code>Iterator</code>接口，实现了基本的迭代删除，而 ListItr 实现了<code>ListIterator</code>，在前者的基础上增加了迭代中添加修改，以及反向迭代的相关方法，并且可以从指定的位置开始创建迭代器。</p>
-<p>AbstractList 的 SubList 可以看成 AbstractList 的包装类，他在实例化的时候会把外部类实例的引用赋值给成员变量，同名的操作方法还仍然是调用 AbstractList 的，但是基于下标的调用会在默认参数的基础上加上步长，以实现对“视图”的操作，这是适配器模式思想的一种体现。</p>
+<p><strong>视图集合SubList</strong></p>
+<p>AbstractList 的 SubList 可以看成 AbstractList 的包装类，他在实例化的时候会把外部类实例的引用赋值给成员变量，同名的操作方法还仍然是调用 AbstractList  的，但是基于下标的调用会在默认参数的基础上加上步长，以实现对“视图”的操作，这是适配器模式思想的一种体现。</p>
+<p><strong>并发修改检查机制fast-fail</strong></p>
 <p>AbstractList 引入了并发修改下 fast-fail 的机制，在内部维护一个成员变量 <code>modelCount</code>，默认为零，每次结构性修改都会让其+1。在迭代过程中会默认检查 <code>modelCount</code>是否符合预期值，否则抛出异常。值得注意的是，这个需要实现类的配合，在实现 <code>add()</code>等方法的时候要让 <code>modelCount</code>+1。对于一些实现类，在迭代中删除可能会抛出 <code>ConcurrentModificationExceptions</code>，就是这方面的问题。</p>
 <p>AbstractList 重写了 <code>hashCode()</code>方法，不再直接获取实例的 HashCode 值，而遍历集合，根据每一个元素的 HashCode 计算集合的 HashCode，这样保证了内容不同的相同集合不会得到相同的 HashCode。</p>
 
@@ -708,7 +705,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">72</span>
+                  <span class="site-state-item-count">73</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

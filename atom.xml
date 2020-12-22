@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2020-12-21T12:09:15.832Z</updated>
+  <updated>2020-12-22T08:28:55.954Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -15,6 +15,49 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>java集合源码分析（八）：Set与AbstractSet</title>
+    <link href="http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/"/>
+    <id>http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/</id>
+    <published>2020-12-21T16:00:00.000Z</published>
+    <updated>2020-12-22T08:28:55.954Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;Set 接口是 Collection 接口下三大子接口之一。其下实现类都为元素不可重复的，不保证线程安全的集合。他有两个主要实现，即无序的 HashSet 与有序的 TreeSet。&lt;/p&gt;
+&lt;p&gt;Set 相对 List 集合与 Queue 集合不同之处在于，他的实现类需要依赖与 Map 集合的实现类密切相关。这体现在以下两点：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;HashSet 实际依赖于 HashMap，他使用 HashMap 的 key 作为存储容器。TreeSet 同理，依赖于 TreeMap实现。&lt;/li&gt;
+&lt;li&gt;Map 集合中的 keySet 与 EntrySet 视图集合往往以实现了 Set 接口的内部类出现在 Map 的实现类中。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;D:%5C%E4%BB%A3%E7%A0%81%E5%8F%8Ajar%E5%8C%85%5C%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%5Cjava%E7%9B%B8%E5%85%B3%5Cjava%E9%9B%86%E5%90%88%5CSet%E5%AE%9E%E7%8E%B0%E7%B1%BB%5Cimage-20201222152520801.png&quot; alt=&quot;image-20201222152520801&quot;&gt;&lt;/p&gt;
+&lt;p&gt;这是关于 java 集合类源码的第八篇文章。往期文章：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/&quot;&gt;java集合源码分析（五）：Map与AbstractMap&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/&quot;&gt;java集合源码分析（六）：HashMap&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/21/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ALinkedHashMap/&quot;&gt;java集合源码分析（七）：LinkedHashMap&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;一-set-接口的类关系&quot;&gt;一、Set 接口的类关系&lt;/h2&gt;
+&lt;h3 id=&quot;1父接口&quot;&gt;1.父接口&lt;/h3&gt;
+&lt;p&gt;Set 接口继承了 Collection 接口，而 Collection 接口又继承了 Iterable 接口，这表明 Set 集合具有 Collection 的通性，是一维的元素集合，并且可以使用迭代器或者 &lt;code&gt;forEach()&lt;/code&gt; 迭代。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="java集合容器" scheme="http://blog.xiajibagao.top/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
+    
+    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
+    
+  </entry>
   
   <entry>
     <title>next5主题自定义摘要</title>
@@ -122,7 +165,7 @@
     <link href="http://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/"/>
     <id>http://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/</id>
     <published>2020-12-15T16:00:00.000Z</published>
-    <updated>2020-12-17T12:53:55.193Z</updated>
+    <updated>2020-12-22T08:23:15.267Z</updated>
     
     
     <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
@@ -130,17 +173,16 @@
 &lt;p&gt;对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式，能否存放空值；作为使用了数组作为底层结构的集合，我们还需要关注其扩容的实现；同时，针对哈希表的特性，我们还需要关注它如何通过哈希算法取模快速定位下标。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;这是关于 java 集合类源码的第六篇文章。往期文章：&lt;/p&gt;
-&lt;ol type=&quot;1&quot;&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/&quot;&gt;java集合源码分析（五）：Map与AbstractMap&lt;/a&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/&quot;&gt;java集合源码分析（五）：Map与AbstractMap&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&quot;一-hashmap-的数据结构&quot;&gt;一、HashMap 的数据结构&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201208205304527.png&quot; alt=&quot;HashMap的数据结构&quot; style=&quot;zoom:67%;&quot;&gt;&lt;/p&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201208205304527.png&quot; alt=&quot;HashMap的数据结构&quot; style=&quot;zoom:67%;&quot;&gt;
 &lt;p&gt;&lt;strong&gt;在 JDK8 之前，HashMap 的数据结构是数组+链表。在 JDK8 以后是数组 + 链表 + 红黑树&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;在 HashMap 中，每一个 value 都被存储在一个 Node 或 TreeNode 实例中，容器中有一个 &lt;code&gt;Node[] table&lt;/code&gt; 数组成员变量，数组中的每一格称为一个“桶”。当添加元素时，根据元素的 key 通过哈希值计算得到对应下标，将 Node 类的形式存入“桶”中。如果 table 容量不足时，就会发生扩容，同时对容器内部的元素进行重哈希。&lt;/p&gt;
 &lt;p&gt;当发生哈希冲突，也就是不同元素计算得到了相同的下标时，会将节点接到“桶”的中的第一个元素后，后续操作亦同，最后就会形成链表。&lt;/p&gt;
@@ -237,24 +279,21 @@
     <link href="http://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/"/>
     <id>http://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/</id>
     <published>2020-12-02T16:00:00.000Z</published>
-    <updated>2020-12-17T06:37:56.578Z</updated>
+    <updated>2020-12-22T08:14:47.451Z</updated>
     
     
     <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
 &lt;p&gt;LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，也正因如此，它也具有队列的特性与方法。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;这是关于 java 集合类源码的第四篇文章。往期文章：&lt;/p&gt;
-&lt;ol type=&quot;1&quot;&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&quot;一-linkedlist-的类关系&quot;&gt;一、LinkedList 的类关系&lt;/h2&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201203153522364.png&quot; alt=&quot;LinkedList 的类关系&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;LinkedList 的类关系&lt;/figcaption&gt;
-&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201203153522364.png&quot; alt=&quot;LinkedList 的类关系&quot;&gt;&lt;/p&gt;
 &lt;p&gt;LinkedList 实现了 Cloneable ，Serializable 接口，表明它可以拷贝，可以被序列化。&lt;/p&gt;
 &lt;p&gt;但是和 ArrayList 或者 Vector 相比，因为它是链表，所以无法像数组那样通过下标快速随机访问，故而没有实现 RandomAccess 接口。&lt;/p&gt;
 &lt;p&gt;他实现了 List 接口，但是也实现了 Queue 的子接口 Deque，因此除了列表，他也具备双端队列的特性。&lt;/p&gt;
@@ -277,23 +316,20 @@
     <link href="http://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/"/>
     <id>http://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/</id>
     <published>2020-12-01T16:00:00.000Z</published>
-    <updated>2020-12-17T06:37:54.019Z</updated>
+    <updated>2020-12-22T08:13:58.344Z</updated>
     
     
     <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
 &lt;p&gt;ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector 有着一样的继承关系，也都能随机访问，但是不同的是不能保证线程安全。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;这是关于 java 集合类源码的第三篇文章。往期文章：&lt;/p&gt;
-&lt;ol type=&quot;1&quot;&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&quot;一-arraylist-的类关系&quot;&gt;一、ArrayList 的类关系&lt;/h2&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201201161347920.png&quot; alt=&quot;image-20201201161347920&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20201201161347920&lt;/figcaption&gt;
-&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201201161347920.png&quot; alt=&quot;image-20201201161347920&quot;&gt;&lt;/p&gt;
 &lt;p&gt;ArrayList 实现了三个接口，继承了一个抽象类，其中 Serializable ，Cloneable 与 RandomAccess 接口都是用于标记的空接口，他的主要抽象方法来自于 List，一些实现来自于 AbstractList。&lt;/p&gt;
 &lt;h3 id=&quot;1abstractlist-与-list&quot;&gt;1.AbstractList 与 List&lt;/h3&gt;
 &lt;p&gt;ArrayList 实现了 List 接口，是 List 接口的实现类之一，他通过继承抽象类 AbstractList 获得的大部分方法的实现。&lt;/p&gt;
@@ -316,7 +352,7 @@
     <link href="http://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/"/>
     <id>http://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/</id>
     <published>2020-11-26T16:00:00.000Z</published>
-    <updated>2020-12-17T06:37:46.332Z</updated>
+    <updated>2020-12-22T08:12:09.108Z</updated>
     
     
     <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
@@ -325,12 +361,10 @@
 &lt;p&gt;本篇文章暂不讨论具体的实现类，而将基于 List 接口与其抽象类 AbstractList，了解 List 接口是如何承上启下，进一步从 Collection 抽象到具体的。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;这是关于 java 集合类源码的第二篇文章。往期文章：&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&quot;一-list-接口&quot;&gt;一、List 接口&lt;/h2&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201125163518482.png&quot; alt=&quot;List 接口的方法&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;List 接口的方法&lt;/figcaption&gt;
-&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201125163518482.png&quot; alt=&quot;List 接口的方法&quot;&gt;&lt;/p&gt;
 &lt;p&gt;List 接口继承了 Collection 接口，在 Collection 接口的基础上增加了一些方法。相对于 Collection 接口，我们可以很明显的看到，List &lt;strong&gt;中增加了非常多根据下标操作集合的方法&lt;/strong&gt;，我们可以简单粗暴的分辨一个方法的抽象方法到底来自 Collection 还是 List：参数里有下标就是来自 List，没有就是来自 Collection。&lt;/p&gt;
 &lt;p&gt;可以说，List 接口在 Collection 的基础上，&lt;strong&gt;进一步明确了 List 集合运允许根据下标快速存取的特性&lt;/strong&gt;。&lt;/p&gt;
 &lt;h3 id=&quot;1新增的方法&quot;&gt;1.新增的方法&lt;/h3&gt;</summary>
@@ -351,26 +385,28 @@
     <link href="http://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/"/>
     <id>http://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/</id>
     <published>2020-11-24T16:00:00.000Z</published>
-    <updated>2020-12-17T06:38:01.683Z</updated>
+    <updated>2020-12-22T08:13:24.174Z</updated>
     
     
     <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
 &lt;p&gt;我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。&lt;/p&gt;
 &lt;p&gt;其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 List 部分的关系图。&lt;/p&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201126100539307.png&quot; alt=&quot;List集合的实现类关系图&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;List集合的实现类关系图&lt;/figcaption&gt;
-&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201126100539307.png&quot; alt=&quot;List集合的实现类关系图&quot;&gt;&lt;/p&gt;
 &lt;p&gt;根据上图的类关系图，我们研究一下源码中，类与类之间的关系，方法是如何从抽象到具体的。&lt;/p&gt;
 &lt;h2 id=&quot;一-iterable-接口&quot;&gt;一、Iterable 接口&lt;/h2&gt;
 &lt;p&gt;Iterable 是最顶层的接口，继承这个接口的类可以被迭代。&lt;/p&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201125151935252.png&quot; alt=&quot;Iterable 接口的方法&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;Iterable 接口的方法&lt;/figcaption&gt;
-&lt;/figure&gt;
+&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201125151935252.png&quot; alt=&quot;Iterable 接口的方法&quot;&gt;&lt;/p&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;p&gt;&lt;code&gt;iterator()&lt;/code&gt;：用于获取一个迭代器。&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;code&gt;forEach()&lt;/code&gt; ：JDK8 新增。一个基于函数式接口实现的新迭代方法。&lt;/p&gt;
-&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Consumer&amp;lt;? &lt;span class=&quot;keyword&quot;&gt;super&lt;/span&gt; T&amp;gt; action)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Objects.requireNonNull(action);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (T t : &lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        action.accept(t);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;code&gt;spliterator()&lt;/code&gt;：JDK8 新增。用于获取一个可分割迭代器。默认实现返回一个&lt;code&gt;IteratorSpliterator&lt;/code&gt;类。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;iterator()&lt;/code&gt;：用于获取一个迭代器。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;forEach()&lt;/code&gt; ：JDK8 新增。一个基于函数式接口实现的新迭代方法。&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Consumer&amp;lt;? &lt;span class=&quot;keyword&quot;&gt;super&lt;/span&gt; T&amp;gt; action)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Objects.requireNonNull(action);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (T t : &lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        action.accept(t);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code&gt;spliterator()&lt;/code&gt;：JDK8 新增。用于获取一个可分割迭代器。默认实现返回一个&lt;code&gt;IteratorSpliterator&lt;/code&gt;类。&lt;/p&gt;
+&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;这个跟迭代器类似，但是是用于并行迭代的，关于具体的情况可以参考一下掘金的一个讨论：&lt;a href=&quot;https://segmentfault.com/q/1010000007087438&quot;&gt;Java8里面的java.util.Spliterator接口有什么用？&lt;/a&gt;&lt;/p&gt;</summary>
     
@@ -1057,36 +1093,6 @@
 &lt;p&gt;其中，被驱动表的关联条件是否有索引对性能有着很大的影响。&lt;/p&gt;
 &lt;h2 id=&quot;二-关联条件有索引&quot;&gt;二、关联条件有索引&lt;/h2&gt;
 &lt;h3 id=&quot;1njl算法&quot;&gt;1.NJL算法&lt;/h3&gt;</summary>
-    
-    
-    
-    <category term="mysql" scheme="http://blog.xiajibagao.top/categories/mysql/"/>
-    
-    
-    <category term="mysql" scheme="http://blog.xiajibagao.top/tags/mysql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Mysql初探(十)：count</title>
-    <link href="http://blog.xiajibagao.top/2020/11/12/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81)%EF%BC%9Acount/"/>
-    <id>http://blog.xiajibagao.top/2020/11/12/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81)%EF%BC%9Acount/</id>
-    <published>2020-11-11T16:00:00.000Z</published>
-    <updated>2020-11-16T13:00:44.200Z</updated>
-    
-    
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;此文为极客时间：MySQL实战45讲的14节count相关内容的笔记&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;一-count的查询过程&quot;&gt;一、count的查询过程&lt;/h2&gt;
-&lt;p&gt;count() 函数用于查询数据的数量，不同的引擎有不同的实现。&lt;/p&gt;
-&lt;p&gt;在 MySAM 引擎会专门记录表的总数；而在 innodb 中，由于 MVCC 的原因，在统计数量的时候需要一行一行的判断当前数据是否对查询的事务的可见的。此外，&lt;code&gt;show table status&lt;/code&gt;的 Rows 字段也能获取表的总条数，但是这只是预估值，实际上并不准确。&lt;/p&gt;
-&lt;p&gt;因此，表的遍历是无法避免的，但是 innodb 也有针对此做出优化：&lt;/p&gt;
-&lt;p&gt;主键索引树的叶子节点是数据行，而普通索引树的叶子节点是主键，针对 count 操作遍历那颗树都是一样的，因此查询的时候回找到最小的那颗索引树进行遍历。&lt;/p&gt;
-&lt;h2 id=&quot;二-计数操作的实现&quot;&gt;二、计数操作的实现&lt;/h2&gt;
-&lt;p&gt;计数这个功能通过 redis 也可以实现，即在 redis 中设定一个值用于计数，但是在遇到异常停止服务后不免会遇到数据丢失的问题。&lt;/p&gt;
-&lt;p&gt;如果结合 mysql 来做，即 redis 更新数据后再变更数据库里的数据，读取的时候直接从 redis 读，这样虽然一定程度避免了数据丢失的问题，但是却有可能导致数据不一致。举个例子：&lt;/p&gt;
-&lt;p&gt;现在计数是5，我们要为计数+1&lt;/p&gt;</summary>
     
     
     

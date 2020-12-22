@@ -287,6 +287,182 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/11/12/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81)%EF%BC%9Acount/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/11/12/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81)%EF%BC%9Acount/" itemprop="url">Mysql初探(十)：count</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-12T00:00:00+08:00">
+                2020-11-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  904
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>此文为极客时间：MySQL实战45讲的14节count相关内容的笔记</p>
+</blockquote>
+<h2 id="一-count的查询过程">一、count的查询过程</h2>
+<p>count() 函数用于查询数据的数量，不同的引擎有不同的实现。</p>
+<p>在 MySAM 引擎会专门记录表的总数；而在 innodb 中，由于 MVCC 的原因，在统计数量的时候需要一行一行的判断当前数据是否对查询的事务的可见的。此外，<code>show table status</code>的 Rows 字段也能获取表的总条数，但是这只是预估值，实际上并不准确。</p>
+<p>因此，表的遍历是无法避免的，但是 innodb 也有针对此做出优化：</p>
+<p>主键索引树的叶子节点是数据行，而普通索引树的叶子节点是主键，针对 count 操作遍历那颗树都是一样的，因此查询的时候回找到最小的那颗索引树进行遍历。</p>
+<h2 id="二-计数操作的实现">二、计数操作的实现</h2>
+<p>计数这个功能通过 redis 也可以实现，即在 redis 中设定一个值用于计数，但是在遇到异常停止服务后不免会遇到数据丢失的问题。</p>
+<p>如果结合 mysql 来做，即 redis 更新数据后再变更数据库里的数据，读取的时候直接从 redis 读，这样虽然一定程度避免了数据丢失的问题，但是却有可能导致数据不一致。举个例子：</p>
+<p>现在计数是5，我们要为计数+1</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/11/12/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81)%EF%BC%9Acount/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/11/11/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B9%9D)%EF%BC%9A%E5%85%B3%E4%BA%8E%E5%85%83%E6%95%B0%E6%8D%AE%E9%94%81%20online%20ddl%E6%8F%92%E9%98%9F%E9%97%AE%E9%A2%98/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1895,184 +2071,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/27/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/10/27/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/" itemprop="url">Mysql初探(二)：日志的文件是如何保证不丢失的</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-27T00:00:00+08:00">
-                2020-10-27
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2.7k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>此文为极客时间：MySQL实战45讲的23节日志相关部分的学习总结</p>
-</blockquote>
-<h2 id="一-持久化的过程">一、持久化的过程</h2>
-<p>从总的来看，日志一般分为两部分：内存中<strong>易遗失的缓存日志</strong>和磁盘上<strong>持久化的日志文件</strong>。</p>
-<p>一次事务中，日志<strong>先被写入内存</strong>，存放在 cache/buffer 中，然后事务结束以后准备持久化：<strong>先写入磁盘的 page cache 中，这个过程叫做 write</strong> ，他仍然是内存操作，只不过从 mysql 的内存去了操作系统的内存，所以比较快；<strong>然后再调用操作系统的方法来写入磁盘，这个过程叫做 fsync ，是真正的持久化过程</strong>，比较耗费时间。</p>
-<p>这个过程，我们可以简单的理解为下图：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201116192502318.png" alt="日志的持久化过程"><figcaption aria-hidden="true">日志的持久化过程</figcaption>
-</figure>
-<p>基于以上的概念，我们了解一下 binlog 和 redo log 的持久化策略。</p>
-<h2 id="二-binlog-的持久化">二、binlog 的持久化</h2>
-<h3 id="1文件结构">1.文件结构</h3>
-<p>系统给 binlog cache 分配了一片内存，<strong>每个线程独享一块内存</strong>，参数 <code>binlog_cache_size</code> 用于控制单个线程内 binlog cache 所占内存的大小。如果超过了这个参数规定的大小，就要暂存到磁盘。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/10/27/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2127,7 +2125,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">72</span>
+                  <span class="site-state-item-count">73</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
