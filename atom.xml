@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2020-12-22T08:50:10.381Z</updated>
+  <updated>2020-12-23T08:51:58.511Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -15,6 +15,38 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>趣谈网络协议读书笔记（一）：网络分层，IP与MAC</title>
+    <link href="http://blog.xiajibagao.top/2020/12/23/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%EF%BC%8CIP%E4%B8%8EMAC/"/>
+    <id>http://blog.xiajibagao.top/2020/12/23/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%EF%BC%8CIP%E4%B8%8EMAC/</id>
+    <published>2020-12-22T16:00:00.000Z</published>
+    <updated>2020-12-23T08:51:58.511Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;此文为极客时间&lt;a href=&quot;https://time.geekbang.org/column/intro/85&quot;&gt;趣谈网络协议&lt;/a&gt;第一模块“通信协议综述”的学习笔记。&lt;/p&gt;
+&lt;p&gt;主要内容包括数据包在如何在层间传输， IP 地址与 MAC 地址的介绍，IP 地址的设置与分配。&lt;/p&gt;
+&lt;h2 id=&quot;一-网络分层&quot;&gt;一、网络分层&lt;/h2&gt;
+&lt;h3 id=&quot;1数据包如何在层间流转&quot;&gt;1.数据包如何在层间流转&lt;/h3&gt;
+&lt;p&gt;分层是一个复杂程序的必然趋势，因而复杂的网络协议就会有分层的要求。&lt;/p&gt;
+&lt;p&gt;以下图为例，下图描述了我们输入网址并回车后，整个大体的请求流程：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/5c00f6e610f533d17fb4ad7decacc776.jpg&quot; alt=&quot;img&quot; style=&quot;zoom: 25%;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;我们知道，按 TCP/IP 的四层模型，HTTP 协议属于应用层。假设用伪代码代表不同层级间对数据包的处理流程，当我们从应用层发起请求时：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;从应用层进入传输层。经过 &lt;code&gt;send_tcp()&lt;/code&gt;的处理，会加上 TCP 头，里面有端口；&lt;/li&gt;
+&lt;li&gt;从传输层进入网络层，经过 &lt;code&gt;send_layer3()&lt;/code&gt;的处理，加上 IP 头；&lt;/li&gt;
+&lt;li&gt;从网络层进入数据链路层，经过 &lt;code&gt;send_layer()&lt;/code&gt;的处理，加上目标 MAC 或网关 MAC。&lt;/li&gt;
+&lt;/ul&gt;</summary>
+    
+    
+    
+    <category term="计算机网络" scheme="http://blog.xiajibagao.top/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
+    
+    
+    <category term="计算机网络，趣谈网络协议" scheme="http://blog.xiajibagao.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%8C%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/"/>
+    
+  </entry>
   
   <entry>
     <title>java集合源码分析（八）：Set与AbstractSet</title>
@@ -241,6 +273,34 @@
     <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
     
     <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>资源推荐：数据结构可视化网站</title>
+    <link href="http://blog.xiajibagao.top/2020/12/15/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E8%B5%84%E6%BA%90%E6%8E%A8%E8%8D%90%EF%BC%9A%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BD%91%E7%AB%99/"/>
+    <id>http://blog.xiajibagao.top/2020/12/15/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E8%B5%84%E6%BA%90%E6%8E%A8%E8%8D%90%EF%BC%9A%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BD%91%E7%AB%99/</id>
+    <published>2020-12-14T16:00:00.000Z</published>
+    <updated>2020-12-23T09:09:05.555Z</updated>
+    
+    
+    <summary type="html">&lt;p&gt;最近偶然发现一个神奇的网站，来自美国南弗罗里达大学计算机科学系的一个在线的数据结构可视化的网站。&lt;/p&gt;
+&lt;p&gt;里面提供了各种数据结构与算法的动态演示，可以调整动画速度，或者根据输入的参数动态展示数据结构或者算法的整个变化过程。&lt;/p&gt;
+&lt;p&gt;比如这个红黑树的演示: &lt;a href=&quot;Red/Black%20Tree&quot;&gt;Red/Black Tree&lt;/a&gt;&lt;/p&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201223170637182.png&quot; alt=&quot;image-20201223170637182&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20201223170637182&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;这里是完整的功能目录：&lt;a href=&quot;https://www.cs.usfca.edu/~galles/visualization/Algorithms.html&quot;&gt;Data Structure Visualizations&lt;/a&gt;&lt;/p&gt;
+</summary>
+    
+    
+    
+    <category term="资源推荐" scheme="http://blog.xiajibagao.top/categories/%E8%B5%84%E6%BA%90%E6%8E%A8%E8%8D%90/"/>
+    
+    
+    <category term="数据结构与算法" scheme="http://blog.xiajibagao.top/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
+    
+    <category term="资源推荐" scheme="http://blog.xiajibagao.top/tags/%E8%B5%84%E6%BA%90%E6%8E%A8%E8%8D%90/"/>
     
   </entry>
   
@@ -1040,76 +1100,6 @@
     <category term="mysql" scheme="http://blog.xiajibagao.top/tags/mysql/"/>
     
     <category term="资源推荐" scheme="http://blog.xiajibagao.top/tags/%E8%B5%84%E6%BA%90%E6%8E%A8%E8%8D%90/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Mysql初探(十三)：自增主键，自增锁</title>
-    <link href="http://blog.xiajibagao.top/2020/11/16/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81%E4%B8%89)%EF%BC%9A%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%EF%BC%8C%E8%87%AA%E5%A2%9E%E9%94%81/"/>
-    <id>http://blog.xiajibagao.top/2020/11/16/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81%E4%B8%89)%EF%BC%9A%E8%87%AA%E5%A2%9E%E4%B8%BB%E9%94%AE%EF%BC%8C%E8%87%AA%E5%A2%9E%E9%94%81/</id>
-    <published>2020-11-15T16:00:00.000Z</published>
-    <updated>2020-11-16T13:06:33.086Z</updated>
-    
-    
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;此文为极客时间：MySQL实战45讲的39节的学习笔记&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;一-自增值的保存方式&quot;&gt;一、自增值的保存方式&lt;/h2&gt;
-&lt;p&gt;我们前面提到过，自增主键的连续性使得表在空间上排列的更紧密，提高了空间利用率，避免了页分裂。实际上，自增主键大部分情况下可以保证连续性，但是也有例外的时候。&lt;/p&gt;
-&lt;p&gt;当我们创建表的时候，表结构会存储在 .frm 文件中，但是并不会一起保存自增值。&lt;strong&gt;MyISAM 引擎将自增值保存在数据文件&lt;/strong&gt;，而 innodb 在 mysql8.0 之前只会&lt;strong&gt;将自增值保存在内存&lt;/strong&gt;。&lt;/p&gt;
-&lt;p&gt;也就是说，对于 innodb 引擎来说，每次重启后，都需要&lt;strong&gt;寻找表中最大的自增值 X，将 X+1 作为新的自增值&lt;/strong&gt;，如果当前最大值为 10，自增值就会是11，如果删除了自增值为 10 的行，那么此时重启数据库，新插入的行自增值就会变成11，当自增值是主键的时候，相当于从新增变成了更新。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;而 8.0 以后，innodb 会将自增值的变更记录到 redo log，重启以后依靠日志重做&lt;/strong&gt;。&lt;/p&gt;
-&lt;h2 id=&quot;二-自增值的自增机制&quot;&gt;二、自增值的自增机制&lt;/h2&gt;
-&lt;p&gt;在 mysql 中，如果字段 id 被定义为 AUTO_INCREMENT，那么插入时：&lt;/p&gt;
-&lt;ol type=&quot;1&quot;&gt;
-&lt;li&gt;如果插入数据时 id 字段指定为 &lt;strong&gt;0、null 或未指定值&lt;/strong&gt;，那么就把这个表当前的 AUTO_INCREMENT 值填到自增字段；&lt;/li&gt;
-&lt;li&gt;如果插入数据时 id 字段指定了具体的值，就直接使用语句里指定的值。&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;根据要插入的值和当前自增值的大小关系，自增值的变更结果也会有所不同。假设，某次要插入的值是 X，当前的自增值是 Y。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="mysql" scheme="http://blog.xiajibagao.top/categories/mysql/"/>
-    
-    
-    <category term="mysql" scheme="http://blog.xiajibagao.top/tags/mysql/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Mysql初探(十二)：order by</title>
-    <link href="http://blog.xiajibagao.top/2020/11/15/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81%E4%BA%8C)%EF%BC%9Aorder%20by/"/>
-    <id>http://blog.xiajibagao.top/2020/11/15/mysql/Mysql%E5%88%9D%E6%8E%A2(%E5%8D%81%E4%BA%8C)%EF%BC%9Aorder%20by/</id>
-    <published>2020-11-14T16:00:00.000Z</published>
-    <updated>2020-11-16T13:06:15.921Z</updated>
-    
-    
-    <summary type="html">&lt;blockquote&gt;
-&lt;p&gt;此文为极客时间：MySQL实战45讲的16节order by相关内容的笔记&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;一-order-by-的执行流程&quot;&gt;一、order by 的执行流程&lt;/h2&gt;
-&lt;h3 id=&quot;1全字段排序&quot;&gt;1.全字段排序&lt;/h3&gt;
-&lt;p&gt;假如此时有这么一张表：&lt;/p&gt;
-&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;CREATE&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;TABLE&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`t`&lt;/span&gt; (&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`id`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`city`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;varchar&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;16&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`name`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;varchar&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;16&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`age`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;int&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;11&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;NOT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;string&quot;&gt;`addr`&lt;/span&gt; &lt;span class=&quot;built_in&quot;&gt;varchar&lt;/span&gt;(&lt;span class=&quot;number&quot;&gt;128&lt;/span&gt;) &lt;span class=&quot;keyword&quot;&gt;DEFAULT&lt;/span&gt; &lt;span class=&quot;literal&quot;&gt;NULL&lt;/span&gt;,&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  PRIMARY &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`id`&lt;/span&gt;),&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;  &lt;span class=&quot;keyword&quot;&gt;KEY&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;`city`&lt;/span&gt; (&lt;span class=&quot;string&quot;&gt;`city`&lt;/span&gt;)&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;) &lt;span class=&quot;keyword&quot;&gt;ENGINE&lt;/span&gt;=&lt;span class=&quot;keyword&quot;&gt;InnoDB&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;现在要按姓名排序查询杭州1000个人的信息&lt;/p&gt;
-&lt;figure class=&quot;highlight sql&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;select&lt;/span&gt; city,&lt;span class=&quot;keyword&quot;&gt;name&lt;/span&gt;,age &lt;span class=&quot;keyword&quot;&gt;from&lt;/span&gt; t &lt;span class=&quot;keyword&quot;&gt;where&lt;/span&gt; city=&lt;span class=&quot;string&quot;&gt;&amp;#x27;杭州&amp;#x27;&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;order&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;by&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;name&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;limit&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;1000&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;这条 sql 的执行流程如下：&lt;/p&gt;
-&lt;ol type=&quot;1&quot;&gt;
-&lt;li&gt;在内存中初始化 sort_buffer，放入 city，name，age 三个字段&lt;/li&gt;
-&lt;li&gt;从 city 索引树找到 city = &#39;杭州&#39; 叶子节点存放的主键 id&lt;/li&gt;
-&lt;li&gt;回表根据主键 id 找到数据，取出全部字段放入 sort_buffer&lt;/li&gt;
-&lt;li&gt;重复上述过程，直到全部符合条件的数据都放入内存&lt;/li&gt;
-&lt;li&gt;在 sort_buffer 对数据按 name 进行排序&lt;/li&gt;
-&lt;li&gt;按照排序结果取前 1000 行返回&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;因为先查了全部需要字段才排序，我们把这个叫做&lt;strong&gt;全字段排序&lt;/strong&gt;。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="mysql" scheme="http://blog.xiajibagao.top/categories/mysql/"/>
-    
-    
-    <category term="mysql" scheme="http://blog.xiajibagao.top/tags/mysql/"/>
     
   </entry>
   

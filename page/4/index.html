@@ -287,7 +287,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/28/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%89)%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/30/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -306,7 +306,543 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/10/28/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%89)%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/" itemprop="url">Mysql初探(三)：内存数据刷盘机制</a></h1>
+                <a class="post-title-link" href="/2020/10/30/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/" itemprop="url">JDK1.8新特性（三）：Lambda表达式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-30T00:00:00+08:00">
+                2020-10-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.2k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>JDK8 为我们带来了 Lambda 表达式和函数式接口，这一点在前文介绍 Stream 和 Collectors 的时候已有提及。通过使用这些特性，我们可以更简洁的创建匿名内部类，也可以将方法作为参数直接传入方法中调用。本文将就这两点简要的总结一下 Lambda 的使用。</p>
+<h2 id="一-函数式接口">一、函数式接口</h2>
+<p>我们知道，java 中允许将接口作为方法的参数类型，但是我们只能传入其实现类。实际开发中，有些接口的仅有少数的方法，并且往往其实现类只在特定的地方使用，为此专门去创建一个新的实现类其实是有点繁琐的，为此 JDK8 引入了函数式接口。</p>
+<p>函数式接口有且仅有一个抽象方法，抽象方法允许有一个默认实现（实际上接口的默认实现也是 JDK8 的新特性）。当我们调用方法时，<strong>可以直接通过 Lambda 表达式直接以匿名内部类的形式去实现他的方法</strong>。表现为直接在参数小括号中： <code>void test(param1, () -&gt; System.out.print("hello world"))</code></p>
+<p>当使用作为方法参数类型是，通过在接口上添加<code>@FunctionalInterface</code>注解来声明。</p>
+<p>我们举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 函数式接口</span></span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">TestInterface</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 将接口作为方法参数</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(TestInterface testInterface)</span></span>&#123;</span><br><span class="line">    <span class="comment">// 有且仅有一个抽象方法</span></span><br><span class="line">    testInterface.test();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用方法</span></span><br><span class="line">test(()-&gt; System.out.println(<span class="string">&quot;hello world&quot;</span>));</span><br></pre></td></tr></table></figure>
+<p>我们可以看到，实现的代码非常的简洁，对于一些不复杂的功能用起来非常方便，而如果使用原本的实现方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">TestInterface testInterface = <span class="keyword">new</span> TestInterface() &#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">()</span> </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">&quot;hello world&quot;</span>)</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用方法</span></span><br><span class="line">test(testInterface);</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/10/30/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/30/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%BA%94)%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/10/30/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%BA%94)%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/" itemprop="url">Mysql45讲读书笔记(五)：数据库表空间的回收</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-30T00:00:00+08:00">
+                2020-10-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.8k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>此文为极客时间MySQL实战45讲第13节的笔记</p>
+</blockquote>
+<h2 id="一-表数据的存放位置">一、表数据的存放位置</h2>
+<p>表数据既可以存在共享表空间里，也可以是单独的文件。这个行为是由参数 <code>innodb_file_per_table</code> 控制的：</p>
+<ol type="1">
+<li>OFF ：表的数据放在系统共享表空间，即跟数据字典放在一起；</li>
+<li>ON ：表数据存储在一个以 .ibd 为后缀的文件中。（MySQL 5.6.6 默认为 ON）</li>
+</ol>
+<p>一般情况下，表单独存放的时候，可以通过 drop table 语句直接删除，而如果放在共享表空间，及时删除了表也无法回收空间。</p>
+<h2 id="二-表数据的删除">二、表数据的删除</h2>
+<p>一般情况下，很少有直接连结构带数据直接删掉表的情况，更多时候是只删除一些数据，但是这样往往会遇到这样的问题：<strong>表中的数据被删除了，但是表空间却没有被回收</strong>。</p>
+<p>实际上，这与 innodb 中数据都以 B+ 树的结构存储有关：</p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201105203027271.png" alt="image-20201105203027271"><figcaption aria-hidden="true">image-20201105203027271</figcaption>
+</figure>
+<p>以上图为例，如果我们删除 R4 这条数据，则 innodb 会把 R4 这个位置标记为删除，之后如果插入一个在 300~600 的记录的时候，就会直接使用现在 R4 的位置。同理，如果我们清除这个 PageA，那么这个数据页都会被标记删除，等到下一个数据页加载的时候就可以直接使用这个空间。而当两个相邻的数据页上被删除了记录很多，也就是页的利用率都很低的时候，系统就会自动合并两个页的数据，并且标记其中一个为可复用。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/10/30/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%BA%94)%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/29/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E5%9B%9B)%EF%BC%9A%E7%B4%A2%E5%BC%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/10/29/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E5%9B%9B)%EF%BC%9A%E7%B4%A2%E5%BC%95/" itemprop="url">Mysql45讲读书笔记(四)：索引</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-29T00:00:00+08:00">
+                2020-10-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5.8k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>此文为极客时间：MySQL实战45讲的 4、5、9、10、11、15、18节索引相关部分的总结</p>
+</blockquote>
+<h2 id="一-innodb索引模型">一、Innodb索引模型</h2>
+<h3 id="1主键非主键索引的区别">1.主键/非主键索引的区别</h3>
+<p>每个索引在Innodb中都是一颗B+树，其中根据索引叶子节点的不同，分为主键索引和非主键索引。</p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20200930164149290.png" alt="image-20200930164149290"><figcaption aria-hidden="true">image-20200930164149290</figcaption>
+</figure>
+<p>我们可以看到：</p>
+<ul>
+<li>主键索引将索引和整行的数据都放在了一起，所以又叫<strong>聚簇索引</strong></li>
+<li>非主键索引的叶子节点内容是主键的值。所以又叫<strong>二级索引</strong></li>
+</ul>
+<p>其中，如果非主键索引查询字段没有做到覆盖索引，就需要先从非主键索引树中找到对应的主键，然后再回到主键索引树找到对应的行数据，这个过程叫做<strong>回表</strong>。</p>
+<p>而相应的，直接把全部的主键索引过一遍，然后每拿到一个主键索引，就把相应的数据拿出来，这个过程叫做<strong>全表扫描</strong>。</p>
+<h3 id="2索引维护">2.索引维护</h3>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/10/29/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E5%9B%9B)%EF%BC%9A%E7%B4%A2%E5%BC%95/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/28/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%B8%89)%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/10/28/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%B8%89)%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/" itemprop="url">Mysql45讲读书笔记(三)：内存数据刷盘机制</a></h1>
         
 
         <div class="post-meta">
@@ -417,7 +953,7 @@
 <h2 id="二-刷脏页的控制策略">二、刷脏页的控制策略</h2>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/10/28/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%89)%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/#more" rel="contents">
+            <a class="btn" href="/2020/10/28/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%B8%89)%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -468,7 +1004,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/27/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/27/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -487,7 +1023,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/10/27/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/" itemprop="url">Mysql初探(二)：日志的文件是如何保证不丢失的</a></h1>
+                <a class="post-title-link" href="/2020/10/27/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/" itemprop="url">Mysql45讲读书笔记(二)：日志的文件是如何保证不丢失的</a></h1>
         
 
         <div class="post-meta">
@@ -595,7 +1131,7 @@
 <p>系统给 binlog cache 分配了一片内存，<strong>每个线程独享一块内存</strong>，参数 <code>binlog_cache_size</code> 用于控制单个线程内 binlog cache 所占内存的大小。如果超过了这个参数规定的大小，就要暂存到磁盘。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/10/27/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/#more" rel="contents">
+            <a class="btn" href="/2020/10/27/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -646,7 +1182,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/25/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%80)%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/25/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%B8%80)%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -665,7 +1201,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/10/25/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%80)%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/" itemprop="url">Mysql初探(一)：三大日志概述</a></h1>
+                <a class="post-title-link" href="/2020/10/25/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%B8%80)%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/" itemprop="url">Mysql45讲读书笔记(一)：三大日志概述</a></h1>
         
 
         <div class="post-meta">
@@ -776,7 +1312,7 @@
 <p>redo log 的日志文件大小是根据配置固定的，如果有一组有四个文件，每个文件的大小是 1GB，那么总共就只能记录 4GB 的日志。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/10/25/mysql/Mysql%E5%88%9D%E6%8E%A2(%E4%B8%80)%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/#more" rel="contents">
+            <a class="btn" href="/2020/10/25/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%B8%80)%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1526,556 +2062,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/12/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/08/12/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/" itemprop="url">JVM初探（四）：类加载器</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-12T00:00:00+08:00">
-                2020-08-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.4k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>虚拟机设计团队把类加载阶段中的“<strong>通过一个类的全限定名来获取描述此类的二进制字节流</strong>”这个动作放到Java虚拟机外部去实现，以便让应用程序自己决定如何去获取所需要的类。<strong>实现这个动作的代码模块称为类加载器。</strong></p>
-<p>对于类加载，我们关注两个方面的问题：</p>
-<ul>
-<li>JVM定义的三个类加载器（Bootstrap，Extension，System）</li>
-<li>双亲委派模型（机制，JDBC违背案例）</li>
-</ul>
-<h2 id="一-类加载器">一、类加载器</h2>
-<p>JVM使用以下三种类型的类加载器：</p>
-<ul>
-<li><p><strong>启动类（Bootstrap）类加载器</strong>：</p>
-<p>这个类存放在<java_home>，无法被Java程序直接引用；</java_home></p></li>
-<li><p><strong>扩展（Extension）类加载器</strong>：</p>
-<p>这个类加载器负责加载<java_home>，开发者可以直接使用；</java_home></p></li>
-<li><p><strong>引用程序（Application）类加载器</strong>：</p>
-<p>这个类加载器是ClassLoader中的getSystemClassLoader（）方法的返回值，所以<strong>一般也称它为系统类加载器</strong>，负责加载用户类路径上所指定的类库。开发者可以直接使用。</p></li>
-</ul>
-<p>从java虚拟机的角度来说，一种是启动类加载器，是JVM的一部分；另一种是其他类加载器，独立于JVM，全部继承自抽象类java.lang.ClassLoader。只有其他类加载器程序员才能自己使用。</p>
-<h2 id="二-双亲委派模型">二、双亲委派模型</h2>
-<h3 id="1什么是双亲委派模型">1.什么是双亲委派模型</h3>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/08/12/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/11/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/08/11/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" itemprop="url">JVM初探（三）：类加载机制</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-11T00:00:00+08:00">
-                2020-08-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>我们知道java代码会被编译为.class文件，这里class文件中的类信息最终还是需要jvm加载以后才能使用。</p>
-<p>事实上，虚拟机把描述类的数据<strong>从Class文件加载到内存，并对数据进行校验，转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型的过程就是虚拟机的类加载机制</strong>。</p>
-<p>对于jvm类的加载机制，我们主要关注两个问题：</p>
-<ul>
-<li>类的加载时机？(初始化的五种情况)</li>
-<li>类的加载过程？（类的五个加载过程）</li>
-</ul>
-<h2 id="一-类的加载时机">一、类的加载时机</h2>
-<h3 id="1类的生命周期">1.类的生命周期</h3>
-<p>类从被加载到虚拟机内存中开始，到卸载出内存为止，整个生命周期包括<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。其中验证、准备、解析统称为<strong>连接</strong>。</p>
-<figure>
-<img src="http://img.xiajibagao.top/类加载的时机.png" alt="类加载的时机"><figcaption aria-hidden="true">类加载的时机</figcaption>
-</figure>
-<p>值得一提的是，加载，验证，准备，初始化和卸载是固定的，<strong>但是解析阶段不是：它在一定情况下可以在初始化后再开始，以支持java语言的动态绑定</strong>。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/08/11/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/" itemprop="url">String类小结</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-11T00:00:00+08:00">
-                2020-08-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4.3k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>java 的 String 类可以说是日常中使用的最多的类，但是大多数时候都只是简单的拼接或者调用 API，只知其然不知其所以然。为了改变这个情况，我决定结合网上的资料，参考源码，深入一点去了解 String 这个熟悉的陌生人。</p>
-<p>要第一时间了解一个类，没有什么比官方的javaDoc文档更直观的了：</p>
-<blockquote>
-<p>String类表示字符串。Java程序中的所有字符串文本（如“abc”）都作为此类的实例实现。</p>
-<p><strong>字符串是常量；它们的值在创建后不能更改</strong>。字符串缓冲区支持可变字符串。<strong>因为字符串对象是不可变的，所以可以共享它们</strong>。</p>
-<p>类字符串包括用于检查序列的单个字符、比较字符串、搜索字符串、提取子字符串以及创建字符串副本的方法，其中所有字符都转换为大写或小写。大小写映射基于Character类指定的Unicode标准版本。</p>
-<p><strong>Java语言提供了对字符串连接运算符（+）以及将其他对象转换为字符串的特殊支持。字符串连接是通过<code>StringBuilder</code>（或<code>StringBuffer</code>）类及其<code>append</code>方法实现的。字符串转换是通过<code>toString</code>方法实现的</strong>，由Object定义并由Java中的所有类继承。有关字符串连接和转换的更多信息，请参阅Gosling、Joy和Steele，Java语言规范。</p>
-<p>除非另有说明，否则向此类中的构造函数或方法传递null参数将导致引发<code>NullPointerException</code>。 字符串表示UTF-16格式的字符串，其中补充字符由代理项对表示（有关详细信息，请参阅<code>Character</code>类中的Unicode字符表示部分）。索引值引用字符代码单位，因此补充字符在字符串中使用两个位置。</p>
-<p>除了处理Unicode代码单元（即字符值）的方法外，String类还提供了处理Unicode代码点（即字符）的方法。</p>
-</blockquote>
-<p>根据文档，对于String类，我们关注三个问题：</p>
-<ul>
-<li>String对象的不可变性（为什么是不可变的，这么设计的必要性）</li>
-<li>String对象的创建方式（两种创建方式，字符串常量池）</li>
-<li>String对象的拼接（StringBuffer，StringBuilder，加号拼接的本质）</li>
-</ul>
-<h2 id="一-string对象的不可变性">一、String对象的不可变性</h2>
-<h3 id="1string为什么是不可变的">1.String为什么是不可变的</h3>
-<p>文档中提到：</p>
-<blockquote>
-<p>字符串是常量；它们的值在创建后不能更改。</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2130,7 +2116,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">74</span>
+                  <span class="site-state-item-count">77</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2141,7 +2127,7 @@
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">12</span>
+                  <span class="site-state-item-count">13</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -2152,7 +2138,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-count">19</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
