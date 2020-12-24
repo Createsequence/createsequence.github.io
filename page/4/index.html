@@ -287,6 +287,364 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/11/03/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81%EF%BC%8C%E9%97%B4%E9%9A%99%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/11/03/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81%EF%BC%8C%E9%97%B4%E9%9A%99%E9%94%81/" itemprop="url">《MySQL45讲》读书笔记(七)：全局锁，表锁，行锁，间隙锁</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-03T00:00:00+08:00">
+                2020-11-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5.7k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>此文为极客时间：MySQL实战45讲的 6、7、20 节锁相关部分的总结</p>
+</blockquote>
+<h2 id="一-全局锁">一、全局锁</h2>
+<h3 id="1概述">1.概述</h3>
+<p>全局锁就是对整个数据库实例加锁。通过使用 <code>Flush tables with read lock</code>（FTWRL）语句加锁，此后整个库都会处于只读状态，这时，其他线程的数据定义语句（DDL），数据操作语句（DML）以及更新类事务的提交语句都会被阻塞。</p>
+<p>也就是说，<strong>加了全局锁以后，其他线程不能对数据增删改，也不能对表增删改</strong>。</p>
+<p>另外值得一提的是，在此之前，数据库会<strong>等待 FTWRL 操作前的所有读写操作完成，事务提交完毕；并且把脏页的数据从缓存刷入磁盘，保证数据的一致性</strong>。</p>
+<p>全局锁的典型使用场景是对数据库进行整库备份。</p>
+<h3 id="2全局锁的缺陷和解决方案">2.全局锁的缺陷和解决方案</h3>
+<p>全局锁有以下问题：</p>
+<ul>
+<li>如果你在主库上备份，那么在备份期间都不能执行更新，业务基本上就得停摆；</li>
+<li>如果你在从库上备份，那么备份期间从库不能执行主库同步过来的 binlog，会导致主从延迟。</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/11/03/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81%EF%BC%8C%E9%97%B4%E9%9A%99%E9%94%81/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/11/02/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E6%A6%82%E8%BF%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/11/02/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E6%A6%82%E8%BF%B0/" itemprop="url">《MySQL45讲》读书笔记(六)：数据库事务概述</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-02T00:00:00+08:00">
+                2020-11-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.8k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>此文为极客时间：MySQL实战45讲的 3、8、18、19节事务相关部分的总结</p>
+</blockquote>
+<h2 id="一-事务的启动方式">一、事务的启动方式</h2>
+<p>mysql 主要有两种事务的启动方式：</p>
+<ol>
+<li><code>begin</code> 或 <code>start transaction</code>显式启动事务。对应的提交语句是 <code>commit</code> ，回滚是 <code>rollback</code></li>
+<li><code>set autocommit = 0</code>关闭自动提交，然后在执行第一条 sql 的时候启动事务，这个事务会一直持续到你主动 commit 或者 rollback，或者断开连接才会结束。</li>
+</ol>
+<p>有一些客户端连接框架会在连接成功后默认修改设置，这可能导致意外的长事务。因此，显示启动事务明显是比较安全的，但是对于一些需要频繁使用事务的业务，每次都需要调用 begin 然后再 commit。对于这种情况，可以使用 <code>commit work and chain</code>，当 <code>autocommit = 1</code>时，<strong>使用该语句可以在提交以后自动开启下一个新事务</strong>。</p>
+<p>这样省去了再次执行 begin 语句的开销，而且可以明确地知道每个语句是否处于事务中。</p>
+<p>除此之外，我们还可以使用 sql 去在 information_schema 库的 innodb_trx 这个表中查询长事务：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> information_schema.innodb_trx <span class="keyword">where</span> TIME_TO_SEC(<span class="keyword">timediff</span>(<span class="keyword">now</span>(),trx_started)) &gt; <span class="number">60</span></span><br></pre></td></tr></table></figure>
+<p>比如上面这条语句，就是用于查找持续时间超过 60s 的事务</p>
+<h2 id="二-事务的隔离级别">二、事务的隔离级别</h2>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/11/02/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E6%A6%82%E8%BF%B0/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/30/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -461,7 +819,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/30/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%BA%94)%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/30/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -480,7 +838,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/10/30/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%BA%94)%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/" itemprop="url">Mysql45讲读书笔记(五)：数据库表空间的回收</a></h1>
+                <a class="post-title-link" href="/2020/10/30/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/" itemprop="url">《MySQL45讲》读书笔记(五)：数据库表空间的回收</a></h1>
         
 
         <div class="post-meta">
@@ -577,7 +935,7 @@
 </blockquote>
 <h2 id="一-表数据的存放位置">一、表数据的存放位置</h2>
 <p>表数据既可以存在共享表空间里，也可以是单独的文件。这个行为是由参数 <code>innodb_file_per_table</code> 控制的：</p>
-<ol type="1">
+<ol>
 <li>OFF ：表的数据放在系统共享表空间，即跟数据字典放在一起；</li>
 <li>ON ：表数据存储在一个以 .ibd 为后缀的文件中。（MySQL 5.6.6 默认为 ON）</li>
 </ol>
@@ -585,13 +943,11 @@
 <h2 id="二-表数据的删除">二、表数据的删除</h2>
 <p>一般情况下，很少有直接连结构带数据直接删掉表的情况，更多时候是只删除一些数据，但是这样往往会遇到这样的问题：<strong>表中的数据被删除了，但是表空间却没有被回收</strong>。</p>
 <p>实际上，这与 innodb 中数据都以 B+ 树的结构存储有关：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201105203027271.png" alt="image-20201105203027271"><figcaption aria-hidden="true">image-20201105203027271</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201105203027271.png" alt="image-20201105203027271"></p>
 <p>以上图为例，如果我们删除 R4 这条数据，则 innodb 会把 R4 这个位置标记为删除，之后如果插入一个在 300~600 的记录的时候，就会直接使用现在 R4 的位置。同理，如果我们清除这个 PageA，那么这个数据页都会被标记删除，等到下一个数据页加载的时候就可以直接使用这个空间。而当两个相邻的数据页上被删除了记录很多，也就是页的利用率都很低的时候，系统就会自动合并两个页的数据，并且标记其中一个为可复用。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/10/30/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%BA%94)%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/#more" rel="contents">
+            <a class="btn" href="/2020/10/30/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -642,7 +998,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/29/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E5%9B%9B)%EF%BC%9A%E7%B4%A2%E5%BC%95/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/29/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B4%A2%E5%BC%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -661,7 +1017,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/10/29/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E5%9B%9B)%EF%BC%9A%E7%B4%A2%E5%BC%95/" itemprop="url">Mysql45讲读书笔记(四)：索引</a></h1>
+                <a class="post-title-link" href="/2020/10/29/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B4%A2%E5%BC%95/" itemprop="url">《MySQL45讲》读书笔记(四)：索引</a></h1>
         
 
         <div class="post-meta">
@@ -759,9 +1115,7 @@
 <h2 id="一-innodb索引模型">一、Innodb索引模型</h2>
 <h3 id="1主键非主键索引的区别">1.主键/非主键索引的区别</h3>
 <p>每个索引在Innodb中都是一颗B+树，其中根据索引叶子节点的不同，分为主键索引和非主键索引。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20200930164149290.png" alt="image-20200930164149290"><figcaption aria-hidden="true">image-20200930164149290</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20200930164149290.png" alt="image-20200930164149290"></p>
 <p>我们可以看到：</p>
 <ul>
 <li>主键索引将索引和整行的数据都放在了一起，所以又叫<strong>聚簇索引</strong></li>
@@ -772,7 +1126,7 @@
 <h3 id="2索引维护">2.索引维护</h3>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/10/29/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E5%9B%9B)%EF%BC%9A%E7%B4%A2%E5%BC%95/#more" rel="contents">
+            <a class="btn" href="/2020/10/29/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B4%A2%E5%BC%95/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -823,7 +1177,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/28/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%B8%89)%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/28/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -842,7 +1196,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/10/28/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%B8%89)%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/" itemprop="url">Mysql45讲读书笔记(三)：内存数据刷盘机制</a></h1>
+                <a class="post-title-link" href="/2020/10/28/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/" itemprop="url">《MySQL45讲》读书笔记(三)：内存数据刷盘机制</a></h1>
         
 
         <div class="post-meta">
@@ -940,7 +1294,7 @@
 <h2 id="一-mysql-的刷盘机制">一、mysql 的刷盘机制</h2>
 <p>而之前提到过，mysql 使用了 WAL 技术，即更新的时候先更新内存中的数据，然后必要的时候再将内存中的数据刷入磁盘。我们把内存中这些被修改过，跟磁盘中的数据页不一致的数据页称为脏页。</p>
 <p>其中，有四种情况会触发脏页的刷盘：</p>
-<ol type="1">
+<ol>
 <li>redo log 可写空间满了。</li>
 <li>内存满了，需要淘汰的数据页恰好是脏页。</li>
 <li>系统不繁忙的时候。</li>
@@ -953,7 +1307,7 @@
 <h2 id="二-刷脏页的控制策略">二、刷脏页的控制策略</h2>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/10/28/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%B8%89)%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/#more" rel="contents">
+            <a class="btn" href="/2020/10/28/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1004,7 +1358,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/27/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/27/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -1023,7 +1377,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/10/27/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/" itemprop="url">Mysql45讲读书笔记(二)：日志的文件是如何保证不丢失的</a></h1>
+                <a class="post-title-link" href="/2020/10/27/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/" itemprop="url">《MySQL45讲》读书笔记(二)：日志的文件是如何保证不丢失的</a></h1>
         
 
         <div class="post-meta">
@@ -1089,7 +1443,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.7k
+                  2.6k
                 </span>
               
 
@@ -1122,16 +1476,14 @@
 <p>从总的来看，日志一般分为两部分：内存中<strong>易遗失的缓存日志</strong>和磁盘上<strong>持久化的日志文件</strong>。</p>
 <p>一次事务中，日志<strong>先被写入内存</strong>，存放在 cache/buffer 中，然后事务结束以后准备持久化：<strong>先写入磁盘的 page cache 中，这个过程叫做 write</strong> ，他仍然是内存操作，只不过从 mysql 的内存去了操作系统的内存，所以比较快；<strong>然后再调用操作系统的方法来写入磁盘，这个过程叫做 fsync ，是真正的持久化过程</strong>，比较耗费时间。</p>
 <p>这个过程，我们可以简单的理解为下图：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201116192502318.png" alt="日志的持久化过程"><figcaption aria-hidden="true">日志的持久化过程</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201116192502318.png" alt="日志的持久化过程"></p>
 <p>基于以上的概念，我们了解一下 binlog 和 redo log 的持久化策略。</p>
 <h2 id="二-binlog-的持久化">二、binlog 的持久化</h2>
 <h3 id="1文件结构">1.文件结构</h3>
 <p>系统给 binlog cache 分配了一片内存，<strong>每个线程独享一块内存</strong>，参数 <code>binlog_cache_size</code> 用于控制单个线程内 binlog cache 所占内存的大小。如果超过了这个参数规定的大小，就要暂存到磁盘。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/10/27/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%BA%8C)%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/#more" rel="contents">
+            <a class="btn" href="/2020/10/27/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E6%97%A5%E5%BF%97%E7%9A%84%E6%96%87%E4%BB%B6%E6%98%AF%E5%A6%82%E4%BD%95%E4%BF%9D%E8%AF%81%E4%B8%8D%E4%B8%A2%E5%A4%B1%E7%9A%84/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1182,7 +1534,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/25/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%B8%80)%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/25/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -1201,7 +1553,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/10/25/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%B8%80)%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/" itemprop="url">Mysql45讲读书笔记(一)：三大日志概述</a></h1>
+                <a class="post-title-link" href="/2020/10/25/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/" itemprop="url">《MySQL45讲》读书笔记(一)：三大日志概述</a></h1>
         
 
         <div class="post-meta">
@@ -1300,19 +1652,17 @@
 <p><strong>redo log 又叫重做日志，提供的是数据丢失后的前滚操作。</strong></p>
 <p><strong>redo log 是 innodb 引擎独有的日志</strong>，使用了 WAL 技术（Write-Ahead Logging），也就是预写日志。它的关键点就是<strong>先写日志，再写磁盘</strong>。对应到 mysql 中具体操作，就是每次更新操作，先写日志，然后更新内存数据，最后等系统压力小的时候再进行IO更新磁盘数据。避免了每一次更新都需要进行IO操作。<strong>redo log 是保证了事务持久性的关键</strong>。</p>
 <p>redo log 一般用在数据库恢复的情况：</p>
-<ol type="1">
+<ol>
 <li>如果是正常运行的实例的话，数据页被修改以后，跟磁盘的数据页不一致，称为<strong>脏页</strong>。最终数据落盘，就是把内存中的数据页写盘。这个过程，甚至<strong>与 redo log 毫无关系</strong>。</li>
 <li>在崩溃恢复场景中，InnoDB 如果判断到一个数据页可能在崩溃恢复的时候丢失了更新，就会<strong>将它读到内存，然后让 redo log 更新内存内容</strong>。更新完成后，内存页变成脏页，就回到了第一种情况的状态。</li>
 </ol>
 <p>另外，<strong>redo log 与 undo log 都被叫做事务日志</strong>。</p>
 <p>redo log 是一个物理日志，我们知道数据库引擎加载是按“页”来的，redo log记录的就是每个“页”上的数据发生的变化。但是不像 binlog 那样，redo log 不记录 sql，而是以类似 session_id + date + file_id + block_id + 修改数据这样的格式去记录数据。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20200930111506778.png" alt="image-20200930111506778"><figcaption aria-hidden="true">image-20200930111506778</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20200930111506778.png" alt="image-20200930111506778"></p>
 <p>redo log 的日志文件大小是根据配置固定的，如果有一组有四个文件，每个文件的大小是 1GB，那么总共就只能记录 4GB 的日志。</p>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/10/25/mysql/Mysql45%E8%AE%B2%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0(%E4%B8%80)%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/#more" rel="contents">
+            <a class="btn" href="/2020/10/25/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -1706,362 +2056,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/19/spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/08/19/spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/" itemprop="url">SpringAOP知识小结</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-19T00:00:00+08:00">
-                2020-08-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>提起Spring，必然就会联想到AOP（面向切面编程）和IOC（控制反转）这两个词，众所周知，Spring框架对这两种思想进行了很好的实现。</p>
-<p>在这篇文章，我将大致的介绍Spring对AOP这思想的实现流程。</p>
-<p>对于AOP，关注的两个问题：</p>
-<ul>
-<li>什么是是AOP/IOC？</li>
-<li>AOP/IOC解决了什么问题？</li>
-</ul>
-<h2 id="一-什么是aop">一、什么是AOP</h2>
-<blockquote>
-<p>Aspect oriented programming 面向切面编程，AOP 是 OOP（面向对象编程）的一种延续。</p>
-</blockquote>
-<p>我们知道，根据面向对象编程的思想，对于一些具有相同属性和方法的类，我们可以抽象出他们共同部分作为一个父类，然后这些子类通过继承来获得他们共同的属性。比如<code>Cat</code>类和<code>Dog</code>都有<code>eat()</code>方法，那么我们可以将<code>eat()</code>方法抽象到他们的父类<code>Animal</code>，让他们去继承父类。</p>
-<p>我们管这个抽取成类的方法叫做<strong>纵向抽取</strong>。</p>
-<p>而如果他们的父类的方法中有相同方法，那么就直接抽取成公共方法。，但是有一些一开始就耦合到业务逻辑里的重复代码，比如下面统计方法执行时间的方法：</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/08/19/spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/13/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E7%B1%BB%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/08/13/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E7%B1%BB%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96/" itemprop="url">JVM初探（五）：类的实例化</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-13T00:00:00+08:00">
-                2020-08-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2.2k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>我们知道，一个对象在可以被使用之前必须要被正确地实例化。而实例化实际指的就是以一个java类为模板创建对象/实例的过程。比如说常见的 <code>Person = new Person()</code>代码就是一个将Person类实例化并创建引用的过程。</p>
-<p>对于类的实例化，我们关注两个问题：</p>
-<ul>
-<li>如何实例化？（类的四种实例化方式）</li>
-<li>什么时候实例化？（类的一个初始化过程和对象的三个初始化过程）</li>
-</ul>
-<h2 id="一-类的四种实例化方式">一、类的四种实例化方式</h2>
-<h3 id="1使用new关键字">1.使用new关键字</h3>
-<p>这也是最常见最简单的创建对象的方法。通过这种方法，我们可以借助类的构造函数实例化对象。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Parent p = <span class="keyword">new</span> Parent();</span><br></pre></td></tr></table></figure>
-<h3 id="2使用newinstance方法">2.使用newInstance()方法</h3>
-<p>我们可以先通过类的全限定名获取类，然后通过Class类的<code>newInstance()</code>方法去调用类的<strong>无参构造方法</strong>创建一个对象：</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/08/13/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E7%B1%BB%E7%9A%84%E5%AE%9E%E4%BE%8B%E5%8C%96/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2116,7 +2110,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">77</span>
+                  <span class="site-state-item-count">79</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2138,7 +2132,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
