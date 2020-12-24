@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="此文为极客时间：MySQL实战45讲的14节count相关内容的笔记  一、count的查询过程 count() 函数用于查询数据的数量，不同的引擎有不同的实现。 在 MySAM 引擎会专门记录表的总数；而在 innodb 中，由于 MVCC 的原因，在统计数量的时候需要一行一行的判断当前数据是否对查询的事务的可见的。此外，show table status的 Rows 字段也能获取表的总条数，">
+<meta name="description" content="此文为极客时间：MySQL实战45讲的14节count相关内容的笔记  一、count的查询过程 count() 函数用于查询数据的数量，不同的引擎有不同的实现。 在 MySAM 引擎会专门记录表的总数；而在 innodb 中，由于 MVCC 的原因，在统计数量的时候需要一行一行的判断当前数据是否对查询的事务的可见的。此外，show table status的 Rows 字段也能获取表">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《MySQL45讲》读书笔记(十)：count">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/11/12/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%8D%81%EF%BC%89%EF%BC%9Acount/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="此文为极客时间：MySQL实战45讲的14节count相关内容的笔记  一、count的查询过程 count() 函数用于查询数据的数量，不同的引擎有不同的实现。 在 MySAM 引擎会专门记录表的总数；而在 innodb 中，由于 MVCC 的原因，在统计数量的时候需要一行一行的判断当前数据是否对查询的事务的可见的。此外，show table status的 Rows 字段也能获取表的总条数，">
+<meta property="og:description" content="此文为极客时间：MySQL实战45讲的14节count相关内容的笔记  一、count的查询过程 count() 函数用于查询数据的数量，不同的引擎有不同的实现。 在 MySAM 引擎会专门记录表的总数；而在 innodb 中，由于 MVCC 的原因，在统计数量的时候需要一行一行的判断当前数据是否对查询的事务的可见的。此外，show table status的 Rows 字段也能获取表">
 <meta property="og:locale">
 <meta property="article:published_time" content="2020-11-11T16:00:00.000Z">
 <meta property="article:modified_time" content="2020-12-24T12:01:32.085Z">
@@ -433,7 +433,7 @@
 </ul>
 <p>count(*) 专门做了优化，流程与 count(1) 差不多。</p>
 <p>因此，不难理解，由于需要去解析数据并且取出字段值，相对于不需要这些操作的 count(1) 和 count(*) 来说，速度是要慢一些的。而 count(字段) 相比起作为主键索引树上的 id，如果没有专门建索引，速度只会比 count(id) 更慢。</p>
-<p>也就是说，他们速度是这样的：<strong>count(字段) &lt; count(id) &lt;count(1) ≈ count(*)</strong></p>
+<p>也就是说，他们速度是这样的：**count(字段) &lt; count(id) &lt;count(1) ≈ count(*)**</p>
 <h2 id="四-总结">四、总结</h2>
 <p>MySAM 会专门记录条数，查询的时候直接返回。innodb 由于 MVCC 机制， count 查询需要遍历数据以判断事务可见性。</p>
 <p>redis 计数不能保证数据不丢失，redis + mysql 缓存和数据库数据可能会不一致，借助 innodb 的事务可以避免以上问题。</p>

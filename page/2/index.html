@@ -763,14 +763,17 @@
 <p>LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，也正因如此，它也具有队列的特性与方法。</p>
 <blockquote>
 <p>这是关于 java 集合类源码的第四篇文章。往期文章：</p>
-<ol>
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<ol type="1">
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
+</li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
 </ol>
 </blockquote>
 <h2 id="一-linkedlist-的类关系">一、LinkedList 的类关系</h2>
-<p><img src="http://img.xiajibagao.top/image-20201203153522364.png" alt="LinkedList 的类关系"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201203153522364.png" alt="LinkedList 的类关系"><figcaption aria-hidden="true">LinkedList 的类关系</figcaption>
+</figure>
 <p>LinkedList 实现了 Cloneable ，Serializable 接口，表明它可以拷贝，可以被序列化。</p>
 <p>但是和 ArrayList 或者 Vector 相比，因为它是链表，所以无法像数组那样通过下标快速随机访问，故而没有实现 RandomAccess 接口。</p>
 <p>他实现了 List 接口，但是也实现了 Queue 的子接口 Deque，因此除了列表，他也具备双端队列的特性。</p>
@@ -944,13 +947,16 @@
 <p>ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector 有着一样的继承关系，也都能随机访问，但是不同的是不能保证线程安全。</p>
 <blockquote>
 <p>这是关于 java 集合类源码的第三篇文章。往期文章：</p>
-<ol>
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<ol type="1">
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
+</li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
 </ol>
 </blockquote>
 <h2 id="一-arraylist-的类关系">一、ArrayList 的类关系</h2>
-<p><img src="http://img.xiajibagao.top/image-20201201161347920.png" alt="image-20201201161347920"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201201161347920.png" alt="image-20201201161347920"><figcaption aria-hidden="true">image-20201201161347920</figcaption>
+</figure>
 <p>ArrayList 实现了三个接口，继承了一个抽象类，其中 Serializable ，Cloneable 与 RandomAccess 接口都是用于标记的空接口，他的主要抽象方法来自于 List，一些实现来自于 AbstractList。</p>
 <h3 id="1abstractlist-与-list">1.AbstractList 与 List</h3>
 <p>ArrayList 实现了 List 接口，是 List 接口的实现类之一，他通过继承抽象类 AbstractList 获得的大部分方法的实现。</p>
@@ -1126,10 +1132,12 @@
 <p>本篇文章暂不讨论具体的实现类，而将基于 List 接口与其抽象类 AbstractList，了解 List 接口是如何承上启下，进一步从 Collection 抽象到具体的。</p>
 <blockquote>
 <p>这是关于 java 集合类源码的第二篇文章。往期文章：</p>
-<p><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></p>
+<p><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></p>
 </blockquote>
 <h2 id="一-list-接口">一、List 接口</h2>
-<p><img src="http://img.xiajibagao.top/image-20201125163518482.png" alt="List 接口的方法"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201125163518482.png" alt="List 接口的方法"><figcaption aria-hidden="true">List 接口的方法</figcaption>
+</figure>
 <p>List 接口继承了 Collection 接口，在 Collection 接口的基础上增加了一些方法。相对于 Collection 接口，我们可以很明显的看到，List <strong>中增加了非常多根据下标操作集合的方法</strong>，我们可以简单粗暴的分辨一个方法的抽象方法到底来自 Collection 还是 List：参数里有下标就是来自 List，没有就是来自 Collection。</p>
 <p>可以说，List 接口在 Collection 的基础上，<strong>进一步明确了 List 集合运允许根据下标快速存取的特性</strong>。</p>
 <h3 id="1新增的方法">1.新增的方法</h3>
@@ -1300,22 +1308,20 @@
           <h2 id="概述">概述</h2>
 <p>我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。</p>
 <p>其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 List 部分的关系图。</p>
-<p><img src="http://img.xiajibagao.top/image-20201126100539307.png" alt="List集合的实现类关系图"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201126100539307.png" alt="List集合的实现类关系图"><figcaption aria-hidden="true">List集合的实现类关系图</figcaption>
+</figure>
 <p>根据上图的类关系图，我们研究一下源码中，类与类之间的关系，方法是如何从抽象到具体的。</p>
 <h2 id="一-iterable-接口">一、Iterable 接口</h2>
 <p>Iterable 是最顶层的接口，继承这个接口的类可以被迭代。</p>
-<p><img src="http://img.xiajibagao.top/image-20201125151935252.png" alt="Iterable 接口的方法"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201125151935252.png" alt="Iterable 接口的方法"><figcaption aria-hidden="true">Iterable 接口的方法</figcaption>
+</figure>
 <ul>
-<li>
-<p><code>iterator()</code>：用于获取一个迭代器。</p>
-</li>
-<li>
-<p><code>forEach()</code> ：JDK8 新增。一个基于函数式接口实现的新迭代方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">forEach</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> T&gt; action)</span> </span>&#123;</span><br><span class="line">    Objects.requireNonNull(action);</span><br><span class="line">    <span class="keyword">for</span> (T t : <span class="keyword">this</span>) &#123;</span><br><span class="line">        action.accept(t);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p><code>spliterator()</code>：JDK8 新增。用于获取一个可分割迭代器。默认实现返回一个<code>IteratorSpliterator</code>类。</p>
-</li>
+<li><p><code>iterator()</code>：用于获取一个迭代器。</p></li>
+<li><p><code>forEach()</code> ：JDK8 新增。一个基于函数式接口实现的新迭代方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">forEach</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> T&gt; action)</span> </span>&#123;</span><br><span class="line">    Objects.requireNonNull(action);</span><br><span class="line">    <span class="keyword">for</span> (T t : <span class="keyword">this</span>) &#123;</span><br><span class="line">        action.accept(t);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><code>spliterator()</code>：JDK8 新增。用于获取一个可分割迭代器。默认实现返回一个<code>IteratorSpliterator</code>类。</p></li>
 </ul>
 <p>这个跟迭代器类似，但是是用于并行迭代的，关于具体的情况可以参考一下掘金的一个讨论：<a target="_blank" rel="noopener" href="https://segmentfault.com/q/1010000007087438">Java8里面的java.util.Spliterator接口有什么用？</a></p>
           <!--noindex-->
@@ -1895,7 +1901,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -1914,7 +1920,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/" itemprop="url">设计模式（三）：代理模式</a></h1>
+                <a class="post-title-link" href="/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/" itemprop="url">设计模式（二）：策略模式</a></h1>
         
 
         <div class="post-meta">
@@ -1980,7 +1986,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.1k
+                  2.3k
                 </span>
               
 
@@ -2008,20 +2014,20 @@
         
           <h2 id="概述">概述</h2>
 <blockquote>
-<p>在代理模式（Proxy Pattern）中，一个类代表另一个类的功能。这种类型的设计模式属于结构型模式。</p>
-<p>在代理模式中，我们创建具有现有对象的对象，以便向外界提供功能接口。</p>
+<p>在策略模式（Strategy Pattern）中，一个类的行为或其算法可以在运行时更改。这种类型的设计模式属于行为型模式。</p>
+<p>在策略模式中，我们创建表示各种策略的对象和一个行为随着策略对象改变而改变的 context 对象。策略对象改变 context 对象的执行算法。</p>
 </blockquote>
-<p>策略模式旨在不改变被代理对象的基础上进行方法增强。</p>
-<p>当我们一个原有的类不能满足功能，又处于职责或其他原因不便修改的时候，我们可以使用代理模式。通过代理类去调用被代理类的方法，在原方法的基础上进行各种加强，又不会改变原代码。</p>
-<p>spring 中的 AOP 就运用了代理模式。</p>
-<h2 id="一-静态代理">一、静态代理</h2>
-<p>为了简单的说明代理模式，我们举个例子：</p>
-<p>首先有一个接口，叫做购房者，然后这个类地下有一个实现类，叫做小明:</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//购房者接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Buyers</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 买房</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">buy</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//小明实现了购房者接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XiaoMing</span> <span class="keyword">implements</span> <span class="title">Buyers</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">buy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;小明买了一套房&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>买房子还要货比三家，小明没时间，于是就把买房子这件事情委托给中介</p>
+<p>策略模式旨在解决不同逻辑下相同的对象执行不同策略的问题。</p>
+<p>当我们遇到同一个方法，里面会根据需要多个逻辑的分支，分支里的行为都不同，但是都服务于同一个功能，这个时候就可以使用策略模式，将行为抽象为一个策略接口中的抽象方法，由接口的实现类——也就是策略类——去实现各中具体的行为。</p>
+<p>策略模式也是一种比较常见且好用的设计模式，线程池的拒绝策略就使用了策略模式。</p>
+<h2 id="一-简单实现">一、简单实现</h2>
+<p>简单的拿一个根据情况需要导出不同文件的接口举例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">exportFile</span><span class="params">(String type)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (type == <span class="string">&quot;excel&quot;</span>) &#123;</span><br><span class="line">        <span class="comment">// 导出excel</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type == <span class="string">&quot;word&quot;</span>) &#123;</span><br><span class="line">        <span class="comment">// 导出word</span></span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (type == <span class="string">&quot;pdf&quot;</span>) &#123;</span><br><span class="line">        <span class="comment">// 导出pdf</span></span><br><span class="line">    &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;错误的文件类型！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这些分支里目的都是导出文件，但是各自有各的实现代码。换而言之，这些不同逻辑分支下的代码只有行为是不同的。现在我们将导出方法抽象成为一个策略接口中的抽象方法，将每个逻辑分支的处理代码都抽成实现策略接口的各个策略类。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 文件导出接口</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> interface <span class="title">IExportFile</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">export</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 实现类</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExportExcel</span> <span class="keyword">implements</span> <span class="title">IExportFile</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="comment">// 导出excel</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExportWord</span> <span class="keyword">implements</span> <span class="title">IExportFile</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="comment">// 导出word</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ExportPdf</span> <span class="keyword">implements</span> <span class="title">IExportFile</span></span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">export</span><span class="params">()</span> </span>&#123;</span><br><span class="line">      <span class="comment">// 导出pdf</span></span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/#more" rel="contents">
+            <a class="btn" href="/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>

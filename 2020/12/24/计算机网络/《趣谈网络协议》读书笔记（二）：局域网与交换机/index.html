@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="概述 此文为极客时间趣谈网络协议第二模块“从第二层到第三层”中，第一和第二节的学习笔记。 主要内容包括局域网 LAN 的建立，以及局域网间如何通过交换机建立拓补结构。 一、如何建立一个局域网 局域网 LAN 的全称为 Local Area Network，它其实就是一个小型的计算机网络系统，当我们搭建一个局域网，我们需要考虑这四个问题：  设备间要怎么互相发送数据？ 多个设备同时发送数据，那么发送">
+<meta name="description" content="概述 此文为极客时间趣谈网络协议第二模块“从第二层到第三层”中，第一和第二节的学习笔记。 主要内容包括局域网 LAN 的建立，以及局域网间如何通过交换机建立拓补结构。 一、如何建立一个局域网 局域网 LAN 的全称为 Local Area Network，它其实就是一个小型的计算机网络系统，当我们搭建一个局域网，我们需要考虑这四个问题：  设备间要怎么互相发送数据？ 多个设备同时发送">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《趣谈网络协议》读书笔记（二）：局域网与交换机">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/12/24/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8E%E4%BA%A4%E6%8D%A2%E6%9C%BA/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 此文为极客时间趣谈网络协议第二模块“从第二层到第三层”中，第一和第二节的学习笔记。 主要内容包括局域网 LAN 的建立，以及局域网间如何通过交换机建立拓补结构。 一、如何建立一个局域网 局域网 LAN 的全称为 Local Area Network，它其实就是一个小型的计算机网络系统，当我们搭建一个局域网，我们需要考虑这四个问题：  设备间要怎么互相发送数据？ 多个设备同时发送数据，那么发送">
+<meta property="og:description" content="概述 此文为极客时间趣谈网络协议第二模块“从第二层到第三层”中，第一和第二节的学习笔记。 主要内容包括局域网 LAN 的建立，以及局域网间如何通过交换机建立拓补结构。 一、如何建立一个局域网 局域网 LAN 的全称为 Local Area Network，它其实就是一个小型的计算机网络系统，当我们搭建一个局域网，我们需要考虑这四个问题：  设备间要怎么互相发送数据？ 多个设备同时发送">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/8072e4885b0cbc6cb5384ea84d487e41.jpg">
 <meta property="og:image" content="http://img.xiajibagao.top/0867321c36cc52bd3dd4d7622583fa29.jpg">
@@ -432,21 +432,21 @@
 <p><strong>这样，就解决了“多个设备数据发送顺序”问题。</strong></p>
 <h3 id="3循环冗余检测防止发生出错">3.循环冗余检测防止发生出错</h3>
 <p>对于以太网，第二层的最后面是 CRC，也就是循环冗余检测。通过 XOR 异或的算法，来计算整个包是否在发送的过程中出现了错误，</p>
-<p><strong>这样，就解决了&quot;数据发生过程中出现错误&quot;问题</strong></p>
+<p><strong>这样，就解决了"数据发生过程中出现错误"问题</strong></p>
 <h3 id="4网卡根据mac接收数据包">4.网卡根据MAC接收数据包</h3>
 <p>现在，我们可以发送数据，并且也能确定好发送顺序了，接下来我们要解决接收问题。</p>
 <p>现在，<strong>我们需要发送数据必然是知道目标 IP 的，而 IP 处于第三层，也就是网络层。</strong></p>
 <p>一般有两种情况，即发送设备知道目标设备 MAC 地址与发送设备不知道目标 MAC 地址两种情况。</p>
 <p><strong>发送设备知道目标设备 MAC 地址</strong></p>
 <p>当数据通过广播进入数据链路层的时候，应当携带对应的链路层地址，也就是 MAC 地址。在网络包中，应当包含目标 MAC 地址和源 MAC 地址：</p>
-<img src="http://img.xiajibagao.top/8072e4885b0cbc6cb5384ea84d487e41.jpg" alt="img" style="zoom:33%;">
-<p><strong>有了目标 MAC 地址，当数据包在链路上广播的时候，网卡发现目标 MAC 和自己的 MAC 相同，就会接收数据包</strong>，接着打开 IP 包，如果 IP 也是自己的，就再打开 TCP 包…依次直到转发给应用层的引用处理为止。</p>
-<p>反之，如果机器要做出响应，就要反过来重复这个过程：数据封装的 TCP 包，TCP 包封到 IP 包，IP 包封装到 MAC 包，然后发送出去，接收机器的网卡根据 MAC 确认是不是自己的…直到应用层处理完为止。</p>
+<p><img src="http://img.xiajibagao.top/8072e4885b0cbc6cb5384ea84d487e41.jpg" alt="img" style="zoom:33%;"></p>
+<p><strong>有了目标 MAC 地址，当数据包在链路上广播的时候，网卡发现目标 MAC 和自己的 MAC 相同，就会接收数据包</strong>，接着打开 IP 包，如果 IP 也是自己的，就再打开 TCP 包......依次直到转发给应用层的引用处理为止。</p>
+<p>反之，如果机器要做出响应，就要反过来重复这个过程：数据封装的 TCP 包，TCP 包封到 IP 包，IP 包封装到 MAC 包，然后发送出去，接收机器的网卡根据 MAC 确认是不是自己的.......直到应用层处理完为止。</p>
 <p><strong>发送设备不知道目标 MAC 地址</strong></p>
 <p>当设备知道目标 IP，但是不知道目标 MAC 的时候，可以通过 ARP 协议来通过目标 IP 获取 MAC 地址。</p>
 <p>而 <strong>ARP 协议就是广播设备目标设备的 IP，并且获得目标设备返回的 MAC</strong>，对应的，<strong>有一个功能相反的 RARP 协议，作用是广播 MAC 获取 IP</strong>。</p>
 <p>现在通过 ARP 协议设备可以知道目标设备的 IP 了，而为了避免频繁的发起 ARP 请求，<strong>设备自己也会在请求后缓存 ARP 信息</strong>。由于机器可能会下线，因此 IP 与 MAC 的对应关系不一定不变，因此 ARP 缓存有一定的有效时间，过了会过期再请求一次。</p>
-<p><strong>这样，就解决了&quot;设备怎么知道数据是发送给自己的&quot;问题</strong></p>
+<p><strong>这样，就解决了"设备怎么知道数据是发送给自己的"问题</strong></p>
 <h3 id="5路由器">5.路由器</h3>
 <p>实际上，按照上面这些环节是可以建立一个局域网的，但是由于原始的交换机是无条件广播的，没有办法根据 IP 或者 MAC 定向发送数据，这样当设备一多，就会占用带宽，降低效率。并且，如果网络存在闭环，当一个设备发起 ARP 请求的时候，请求有可能再次回到交换机，然后进一步广播，如此反复形成广播风暴。</p>
 <p>为此，我们需要交换机具有学习能力，就像路由器一样。<strong>而路由器是一个网络层设备，他可以直接记忆 IP 和 MAC 的对照关系，假如一个交换机可以做到这点，那么它其实就可以看做一个网络层设备，因此也叫三层交换机</strong>。我们以路由器为例，说明这个“学习”的流程：</p>
@@ -455,7 +455,7 @@
 <h2 id="二-交换机与vlan">二、交换机与VLAN</h2>
 <h3 id="1交换机与拓补结构">1.交换机与拓补结构</h3>
 <p>在公司这样的场合，多个局域网一般会由多个交换机互相连接形成拓补结构：</p>
-<img src="http://img.xiajibagao.top/0867321c36cc52bd3dd4d7622583fa29.jpg" alt="img" style="zoom: 25%;">
+<p><img src="http://img.xiajibagao.top/0867321c36cc52bd3dd4d7622583fa29.jpg" alt="img" style="zoom: 25%;"></p>
 <p>假如现在机器1需要发送消息给机器4，现在它只知道机器4的 IP，那么它就需要通过 ARP 请求获得机器4的 MAC。</p>
 <ul>
 <li>现在机器1发起了 ARP 请求，机器2收到了，但是 IP 不是它的，所以它没有动作；然后交换机 A 收到了这个 ARP 请求，现在它也不知道 IP 对应的 MAC 是多少，于是它把请求广播给其他设备或交换机。</li>
@@ -467,7 +467,7 @@
 <p>随着 ARP 请求，交换机会逐渐了解整个拓补结构，减少不必要的广播，从而提高转发效率。</p>
 <h3 id="2环路问题">2.环路问题</h3>
 <p>当我们把两台交换机相连的时候，可能就会导致环路问题，比如机器1请求机器2：</p>
-<img src="http://img.xiajibagao.top/1f909508a8253d4842ffe962883421ea.jpg" alt="img" style="zoom:25%;">
+<p><img src="http://img.xiajibagao.top/1f909508a8253d4842ffe962883421ea.jpg" alt="img" style="zoom:25%;"></p>
 <ul>
 <li>机器1请求到达交换机 A，交换机 A 广播至 LAN2；</li>
 <li>交换机 B 也在 LAN2，因此他也收到了广播，接着转发至 LAN1；</li>
@@ -481,7 +481,7 @@
 </ul>
 <h3 id="3stp协议解决环路问题">3.STP协议解决环路问题</h3>
 <p>STP 即最小生成树，假如我们有一张无向量的图，每个节点之间的路径有不同的权重，我们打破图的环状结构，将其变为一课树，如果有一课树上节点之间所有路径的权重之和最小，那么这个树就是最小权重生成树，简称最小生成树。</p>
-<p>我们比较熟悉的普利姆和克鲁斯卡算法就是用来生成最小生成树的，具体可以参考大佬的博文：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_35644234/article/details/59106779">数据结构–最小生成树详解</a>。</p>
+<p>我们比较熟悉的普利姆和克鲁斯卡算法就是用来生成最小生成树的，具体可以参考大佬的博文：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_35644234/article/details/59106779">数据结构--最小生成树详解</a>。</p>
 <p>当交换机并入网络的时候回被分配到一个 ID，ID 有优先限级，当交换机节点相遇的时候，会互相发送 BPDU（网桥协议数据单元）比较优先级，优先级大的节点会成为优先级第的节点的父节点，反复比较后，最终会得到一个根节点。</p>
 <p>根据此原则，有以下四种情况：</p>
 <ul>
@@ -497,9 +497,9 @@
 <p>隔离有两种方式，一种是<strong>物理隔离，即直接将局域网和交换机摘出去，改为通过路由器连接</strong>。</p>
 <p>第二种是<strong>虚拟隔离，即虚拟局域网 VLAN，将一个连接在一个交换机上的机器划分为多个虚拟的局域网</strong>。</p>
 <p>方法同一个 VLAN 里的机器，在发送数据包的时候会在 MAC 层的头中加上Tag，里面有一个 VLAN ID，默认为 12 位，也就是一个 VLAN 中最多允许 <code>2^12 = 4096</code> 个 IP。当交换机支持使用 VLAN 的时候，包经过 MAC 层转发到交换机，<strong>交换机会解析 Tag，只有 VLAN 相同的包才会互相转发</strong>。</p>
-<img src="http://img.xiajibagao.top/ba720f6988558f95c381f4deaab11660.jpg" alt="img" style="zoom: 33%;">
+<p><img src="http://img.xiajibagao.top/ba720f6988558f95c381f4deaab11660.jpg" alt="img" style="zoom: 33%;"></p>
 <p>而交换机之间有一个特殊的网口，叫做 Trunk 口，这两个口会转发所有的 VLAN 的包。</p>
-<img src="http://img.xiajibagao.top/5c207a6e2c1c9881823b04e648f4ba4a.jpg" alt="img" style="zoom: 25%;">
+<p><img src="http://img.xiajibagao.top/5c207a6e2c1c9881823b04e648f4ba4a.jpg" alt="img" style="zoom: 25%;"></p>
 <h2 id="三-总结">三、总结</h2>
 <p><strong>局域网的建立</strong></p>
 <ul>
@@ -511,7 +511,7 @@
 <p><strong>交换机与路由器</strong></p>
 <p>由于 ARP 需要在 LAN 中广播，若每次发送数据包都要进行 ARP 请求效率会非常低，因此交换机会在 ARP 请求后记录源机器和目标机器的位置与信息，当下次发起请求时，不再全局广播 ARP 请求，而是定向发送。</p>
 <p><strong>环路问题与STP协议</strong></p>
-<p>一般来说，公司的局域网都是以多台交换机组成的拓补结构，但是随着网络结构复杂程度的上升，可能会出现环路，对应的解决方法是将形成环的图结构根据 STP     协议转为最小生成树。不过在节点过多的时候生成 STP 可能会花费较多时间，而且如果每当新节点加入都需要重新生成 STP。</p>
+<p>一般来说，公司的局域网都是以多台交换机组成的拓补结构，但是随着网络结构复杂程度的上升，可能会出现环路，对应的解决方法是将形成环的图结构根据 STP 协议转为最小生成树。不过在节点过多的时候生成 STP 可能会花费较多时间，而且如果每当新节点加入都需要重新生成 STP。</p>
 <p><strong>VLAN</strong></p>
 <p>要将一个大局域网分为多个小局域网，一种是划分物理局域网，一种是划分虚拟局域网，即 VLAN。</p>
 <p>当一些机器处于 VLAN 中时，发送的数据包会在 MAC 层会在头中添加 Tag，而 Tag 中又包含了 VLAN ID，支持划分 VLAN 的路由器在转发数据包的时候，只会广播给 VLAN ID 相同的机器，而路由器间通过 Trunk 口互相连接，这个网口会广播所有的 VLAN 的包。</p>

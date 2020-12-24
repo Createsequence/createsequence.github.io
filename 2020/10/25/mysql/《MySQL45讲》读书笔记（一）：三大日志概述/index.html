@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="此文为极客时间：MySQL实战45讲的 2、15节日志相关部分和网上一些相关文章的内容的总结  一、redo log redo log 又叫重做日志，提供的是数据丢失后的前滚操作。 redo log 是 innodb 引擎独有的日志，使用了 WAL 技术（Write-Ahead Logging），也就是预写日志。它的关键点就是先写日志，再写磁盘。对应到 mysql 中具体操作，就是每次更新操作，">
+<meta name="description" content="此文为极客时间：MySQL实战45讲的 2、15节日志相关部分和网上一些相关文章的内容的总结  一、redo log redo log 又叫重做日志，提供的是数据丢失后的前滚操作。 redo log 是 innodb 引擎独有的日志，使用了 WAL 技术（Write-Ahead Logging），也就是预写日志。它的关键点就是先写日志，再写磁盘。对应到 mysql 中具体操作，就是每次">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《MySQL45讲》读书笔记(一)：三大日志概述">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/10/25/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%B8%89%E5%A4%A7%E6%97%A5%E5%BF%97%E6%A6%82%E8%BF%B0/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="此文为极客时间：MySQL实战45讲的 2、15节日志相关部分和网上一些相关文章的内容的总结  一、redo log redo log 又叫重做日志，提供的是数据丢失后的前滚操作。 redo log 是 innodb 引擎独有的日志，使用了 WAL 技术（Write-Ahead Logging），也就是预写日志。它的关键点就是先写日志，再写磁盘。对应到 mysql 中具体操作，就是每次更新操作，">
+<meta property="og:description" content="此文为极客时间：MySQL实战45讲的 2、15节日志相关部分和网上一些相关文章的内容的总结  一、redo log redo log 又叫重做日志，提供的是数据丢失后的前滚操作。 redo log 是 innodb 引擎独有的日志，使用了 WAL 技术（Write-Ahead Logging），也就是预写日志。它的关键点就是先写日志，再写磁盘。对应到 mysql 中具体操作，就是每次">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20200930111506778.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201011182232866.png">
@@ -407,13 +407,15 @@
 <p><strong>redo log 又叫重做日志，提供的是数据丢失后的前滚操作。</strong></p>
 <p><strong>redo log 是 innodb 引擎独有的日志</strong>，使用了 WAL 技术（Write-Ahead Logging），也就是预写日志。它的关键点就是<strong>先写日志，再写磁盘</strong>。对应到 mysql 中具体操作，就是每次更新操作，先写日志，然后更新内存数据，最后等系统压力小的时候再进行IO更新磁盘数据。避免了每一次更新都需要进行IO操作。<strong>redo log 是保证了事务持久性的关键</strong>。</p>
 <p>redo log 一般用在数据库恢复的情况：</p>
-<ol>
+<ol type="1">
 <li>如果是正常运行的实例的话，数据页被修改以后，跟磁盘的数据页不一致，称为<strong>脏页</strong>。最终数据落盘，就是把内存中的数据页写盘。这个过程，甚至<strong>与 redo log 毫无关系</strong>。</li>
 <li>在崩溃恢复场景中，InnoDB 如果判断到一个数据页可能在崩溃恢复的时候丢失了更新，就会<strong>将它读到内存，然后让 redo log 更新内存内容</strong>。更新完成后，内存页变成脏页，就回到了第一种情况的状态。</li>
 </ol>
 <p>另外，<strong>redo log 与 undo log 都被叫做事务日志</strong>。</p>
 <p>redo log 是一个物理日志，我们知道数据库引擎加载是按“页”来的，redo log记录的就是每个“页”上的数据发生的变化。但是不像 binlog 那样，redo log 不记录 sql，而是以类似 session_id + date + file_id + block_id + 修改数据这样的格式去记录数据。</p>
-<p><img src="http://img.xiajibagao.top/image-20200930111506778.png" alt="image-20200930111506778"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20200930111506778.png" alt="image-20200930111506778"><figcaption aria-hidden="true">image-20200930111506778</figcaption>
+</figure>
 <p>redo log 的日志文件大小是根据配置固定的，如果有一组有四个文件，每个文件的大小是 1GB，那么总共就只能记录 4GB 的日志。</p>
 <p>因为 redo log 是前滚日志，也就是说一旦事务成功提交且数据持久化落盘之后，此时日志中的对应事务数据记录就失去了意义。所以 redo log 类似一个环形链表，<strong>从前往后写，到底了就删除最前面的再回到开头往后写</strong>。</p>
 <p><strong>有了 redo log，InnoDB 就可以保证即使数据库发生异常重启，之前提交的并且在日志中有记录都数据可以找回，这个能力称为 crash-safe。</strong></p>
@@ -421,13 +423,9 @@
 <p>undo log 又叫<strong>回滚日志</strong>。事务未提交之前，undo log 保存了未提交之前的版本数据，可作为数据旧版本快照供其他并发事务进行快照读。</p>
 <p>因此，他能够提供两个功能：</p>
 <ul>
-<li>
-<p><strong>回滚</strong>：当执行 rollback 时，就可以从 undo log 中的逻辑记录读取到相应的内容并进行回滚。</p>
-<p>简单的说：如果我们执行了insert操作，那么日志中就会新增一条相反的 delete 的 sql；</p>
-</li>
-<li>
-<p><strong>多行版本控制(MVCC)</strong>：当读取的某一行被其他事务锁定时，它可以从 undo log 中分析出该行记录以前的数据是什么，从而提供该行版本信息，让用户实现非锁定一致性读取。</p>
-</li>
+<li><p><strong>回滚</strong>：当执行 rollback 时，就可以从 undo log 中的逻辑记录读取到相应的内容并进行回滚。</p>
+<p>简单的说：如果我们执行了insert操作，那么日志中就会新增一条相反的 delete 的 sql；</p></li>
+<li><p><strong>多行版本控制(MVCC)</strong>：当读取的某一行被其他事务锁定时，它可以从 undo log 中分析出该行记录以前的数据是什么，从而提供该行版本信息，让用户实现非锁定一致性读取。</p></li>
 </ul>
 <p><strong>undo log 保证了事务的原子性。</strong></p>
 <h2 id="三-binlog">三、binlog</h2>
@@ -448,7 +446,9 @@
 </ul>
 <h2 id="五-两阶段提交">五、两阶段提交</h2>
 <h3 id="1概述">1.概述</h3>
-<p><img src="http://img.xiajibagao.top/image-20201011182232866.png" alt="image-20201011182232866"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201011182232866.png" alt="image-20201011182232866"><figcaption aria-hidden="true">image-20201011182232866</figcaption>
+</figure>
 <p>当innodb执行修改时，会经历一个两阶段提交的过程：</p>
 <ul>
 <li>执行器根据sql写入新数据，然后新数据更新到内存里</li>
@@ -458,22 +458,14 @@
 </ul>
 <p>那么如果事务提交过程中出现了异常，数据库崩溃了，就会有以下几种情况：</p>
 <ul>
-<li>
-<p><strong>写 binlog 前崩溃了</strong>：对于时刻A，redo log 还是 prepare，binlog 没写，此时崩溃后事务回滚。</p>
-</li>
-<li>
-<p><strong>写 binlog 后崩溃了</strong>：对于时刻B，redo log 还是 prepare，binlog 已经写了，此时发生崩溃后情况如下：</p>
-<ol>
-<li>
-<p>如果redo log 已经标记为 commit，则提交事务，重做</p>
-</li>
-<li>
-<p>如果redo log 还是 prepare，则去检查 binlog 记录的对应事务是否存在：</p>
+<li><p><strong>写 binlog 前崩溃了</strong>：对于时刻A，redo log 还是 prepare，binlog 没写，此时崩溃后事务回滚。</p></li>
+<li><p><strong>写 binlog 后崩溃了</strong>：对于时刻B，redo log 还是 prepare，binlog 已经写了，此时发生崩溃后情况如下：</p>
+<ol type="1">
+<li><p>如果redo log 已经标记为 commit，则提交事务，重做</p></li>
+<li><p>如果redo log 还是 prepare，则去检查 binlog 记录的对应事务是否存在：</p>
 <p>如果存在，就提交事务，重做</p>
-<p>如果不存在，就回滚</p>
-</li>
-</ol>
-</li>
+<p>如果不存在，就回滚</p></li>
+</ol></li>
 </ul>
 <h3 id="2为什么需要两阶段提交">2.为什么需要两阶段提交</h3>
 <p>我们举个反例，说明一下他的必要性。假设我们要更新某条数据的A字段由0变为2：</p>

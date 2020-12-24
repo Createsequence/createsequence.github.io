@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="此文为极客时间：MySQL实战45讲的 6、7、20 节锁相关部分的总结  一、全局锁 1.概述 全局锁就是对整个数据库实例加锁。通过使用 Flush tables with read lock（FTWRL）语句加锁，此后整个库都会处于只读状态，这时，其他线程的数据定义语句（DDL），数据操作语句（DML）以及更新类事务的提交语句都会被阻塞。 也就是说，加了全局锁以后，其他线程不能对数据增删改，">
+<meta name="description" content="此文为极客时间：MySQL实战45讲的 6、7、20 节锁相关部分的总结  一、全局锁 1.概述 全局锁就是对整个数据库实例加锁。通过使用 Flush tables with read lock（FTWRL）语句加锁，此后整个库都会处于只读状态，这时，其他线程的数据定义语句（DDL），数据操作语句（DML）以及更新类事务的提交语句都会被阻塞。 也就是说，加了全局锁以后，其他线程不能对">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《MySQL45讲》读书笔记(七)：全局锁，表锁，行锁，间隙锁">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/11/03/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81%EF%BC%8C%E9%97%B4%E9%9A%99%E9%94%81/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="此文为极客时间：MySQL实战45讲的 6、7、20 节锁相关部分的总结  一、全局锁 1.概述 全局锁就是对整个数据库实例加锁。通过使用 Flush tables with read lock（FTWRL）语句加锁，此后整个库都会处于只读状态，这时，其他线程的数据定义语句（DDL），数据操作语句（DML）以及更新类事务的提交语句都会被阻塞。 也就是说，加了全局锁以后，其他线程不能对数据增删改，">
+<meta property="og:description" content="此文为极客时间：MySQL实战45讲的 6、7、20 节锁相关部分的总结  一、全局锁 1.概述 全局锁就是对整个数据库实例加锁。通过使用 Flush tables with read lock（FTWRL）语句加锁，此后整个库都会处于只读状态，这时，其他线程的数据定义语句（DDL），数据操作语句（DML）以及更新类事务的提交语句都会被阻塞。 也就是说，加了全局锁以后，其他线程不能对">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201022131135062.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201022134524700.png">
@@ -420,7 +420,7 @@
 <p>single-transaction 虽好，但是对于像 MyISAM 这样不支持事务的引擎而言就享受不到这样的便利，所以还是需要 FTWRL 语句。这也是为什么推荐使用 innodb 引擎的原因之一。</p>
 <h3 id="3-为何不能使用readonly替代">3. 为何不能使用readonly替代</h3>
 <p>全局锁的效果表现为全库变为只读，但是同样的效果，<code>set global readonly=true</code> 却不是一个合适的替代方案：</p>
-<ol>
+<ol type="1">
 <li><strong>global 不宜改动</strong>：在有些系统中，readonly 的值会被用来做其他逻辑，比如用来判断一个库是主库还是备库。因此，修改 global 变量的方式影响面更大。</li>
 <li><strong>在异常处理机制上有差异</strong>：<strong>如果执行 FTWRL 命令之后由于客户端发生异常断开，那么 MySQL 会自动释放这个全局锁</strong>，整个库回到可以正常更新的状态。而将整个库设置为 readonly 之后，如果客户端发生异常，则数据库就会<strong>一直保持 readonly 状态</strong>，这样会导致整个库长时间处于不可写状态，风险较高。</li>
 <li><strong>无法限制超管操作</strong>：只会禁止普通用户权限的 mysql 写操作，不能限制 super 权限用户的写操作。</li>
@@ -439,7 +439,7 @@
 <p>申请 MDL 锁的操作会形成一个队列，队列中<strong>写锁获取优先级高于读锁</strong>。一旦出现写锁等待，不但当前操作会被阻塞，同时还会阻塞后续该表的所有操作。事务一旦申请到 MDL 锁后，直到事务执行完才会将锁释放。<strong>如果事务中包含 DDL 操作，mysql 会在 DDL 操作语句执行前，隐式提交commit，以保证该DDL语句操作作为一个单独的事务存在，同时也保证元数据排他锁的释放</strong>。</p>
 <p>换句话说，<strong>元数据锁最主要的目的不是保证 select 与 update 之间的正确进行，而是保证 DDL 语句 和 DML/DQL 语句之间的正确进行</strong>。</p>
 <p>其中：</p>
-<ol>
+<ol type="1">
 <li>读锁与读锁之间不互斥，因此可以同时有多个线程对同一张表进行查询；</li>
 <li>读锁之写锁之间是互斥的，并且写锁获取优先级高，这可以避免一次事务的两次查询查到不一样的表结构；</li>
 <li>写锁与写锁之间是互斥的，这可以用来保证要更改表结构的操作的安全性；</li>
@@ -448,15 +448,17 @@
 <p>假如A和B线程同时修改T表的两行数据，A 线程先分别获取 MDL 读锁和 MDL 写锁，然后 B 线程获取 MDL 读锁，但是 B 线程无法获取MDL写锁，所以 B 线程进入等待，等到 A 线程完成后B线程才获取写锁，继续操作。</p>
 <h3 id="3元数据锁存在的问题">3.元数据锁存在的问题</h3>
 <p>事务中的 MDL 锁，在语句执行开始时申请，但是语句结束后并不会马上释放，而会等到整个事务提交后再释放。所以可能会出现这样的问题：</p>
-<p><img src="http://img.xiajibagao.top/image-20201022131135062.png" alt="image-20201022131135062"></p>
-<ol>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201022131135062.png" alt="image-20201022131135062"><figcaption aria-hidden="true">image-20201022131135062</figcaption>
+</figure>
+<ol type="1">
 <li>我们可以看到 session A 先启动，这时候会对表 t 加一个 MDL 读锁。由于 session B 需要的也是 MDL 读锁，因此可以正常执行；</li>
 <li>之后 session C 会被 blocked，是因为 session A 的 MDL 读锁还没有释放，而 session C 需要 MDL 写锁，因此只能被阻塞；</li>
 <li>如果只有 session C 自己被阻塞还没什么关系，但是之后所有要在表 t 上新申请 MDL 读锁的请求也会被 session C 阻塞。前面我们说了，所有对表的增删改查操作都需要先申请 MDL 读锁，就都被锁住，等于这个表现在完全不可读写了；</li>
 <li>如果某个表上的查询语句频繁，而且客户端有重试机制，也就是说超时后会再起一个新 session 再请求的话，这个库的线程很快就会爆满。</li>
 </ol>
 <p>针对以上的情况，我们有以下的改善方式：</p>
-<ol>
+<ol type="1">
 <li>假如不是热点表：如果要修改的表有长事务要进行，<strong>要么 kill 掉长事务，要么先暂停表结构的修改</strong>；</li>
 <li>假如是热点表：<strong>为 alert 语句加上等待时间</strong>，避免长时间的阻塞后面的语句。</li>
 </ol>
@@ -466,7 +468,7 @@
 <p>假设我们有这样一条sql：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">begin</span>;</span><br><span class="line"><span class="keyword">update</span> t <span class="keyword">set</span> a = <span class="number">2</span> <span class="keyword">where</span> <span class="keyword">id</span> =  <span class="number">1</span>;</span><br><span class="line"><span class="keyword">update</span> t <span class="keyword">set</span> a = <span class="number">3</span> <span class="keyword">where</span> <span class="keyword">id</span> =  <span class="number">2</span>;</span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
 <p>这个过程是这样的：</p>
-<ol>
+<ol type="1">
 <li>开启了一个事务；</li>
 <li>第一条 sql 获得了 id = 1 这一行的行锁，执行完后不释放；</li>
 <li>第二条 sql 获得了 id = 2 这一行的行锁，但是执行完也不释放；</li>
@@ -478,18 +480,16 @@
 <p>上面这条 sql 涉及到两个 update 的 sql，一条 select 的 sql。如果可能的话，我们可以把 select 的操作放到最前面，这样就能减少两条 update 的 sql 获取行锁的时间。</p>
 <h3 id="2死锁与死锁处理策略">2.死锁与死锁处理策略</h3>
 <p>在学多线程的时候不难理解死锁的概念，两个线程互相持有对方所需要的锁就会导致死锁。我们拿数据库中的死锁举例：</p>
-<p><img src="http://img.xiajibagao.top/image-20201022134524700.png" alt="image-20201022134524700"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201022134524700.png" alt="image-20201022134524700"><figcaption aria-hidden="true">image-20201022134524700</figcaption>
+</figure>
 <p>这时候，事务 A 在等待事务 B 释放 id=2 的行锁，而事务 B 在等待事务 A 释放 id=1 的行锁。 事务 A 和事务 B 在互相等待对方的资源释放，就是进入了死锁状态。</p>
 <p>当出现死锁以后，有两种策略：</p>
-<ol>
-<li>
-<p><strong>直接进入等待，直到超时</strong>。</p>
-<p>这个超时时间可以通过参数 innodb_lock_wait_timeout 来设置。</p>
-</li>
-<li>
-<p>发<strong>起死锁检测，主动回滚死锁链条中的某一个事务，让其他事务得以继续执行</strong>。</p>
-<p>将参数 innodb_deadlock_detect 设置为 on，表示开启这个逻辑。</p>
-</li>
+<ol type="1">
+<li><p><strong>直接进入等待，直到超时</strong>。</p>
+<p>这个超时时间可以通过参数 innodb_lock_wait_timeout 来设置。</p></li>
+<li><p>发<strong>起死锁检测，主动回滚死锁链条中的某一个事务，让其他事务得以继续执行</strong>。</p>
+<p>将参数 innodb_deadlock_detect 设置为 on，表示开启这个逻辑。</p></li>
 </ol>
 <p>设置超时时间看上去是个好选择，但是实际上这个时间很难把握。innodb 的默认超时时间是50s，这个时间几乎是不可能接受的。但是如果将时间设置果断，可能又会导致正常的等待锁释放的过程受到影响。</p>
 <p>因此，还是需要采用第二种策略，死锁检测。<strong>这个也是 innodb 默认开启的。死锁检测的问题在于检测过程也是一个非常消耗性能的过程</strong>。当多个事务同时更新一条数据的时候，每个线程都要把所有争夺这把锁的线程检测一遍。这也是有时候 cpu 利用率极高，但是每秒仍然执行不了几个事务。</p>
@@ -509,23 +509,15 @@
 <p>虽然叫行锁，但是<strong>锁并不是只锁一条数据，有些时候行锁会锁住多条数据，在一些没指明主键的情况，行锁会直接转为表锁</strong>。</p>
 <p>我们举个例子:</p>
 <p>假设有个表单 products ，里面有 id 跟 name 二个字段。</p>
-<ol>
-<li>
-<p>明确指定主键，并且有能查到，加行锁</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="string">&#x27;3&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="string">&#x27;3&#x27;</span> <span class="keyword">and</span> <span class="keyword">type</span>=<span class="number">1</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>明确指定主键，不能查到，不加锁</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="string">&#x27;-1&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>不指明主键，加表锁</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">name</span>=<span class="string">&#x27;Mouse&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p>主键不明确，加表锁</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>&lt;&gt;<span class="string">&#x27;3&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span> <span class="keyword">LIKE</span> <span class="string">&#x27;3&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure>
-</li>
+<ol type="1">
+<li><p>明确指定主键，并且有能查到，加行锁</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="string">&#x27;3&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="string">&#x27;3&#x27;</span> <span class="keyword">and</span> <span class="keyword">type</span>=<span class="number">1</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure></li>
+<li><p>明确指定主键，不能查到，不加锁</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>=<span class="string">&#x27;-1&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure></li>
+<li><p>不指明主键，加表锁</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">name</span>=<span class="string">&#x27;Mouse&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure></li>
+<li><p>主键不明确，加表锁</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span>&lt;&gt;<span class="string">&#x27;3&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br><span class="line"><span class="keyword">SELECT</span> * <span class="keyword">FROM</span> products <span class="keyword">WHERE</span> <span class="keyword">id</span> <span class="keyword">LIKE</span> <span class="string">&#x27;3&#x27;</span> <span class="keyword">FOR</span> <span class="keyword">UPDATE</span>;</span><br></pre></td></tr></table></figure></li>
 </ol>
 <p>实际上，不难看出，如果没有使用索引，行锁很容易就会上升到表锁。</p>
 <h2 id="四-间隙锁">四、间隙锁</h2>
@@ -555,7 +547,7 @@
 <h3 id="2间隙锁">2.间隙锁</h3>
 <p>行锁只能锁住行，但是新插入记录这个动作，要更新的是记录之间的“间隙”，所以可能会出现幻读的情况。因此，为了解决这个问题，InnoDB 只好引入新的锁，也就是间隙锁 (Gap Lock)。</p>
 <p>顾名思义，<strong>间隙锁（next-key lock），锁的就是两个值之间的空隙</strong>。</p>
-<p>在最开始，表 t 一共有两条（0，5），（2，5）数据，那么就有三个<strong>前开后闭的区间/间隙</strong>（-∞，0 ]，（0，2 ]，（2，+  supremum )。其中，supremum 是 innodb 允许的索引最大值，这是一个概念上的数，可以认为是正无穷。</p>
+<p>在最开始，表 t 一共有两条（0，5），（2，5）数据，那么就有三个<strong>前开后闭的区间/间隙</strong>（-∞，0 ]，（0，2 ]，（2，+ supremum )。其中，supremum 是 innodb 允许的索引最大值，这是一个概念上的数，可以认为是正无穷。</p>
 <p>当我们执行第 <code>select * from t whrere d = 5 for update</code>的时候，除了为扫描到的两条数据加上行锁外，还会为这三个区间加上间隙锁。</p>
 <h3 id="3间隙锁引起死锁问题">3.间隙锁引起死锁问题</h3>
 <p>间隙锁跟间隙锁之间是不冲突的，有冲突的是往间隙插入值的行为。也就是说，同样的一个间隙，两条 sql 分别加上了间隙锁，这样就很可能引起死锁。</p>
@@ -566,11 +558,11 @@
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">begin</span>;</span><br><span class="line"><span class="keyword">select</span> * <span class="keyword">from</span> t <span class="keyword">where</span> <span class="keyword">id</span> = <span class="number">1</span> <span class="keyword">for</span> <span class="keyword">update</span>; <span class="comment"># Q3</span></span><br><span class="line"><span class="keyword">insert</span> <span class="keyword">into</span> t <span class="keyword">values</span>(<span class="number">1</span>,<span class="number">1</span>) <span class="comment"># Q4</span></span><br><span class="line"><span class="keyword">commit</span>;</span><br></pre></td></tr></table></figure>
 <p>现在，语句的执行顺序的：Q1 -&gt; Q3 -&gt; Q4 -&gt; Q2。</p>
 <p>在这种情况下，不等到 Q4 执行，就已经形成死锁了：</p>
-<ol>
+<ol type="1">
 <li>session A 执行 Q1 语句，由于 id=1 这一行并不存在，因此会加上间隙锁 (0,2);</li>
 <li>session B 执行 Q3 语句，同样会加上间隙锁 (5,12)，间隙锁之间不会冲突，因此这个语句可以执行成功；</li>
 <li>session B 试图插入 Q4，被 session A 的间隙锁挡住了，只好进入等待；</li>
-<li>session A 试图插入一行  Q2，被 session B 的间隙锁挡住了。</li>
+<li>session A 试图插入一行 Q2，被 session B 的间隙锁挡住了。</li>
 </ol>
 <p>至此，两个 session 进入互相等待状态，形成死锁。当然，InnoDB 的死锁检测马上就发现了这对死锁关系，让 session A 的 insert 语句报错返回了。</p>
 <p>间隙锁在解决了一些问题的情况下，又引入了一些新的问题，所以我们也有其他的选择，并非一定需要引入间隙锁：</p>
@@ -581,56 +573,46 @@
 <h2 id="五-总结">五、总结</h2>
 <p>根据加锁的范围，MySQL 里面的锁大致可以分成全局锁、表级锁和行锁三类，其中针对行锁难以解决的幻读问题，又添加了间隙锁。</p>
 <p><strong>全局锁</strong>：</p>
-<ol>
+<ol type="1">
 <li>通过 <code>Flush tables with read lock</code>（FTWRL）语句加锁，可以主动释放或者在客户端断开连接时释放；</li>
 <li>会限制其他线程的 DDL 和 DML 操作，但不会限制自己的；</li>
 <li>一般用于 MyISAM 之类不支持事务的引擎进行整库备份。若 innodb 的话，可以开启事务为可重复读，接着 MVCC 实现无全局锁备份。</li>
 </ol>
 <p><strong>表级锁</strong>：</p>
-<ol>
+<ol type="1">
 <li>分为表锁和元数据锁，两者都区分读锁和写锁；</li>
 <li>表锁：
 <ul>
 <li>表锁和全局锁一样，可以主动释放或者在客户端断开连接时释放；</li>
 <li>表锁是显式使用的，不但限制其他线程对表的操作，也会限制本线程对表的操作；</li>
-</ul>
-</li>
+</ul></li>
 <li>元数据锁：
 <ul>
 <li>是一种典型的读写锁，每一条 DDL 都会自动加上元数据锁；</li>
 <li>作用是确保 DDL 和 DML/DQL 语句的正确执行；</li>
 <li>元数据锁可能会因为无法获取锁而引起阻塞，最好的办法是避免长事务和 DDL 的同时存在，对于热点数据由于可能存在频繁的事务开启，所以最好为 DDL 语句添加超时时间，再无法修改表结构的情况下避免阻塞。</li>
-</ul>
-</li>
+</ul></li>
 </ol>
 <p><strong>行级锁</strong>：</p>
-<ol>
-<li>
-<p>存在两阶段锁的机制：即需要就先获取锁，而使用后不释放锁，直到事务结束再统一释放锁。</p>
-<p>因此，优化思路是在执行 sql 的时候把需要获取行锁的语句放在后面，避免过长时间的占用锁；</p>
-</li>
-<li>
-<p>可能会存在死锁问题，处理策略有两种：</p>
+<ol type="1">
+<li><p>存在两阶段锁的机制：即需要就先获取锁，而使用后不释放锁，直到事务结束再统一释放锁。</p>
+<p>因此，优化思路是在执行 sql 的时候把需要获取行锁的语句放在后面，避免过长时间的占用锁；</p></li>
+<li><p>可能会存在死锁问题，处理策略有两种：</p>
 <ul>
 <li>调整超时时间。innodb_lock_wait_timeout 默认为50s。但是调长容易引起阻塞，调短可能影响正常的锁等待；</li>
 <li>死锁检测。每次获取锁都检测是否有死锁，有就回滚其中一个事务。innodb_deadlock_detect 是默认开启的，但是容易死锁检测在并发线程多的情况下非常消耗性能。</li>
-</ul>
-</li>
-<li>
-<p>死锁检测的优化思路有四种：</p>
+</ul></li>
+<li><p>死锁检测的优化思路有四种：</p>
 <ul>
 <li>关掉不必要是死锁检测。可能引起大量超时，导致操作丢失；</li>
 <li>在客户端做控制并发度。限制客户端线程并发数，但是无法限制客户端数量，所以不是很有效；</li>
 <li>在服务端做并发控制。使用中间件或者修改 mysql 源码，让争夺锁的线程进入等待队列；</li>
 <li>分散锁冲突。将一个字段在逻辑上分为多个字段，避免多个线程争夺同一把锁。</li>
-</ul>
-</li>
-<li>
-<p>锁同时存在的情况下，并不是只要满足粒度最小的锁不互斥就可以了，而是必须满足全部全部不互斥才行。</p>
-</li>
+</ul></li>
+<li><p>锁同时存在的情况下，并不是只要满足粒度最小的锁不互斥就可以了，而是必须满足全部全部不互斥才行。</p></li>
 </ol>
 <p><strong>间隙锁</strong>：</p>
-<ol>
+<ol type="1">
 <li>锁索引之间的间隙，是前开后闭的区间；</li>
 <li>间隙锁之间不冲突，但是插入间隙的行为是冲突的，所以当两个事务同时为一个间隙加锁容易引起死锁；</li>
 <li>能解决幻读，但不是必须的。读已提交 + 把 binlog 格式设置为 row 也可以防止幻读。</li>

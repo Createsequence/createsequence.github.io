@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="概述 HashMap 是 Map 接口下一个线程不安全的，基于哈希表的实现类。由于他解决哈希冲突的方式是分离链表法，也就是拉链法，因此他的数据结构是数组+链表，在 JDK8 以后，当哈希冲突严重时，HashMap 的链表会在一定条件下转为红黑树以优化查询性能，因此在 JDK8 以后，他的数据结构是数组+链表+红黑树。 对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式，能">
+<meta name="description" content="概述 HashMap 是 Map 接口下一个线程不安全的，基于哈希表的实现类。由于他解决哈希冲突的方式是分离链表法，也就是拉链法，因此他的数据结构是数组+链表，在 JDK8 以后，当哈希冲突严重时，HashMap 的链表会在一定条件下转为红黑树以优化查询性能，因此在 JDK8 以后，他的数据结构是数组+链表+红黑树。 对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java集合源码分析（六）：HashMap">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 HashMap 是 Map 接口下一个线程不安全的，基于哈希表的实现类。由于他解决哈希冲突的方式是分离链表法，也就是拉链法，因此他的数据结构是数组+链表，在 JDK8 以后，当哈希冲突严重时，HashMap 的链表会在一定条件下转为红黑树以优化查询性能，因此在 JDK8 以后，他的数据结构是数组+链表+红黑树。 对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式，能">
+<meta property="og:description" content="概述 HashMap 是 Map 接口下一个线程不安全的，基于哈希表的实现类。由于他解决哈希冲突的方式是分离链表法，也就是拉链法，因此他的数据结构是数组+链表，在 JDK8 以后，当哈希冲突严重时，HashMap 的链表会在一定条件下转为红黑树以优化查询性能，因此在 JDK8 以后，他的数据结构是数组+链表+红黑树。 对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201208205304527.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201208205304527.png">
@@ -410,16 +410,17 @@
 <p>对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式，能否存放空值；作为使用了数组作为底层结构的集合，我们还需要关注其扩容的实现；同时，针对哈希表的特性，我们还需要关注它如何通过哈希算法取模快速定位下标。</p>
 <blockquote>
 <p>这是关于 java 集合类源码的第六篇文章。往期文章：</p>
-<ol>
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/">java集合源码分析（四）：LinkedList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
+<ol type="1">
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
+</li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/">java集合源码分析（四）：LinkedList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
 </ol>
 </blockquote>
 <h2 id="一-hashmap-的数据结构">一、HashMap 的数据结构</h2>
-<img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;">
+<p><img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;"></p>
 <p><strong>在 JDK8 之前，HashMap 的数据结构是数组+链表。在 JDK8 以后是数组 + 链表 + 红黑树</strong>。</p>
 <p>在 HashMap 中，每一个 value 都被存储在一个 Node 或 TreeNode 实例中，容器中有一个 <code>Node[] table</code> 数组成员变量，数组中的每一格称为一个“桶”。当添加元素时，根据元素的 key 通过哈希值计算得到对应下标，将 Node 类的形式存入“桶”中。如果 table 容量不足时，就会发生扩容，同时对容器内部的元素进行重哈希。</p>
 <p>当发生哈希冲突，也就是不同元素计算得到了相同的下标时，会将节点接到“桶”的中的第一个元素后，后续操作亦同，最后就会形成链表。</p>
@@ -448,7 +449,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(Map&lt;? extends K, ? extends V&gt; m)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.loadFactor = DEFAULT_LOAD_FACTOR;</span><br><span class="line">    putMapEntries(m, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里涉及到一个将合并集合的方法 <code>putMapEntries()</code>，<code>putAll()</code>方法也是基于这个方法实现的。由于添加还涉及到扩容以及其他方法，这里暂不介绍，等下面再详细的了解。</p>
 <h2 id="四-hashmap的内部类">四、HashMap的内部类</h2>
-<p>基于前文<a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a>中第五部分 “AbstractMap 的视图”里对 AbstractMap 的分析，我们知道，HashMap 作为继承了 AbstractMap 的子类，因此它内部会拥有三个集合视图</p>
+<p>基于前文<a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a>中第五部分 “AbstractMap 的视图”里对 AbstractMap 的分析，我们知道，HashMap 作为继承了 AbstractMap 的子类，因此它内部会拥有三个集合视图</p>
 <ul>
 <li>存放 key 的 Set 集合：<code>Set&lt;K&gt; keySet</code></li>
 <li>存放 value 的 Collection 集合：<code>Collection&lt;V&gt; valuse</code></li>
@@ -461,7 +462,7 @@
 <p><code>3种视图容器 + 1种迭代器抽象类 + 3种视图容器的迭代器 + 1种并行迭代器抽象类 + 3种视图容器对应的并行迭代器 + 1种Entry实现类 + 1种Entry的红黑树节点实现类</code></p>
 <p>总计 13 种内部类</p>
 <h3 id="1-node-treenode">1. Node / TreeNode</h3>
-<img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom: 50%;">
+<p><img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom: 50%;"></p>
 <p>Node 是 HashMap 中的节点类，在 JDK8 之前对应的是 Entry 类。他是 Map 接口中 Entry 的实现类。</p>
 <p>在 HashMap 中数组的每一个位置都是一个“桶”，而“桶”中存放的就是带有数据的节点对象 Node。当哈希冲突时，多个 Node 会在同一个“桶”中形成链表。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 节点的hashcode</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="comment">// key</span></span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    <span class="comment">// value</span></span><br><span class="line">    V value;</span><br><span class="line">    <span class="comment">// 下一节点</span></span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -469,13 +470,13 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">LinkedHashMap</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 父节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; parent;</span><br><span class="line">    <span class="comment">// 左子节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; left;</span><br><span class="line">    <span class="comment">// 右子节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; right;</span><br><span class="line">    <span class="comment">// 前驱节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; prev;</span><br><span class="line">    <span class="comment">// 是否为红色节点</span></span><br><span class="line">    <span class="keyword">boolean</span> red;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>值得一提的是，TreeNode 继承了 LinkedHashMap.Entry 类，但是 LinkedHashMap.Entry 类又继承了 HashMap.Node，因此，实际上 TreeNode 也是 Node 类的子类，这是 Node 转变为 TreeNode 的结构基础。</p>
 <p>另外，TreeNode 尽管是树，但是他仍然通过 prev 维持了隐式的链表结构，理论上每一个节点都可以获取他上一次插入的节点，这仍然可以理解为单向链表。</p>
-<h3 id="2-keyset-keyiterator">2.  KeySet / KeyIterator</h3>
+<h3 id="2-keyset-keyiterator">2. KeySet / KeyIterator</h3>
 <p><code>Set&lt;K&gt; keySet</code> 是在 AbstractMap 中已经定义好了变量，它是一个存放 key 的集合，HashMap 的哈希算法保证了 key 的唯一性，这恰好也符合 Set 集合的特征。在 HashMap 中，<strong>为其提供了实现类 KeySet</strong> 。</p>
-<p>KeySet  继承了 AbstractSet 抽象类，并且直接使用 HashMap 中的方法去实现了抽象类中的大多数抽象方法。值得一提的是，他实现的 <code>iterator()</code><strong>返回的也是 HashMap 的一个内部类 KeyIterator</strong>。</p>
-<h3 id="3-values-valueiterator">3. Values  /  ValueIterator</h3>
+<p>KeySet 继承了 AbstractSet 抽象类，并且直接使用 HashMap 中的方法去实现了抽象类中的大多数抽象方法。值得一提的是，他实现的 <code>iterator()</code><strong>返回的也是 HashMap 的一个内部类 KeyIterator</strong>。</p>
+<h3 id="3-values-valueiterator">3. Values / ValueIterator</h3>
 <p>和 KeySet 类一样，<strong>Values 也是给 AbstractMap 中的 <code>Collection&lt;V&gt; values</code> 提供的实现类</strong>，他继承了 AbstractCollection 抽象类，并且使用 HashMap 的方法实现了大部分抽象方法。</p>
 <p>同样的，它的<code>iterator()</code>返回的也是 HashMap 的一个<strong>内部类 ValueIterator</strong>。</p>
-<h3 id="4-entryset-entryiterator">4. EntrySet  /  EntryIterator</h3>
+<h3 id="4-entryset-entryiterator">4. EntrySet / EntryIterator</h3>
 <p>A<strong>bstractMap 中有一个留给子类去实现的核心抽象方法 <code>entrySet()</code>，而 EntrySet 就是为了实现该方法而创建的类</strong>。它继承了 <code>AbstractSet&lt;Map.Entry&lt;K,V&gt;&gt;</code>，<strong>表示的是容器中的一对键值对对象</strong>。在注释中，作者将其称为视图。</p>
 <p>通过 EntrySet 类，我们就可以<strong>像 Collection 的 toArray 一样，将 Map 以 Set 集合视图的形式表现出来</strong>。</p>
 <p>同样的，作为一个 AbstractSet 的实现类，HashMap 也专门为其实现了一个<strong>内部迭代器类 EntryIterator</strong> 。EntrySet 的<code>iterator()</code>方法返回的就是该类。</p>
@@ -496,7 +497,9 @@
 <p>这是来自知乎大佬一个非常详细的回答：<a target="_blank" rel="noopener" href="https://www.zhihu.com/question/20733617/answer/32513376">JDK 源码中 HashMap 的 hash 方法原理是什么？ - 知乎</a>；</p>
 <p>这里我简单的概括一下：</p>
 <p>该方法实际上是一个“扰动函数”，作用是对<code>Object.hashCode()</code>获取到的 hash 值进行<strong>高低位混淆</strong>。</p>
-<p><img src="http://img.xiajibagao.top/image-20201209140746276.png" alt="HashMap的哈希算法"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201209140746276.png" alt="HashMap的哈希算法"><figcaption aria-hidden="true">HashMap的哈希算法</figcaption>
+</figure>
 <p>我们可以看到，<strong>符号右移16位后，新二进制数的前16位都为0，后16位就是原始 hashcode 的高16位</strong>。</p>
 <p><strong>将原始 hashcode 与 位运算得到的二进制数再进行异或运算以后，我们就得到的 hash 前16全部都为1，后16位则同时混淆了高16位和低16位的特征，进一步增加了随机性。</strong></p>
 <p>现在我们得到了 key 的 hashcode，这是计算下标的基础。</p>
@@ -506,7 +509,9 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">    ... ...</span><br><span class="line">    <span class="comment">// n 即为当前数组长度</span></span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">            n = (tab = resize()).length;</span><br><span class="line">    <span class="comment">// 根据 n 与 hash 计算插入下标</span></span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    </span><br><span class="line">    ... ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>也就是说，当通过扰动函数<code>hash()</code>获取到了已经混淆高低位的 key 的 hashcode 以后， <strong>会将其与数组长度-1进行与运算</strong>：<code>(n - 1) &amp; hash</code>。</p>
 <p>以默认是容量16为例，它转换为二进制数是 10000，而 （16-1）转换为二进制数就是 1111，补零以后它与 <code>hash()</code> 计算得到的 hashcode 进行与运算过程如下：</p>
-<p><img src="http://img.xiajibagao.top/image-20201209142455463.png" alt="与运算取模"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201209142455463.png" alt="与运算取模"><figcaption aria-hidden="true">与运算取模</figcaption>
+</figure>
 <p>在这个过程，之前留下的两个问题就得到了解答：</p>
 <h4 id="为什么容量需要是2的幂">为什么容量需要是2的幂？</h4>
 <p>我们可以看到，按位的与运算只有 1&amp;1 = 1，<strong>由于数组长度转为二进制只有4位，所有高于4位的位数都为0，因此运算结果高于4位的位置也都会是0，这里巧妙的实现了取模的效果，数组长度起到了低位掩码的作用。这也整是为什么 HashMap 的容量要是2的幂的原因。</strong></p>
@@ -515,7 +520,7 @@
 <p>我们举个例子：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>key</th>
 <th>hashCode</th>
 <th>不混淆取后四位</th>
@@ -523,19 +528,19 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>808321199</td>
 <td>110000001011100000000010101111</td>
 <td>1111</td>
 <td>0001</td>
 </tr>
-<tr>
+<tr class="even">
 <td>7015199</td>
 <td>11010110000101100011111</td>
 <td>1111</td>
 <td>0100</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>9999</td>
 <td>10011100001111</td>
 <td>1111</td>
@@ -591,7 +596,7 @@
 <h4 id="扩容的大小">扩容的大小</h4>
 <p>扩容的时候，分为两种情况：已经扩容过，还未扩容过。</p>
 <p>我们仅针对获取新容量 <code>newCap</code> 与新扩容阈值 <code>newThr</code> 这段代码逻辑，画出大致流程图：</p>
-<img src="http://img.xiajibagao.top/未命名文件.jpg" alt="未命名文件" style="zoom:50%;">
+<p><img src="http://img.xiajibagao.top/未命名文件.jpg" alt="未命名文件" style="zoom:50%;"></p>
 <p>这里比较需要注意的是，<strong>当 oldCap 已经大于等于理论最大值的时候，会在设置 <code>newThr=Integer.MAX_VALUE</code>后直接返回，不会执行后序扩容过程</strong>。</p>
 <p>另外，当新扩容阈值被设置为 <code>Integer.MAX_VALUE</code>以后，<strong>由于该值已经是最大的整数值了，所以设置为该值以后 HashMap 就不会再触发扩容了</strong>。</p>
 <h3 id="3重哈希过程">3.重哈希过程</h3>
@@ -604,7 +609,7 @@
 <p>以初始容量 <code>oldCap = 16,newCap = 32</code> 为例，我们先看看他的换算过程：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th></th>
 <th>十进制 Cap</th>
 <th>二进制 Cap</th>
@@ -613,14 +618,14 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><strong>oldCap</strong></td>
 <td>16</td>
 <td>10000</td>
 <td>1111</td>
 <td>15</td>
 </tr>
-<tr>
+<tr class="even">
 <td><strong>newCap</strong></td>
 <td>32</td>
 <td>100000</td>
@@ -632,7 +637,7 @@
 <p>以上述数据为基础，我们模拟下面三个 key 在扩容过程中的计算：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>key</th>
 <th>hash</th>
 <th>(oldCap-1) &amp; hash</th>
@@ -641,21 +646,21 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>808321199</td>
 <td>110000001011100000000010101111</td>
 <td>1111（15）</td>
 <td>0</td>
 <td>01111（15）</td>
 </tr>
-<tr>
+<tr class="even">
 <td>7015199</td>
 <td>11010110000101100011111</td>
 <td>1111（15）</td>
 <td>10000</td>
 <td>11111（31）</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>9999</td>
 <td>10011100001111</td>
 <td>1111（15）</td>
@@ -664,7 +669,7 @@
 </tr>
 </tbody>
 </table>
-<p>不难看出，<strong>只有当 <code>oldCap &amp; hash &gt; 0 </code>的时候元素才需要移动</strong>，而由于容量必然是2的冥，每次扩容新容量都是旧容量的两倍，换成二进制，相同的 hash 值与运算算出来的坐标总是多1，因此相当于每次需要移动的距离都是旧容量。</p>
+<p>不难看出，<strong>只有当 <code>oldCap &amp; hash &gt; 0</code>的时候元素才需要移动</strong>，而由于容量必然是2的冥，每次扩容新容量都是旧容量的两倍，换成二进制，相同的 hash 值与运算算出来的坐标总是多1，因此相当于每次需要移动的距离都是旧容量。</p>
 <p><strong>也就是说，如果 <code>oldCap &amp; hash &gt; 0</code>，那么就有 <code>新坐标=原下标+oldCap</code></strong>，这个逻辑对应的代码就是 <code>newTab[j + oldCap] = hiHead;</code>这一行。</p>
 <p>这样做的好处显而易见，<strong>少移动一些元素可以减少扩容的性能消耗，同时同一桶中的元素也有可能在重哈希之后被移动，使得哈希冲突得以在扩容后减缓，元素散列更均匀。</strong></p>
 <h2 id="八-hashmap-获取元素">八、HashMap 获取元素</h2>
@@ -707,7 +712,9 @@
 <p>我们暂且只关注链化的判断条件，也就是在 <code>removeTreeNode()</code>中的这一段代码：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 根节点为null，根节点的左或右子节点为null，根节点左子节点的左子节点为null</span></span><br><span class="line"><span class="keyword">if</span> (root == <span class="keyword">null</span> || root.right == <span class="keyword">null</span> ||</span><br><span class="line">    (rl = root.left) == <span class="keyword">null</span> || rl.left == <span class="keyword">null</span>) &#123;</span><br><span class="line">    tab[index] = first.untreeify(map);  <span class="comment">// too small</span></span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>也就是说，如果可能存在的最小红黑树如下：</p>
-<p><img src="http://img.xiajibagao.top/image-20201217204231973.png" alt="删除中可能存在的最小红黑树"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201217204231973.png" alt="删除中可能存在的最小红黑树"><figcaption aria-hidden="true">删除中可能存在的最小红黑树</figcaption>
+</figure>
 <p>可以看到，此时树共有四个及节点，需要再删除一个节点才会导致链化，也就是说，在 remove 中，触发链化的最小树可能只有3个节点，而最大树需要考虑到变色和平衡，是十个（待考证）。</p>
 <p>也就是说，和网上所说的小于6就链化不同，<strong>在删除中，链化触发值是一个范围，在 [3,10] 之间</strong>。</p>
 <h3 id="3红黑树在扩容过程的链化">3.红黑树在扩容过程的链化</h3>
@@ -956,7 +963,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-hashmap-%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">一、HashMap 的数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-hashmap%E7%9A%84%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F"><span class="nav-text">二、HashMap的成员变量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E6%9D%A5%E8%87%AA%E7%88%B6%E7%B1%BB%E7%9A%84%E5%8F%98%E9%87%8F"><span class="nav-text">1.来自父类的变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8F%98%E9%87%8F"><span class="nav-text">2.自己的变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E6%89%A9%E5%AE%B9%E7%9B%B8%E5%85%B3%E7%9A%84%E5%8F%98%E9%87%8F%E5%92%8C%E5%B8%B8%E9%87%8F"><span class="nav-text">3.扩容相关的变量和常量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95"><span class="nav-text">三、构造方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E6%8C%87%E5%AE%9A%E5%AE%B9%E9%87%8F%E5%92%8C%E8%B4%9F%E8%BD%BD%E7%B3%BB%E6%95%B0"><span class="nav-text">1.指定容量和负载系数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E5%8F%AA%E6%8C%87%E5%AE%9A%E5%AE%B9%E9%87%8F"><span class="nav-text">2.只指定容量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E4%B8%8D%E6%8C%87%E5%AE%9A%E4%BB%BB%E4%BD%95%E7%B3%BB%E6%95%B0"><span class="nav-text">3.不指定任何系数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E6%A0%B9%E6%8D%AE%E6%8C%87%E5%AE%9Amap%E9%9B%86%E5%90%88%E6%9E%84%E5%BB%BA"><span class="nav-text">4.根据指定Map集合构建</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B-hashmap%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB"><span class="nav-text">四、HashMap的内部类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-node-treenode"><span class="nav-text">1. Node &#x2F; TreeNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-keyset-keyiterator"><span class="nav-text">2.  KeySet &#x2F; KeyIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-values-valueiterator"><span class="nav-text">3. Values  &#x2F;  ValueIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-entryset-entryiterator"><span class="nav-text">4. EntrySet  &#x2F;  EntryIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-hashiterator"><span class="nav-text">5. HashIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-spliterator"><span class="nav-text">6. Spliterator</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94-hashmap-%E8%8E%B7%E5%8F%96%E6%8F%92%E5%85%A5%E4%B8%8B%E6%A0%87"><span class="nav-text">五、HashMap 获取插入下标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%AE%A1%E7%AE%97%E5%93%88%E5%B8%8C%E5%80%BC"><span class="nav-text">1. 计算哈希值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%AE%A1%E7%AE%97%E4%B8%8B%E6%A0%87"><span class="nav-text">2. 计算下标</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AE%B9%E9%87%8F%E9%9C%80%E8%A6%81%E6%98%AF2%E7%9A%84%E5%B9%82"><span class="nav-text">为什么容量需要是2的幂？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81hash%E8%A6%81%E6%B7%B7%E6%B7%86%E9%AB%98%E4%BD%8E%E4%BD%8D"><span class="nav-text">为什么要hash()要混淆高低位？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD-hashmap-%E6%B7%BB%E5%8A%A0%E5%85%83%E7%B4%A0"><span class="nav-text">六、HashMap 添加元素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-putval"><span class="nav-text">1. putVal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E9%93%BE%E8%A1%A8%E7%9A%84%E6%A0%91%E5%8C%96"><span class="nav-text">2.链表的树化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE%E8%A1%A8%E8%BD%AC%E4%B8%BA%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E6%9D%A1%E4%BB%B6"><span class="nav-text">链表转为红黑树的条件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E4%B8%BA%E4%BB%80%E4%B9%88key%E5%8F%AF%E4%BB%A5%E4%B8%BAnull"><span class="nav-text">3.为什么key可以为null</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83-hashmap-%E7%9A%84%E6%89%A9%E5%AE%B9"><span class="nav-text">七、HashMap 的扩容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-resize"><span class="nav-text">1. resize</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E7%A1%AE%E8%AE%A4%E6%89%A9%E5%AE%B9%E5%A4%A7%E5%B0%8F"><span class="nav-text">2.确认扩容大小</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E5%AE%B9%E7%9A%84%E6%97%B6%E6%9C%BA"><span class="nav-text">扩容的时机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E5%AE%B9%E7%9A%84%E5%A4%A7%E5%B0%8F"><span class="nav-text">扩容的大小</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E9%87%8D%E5%93%88%E5%B8%8C%E8%BF%87%E7%A8%8B"><span class="nav-text">3.重哈希过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB-hashmap-%E8%8E%B7%E5%8F%96%E5%85%83%E7%B4%A0"><span class="nav-text">八、HashMap 获取元素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-getnode"><span class="nav-text">1. getNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E4%B8%BA%E4%BB%80%E4%B9%88%E5%85%83%E7%B4%A0%E8%A6%81%E5%90%8C%E6%97%B6%E9%87%8D%E5%86%99equals%E5%92%8Chashcode"><span class="nav-text">2.为什么元素要同时重写equals和hashcode？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D-hashmap-%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0"><span class="nav-text">九、HashMap 删除元素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-removenode"><span class="nav-text">1. removeNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E7%BA%A2%E9%BB%91%E6%A0%91%E5%9C%A8%E5%88%A0%E9%99%A4%E8%BF%87%E7%A8%8B%E7%9A%84%E9%93%BE%E5%8C%96"><span class="nav-text">2.红黑树在删除过程的链化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E7%BA%A2%E9%BB%91%E6%A0%91%E5%9C%A8%E6%89%A9%E5%AE%B9%E8%BF%87%E7%A8%8B%E7%9A%84%E9%93%BE%E5%8C%96"><span class="nav-text">3.红黑树在扩容过程的链化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%AD%98%E5%9C%A8%E4%B8%A4%E5%A5%97%E9%93%BE%E5%8C%96%E9%80%BB%E8%BE%91"><span class="nav-text">4.为什么会存在两套链化逻辑？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81-hashmap-%E7%9A%84%E8%BF%AD%E4%BB%A3"><span class="nav-text">十、HashMap 的迭代</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E8%BF%AD%E4%BB%A3%E5%99%A8%E8%BF%AD%E4%BB%A3"><span class="nav-text">1.迭代器迭代</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E8%A7%86%E5%9B%BE%E9%9B%86%E5%90%88%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E4%BB%8E%E4%BD%95%E5%A4%84%E6%9D%A5"><span class="nav-text">2.视图集合中的数据从何处来</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-foreach%E8%BF%AD%E4%BB%A3"><span class="nav-text">3. forEach迭代</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%80-%E6%80%BB%E7%BB%93"><span class="nav-text">十一、总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-hashmap-%E7%9A%84%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84"><span class="nav-text">一、HashMap 的数据结构</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-hashmap%E7%9A%84%E6%88%90%E5%91%98%E5%8F%98%E9%87%8F"><span class="nav-text">二、HashMap的成员变量</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E6%9D%A5%E8%87%AA%E7%88%B6%E7%B1%BB%E7%9A%84%E5%8F%98%E9%87%8F"><span class="nav-text">1.来自父类的变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8F%98%E9%87%8F"><span class="nav-text">2.自己的变量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E6%89%A9%E5%AE%B9%E7%9B%B8%E5%85%B3%E7%9A%84%E5%8F%98%E9%87%8F%E5%92%8C%E5%B8%B8%E9%87%8F"><span class="nav-text">3.扩容相关的变量和常量</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95"><span class="nav-text">三、构造方法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E6%8C%87%E5%AE%9A%E5%AE%B9%E9%87%8F%E5%92%8C%E8%B4%9F%E8%BD%BD%E7%B3%BB%E6%95%B0"><span class="nav-text">1.指定容量和负载系数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E5%8F%AA%E6%8C%87%E5%AE%9A%E5%AE%B9%E9%87%8F"><span class="nav-text">2.只指定容量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E4%B8%8D%E6%8C%87%E5%AE%9A%E4%BB%BB%E4%BD%95%E7%B3%BB%E6%95%B0"><span class="nav-text">3.不指定任何系数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E6%A0%B9%E6%8D%AE%E6%8C%87%E5%AE%9Amap%E9%9B%86%E5%90%88%E6%9E%84%E5%BB%BA"><span class="nav-text">4.根据指定Map集合构建</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B-hashmap%E7%9A%84%E5%86%85%E9%83%A8%E7%B1%BB"><span class="nav-text">四、HashMap的内部类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-node-treenode"><span class="nav-text">1. Node &#x2F; TreeNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-keyset-keyiterator"><span class="nav-text">2. KeySet &#x2F; KeyIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-values-valueiterator"><span class="nav-text">3. Values &#x2F; ValueIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-entryset-entryiterator"><span class="nav-text">4. EntrySet &#x2F; EntryIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-hashiterator"><span class="nav-text">5. HashIterator</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-spliterator"><span class="nav-text">6. Spliterator</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94-hashmap-%E8%8E%B7%E5%8F%96%E6%8F%92%E5%85%A5%E4%B8%8B%E6%A0%87"><span class="nav-text">五、HashMap 获取插入下标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E8%AE%A1%E7%AE%97%E5%93%88%E5%B8%8C%E5%80%BC"><span class="nav-text">1. 计算哈希值</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%AE%A1%E7%AE%97%E4%B8%8B%E6%A0%87"><span class="nav-text">2. 计算下标</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AE%B9%E9%87%8F%E9%9C%80%E8%A6%81%E6%98%AF2%E7%9A%84%E5%B9%82"><span class="nav-text">为什么容量需要是2的幂？</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81hash%E8%A6%81%E6%B7%B7%E6%B7%86%E9%AB%98%E4%BD%8E%E4%BD%8D"><span class="nav-text">为什么要hash()要混淆高低位？</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD-hashmap-%E6%B7%BB%E5%8A%A0%E5%85%83%E7%B4%A0"><span class="nav-text">六、HashMap 添加元素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-putval"><span class="nav-text">1. putVal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E9%93%BE%E8%A1%A8%E7%9A%84%E6%A0%91%E5%8C%96"><span class="nav-text">2.链表的树化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%93%BE%E8%A1%A8%E8%BD%AC%E4%B8%BA%E7%BA%A2%E9%BB%91%E6%A0%91%E7%9A%84%E6%9D%A1%E4%BB%B6"><span class="nav-text">链表转为红黑树的条件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E4%B8%BA%E4%BB%80%E4%B9%88key%E5%8F%AF%E4%BB%A5%E4%B8%BAnull"><span class="nav-text">3.为什么key可以为null</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%83-hashmap-%E7%9A%84%E6%89%A9%E5%AE%B9"><span class="nav-text">七、HashMap 的扩容</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-resize"><span class="nav-text">1. resize</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E7%A1%AE%E8%AE%A4%E6%89%A9%E5%AE%B9%E5%A4%A7%E5%B0%8F"><span class="nav-text">2.确认扩容大小</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E5%AE%B9%E7%9A%84%E6%97%B6%E6%9C%BA"><span class="nav-text">扩容的时机</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%89%A9%E5%AE%B9%E7%9A%84%E5%A4%A7%E5%B0%8F"><span class="nav-text">扩容的大小</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E9%87%8D%E5%93%88%E5%B8%8C%E8%BF%87%E7%A8%8B"><span class="nav-text">3.重哈希过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AB-hashmap-%E8%8E%B7%E5%8F%96%E5%85%83%E7%B4%A0"><span class="nav-text">八、HashMap 获取元素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-getnode"><span class="nav-text">1. getNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E4%B8%BA%E4%BB%80%E4%B9%88%E5%85%83%E7%B4%A0%E8%A6%81%E5%90%8C%E6%97%B6%E9%87%8D%E5%86%99equals%E5%92%8Chashcode"><span class="nav-text">2.为什么元素要同时重写equals和hashcode？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B9%9D-hashmap-%E5%88%A0%E9%99%A4%E5%85%83%E7%B4%A0"><span class="nav-text">九、HashMap 删除元素</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-removenode"><span class="nav-text">1. removeNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E7%BA%A2%E9%BB%91%E6%A0%91%E5%9C%A8%E5%88%A0%E9%99%A4%E8%BF%87%E7%A8%8B%E7%9A%84%E9%93%BE%E5%8C%96"><span class="nav-text">2.红黑树在删除过程的链化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E7%BA%A2%E9%BB%91%E6%A0%91%E5%9C%A8%E6%89%A9%E5%AE%B9%E8%BF%87%E7%A8%8B%E7%9A%84%E9%93%BE%E5%8C%96"><span class="nav-text">3.红黑树在扩容过程的链化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E5%AD%98%E5%9C%A8%E4%B8%A4%E5%A5%97%E9%93%BE%E5%8C%96%E9%80%BB%E8%BE%91"><span class="nav-text">4.为什么会存在两套链化逻辑？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81-hashmap-%E7%9A%84%E8%BF%AD%E4%BB%A3"><span class="nav-text">十、HashMap 的迭代</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E8%BF%AD%E4%BB%A3%E5%99%A8%E8%BF%AD%E4%BB%A3"><span class="nav-text">1.迭代器迭代</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E8%A7%86%E5%9B%BE%E9%9B%86%E5%90%88%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E4%BB%8E%E4%BD%95%E5%A4%84%E6%9D%A5"><span class="nav-text">2.视图集合中的数据从何处来</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-foreach%E8%BF%AD%E4%BB%A3"><span class="nav-text">3. forEach迭代</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%81%E4%B8%80-%E6%80%BB%E7%BB%93"><span class="nav-text">十一、总结</span></a></li></ol></div>
             
 
           </div>

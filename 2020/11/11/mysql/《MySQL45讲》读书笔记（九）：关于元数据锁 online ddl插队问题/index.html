@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结  一、读写锁堵塞 前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：  现在等待队列中有四个 session 要获取锁：  由于 sessionA 和 sessionB 都是读操作，读读不互斥，因此两个 session 都持有读锁； sessionA">
+<meta name="description" content="此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结  一、读写锁堵塞 前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：  image-20201111201636187  现在等待队列中有四个 session 要获取锁：  由于 sessionA 和 sessionB 都是读操作，">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《MySQL45讲》读书笔记(九)：关于元数据锁 online ddl插队问题">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/11/11/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E5%85%B3%E4%BA%8E%E5%85%83%E6%95%B0%E6%8D%AE%E9%94%81%20online%20ddl%E6%8F%92%E9%98%9F%E9%97%AE%E9%A2%98/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结  一、读写锁堵塞 前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：  现在等待队列中有四个 session 要获取锁：  由于 sessionA 和 sessionB 都是读操作，读读不互斥，因此两个 session 都持有读锁； sessionA">
+<meta property="og:description" content="此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结  一、读写锁堵塞 前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：  image-20201111201636187  现在等待队列中有四个 session 要获取锁：  由于 sessionA 和 sessionB 都是读操作，">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201111201636187.png">
 <meta property="article:published_time" content="2020-11-10T16:00:00.000Z">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  621
+                  623
                 </span>
               
 
@@ -404,7 +404,9 @@
 </blockquote>
 <h2 id="一-读写锁堵塞">一、读写锁堵塞</h2>
 <p>前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：</p>
-<p><img src="http://img.xiajibagao.top/image-20201111201636187.png" alt="image-20201111201636187"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201111201636187.png" alt="image-20201111201636187"><figcaption aria-hidden="true">image-20201111201636187</figcaption>
+</figure>
 <p>现在等待队列中有四个 session 要获取锁：</p>
 <ul>
 <li>由于 sessionA 和 sessionB 都是读操作，读读不互斥，因此两个 session 都持有读锁；</li>

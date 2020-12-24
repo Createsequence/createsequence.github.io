@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="概述 我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。 其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 List 部分的关系图。  根据上图的类关系图，我们研究一下源码中，类与类之间的关系，方法是如何从抽象">
+<meta name="description" content="概述 我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。 其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 List 部分的关系图。  List集合的实现类关系图  根据上图的类关系图，我们研究一下">
 <meta property="og:type" content="article">
 <meta property="og:title" content="java集合源码分析（一）：Collection 与 AbstractCollection">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。 其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 List 部分的关系图。  根据上图的类关系图，我们研究一下源码中，类与类之间的关系，方法是如何从抽象">
+<meta property="og:description" content="概述 我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。 其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 List 部分的关系图。  List集合的实现类关系图  根据上图的类关系图，我们研究一下">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201126100539307.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201125151935252.png">
@@ -405,28 +405,28 @@
         <h2 id="概述">概述</h2>
 <p>我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。</p>
 <p>其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 List 部分的关系图。</p>
-<p><img src="http://img.xiajibagao.top/image-20201126100539307.png" alt="List集合的实现类关系图"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201126100539307.png" alt="List集合的实现类关系图"><figcaption aria-hidden="true">List集合的实现类关系图</figcaption>
+</figure>
 <p>根据上图的类关系图，我们研究一下源码中，类与类之间的关系，方法是如何从抽象到具体的。</p>
 <h2 id="一-iterable-接口">一、Iterable 接口</h2>
 <p>Iterable 是最顶层的接口，继承这个接口的类可以被迭代。</p>
-<p><img src="http://img.xiajibagao.top/image-20201125151935252.png" alt="Iterable 接口的方法"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201125151935252.png" alt="Iterable 接口的方法"><figcaption aria-hidden="true">Iterable 接口的方法</figcaption>
+</figure>
 <ul>
-<li>
-<p><code>iterator()</code>：用于获取一个迭代器。</p>
-</li>
-<li>
-<p><code>forEach()</code> ：JDK8 新增。一个基于函数式接口实现的新迭代方法。</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">forEach</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> T&gt; action)</span> </span>&#123;</span><br><span class="line">    Objects.requireNonNull(action);</span><br><span class="line">    <span class="keyword">for</span> (T t : <span class="keyword">this</span>) &#123;</span><br><span class="line">        action.accept(t);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-</li>
-<li>
-<p><code>spliterator()</code>：JDK8 新增。用于获取一个可分割迭代器。默认实现返回一个<code>IteratorSpliterator</code>类。</p>
-</li>
+<li><p><code>iterator()</code>：用于获取一个迭代器。</p></li>
+<li><p><code>forEach()</code> ：JDK8 新增。一个基于函数式接口实现的新迭代方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">default</span> <span class="keyword">void</span> <span class="title">forEach</span><span class="params">(Consumer&lt;? <span class="keyword">super</span> T&gt; action)</span> </span>&#123;</span><br><span class="line">    Objects.requireNonNull(action);</span><br><span class="line">    <span class="keyword">for</span> (T t : <span class="keyword">this</span>) &#123;</span><br><span class="line">        action.accept(t);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p><code>spliterator()</code>：JDK8 新增。用于获取一个可分割迭代器。默认实现返回一个<code>IteratorSpliterator</code>类。</p></li>
 </ul>
 <p>这个跟迭代器类似，但是是用于并行迭代的，关于具体的情况可以参考一下掘金的一个讨论：<a target="_blank" rel="noopener" href="https://segmentfault.com/q/1010000007087438">Java8里面的java.util.Spliterator接口有什么用？</a></p>
 <h2 id="二-collection-接口">二、Collection 接口</h2>
-<p><img src="http://img.xiajibagao.top/image-20201125154357523.png" alt="Collection 接口的方法"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201125154357523.png" alt="Collection 接口的方法"><figcaption aria-hidden="true">Collection 接口的方法</figcaption>
+</figure>
 <p>Collection 是集合容器的顶级接口，他继承了 Iterable 接口，即凡是 Collection 的实现类都可以迭代，List 也是 Collection 的子接口，因此也拥有此特性。</p>
-<p>可以看到，  Collection 接口提供了十九个抽象方法，这些方法的命名都很直观的反应的这些方法的功能。通过这些方法规定了 Collection的实现类的一些基本特性：<strong>可迭代，可转化为数组，可对节点进行添加删除，集合间可以合并或者互相过滤，可以使用 Stream 进行流式处理。</strong></p>
+<p>可以看到， Collection 接口提供了十九个抽象方法，这些方法的命名都很直观的反应的这些方法的功能。通过这些方法规定了 Collection的实现类的一些基本特性：<strong>可迭代，可转化为数组，可对节点进行添加删除，集合间可以合并或者互相过滤，可以使用 Stream 进行流式处理。</strong></p>
 <h3 id="1抽象方法">1.抽象方法</h3>
 <p>我们可以根据功能简单的分类介绍一下 Collection 接口提供的方法。</p>
 <p><strong>判断类：</strong></p>
@@ -446,16 +446,10 @@
 </ul>
 <p><strong>辅助类：</strong></p>
 <ul>
-<li>
-<p><code>size()</code>：获取集合的长度。如果长度超过 Integer.MAX_VALU 就返回 Integer.MAX_VALU；</p>
-</li>
-<li>
-<p><code>iterator()</code>：获取集合的迭代器；</p>
-</li>
-<li>
-<p><code>toArray()</code>：返回一个包含此集合中所有元素的<strong>新数组实例</strong>。因为是新实例，所以对原数组的操作不会影响新数组，反之亦然；</p>
-<p>它有一多态方法参数为<code>T[]</code>，此时调用 <code>toArray()</code>会将内部数组中的元素全部放入指定数组，如果结束后指定数组还有剩余空间，那剩余空间都放入null。</p>
-</li>
+<li><p><code>size()</code>：获取集合的长度。如果长度超过 Integer.MAX_VALU 就返回 Integer.MAX_VALU；</p></li>
+<li><p><code>iterator()</code>：获取集合的迭代器；</p></li>
+<li><p><code>toArray()</code>：返回一个包含此集合中所有元素的<strong>新数组实例</strong>。因为是新实例，所以对原数组的操作不会影响新数组，反之亦然；</p>
+<p>它有一多态方法参数为<code>T[]</code>，此时调用 <code>toArray()</code>会将内部数组中的元素全部放入指定数组，如果结束后指定数组还有剩余空间，那剩余空间都放入null。</p></li>
 </ul>
 <h3 id="2jdk8-新增抽象方法">2.JDK8 新增抽象方法</h3>
 <p>此外，在 JDK8 中新增了四个抽象方法，他们都提供了默认实现：</p>
@@ -510,8 +504,7 @@
 <p>可能有人会疑问，<code>MAX_ARRAY_SIZE</code>应该就是允许扩容的最大大小了，为什么还可以扩容到<code>Integer.MAX_VALUE</code>？</p>
 <p>实际上，根据 JavaDoc 的解释：</p>
 <blockquote>
-<p>Some VMs reserve some header words in an array.<br>
-Attempts to allocate larger arrays may result in OutOfMemoryError</p>
+<p>Some VMs reserve some header words in an array. Attempts to allocate larger arrays may result in OutOfMemoryError</p>
 </blockquote>
 <p>一些 JVM 可能会用数组头存放一些关于数组的数据，一般情况下，最好不要直接可以扩容到<code>Integer.MAX_VALUE</code>，因此扩容到<code>Integer.MAX_VALUE-8</code>就是理论上允许的最大值了，但是如果真的大到了这个地步，就只能特殊情况特殊对待，试试看可不可以扩容到<code>Integer.MAX_VALUE</code>，如果再大就要溢出了。</p>
 <h3 id="6clear">6.clear</h3>

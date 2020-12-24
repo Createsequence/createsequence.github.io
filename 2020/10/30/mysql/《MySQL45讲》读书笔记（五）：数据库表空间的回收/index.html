@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="此文为极客时间MySQL实战45讲第13节的笔记  一、表数据的存放位置 表数据既可以存在共享表空间里，也可以是单独的文件。这个行为是由参数 innodb_file_per_table 控制的：  OFF ：表的数据放在系统共享表空间，即跟数据字典放在一起； ON ：表数据存储在一个以 .ibd 为后缀的文件中。（MySQL 5.6.6 默认为 ON）  一般情况下，表单独存放的时候，可以通过">
+<meta name="description" content="此文为极客时间MySQL实战45讲第13节的笔记  一、表数据的存放位置 表数据既可以存在共享表空间里，也可以是单独的文件。这个行为是由参数 innodb_file_per_table 控制的：  OFF ：表的数据放在系统共享表空间，即跟数据字典放在一起； ON ：表数据存储在一个以 .ibd 为后缀的文件中。（MySQL 5.6.6 默认为 ON）  一般情况下，表单独存放">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《MySQL45讲》读书笔记(五)：数据库表空间的回收">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/10/30/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="此文为极客时间MySQL实战45讲第13节的笔记  一、表数据的存放位置 表数据既可以存在共享表空间里，也可以是单独的文件。这个行为是由参数 innodb_file_per_table 控制的：  OFF ：表的数据放在系统共享表空间，即跟数据字典放在一起； ON ：表数据存储在一个以 .ibd 为后缀的文件中。（MySQL 5.6.6 默认为 ON）  一般情况下，表单独存放的时候，可以通过">
+<meta property="og:description" content="此文为极客时间MySQL实战45讲第13节的笔记  一、表数据的存放位置 表数据既可以存在共享表空间里，也可以是单独的文件。这个行为是由参数 innodb_file_per_table 控制的：  OFF ：表的数据放在系统共享表空间，即跟数据字典放在一起； ON ：表数据存储在一个以 .ibd 为后缀的文件中。（MySQL 5.6.6 默认为 ON）  一般情况下，表单独存放">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201105203027271.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201105204359077.png">
@@ -405,7 +405,7 @@
 </blockquote>
 <h2 id="一-表数据的存放位置">一、表数据的存放位置</h2>
 <p>表数据既可以存在共享表空间里，也可以是单独的文件。这个行为是由参数 <code>innodb_file_per_table</code> 控制的：</p>
-<ol>
+<ol type="1">
 <li>OFF ：表的数据放在系统共享表空间，即跟数据字典放在一起；</li>
 <li>ON ：表数据存储在一个以 .ibd 为后缀的文件中。（MySQL 5.6.6 默认为 ON）</li>
 </ol>
@@ -413,13 +413,17 @@
 <h2 id="二-表数据的删除">二、表数据的删除</h2>
 <p>一般情况下，很少有直接连结构带数据直接删掉表的情况，更多时候是只删除一些数据，但是这样往往会遇到这样的问题：<strong>表中的数据被删除了，但是表空间却没有被回收</strong>。</p>
 <p>实际上，这与 innodb 中数据都以 B+ 树的结构存储有关：</p>
-<p><img src="http://img.xiajibagao.top/image-20201105203027271.png" alt="image-20201105203027271"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201105203027271.png" alt="image-20201105203027271"><figcaption aria-hidden="true">image-20201105203027271</figcaption>
+</figure>
 <p>以上图为例，如果我们删除 R4 这条数据，则 innodb 会把 R4 这个位置标记为删除，之后如果插入一个在 300~600 的记录的时候，就会直接使用现在 R4 的位置。同理，如果我们清除这个 PageA，那么这个数据页都会被标记删除，等到下一个数据页加载的时候就可以直接使用这个空间。而当两个相邻的数据页上被删除了记录很多，也就是页的利用率都很低的时候，系统就会自动合并两个页的数据，并且标记其中一个为可复用。</p>
 <p>值得一提的是，记录的空间被复用，必须限定位置，比如 R4 的空间被复用，就不能插入300 ~ 600之外的数据；而数据页的空间则可以被任意一页新加载的页复用。</p>
 <p>综上所述，不难理解，<strong>我们使用 delete 删除的数据只是把这块空间标记为可复用，是一种逻辑上的删除，并没有实际减少磁盘空间的占用</strong>。</p>
 <p>实际上，<strong>不止是删除数据会造成空洞，插入数据也会。</strong></p>
 <p>如果数据是按照索引递增顺序插入的，那么索引是紧凑的。但如果数据是随机插入的，就可能造成索引的数据页分裂。</p>
-<p><img src="http://img.xiajibagao.top/image-20201105204359077.png" alt="image-20201105204359077"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201105204359077.png" alt="image-20201105204359077"><figcaption aria-hidden="true">image-20201105204359077</figcaption>
+</figure>
 <p>假如 PageA 已满，再插入一条550，PageA 就会不得不分离成两页，这就是页的分裂。当分裂完以后，PageA 就会留下一个空洞，新页 PageB 一样没有占满。</p>
 <p>另外，更新索引上的值，可以理解为删除一个旧的值，再插入一个新值。不难理解，这很有可能破坏了索引的有序性，也是会造成空洞的</p>
 <p>也就是说，经过大量增删改的表，都是可能是存在空洞的。所以，<strong>如果能够把这些空洞去掉，就能达到收缩表空间的目的</strong>。</p>
@@ -432,7 +436,7 @@
 <h3 id="2优化">2.优化</h3>
 <p>但是这个 DDL 语句不是 online 的，也就说，<strong>如果过程中有新的数据往 A 表插入，有可能不会被读到并且一起转移到 B 表，导致最后丢失更新</strong>。因此，在 5.6 版本以后，引入的 online DDL 对这个流程做了优化。</p>
 <p>新的流程如下：</p>
-<ol>
+<ol type="1">
 <li>建立一个临时文件，扫描表 A 主键的所有数据页；</li>
 <li>用数据页中表 A 的记录生成 B+ 树，存储到临时文件中；</li>
 <li>生成临时文件的过程中，<strong>将所有对 A 的操作记录在一个日志文件</strong>中；</li>
@@ -447,7 +451,7 @@
 <p>相对于创建临时表：</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">alter</span> <span class="keyword">table</span> t <span class="keyword">engine</span>=<span class="keyword">innodb</span>,ALGORITHM=copy;</span><br></pre></td></tr></table></figure>
 <h3 id="4三种重建表方式的区别">4.三种重建表方式的区别</h3>
-<ol>
+<ol type="1">
 <li>从 MySQL 5.6 版本开始，alter table t engine = InnoDB（也就是 recreate）默认的就是上面图 4 的流程了；</li>
 <li>analyze table t 其实不是重建表，只是对表的索引信息做重新统计，没有修改数据，这个过程中加了 MDL 读锁；</li>
 <li>optimize table t 等于 recreate + analyze。</li>
@@ -489,8 +493,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2020/10/29/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B4%A2%E5%BC%95/" rel="next" title="《MySQL45讲》读书笔记(四)：索引">
-                <i class="fa fa-chevron-left"></i> 《MySQL45讲》读书笔记(四)：索引
+              <a href="/2020/10/30/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/" rel="next" title="JDK1.8新特性（三）：Lambda表达式">
+                <i class="fa fa-chevron-left"></i> JDK1.8新特性（三）：Lambda表达式
               </a>
             
           </div>
@@ -499,8 +503,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2020/10/30/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9ALambda%E8%A1%A8%E8%BE%BE%E5%BC%8F/" rel="prev" title="JDK1.8新特性（三）：Lambda表达式">
-                JDK1.8新特性（三）：Lambda表达式 <i class="fa fa-chevron-right"></i>
+              <a href="/2020/11/02/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E6%A6%82%E8%BF%B0/" rel="prev" title="《MySQL45讲》读书笔记(六)：数据库事务概述">
+                《MySQL45讲》读书笔记(六)：数据库事务概述 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>

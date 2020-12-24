@@ -64,7 +64,7 @@
 &lt;h3 id=&quot;1数据包如何在层间流转&quot;&gt;1.数据包如何在层间流转&lt;/h3&gt;
 &lt;p&gt;分层是一个复杂程序的必然趋势，因而复杂的网络协议就会有分层的要求。&lt;/p&gt;
 &lt;p&gt;以下图为例，下图描述了我们输入网址并回车后，整个大体的请求流程：&lt;/p&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/5c00f6e610f533d17fb4ad7decacc776.jpg&quot; alt=&quot;img&quot; style=&quot;zoom: 25%;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/5c00f6e610f533d17fb4ad7decacc776.jpg&quot; alt=&quot;img&quot; style=&quot;zoom: 25%;&quot;&gt;&lt;/p&gt;
 &lt;p&gt;我们知道，按 TCP/IP 的四层模型，HTTP 协议属于应用层。假设用伪代码代表不同层级间对数据包的处理流程，当我们从应用层发起请求时：&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;从应用层进入传输层。经过 &lt;code&gt;send_tcp()&lt;/code&gt;的处理，会加上 TCP 头，里面有端口；&lt;/li&gt;
@@ -78,6 +78,48 @@
     
     
     <category term="计算机网络" scheme="http://blog.xiajibagao.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>java集合源码分析（九）：HashSet与TreeSet.md</title>
+    <link href="http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9AHashSet/"/>
+    <id>http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9AHashSet/</id>
+    <published>2020-12-21T16:00:00.000Z</published>
+    <updated>2020-12-22T09:33:35.569Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;HashSet 是 Set 接口下一个不允许重复但允许 null、无序并且线程不安全的集合。它基于 HashMap 实现。&lt;/p&gt;
+&lt;p&gt;从数据结构来说，他与 HashMap 相同，但是由于 HashSet 借助 HashMap 的 key 来存储数据，因而 HashMap 的 value 在 HashSet 中无意义。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201208205304527.png&quot; alt=&quot;HashMap的数据结构&quot; style=&quot;zoom:67%;&quot;&gt;&lt;/p&gt;
+&lt;p&gt;这是关于 java 集合类源码的第九篇文章。往期文章：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/&quot;&gt;java集合源码分析（五）：Map与AbstractMap&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/&quot;&gt;java集合源码分析（六）：HashMap&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/21/java/集合类源码分析/java集合源码分析（七）：LinkedHashMap/&quot;&gt;java集合源码分析（七）：LinkedHashMap&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/22/java/集合类源码分析/java集合源码分析（八）：Set与AbstracSet/&quot;&gt;java集合源码分析（八）：Set与AbstractSet&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&quot;一-数据结构&quot;&gt;一、数据结构&lt;/h2&gt;
+&lt;p&gt;HashSet 基于 HashMap 实现，也就是说，HashSet 用于存储数据的容器实际上就是一个 HashMap 实例。（关于 HashMap 的数据结构，可以参考前文&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/&quot;&gt;java集合源码分析（六）：HashMap&lt;/a&gt;中的第一部分。）&lt;/p&gt;
+&lt;p&gt;HashSet 使用 HashMap 的 key 作为存储数据的位置，而 value 的位置使用一个默认的全局空对象填充。大部分方法通过直接包装调用 HashMap 的来实现，也就是说，我们可以把 HashSet 看成 HashMap 的一个大号包装器——或者说适配器类。&lt;/p&gt;
+&lt;h2 id=&quot;二-成员变量&quot;&gt;二、成员变量&lt;/h2&gt;</summary>
+    
+    
+    
+    <category term="java集合容器" scheme="http://blog.xiajibagao.top/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
+    
+    
+    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
+    
+    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
     
   </entry>
   
@@ -128,48 +170,6 @@
   </entry>
   
   <entry>
-    <title>java集合源码分析（九）：HashSet与TreeSet.md</title>
-    <link href="http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9AHashSet/"/>
-    <id>http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9AHashSet/</id>
-    <published>2020-12-21T16:00:00.000Z</published>
-    <updated>2020-12-22T09:33:35.569Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;HashSet 是 Set 接口下一个不允许重复但允许 null、无序并且线程不安全的集合。它基于 HashMap 实现。&lt;/p&gt;
-&lt;p&gt;从数据结构来说，他与 HashMap 相同，但是由于 HashSet 借助 HashMap 的 key 来存储数据，因而 HashMap 的 value 在 HashSet 中无意义。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201208205304527.png&quot; alt=&quot;HashMap的数据结构&quot; style=&quot;zoom:67%;&quot;&gt;&lt;/p&gt;
-&lt;p&gt;这是关于 java 集合类源码的第九篇文章。往期文章：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;ol type=&quot;1&quot;&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/&quot;&gt;java集合源码分析（五）：Map与AbstractMap&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/&quot;&gt;java集合源码分析（六）：HashMap&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/21/java/集合类源码分析/java集合源码分析（七）：LinkedHashMap/&quot;&gt;java集合源码分析（七）：LinkedHashMap&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/22/java/集合类源码分析/java集合源码分析（八）：Set与AbstracSet/&quot;&gt;java集合源码分析（八）：Set与AbstractSet&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;一-数据结构&quot;&gt;一、数据结构&lt;/h2&gt;
-&lt;p&gt;HashSet 基于 HashMap 实现，也就是说，HashSet 用于存储数据的容器实际上就是一个 HashMap 实例。（关于 HashMap 的数据结构，可以参考前文&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/&quot;&gt;java集合源码分析（六）：HashMap&lt;/a&gt;中的第一部分。）&lt;/p&gt;
-&lt;p&gt;HashSet 使用 HashMap 的 key 作为存储数据的位置，而 value 的位置使用一个默认的全局空对象填充。大部分方法通过直接包装调用 HashMap 的来实现，也就是说，我们可以把 HashSet 看成 HashMap 的一个大号包装器——或者说适配器类。&lt;/p&gt;
-&lt;h2 id=&quot;二-成员变量&quot;&gt;二、成员变量&lt;/h2&gt;</summary>
-    
-    
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-  </entry>
-  
-  <entry>
     <title>next5主题自定义摘要</title>
     <link href="http://blog.xiajibagao.top/2020/12/21/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/next5%E4%B8%BB%E9%A2%98%E8%87%AA%E5%AE%9A%E4%B9%89%E6%91%98%E8%A6%81/"/>
     <id>http://blog.xiajibagao.top/2020/12/21/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/next5%E4%B8%BB%E9%A2%98%E8%87%AA%E5%AE%9A%E4%B9%89%E6%91%98%E8%A6%81/</id>
@@ -194,6 +194,34 @@
     
     
     <category term="杂七乱八" scheme="http://blog.xiajibagao.top/tags/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>计算机网络基本知识</title>
+    <link href="http://blog.xiajibagao.top/2020/12/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/"/>
+    <id>http://blog.xiajibagao.top/2020/12/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/</id>
+    <published>2020-12-20T16:00:00.000Z</published>
+    <updated>2020-12-24T12:09:24.541Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;本文为阅读《趣谈网络协议》之前需要了解的一些基本概念与知识，包括 OSI 七层模型与 TCP/IP 四层模型，不同层级的作用，不同层级之间的主要协议等。&lt;/p&gt;
+&lt;h2 id=&quot;一-为什么需要网络协议&quot;&gt;一、为什么需要网络协议&lt;/h2&gt;
+&lt;p&gt;网络协议为计算机网络中进行数据交换而建立的规则、标准或约定的集合。&lt;/p&gt;
+&lt;p&gt;例如，网络中一个微机用户和一个大型主机的操作员进行通信，由于这两个数据终端所用字符集不同，因此操作员所输入的命令彼此不认识。为了能进行通信，规定每个终端都要将各自字符集中的字符先变换为标准字符集的字符后，才进入网络传送，到达目的终端之后，再变换为该终端字符集的字符。&lt;/p&gt;
+&lt;h2 id=&quot;二-网络的分层模型&quot;&gt;二、网络的分层模型&lt;/h2&gt;
+&lt;h3 id=&quot;1网络的分层模型&quot;&gt;1.网络的分层模型&lt;/h3&gt;
+&lt;p&gt;根据 OSI 提出的模型，计算机网络体系结构的通讯协议应当分为七层，而除了标准的 OSI七层模型以外，常见的网络层次划分还有 TCP/IP 四层协议以及 TCP/IP 五层协议，它们之间的关系如下：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201223110909686.png&quot; alt=&quot;image-20201223110909686&quot; style=&quot;zoom: 67%;&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;2tcpip模型与osi模型&quot;&gt;2.TCP/IP模型与OSI模型&lt;/h3&gt;</summary>
+    
+    
+    
+    <category term="计算机网络" scheme="http://blog.xiajibagao.top/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
+    
+    
+    <category term="计算机网络，趣谈网络协议" scheme="http://blog.xiajibagao.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%8C%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/"/>
     
   </entry>
   
@@ -241,34 +269,6 @@
   </entry>
   
   <entry>
-    <title>计算机网络基本知识</title>
-    <link href="http://blog.xiajibagao.top/2020/12/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/"/>
-    <id>http://blog.xiajibagao.top/2020/12/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/</id>
-    <published>2020-12-20T16:00:00.000Z</published>
-    <updated>2020-12-24T12:09:24.541Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;本文为阅读《趣谈网络协议》之前需要了解的一些基本概念与知识，包括 OSI 七层模型与 TCP/IP 四层模型，不同层级的作用，不同层级之间的主要协议等。&lt;/p&gt;
-&lt;h2 id=&quot;一-为什么需要网络协议&quot;&gt;一、为什么需要网络协议&lt;/h2&gt;
-&lt;p&gt;网络协议为计算机网络中进行数据交换而建立的规则、标准或约定的集合。&lt;/p&gt;
-&lt;p&gt;例如，网络中一个微机用户和一个大型主机的操作员进行通信，由于这两个数据终端所用字符集不同，因此操作员所输入的命令彼此不认识。为了能进行通信，规定每个终端都要将各自字符集中的字符先变换为标准字符集的字符后，才进入网络传送，到达目的终端之后，再变换为该终端字符集的字符。&lt;/p&gt;
-&lt;h2 id=&quot;二-网络的分层模型&quot;&gt;二、网络的分层模型&lt;/h2&gt;
-&lt;h3 id=&quot;1网络的分层模型&quot;&gt;1.网络的分层模型&lt;/h3&gt;
-&lt;p&gt;根据 OSI 提出的模型，计算机网络体系结构的通讯协议应当分为七层，而除了标准的 OSI七层模型以外，常见的网络层次划分还有 TCP/IP 四层协议以及 TCP/IP 五层协议，它们之间的关系如下：&lt;/p&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201223110909686.png&quot; alt=&quot;image-20201223110909686&quot; style=&quot;zoom: 67%;&quot;&gt;
-&lt;h3 id=&quot;2tcpip模型与osi模型&quot;&gt;2.TCP/IP模型与OSI模型&lt;/h3&gt;</summary>
-    
-    
-    
-    <category term="计算机网络" scheme="http://blog.xiajibagao.top/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
-    
-    
-    <category term="计算机网络，趣谈网络协议" scheme="http://blog.xiajibagao.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%8C%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/"/>
-    
-  </entry>
-  
-  <entry>
     <title>如何解决next5主题目录无法跳转的问题</title>
     <link href="http://blog.xiajibagao.top/2020/12/17/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3next5%E4%B8%BB%E9%A2%98%E7%9B%AE%E5%BD%95%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%AC%E7%9A%84%E9%97%AE%E9%A2%98/"/>
     <id>http://blog.xiajibagao.top/2020/12/17/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3next5%E4%B8%BB%E9%A2%98%E7%9B%AE%E5%BD%95%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%AC%E7%9A%84%E9%97%AE%E9%A2%98/</id>
@@ -311,16 +311,17 @@
 &lt;p&gt;对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式，能否存放空值；作为使用了数组作为底层结构的集合，我们还需要关注其扩容的实现；同时，针对哈希表的特性，我们还需要关注它如何通过哈希算法取模快速定位下标。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;这是关于 java 集合类源码的第六篇文章。往期文章：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/&quot;&gt;java集合源码分析（五）：Map与AbstractMap&lt;/a&gt;&lt;/li&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/&quot;&gt;java集合源码分析（五）：Map与AbstractMap&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&quot;一-hashmap-的数据结构&quot;&gt;一、HashMap 的数据结构&lt;/h2&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201208205304527.png&quot; alt=&quot;HashMap的数据结构&quot; style=&quot;zoom:67%;&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201208205304527.png&quot; alt=&quot;HashMap的数据结构&quot; style=&quot;zoom:67%;&quot;&gt;&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;在 JDK8 之前，HashMap 的数据结构是数组+链表。在 JDK8 以后是数组 + 链表 + 红黑树&lt;/strong&gt;。&lt;/p&gt;
 &lt;p&gt;在 HashMap 中，每一个 value 都被存储在一个 Node 或 TreeNode 实例中，容器中有一个 &lt;code&gt;Node[] table&lt;/code&gt; 数组成员变量，数组中的每一格称为一个“桶”。当添加元素时，根据元素的 key 通过哈希值计算得到对应下标，将 Node 类的形式存入“桶”中。如果 table 容量不足时，就会发生扩容，同时对容器内部的元素进行重哈希。&lt;/p&gt;
 &lt;p&gt;当发生哈希冲突，也就是不同元素计算得到了相同的下标时，会将节点接到“桶”的中的第一个元素后，后续操作亦同，最后就会形成链表。&lt;/p&gt;
@@ -413,7 +414,7 @@
     <link href="http://blog.xiajibagao.top/2020/12/04/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/ArrayList%E4%B8%8ELinkedList%E9%81%8D%E5%8E%86%E6%93%8D%E4%BD%9C%E9%97%AE%E9%A2%98/"/>
     <id>http://blog.xiajibagao.top/2020/12/04/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/ArrayList%E4%B8%8ELinkedList%E9%81%8D%E5%8E%86%E6%93%8D%E4%BD%9C%E9%97%AE%E9%A2%98/</id>
     <published>2020-12-03T16:00:00.000Z</published>
-    <updated>2020-12-17T06:37:48.075Z</updated>
+    <updated>2020-12-05T04:58:38.052Z</updated>
     
     
     <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
@@ -452,14 +453,17 @@
 &lt;p&gt;LinkedList 是一个不保证线程安全的、基于双向的双端链表的实现的 List 集合。LinkedList 继承了 AbstractSequentialList 抽象类，在实现 List 接口的同时还实现了 Deque 接口，也正因如此，它也具有队列的特性与方法。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;这是关于 java 集合类源码的第四篇文章。往期文章：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&quot;一-linkedlist-的类关系&quot;&gt;一、LinkedList 的类关系&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201203153522364.png&quot; alt=&quot;LinkedList 的类关系&quot;&gt;&lt;/p&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201203153522364.png&quot; alt=&quot;LinkedList 的类关系&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;LinkedList 的类关系&lt;/figcaption&gt;
+&lt;/figure&gt;
 &lt;p&gt;LinkedList 实现了 Cloneable ，Serializable 接口，表明它可以拷贝，可以被序列化。&lt;/p&gt;
 &lt;p&gt;但是和 ArrayList 或者 Vector 相比，因为它是链表，所以无法像数组那样通过下标快速随机访问，故而没有实现 RandomAccess 接口。&lt;/p&gt;
 &lt;p&gt;他实现了 List 接口，但是也实现了 Queue 的子接口 Deque，因此除了列表，他也具备双端队列的特性。&lt;/p&gt;
@@ -489,13 +493,16 @@
 &lt;p&gt;ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector 有着一样的继承关系，也都能随机访问，但是不同的是不能保证线程安全。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;这是关于 java 集合类源码的第三篇文章。往期文章：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
+&lt;ol type=&quot;1&quot;&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&quot;一-arraylist-的类关系&quot;&gt;一、ArrayList 的类关系&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201201161347920.png&quot; alt=&quot;image-20201201161347920&quot;&gt;&lt;/p&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201201161347920.png&quot; alt=&quot;image-20201201161347920&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20201201161347920&lt;/figcaption&gt;
+&lt;/figure&gt;
 &lt;p&gt;ArrayList 实现了三个接口，继承了一个抽象类，其中 Serializable ，Cloneable 与 RandomAccess 接口都是用于标记的空接口，他的主要抽象方法来自于 List，一些实现来自于 AbstractList。&lt;/p&gt;
 &lt;h3 id=&quot;1abstractlist-与-list&quot;&gt;1.AbstractList 与 List&lt;/h3&gt;
 &lt;p&gt;ArrayList 实现了 List 接口，是 List 接口的实现类之一，他通过继承抽象类 AbstractList 获得的大部分方法的实现。&lt;/p&gt;
@@ -527,10 +534,12 @@
 &lt;p&gt;本篇文章暂不讨论具体的实现类，而将基于 List 接口与其抽象类 AbstractList，了解 List 接口是如何承上启下，进一步从 Collection 抽象到具体的。&lt;/p&gt;
 &lt;blockquote&gt;
 &lt;p&gt;这是关于 java 集合类源码的第二篇文章。往期文章：&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/p&gt;
 &lt;/blockquote&gt;
 &lt;h2 id=&quot;一-list-接口&quot;&gt;一、List 接口&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201125163518482.png&quot; alt=&quot;List 接口的方法&quot;&gt;&lt;/p&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201125163518482.png&quot; alt=&quot;List 接口的方法&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;List 接口的方法&lt;/figcaption&gt;
+&lt;/figure&gt;
 &lt;p&gt;List 接口继承了 Collection 接口，在 Collection 接口的基础上增加了一些方法。相对于 Collection 接口，我们可以很明显的看到，List &lt;strong&gt;中增加了非常多根据下标操作集合的方法&lt;/strong&gt;，我们可以简单粗暴的分辨一个方法的抽象方法到底来自 Collection 还是 List：参数里有下标就是来自 List，没有就是来自 Collection。&lt;/p&gt;
 &lt;p&gt;可以说，List 接口在 Collection 的基础上，&lt;strong&gt;进一步明确了 List 集合运允许根据下标快速存取的特性&lt;/strong&gt;。&lt;/p&gt;
 &lt;h3 id=&quot;1新增的方法&quot;&gt;1.新增的方法&lt;/h3&gt;</summary>
@@ -557,22 +566,20 @@
     <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
 &lt;p&gt;我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。&lt;/p&gt;
 &lt;p&gt;其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 List 部分的关系图。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201126100539307.png&quot; alt=&quot;List集合的实现类关系图&quot;&gt;&lt;/p&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201126100539307.png&quot; alt=&quot;List集合的实现类关系图&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;List集合的实现类关系图&lt;/figcaption&gt;
+&lt;/figure&gt;
 &lt;p&gt;根据上图的类关系图，我们研究一下源码中，类与类之间的关系，方法是如何从抽象到具体的。&lt;/p&gt;
 &lt;h2 id=&quot;一-iterable-接口&quot;&gt;一、Iterable 接口&lt;/h2&gt;
 &lt;p&gt;Iterable 是最顶层的接口，继承这个接口的类可以被迭代。&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;http://img.xiajibagao.top/image-20201125151935252.png&quot; alt=&quot;Iterable 接口的方法&quot;&gt;&lt;/p&gt;
+&lt;figure&gt;
+&lt;img src=&quot;http://img.xiajibagao.top/image-20201125151935252.png&quot; alt=&quot;Iterable 接口的方法&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;Iterable 接口的方法&lt;/figcaption&gt;
+&lt;/figure&gt;
 &lt;ul&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;iterator()&lt;/code&gt;：用于获取一个迭代器。&lt;/p&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;forEach()&lt;/code&gt; ：JDK8 新增。一个基于函数式接口实现的新迭代方法。&lt;/p&gt;
-&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Consumer&amp;lt;? &lt;span class=&quot;keyword&quot;&gt;super&lt;/span&gt; T&amp;gt; action)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Objects.requireNonNull(action);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (T t : &lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        action.accept(t);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;p&gt;&lt;code&gt;spliterator()&lt;/code&gt;：JDK8 新增。用于获取一个可分割迭代器。默认实现返回一个&lt;code&gt;IteratorSpliterator&lt;/code&gt;类。&lt;/p&gt;
-&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;iterator()&lt;/code&gt;：用于获取一个迭代器。&lt;/p&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;forEach()&lt;/code&gt; ：JDK8 新增。一个基于函数式接口实现的新迭代方法。&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Consumer&amp;lt;? &lt;span class=&quot;keyword&quot;&gt;super&lt;/span&gt; T&amp;gt; action)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Objects.requireNonNull(action);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (T t : &lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        action.accept(t);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
+&lt;li&gt;&lt;p&gt;&lt;code&gt;spliterator()&lt;/code&gt;：JDK8 新增。用于获取一个可分割迭代器。默认实现返回一个&lt;code&gt;IteratorSpliterator&lt;/code&gt;类。&lt;/p&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;这个跟迭代器类似，但是是用于并行迭代的，关于具体的情况可以参考一下掘金的一个讨论：&lt;a href=&quot;https://segmentfault.com/q/1010000007087438&quot;&gt;Java8里面的java.util.Spliterator接口有什么用？&lt;/a&gt;&lt;/p&gt;</summary>
     
@@ -680,26 +687,26 @@
   </entry>
   
   <entry>
-    <title>设计模式（三）：代理模式</title>
-    <link href="http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/"/>
-    <id>http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F/</id>
+    <title>设计模式（二）：策略模式</title>
+    <link href="http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/"/>
+    <id>http://blog.xiajibagao.top/2020/11/20/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E7%AD%96%E7%95%A5%E6%A8%A1%E5%BC%8F/</id>
     <published>2020-11-19T16:00:00.000Z</published>
-    <updated>2020-11-20T07:47:28.585Z</updated>
+    <updated>2020-11-20T06:49:31.763Z</updated>
     
     
     <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
 &lt;blockquote&gt;
-&lt;p&gt;在代理模式（Proxy Pattern）中，一个类代表另一个类的功能。这种类型的设计模式属于结构型模式。&lt;/p&gt;
-&lt;p&gt;在代理模式中，我们创建具有现有对象的对象，以便向外界提供功能接口。&lt;/p&gt;
+&lt;p&gt;在策略模式（Strategy Pattern）中，一个类的行为或其算法可以在运行时更改。这种类型的设计模式属于行为型模式。&lt;/p&gt;
+&lt;p&gt;在策略模式中，我们创建表示各种策略的对象和一个行为随着策略对象改变而改变的 context 对象。策略对象改变 context 对象的执行算法。&lt;/p&gt;
 &lt;/blockquote&gt;
-&lt;p&gt;策略模式旨在不改变被代理对象的基础上进行方法增强。&lt;/p&gt;
-&lt;p&gt;当我们一个原有的类不能满足功能，又处于职责或其他原因不便修改的时候，我们可以使用代理模式。通过代理类去调用被代理类的方法，在原方法的基础上进行各种加强，又不会改变原代码。&lt;/p&gt;
-&lt;p&gt;spring 中的 AOP 就运用了代理模式。&lt;/p&gt;
-&lt;h2 id=&quot;一-静态代理&quot;&gt;一、静态代理&lt;/h2&gt;
-&lt;p&gt;为了简单的说明代理模式，我们举个例子：&lt;/p&gt;
-&lt;p&gt;首先有一个接口，叫做购房者，然后这个类地下有一个实现类，叫做小明:&lt;/p&gt;
-&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//购房者接口&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;interface&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Buyers&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;comment&quot;&gt;// 买房&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;buy&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;//小明实现了购房者接口&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;XiaoMing&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;Buyers&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;buy&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        System.out.println(&lt;span class=&quot;string&quot;&gt;&amp;quot;小明买了一套房&amp;quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;买房子还要货比三家，小明没时间，于是就把买房子这件事情委托给中介&lt;/p&gt;</summary>
+&lt;p&gt;策略模式旨在解决不同逻辑下相同的对象执行不同策略的问题。&lt;/p&gt;
+&lt;p&gt;当我们遇到同一个方法，里面会根据需要多个逻辑的分支，分支里的行为都不同，但是都服务于同一个功能，这个时候就可以使用策略模式，将行为抽象为一个策略接口中的抽象方法，由接口的实现类——也就是策略类——去实现各中具体的行为。&lt;/p&gt;
+&lt;p&gt;策略模式也是一种比较常见且好用的设计模式，线程池的拒绝策略就使用了策略模式。&lt;/p&gt;
+&lt;h2 id=&quot;一-简单实现&quot;&gt;一、简单实现&lt;/h2&gt;
+&lt;p&gt;简单的拿一个根据情况需要导出不同文件的接口举例：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;exportFile&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(String type)&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (type == &lt;span class=&quot;string&quot;&gt;&amp;quot;excel&amp;quot;&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 导出excel&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (type == &lt;span class=&quot;string&quot;&gt;&amp;quot;word&amp;quot;&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 导出word&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125; &lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (type == &lt;span class=&quot;string&quot;&gt;&amp;quot;pdf&amp;quot;&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 导出pdf&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;span class=&quot;keyword&quot;&gt;else&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;throw&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; RuntimeException(&lt;span class=&quot;string&quot;&gt;&amp;quot;错误的文件类型！&amp;quot;&lt;/span&gt;);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;这些分支里目的都是导出文件，但是各自有各的实现代码。换而言之，这些不同逻辑分支下的代码只有行为是不同的。现在我们将导出方法抽象成为一个策略接口中的抽象方法，将每个逻辑分支的处理代码都抽成实现策略接口的各个策略类。&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// 文件导出接口&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; interface &lt;span class=&quot;title&quot;&gt;IExportFile&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;export&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;comment&quot;&gt;// 实现类&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExportExcel&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;IExportFile&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;export&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;comment&quot;&gt;// 导出excel&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExportWord&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;IExportFile&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;export&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;comment&quot;&gt;// 导出word&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;class&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;class&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ExportPdf&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;implements&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;IExportFile&lt;/span&gt;&lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@Override&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;export&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;      &lt;span class=&quot;comment&quot;&gt;// 导出pdf&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
     
     
     

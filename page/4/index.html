@@ -582,7 +582,7 @@
 </blockquote>
 <h2 id="一-事务的启动方式">一、事务的启动方式</h2>
 <p>mysql 主要有两种事务的启动方式：</p>
-<ol>
+<ol type="1">
 <li><code>begin</code> 或 <code>start transaction</code>显式启动事务。对应的提交语句是 <code>commit</code> ，回滚是 <code>rollback</code></li>
 <li><code>set autocommit = 0</code>关闭自动提交，然后在执行第一条 sql 的时候启动事务，这个事务会一直持续到你主动 commit 或者 rollback，或者断开连接才会结束。</li>
 </ol>
@@ -595,6 +595,187 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2020/11/02/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E6%A6%82%E8%BF%B0/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/30/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/10/30/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/" itemprop="url">《MySQL45讲》读书笔记(五)：数据库表空间的回收</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-30T00:00:00+08:00">
+                2020-10-30
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.8k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>此文为极客时间MySQL实战45讲第13节的笔记</p>
+</blockquote>
+<h2 id="一-表数据的存放位置">一、表数据的存放位置</h2>
+<p>表数据既可以存在共享表空间里，也可以是单独的文件。这个行为是由参数 <code>innodb_file_per_table</code> 控制的：</p>
+<ol type="1">
+<li>OFF ：表的数据放在系统共享表空间，即跟数据字典放在一起；</li>
+<li>ON ：表数据存储在一个以 .ibd 为后缀的文件中。（MySQL 5.6.6 默认为 ON）</li>
+</ol>
+<p>一般情况下，表单独存放的时候，可以通过 drop table 语句直接删除，而如果放在共享表空间，及时删除了表也无法回收空间。</p>
+<h2 id="二-表数据的删除">二、表数据的删除</h2>
+<p>一般情况下，很少有直接连结构带数据直接删掉表的情况，更多时候是只删除一些数据，但是这样往往会遇到这样的问题：<strong>表中的数据被删除了，但是表空间却没有被回收</strong>。</p>
+<p>实际上，这与 innodb 中数据都以 B+ 树的结构存储有关：</p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201105203027271.png" alt="image-20201105203027271"><figcaption aria-hidden="true">image-20201105203027271</figcaption>
+</figure>
+<p>以上图为例，如果我们删除 R4 这条数据，则 innodb 会把 R4 这个位置标记为删除，之后如果插入一个在 300~600 的记录的时候，就会直接使用现在 R4 的位置。同理，如果我们清除这个 PageA，那么这个数据页都会被标记删除，等到下一个数据页加载的时候就可以直接使用这个空间。而当两个相邻的数据页上被删除了记录很多，也就是页的利用率都很低的时候，系统就会自动合并两个页的数据，并且标记其中一个为可复用。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/10/30/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -819,185 +1000,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/30/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/10/30/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/" itemprop="url">《MySQL45讲》读书笔记(五)：数据库表空间的回收</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-30T00:00:00+08:00">
-                2020-10-30
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/mysql/" itemprop="url" rel="index">
-                    <span itemprop="name">mysql</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.8k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>此文为极客时间MySQL实战45讲第13节的笔记</p>
-</blockquote>
-<h2 id="一-表数据的存放位置">一、表数据的存放位置</h2>
-<p>表数据既可以存在共享表空间里，也可以是单独的文件。这个行为是由参数 <code>innodb_file_per_table</code> 控制的：</p>
-<ol>
-<li>OFF ：表的数据放在系统共享表空间，即跟数据字典放在一起；</li>
-<li>ON ：表数据存储在一个以 .ibd 为后缀的文件中。（MySQL 5.6.6 默认为 ON）</li>
-</ol>
-<p>一般情况下，表单独存放的时候，可以通过 drop table 语句直接删除，而如果放在共享表空间，及时删除了表也无法回收空间。</p>
-<h2 id="二-表数据的删除">二、表数据的删除</h2>
-<p>一般情况下，很少有直接连结构带数据直接删掉表的情况，更多时候是只删除一些数据，但是这样往往会遇到这样的问题：<strong>表中的数据被删除了，但是表空间却没有被回收</strong>。</p>
-<p>实际上，这与 innodb 中数据都以 B+ 树的结构存储有关：</p>
-<p><img src="http://img.xiajibagao.top/image-20201105203027271.png" alt="image-20201105203027271"></p>
-<p>以上图为例，如果我们删除 R4 这条数据，则 innodb 会把 R4 这个位置标记为删除，之后如果插入一个在 300~600 的记录的时候，就会直接使用现在 R4 的位置。同理，如果我们清除这个 PageA，那么这个数据页都会被标记删除，等到下一个数据页加载的时候就可以直接使用这个空间。而当两个相邻的数据页上被删除了记录很多，也就是页的利用率都很低的时候，系统就会自动合并两个页的数据，并且标记其中一个为可复用。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/10/30/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E8%A1%A8%E7%A9%BA%E9%97%B4%E7%9A%84%E5%9B%9E%E6%94%B6/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/29/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B4%A2%E5%BC%95/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1115,7 +1117,9 @@
 <h2 id="一-innodb索引模型">一、Innodb索引模型</h2>
 <h3 id="1主键非主键索引的区别">1.主键/非主键索引的区别</h3>
 <p>每个索引在Innodb中都是一颗B+树，其中根据索引叶子节点的不同，分为主键索引和非主键索引。</p>
-<p><img src="http://img.xiajibagao.top/image-20200930164149290.png" alt="image-20200930164149290"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20200930164149290.png" alt="image-20200930164149290"><figcaption aria-hidden="true">image-20200930164149290</figcaption>
+</figure>
 <p>我们可以看到：</p>
 <ul>
 <li>主键索引将索引和整行的数据都放在了一起，所以又叫<strong>聚簇索引</strong></li>
@@ -1294,7 +1298,7 @@
 <h2 id="一-mysql-的刷盘机制">一、mysql 的刷盘机制</h2>
 <p>而之前提到过，mysql 使用了 WAL 技术，即更新的时候先更新内存中的数据，然后必要的时候再将内存中的数据刷入磁盘。我们把内存中这些被修改过，跟磁盘中的数据页不一致的数据页称为脏页。</p>
 <p>其中，有四种情况会触发脏页的刷盘：</p>
-<ol>
+<ol type="1">
 <li>redo log 可写空间满了。</li>
 <li>内存满了，需要淘汰的数据页恰好是脏页。</li>
 <li>系统不繁忙的时候。</li>
@@ -1443,7 +1447,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.6k
+                  2.7k
                 </span>
               
 
@@ -1476,7 +1480,9 @@
 <p>从总的来看，日志一般分为两部分：内存中<strong>易遗失的缓存日志</strong>和磁盘上<strong>持久化的日志文件</strong>。</p>
 <p>一次事务中，日志<strong>先被写入内存</strong>，存放在 cache/buffer 中，然后事务结束以后准备持久化：<strong>先写入磁盘的 page cache 中，这个过程叫做 write</strong> ，他仍然是内存操作，只不过从 mysql 的内存去了操作系统的内存，所以比较快；<strong>然后再调用操作系统的方法来写入磁盘，这个过程叫做 fsync ，是真正的持久化过程</strong>，比较耗费时间。</p>
 <p>这个过程，我们可以简单的理解为下图：</p>
-<p><img src="http://img.xiajibagao.top/image-20201116192502318.png" alt="日志的持久化过程"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201116192502318.png" alt="日志的持久化过程"><figcaption aria-hidden="true">日志的持久化过程</figcaption>
+</figure>
 <p>基于以上的概念，我们了解一下 binlog 和 redo log 的持久化策略。</p>
 <h2 id="二-binlog-的持久化">二、binlog 的持久化</h2>
 <h3 id="1文件结构">1.文件结构</h3>
@@ -1652,13 +1658,15 @@
 <p><strong>redo log 又叫重做日志，提供的是数据丢失后的前滚操作。</strong></p>
 <p><strong>redo log 是 innodb 引擎独有的日志</strong>，使用了 WAL 技术（Write-Ahead Logging），也就是预写日志。它的关键点就是<strong>先写日志，再写磁盘</strong>。对应到 mysql 中具体操作，就是每次更新操作，先写日志，然后更新内存数据，最后等系统压力小的时候再进行IO更新磁盘数据。避免了每一次更新都需要进行IO操作。<strong>redo log 是保证了事务持久性的关键</strong>。</p>
 <p>redo log 一般用在数据库恢复的情况：</p>
-<ol>
+<ol type="1">
 <li>如果是正常运行的实例的话，数据页被修改以后，跟磁盘的数据页不一致，称为<strong>脏页</strong>。最终数据落盘，就是把内存中的数据页写盘。这个过程，甚至<strong>与 redo log 毫无关系</strong>。</li>
 <li>在崩溃恢复场景中，InnoDB 如果判断到一个数据页可能在崩溃恢复的时候丢失了更新，就会<strong>将它读到内存，然后让 redo log 更新内存内容</strong>。更新完成后，内存页变成脏页，就回到了第一种情况的状态。</li>
 </ol>
 <p>另外，<strong>redo log 与 undo log 都被叫做事务日志</strong>。</p>
 <p>redo log 是一个物理日志，我们知道数据库引擎加载是按“页”来的，redo log记录的就是每个“页”上的数据发生的变化。但是不像 binlog 那样，redo log 不记录 sql，而是以类似 session_id + date + file_id + block_id + 修改数据这样的格式去记录数据。</p>
-<p><img src="http://img.xiajibagao.top/image-20200930111506778.png" alt="image-20200930111506778"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20200930111506778.png" alt="image-20200930111506778"><figcaption aria-hidden="true">image-20200930111506778</figcaption>
+</figure>
 <p>redo log 的日志文件大小是根据配置固定的，如果有一组有四个文件，每个文件的大小是 1GB，那么总共就只能记录 4GB 的日志。</p>
           <!--noindex-->
           <div class="post-button text-center">
