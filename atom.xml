@@ -202,7 +202,7 @@
     <link href="http://blog.xiajibagao.top/2020/12/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/"/>
     <id>http://blog.xiajibagao.top/2020/12/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/</id>
     <published>2020-12-20T16:00:00.000Z</published>
-    <updated>2020-12-24T12:09:24.541Z</updated>
+    <updated>2020-12-25T03:19:56.810Z</updated>
     
     
     <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
@@ -221,7 +221,9 @@
     <category term="计算机网络" scheme="http://blog.xiajibagao.top/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
     
     
-    <category term="计算机网络，趣谈网络协议" scheme="http://blog.xiajibagao.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%8C%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/"/>
+    <category term="计算机网络" scheme="http://blog.xiajibagao.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
+    
+    <category term="趣谈网络协议" scheme="http://blog.xiajibagao.top/tags/%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/"/>
     
   </entry>
   

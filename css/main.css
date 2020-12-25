@@ -1823,7 +1823,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #1f22b4;
+  background: #ff407e;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -3121,6 +3121,15 @@ pre .javascript .function {
     margin: 8px 0 0;
   }
 }
+.posts-expand .post-meta {
+  margin: 3px 0 35px 0 !important;
+}
+.custom-article-list .post-body {
+  text-indent: 2em;
+}
+.custom-article-list .post-button {
+  text-indent: none;
+}
 figcaption {
   text-align: center;
 }
@@ -3134,11 +3143,15 @@ blockquote {
   padding: 10px !important;
   background-color: #ddd !important;
 }
-.ul li {
-  list-style: lower-latin !important;
+ul li,
+ol li {
+  list-style: Upper-latin !important;
 }
-.ol li {
-  list-style-type: upper-latin !important;
+ul li ul li,
+ol li ol li,
+ul li ol li,
+ol li ul li {
+  list-style-type: lower-latin !important;
 }
 .highlight {
   border-radius: 4px !important;

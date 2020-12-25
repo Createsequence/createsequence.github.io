@@ -464,180 +464,6 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ACollectors%E6%94%B6%E9%9B%86%E5%99%A8%E7%B1%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ACollectors%E6%94%B6%E9%9B%86%E5%99%A8%E7%B1%BB/" itemprop="url">JDK1.8新特性（二）：Collectors收集器类</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-01T00:00:00+08:00">
-                2019-12-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.3k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>上文我们介绍了JDK8新添加的Stream流接口，借助Stream配合拉姆达表达式，我们可以很方便的处理流对象。</p>
-<p>针对流的聚合操作，Stream有一个对应的收集器类Collectors，通过Stream中的collect和collectingAndThen方法，我们可以借助收集器类聚合流中的数据，例如将元素累积到集合中，并根据各种标准对元素进行汇总，分类等操作。</p>
-<h2 id="二-举个例子">二. 举个例子？</h2>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取String集合</span></span><br><span class="line">List&lt;String&gt; strings = Arrays.asList(<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;bc&quot;</span>, <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;abcd&quot;</span>,<span class="string">&quot;&quot;</span>, <span class="string">&quot;jkl&quot;</span>);</span><br><span class="line"><span class="comment">//通过stream操作集合</span></span><br><span class="line">List&lt;String&gt; stringList = strings.stream()</span><br><span class="line">    <span class="comment">//为集合中的每一个元素拼接“？？？”</span></span><br><span class="line">    .map(s -&gt; s += <span class="string">&quot;???&quot;</span>)</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
-<p>如代码所示，我们可以很方便的通过Collectors类对被处理的流数据进行聚合操作，包括并不仅限与将处理过的流转换成集合</p>
-<h2 id="三-如何使用collectors">三. 如何使用Collectors？</h2>
-<h3 id="1-collectors类中提供的方法">1. Collectors类中提供的方法</h3>
-<p>总结一下，就是以下几类方法：</p>
-<p>1.1 转换成集合：toList()，toSet()，toMap()，toCollection()</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ACollectors%E6%94%B6%E9%9B%86%E5%99%A8%E7%B1%BB/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AStream/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -762,6 +588,180 @@
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9AStream/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ACollectors%E6%94%B6%E9%9B%86%E5%99%A8%E7%B1%BB/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ACollectors%E6%94%B6%E9%9B%86%E5%99%A8%E7%B1%BB/" itemprop="url">JDK1.8新特性（二）：Collectors收集器类</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-01T00:00:00+08:00">
+                2019-12-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.3k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>上文我们介绍了JDK8新添加的Stream流接口，借助Stream配合拉姆达表达式，我们可以很方便的处理流对象。</p>
+<p>针对流的聚合操作，Stream有一个对应的收集器类Collectors，通过Stream中的collect和collectingAndThen方法，我们可以借助收集器类聚合流中的数据，例如将元素累积到集合中，并根据各种标准对元素进行汇总，分类等操作。</p>
+<h2 id="二-举个例子">二. 举个例子？</h2>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取String集合</span></span><br><span class="line">List&lt;String&gt; strings = Arrays.asList(<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;bc&quot;</span>, <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;abcd&quot;</span>,<span class="string">&quot;&quot;</span>, <span class="string">&quot;jkl&quot;</span>);</span><br><span class="line"><span class="comment">//通过stream操作集合</span></span><br><span class="line">List&lt;String&gt; stringList = strings.stream()</span><br><span class="line">    <span class="comment">//为集合中的每一个元素拼接“？？？”</span></span><br><span class="line">    .map(s -&gt; s += <span class="string">&quot;???&quot;</span>)</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
+<p>如代码所示，我们可以很方便的通过Collectors类对被处理的流数据进行聚合操作，包括并不仅限与将处理过的流转换成集合</p>
+<h2 id="三-如何使用collectors">三. 如何使用Collectors？</h2>
+<h3 id="1-collectors类中提供的方法">1. Collectors类中提供的方法</h3>
+<p>总结一下，就是以下几类方法：</p>
+<p>1.1 转换成集合：toList()，toSet()，toMap()，toCollection()</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ACollectors%E6%94%B6%E9%9B%86%E5%99%A8%E7%B1%BB/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -2469,6 +2469,6 @@
 
 
   <!-- 引入目录截取js -->
-  <script type="text/javascript" src="/js/src/abstract.js"></script>
+  <script type="text/javascript" src="/js/src/custom/custom.js"></script>
 </body>
 </html>
