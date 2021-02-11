@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2021-02-10T12:57:34.049Z</updated>
+  <updated>2021-02-11T09:44:36.807Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -15,6 +15,42 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>线程池源码分析</title>
+    <link href="http://blog.xiajibagao.top/2021/02/09/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    <id>http://blog.xiajibagao.top/2021/02/09/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</id>
+    <published>2021-02-08T16:00:00.000Z</published>
+    <updated>2021-02-11T09:44:36.807Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;在 java 中，线程池 ThreadPoolExecutor 是一个绕不过去的类，它是享元模式思想的体现，通过在容器中创建一定数量的线程加以重复利用，从而避免频繁创建线程带来的额外开销。一个设置合理的线程池可以提高任务响应的速度，并且避免线程数超过硬件能力带来的意外情况。&lt;/p&gt;
+&lt;p&gt;在本文，将深入线程池源码，了解线程池的底层实现与运行机制。&lt;/p&gt;
+&lt;h2 id=&quot;一-构造方法&quot;&gt;一、构造方法&lt;/h2&gt;
+&lt;p&gt;ThreadPoolExecutor 类一共提供了四个构造方法，我们基于参数最完整构造方法了解一下线程池创建所需要的变量：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;ThreadPoolExecutor&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(&lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; corePoolSize, // 核心线程数&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;params&quot;&gt;                          &lt;span class=&quot;keyword&quot;&gt;int&lt;/span&gt; maximumPoolSize, // 最大线程数&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;params&quot;&gt;                          &lt;span class=&quot;keyword&quot;&gt;long&lt;/span&gt; keepAliveTime, // 非核心线程闲置存活时间&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;params&quot;&gt;                          TimeUnit unit, // 时间单位&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;params&quot;&gt;                          BlockingQueue&amp;lt;Runnable&amp;gt; workQueue, // 工作队列&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;params&quot;&gt;                          ThreadFactory threadFactory, // 创建线程使用的线程工厂&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;params&quot;&gt;                          RejectedExecutionHandler handler // 拒绝策略)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;ul&gt;
+&lt;li&gt;核心线程数：即长期存在的线程数，当线程池中运行线程未达到核心线程数时会优先创建新线程；&lt;/li&gt;
+&lt;li&gt;最大线程数：当核心线程已满，工作队列已满，同时线程池中线程总数未超过最大线程数，会创建非核心线程；&lt;/li&gt;
+&lt;li&gt;非核心线程闲置存活时间：当非核心线程闲置的时的最大存活时间；&lt;/li&gt;
+&lt;li&gt;时间单位：非核心线程闲置存活时间的时间单位；&lt;/li&gt;
+&lt;li&gt;任务队列：当核心线程满后，任务会优先加入工作队列，等等待核心线程消费；&lt;/li&gt;
+&lt;li&gt;线程工厂：线程池创建新线程时使用的线程工厂；&lt;/li&gt;
+&lt;li&gt;拒绝策略：当工作队列与线程池都满时，用于执行的策略；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;二-线程池状态&quot;&gt;二、线程池状态&lt;/h2&gt;
+&lt;h3 id=&quot;1线程池状态&quot;&gt;1.线程池状态&lt;/h3&gt;
+&lt;p&gt;线程池拥有一个 AtomicInteger 类型的成员变量 ctl ，通过位运算分别使用 ctl 的高位低位以便在一个值中存储线程数量以及线程池状态。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="多线程" scheme="http://blog.xiajibagao.top/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
+    
+    
+    <category term="多线程" scheme="http://blog.xiajibagao.top/tags/%E5%A4%9A%E7%BA%BF%E7%A8%8B/"/>
+    
+  </entry>
   
   <entry>
     <title>synchronized底层原理探究</title>
@@ -659,45 +695,6 @@
 &lt;p&gt;List 接口继承了 Collection 接口，在 Collection 接口的基础上增加了一些方法。相对于 Collection 接口，我们可以很明显的看到，List &lt;strong&gt;中增加了非常多根据下标操作集合的方法&lt;/strong&gt;，我们可以简单粗暴的分辨一个方法的抽象方法到底来自 Collection 还是 List：参数里有下标就是来自 List，没有就是来自 Collection。&lt;/p&gt;
 &lt;p&gt;可以说，List 接口在 Collection 的基础上，&lt;strong&gt;进一步明确了 List 集合运允许根据下标快速存取的特性&lt;/strong&gt;。&lt;/p&gt;
 &lt;h3 id=&quot;1新增的方法&quot;&gt;1.新增的方法&lt;/h3&gt;</summary>
-    
-    
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>java集合源码分析（一）：Collection 与 AbstractCollection</title>
-    <link href="http://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/"/>
-    <id>http://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/</id>
-    <published>2020-11-24T16:00:00.000Z</published>
-    <updated>2020-12-22T08:13:24.174Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;我们知道，java 中容器分为 Map 集合和 Collection 集合，其中 Collection 中的又分为 Queue，List，Set 三大子接口。&lt;/p&gt;
-&lt;p&gt;其下实现类与相关的实现类子类数量繁多。我们仅以最常使用的 List 接口的关系为例，简单的画图了解一下 Collection 接口 List 部分的关系图。&lt;/p&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201126100539307.png&quot; alt=&quot;List集合的实现类关系图&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;List集合的实现类关系图&lt;/figcaption&gt;
-&lt;/figure&gt;
-&lt;p&gt;根据上图的类关系图，我们研究一下源码中，类与类之间的关系，方法是如何从抽象到具体的。&lt;/p&gt;
-&lt;h2 id=&quot;一-iterable-接口&quot;&gt;一、Iterable 接口&lt;/h2&gt;
-&lt;p&gt;Iterable 是最顶层的接口，继承这个接口的类可以被迭代。&lt;/p&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201125151935252.png&quot; alt=&quot;Iterable 接口的方法&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;Iterable 接口的方法&lt;/figcaption&gt;
-&lt;/figure&gt;
-&lt;ul&gt;
-&lt;li&gt;&lt;p&gt;&lt;code&gt;iterator()&lt;/code&gt;：用于获取一个迭代器。&lt;/p&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;code&gt;forEach()&lt;/code&gt; ：JDK8 新增。一个基于函数式接口实现的新迭代方法。&lt;/p&gt;
-&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;default&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;forEach&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;(Consumer&amp;lt;? &lt;span class=&quot;keyword&quot;&gt;super&lt;/span&gt; T&amp;gt; action)&lt;/span&gt; &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Objects.requireNonNull(action);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;for&lt;/span&gt; (T t : &lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        action.accept(t);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;&lt;/li&gt;
-&lt;li&gt;&lt;p&gt;&lt;code&gt;spliterator()&lt;/code&gt;：JDK8 新增。用于获取一个可分割迭代器。默认实现返回一个&lt;code&gt;IteratorSpliterator&lt;/code&gt;类。&lt;/p&gt;&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;这个跟迭代器类似，但是是用于并行迭代的，关于具体的情况可以参考一下掘金的一个讨论：&lt;a href=&quot;https://segmentfault.com/q/1010000007087438&quot;&gt;Java8里面的java.util.Spliterator接口有什么用？&lt;/a&gt;&lt;/p&gt;</summary>
     
     
     
