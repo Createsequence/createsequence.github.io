@@ -287,6 +287,193 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/" itemprop="url">String类小结</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-11T00:00:00+08:00">
+                2020-08-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4.3k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>java 的 String 类可以说是日常中使用的最多的类，但是大多数时候都只是简单的拼接或者调用 API，只知其然不知其所以然。为了改变这个情况，我决定结合网上的资料，参考源码，深入一点去了解 String 这个熟悉的陌生人。</p>
+<p>要第一时间了解一个类，没有什么比官方的javaDoc文档更直观的了：</p>
+<blockquote>
+<p>String类表示字符串。Java程序中的所有字符串文本（如“abc”）都作为此类的实例实现。</p>
+<p><strong>字符串是常量；它们的值在创建后不能更改</strong>。字符串缓冲区支持可变字符串。<strong>因为字符串对象是不可变的，所以可以共享它们</strong>。</p>
+<p>类字符串包括用于检查序列的单个字符、比较字符串、搜索字符串、提取子字符串以及创建字符串副本的方法，其中所有字符都转换为大写或小写。大小写映射基于Character类指定的Unicode标准版本。</p>
+<p><strong>Java语言提供了对字符串连接运算符（+）以及将其他对象转换为字符串的特殊支持。字符串连接是通过<code>StringBuilder</code>（或<code>StringBuffer</code>）类及其<code>append</code>方法实现的。字符串转换是通过<code>toString</code>方法实现的</strong>，由Object定义并由Java中的所有类继承。有关字符串连接和转换的更多信息，请参阅Gosling、Joy和Steele，Java语言规范。</p>
+<p>除非另有说明，否则向此类中的构造函数或方法传递null参数将导致引发<code>NullPointerException</code>。 字符串表示UTF-16格式的字符串，其中补充字符由代理项对表示（有关详细信息，请参阅<code>Character</code>类中的Unicode字符表示部分）。索引值引用字符代码单位，因此补充字符在字符串中使用两个位置。</p>
+<p>除了处理Unicode代码单元（即字符值）的方法外，String类还提供了处理Unicode代码点（即字符）的方法。</p>
+</blockquote>
+<p>根据文档，对于String类，我们关注三个问题：</p>
+<ul>
+<li>String对象的不可变性（为什么是不可变的，这么设计的必要性）</li>
+<li>String对象的创建方式（两种创建方式，字符串常量池）</li>
+<li>String对象的拼接（StringBuffer，StringBuilder，加号拼接的本质）</li>
+</ul>
+<h2 id="一-string对象的不可变性">一、String对象的不可变性</h2>
+<h3 id="1string为什么是不可变的">1.String为什么是不可变的</h3>
+<p>文档中提到：</p>
+<blockquote>
+<p>字符串是常量；它们的值在创建后不能更改。</p>
+</blockquote>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/10/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1914,183 +2101,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/07/16/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%A0%86%E6%8E%92%E5%BA%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/07/16/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%A0%86%E6%8E%92%E5%BA%8F/" itemprop="url">数据结构与算法（十二）：堆排序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-16T00:00:00+08:00">
-                2020-07-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.4k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一-什么是堆排序">一、什么是堆排序</h2>
-<h3 id="1堆堆排序">1.堆，堆排序</h3>
-<p>对于“<strong>堆</strong>”我们可以理解为具有以下性质的<strong>完全二叉树</strong>：</p>
-<ul>
-<li>每个结点的值都<strong>大于或等于</strong>其左右孩子结点的值，称为<strong>大顶堆</strong></li>
-<li>每个结点的值都<strong>小于或等于</strong>其左右孩子结点的值，称为<strong>小顶堆</strong></li>
-</ul>
-<p>堆排序是利用堆这种数据结构而设计的一种排序算法，堆排序是一种选择排序，它的最坏，最好，平均时间复杂度均为O(nlogn)，它也是不稳定排序。</p>
-<p>在排序时，一般<strong>升序</strong>采用大顶堆，<strong>降序</strong>采用小顶堆。</p>
-<h3 id="2大顶堆">2.大顶堆</h3>
-<p><img src="http://img.xiajibagao.top/大顶堆.png"></p>
-<p>我们可以看到，层数从小到大，节点的数字是越来越小的，映射到数组有：<code>&#123;50,45,40,20,25,35,30,10,15&#125;</code></p>
-<p>特点是<code>arr[i] &gt;= arr[2*i+1] &amp;&amp; arr[i] &gt;= arr[2*i+2]</code></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/07/16/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%A0%86%E6%8E%92%E5%BA%8F/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2145,7 +2155,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">84</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

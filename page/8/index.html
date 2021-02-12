@@ -287,6 +287,191 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/06/25/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%A0%88%E4%B8%8E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%E8%AE%A1%E7%AE%97%E5%99%A8%E5%8A%9F%E8%83%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/25/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%A0%88%E4%B8%8E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%E8%AE%A1%E7%AE%97%E5%99%A8%E5%8A%9F%E8%83%BD/" itemprop="url">数据结构与算法（五）：递归和栈实现简单计算器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-25T00:00:00+08:00">
+                2020-06-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.6k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="一-计算器的计算思路分析">一、计算器的计算思路分析</h2>
+<p>我们以计算<code>3+8*2-6</code>这个算式为例：</p>
+<ol type="1">
+<li><p>将算式解析为数字和符号：<code>3，+，8，*，2，-，6</code></p></li>
+<li><p>准备一个用于存放数字的数字栈numStack，还有一个存放运算符号的符号栈symbolStack，下面分别简称栈n和栈s</p></li>
+<li><p>按顺序扫描解析后的数字和符号，</p>
+<p>如果是数字，就直接入数栈n，</p>
+<p>如果是符号，且如果<strong>符号栈s为空</strong>，就直接入栈，</p>
+<p>如果s不为空，就需要比较栈顶符号与当前符号的优先级，再分两种情况：</p>
+<ul>
+<li>如果<strong>栈顶符号优先级比当前符号大</strong>，就从栈n弹出两个数字，从栈s弹出一个符号，然后进行运算，最后得出的结果再入栈n</li>
+<li>如果<strong>栈顶符号优先级小于或等于当前符号</strong>，就将符号入栈s</li>
+</ul></li>
+</ol>
+<p><img src="http://img.xiajibagao.top/20200625203947.png"></p>
+<p>按照这个流程，扫描完后栈n会留下<code>3，16，6</code>这三个数，栈s会留下<code>+，-</code>这两个 符号，</p>
+<p>然后按顺序，栈n弹出两个数字，栈s弹出一个符号，然后运算得到结果后再入栈n，重复此步骤，最后栈s清空，栈n只剩一个数字，即为运算结果。</p>
+<h2 id="二-代码实现">二、代码实现</h2>
+<p>我们先来实现一个加减乘除的数计算器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：黄成兴</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-06-25 16:29</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：使用栈实现一个计算器</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StackCalculator</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//数字栈</span></span><br><span class="line">    <span class="keyword">public</span> Stack&lt;Integer&gt; numStack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//符号栈</span></span><br><span class="line">    <span class="keyword">public</span> Stack&lt;String&gt; symbolStack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据计算公式运算并输出结果</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> expression 计算公式</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">calculate</span><span class="params">(String expression)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//用于多位数拼接</span></span><br><span class="line">        String numStr = <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//遍历字符串里的每一个字符</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; expression.length() ; i++) &#123;</span><br><span class="line">            String ch = expression.substring(i, i + <span class="number">1</span>);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//检验是否数字</span></span><br><span class="line">            <span class="keyword">if</span> (ch.matches(<span class="string">&quot;[0-9]&quot;</span>)) &#123;</span><br><span class="line">                <span class="comment">//如果该数字已经是最后一个字符就直接存入数字栈</span></span><br><span class="line">                <span class="keyword">if</span> (i == expression.length() - <span class="number">1</span>)&#123;</span><br><span class="line">                    numStack.push(Integer.valueOf(ch));</span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">//如果不是字符串最后一个字符，就拼接入字符串</span></span><br><span class="line">                    numStr += ch;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//如果是符号，就把之前拼接的多位数存入数字栈</span></span><br><span class="line">            numStack.push(Integer.valueOf(numStr));</span><br><span class="line">            numStr = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//如果是符号就比较符号优先级</span></span><br><span class="line">            <span class="keyword">if</span> (isFrist(ch))&#123;</span><br><span class="line">                <span class="comment">//如果当前符号与符号栈栈栈顶符号优先或者平级就入栈</span></span><br><span class="line">                symbolStack.push(ch);</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//否则就从栈中取两数字和一个符号先计算</span></span><br><span class="line">                <span class="keyword">int</span> num = getCalculateResult();</span><br><span class="line">                <span class="comment">//再把计算结果入数栈</span></span><br><span class="line">                numStack.push(num);</span><br><span class="line">                <span class="comment">//再把当前符号入栈</span></span><br><span class="line">                symbolStack.push(ch);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//当符号栈为空时，说明计算完成，此时数字栈唯一数字即为结果</span></span><br><span class="line">        <span class="keyword">while</span> (!symbolStack.empty()) &#123;</span><br><span class="line">            <span class="keyword">int</span> result = getCalculateResult();</span><br><span class="line">            numStack.push(result);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;计算结束！结果为：&quot;</span> + numStack.pop());</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据数字和符号运算并返回结果</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> num1 后出栈的数字</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> num2 先出栈的数字</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> symbol 运算符号</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCalculateResult</span><span class="params">(<span class="keyword">int</span> num1, <span class="keyword">int</span> num2, String symbol)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> result = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//根据符号进行运算</span></span><br><span class="line">        <span class="keyword">switch</span> (symbol)&#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&quot;+&quot;</span>:</span><br><span class="line">                result = num1 + num2;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&quot;-&quot;</span>:</span><br><span class="line">                result = num1 - num2;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&quot;*&quot;</span>:</span><br><span class="line">                result = num1 * num2;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&quot;/&quot;</span>:</span><br><span class="line">                result = num1 / num2;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">default</span>:</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;只支持加减乘除运算！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        System.out.println(num1 + symbol + num2 + <span class="string">&quot;=&quot;</span> + result);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 直接从数栈取两数字，符号栈取一符号进行计算</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCalculateResult</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> num1 = numStack.pop();</span><br><span class="line">        <span class="keyword">int</span> num2 = numStack.pop();</span><br><span class="line">        String symbol = symbolStack.pop();</span><br><span class="line">        <span class="keyword">int</span> result = getCalculateResult(num2, num1, symbol);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 比较符号和当前符号栈顶符号的优先级。</span></span><br><span class="line"><span class="comment">     * 如果当前符号优先级小于符号栈栈顶符号的优先级，就返回false，否则返回true</span></span><br><span class="line"><span class="comment">     * 如果当前符号栈为空，直接返回true</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> symbol</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isFrist</span><span class="params">(String symbol)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//判断当前符号栈是否为空</span></span><br><span class="line">        <span class="keyword">if</span> (symbolStack.empty()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//取出并放回栈顶符号</span></span><br><span class="line">        String stackSymbol = symbolStack.pop();</span><br><span class="line">        symbolStack.push(stackSymbol);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//栈顶符号的优先级</span></span><br><span class="line">        <span class="keyword">int</span> stackSymbolGrade = getSymbolGrade(stackSymbol);</span><br><span class="line">        <span class="comment">//当前符号的优先级</span></span><br><span class="line">        <span class="keyword">int</span> symbolgrade = getSymbolGrade(symbol);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> symbolgrade &gt; stackSymbolGrade;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据符号返回符号的优先级</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> symbol</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 加减返回0，乘除返回1</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getSymbolGrade</span><span class="params">(String symbol)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> grade;</span><br><span class="line">        <span class="keyword">if</span> (<span class="string">&quot;+&quot;</span>.equals(symbol) || <span class="string">&quot;-&quot;</span>.equals(symbol)) &#123;</span><br><span class="line">            grade = <span class="number">0</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;*&quot;</span>.equals(symbol) || <span class="string">&quot;/&quot;</span>.equals(symbol)) &#123;</span><br><span class="line">            grade = <span class="number">1</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;不支持的操作符类型：&quot;</span> + symbol);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> grade;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在输入运算公式调用<code>calculate()</code>函数即可得出结果，但是目前这个计算器仍然还有致命问题没有解决：</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/25/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%A0%88%E4%B8%8E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%E8%AE%A1%E7%AE%97%E5%99%A8%E5%8A%9F%E8%83%BD/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/06/23/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E6%A0%88/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1854,180 +2039,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/08/28/docker/Docker%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/28/docker/Docker%E5%AE%89%E8%A3%85/" itemprop="url">Docker安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-28T00:00:00+08:00">
-                2019-08-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/docker/" itemprop="url" rel="index">
-                    <span itemprop="name">docker</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  506
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一-安装docker">一. 安装docker</h2>
-<h3 id="1-删除已安装的docker">1. 删除已安装的docker</h3>
-<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">yum</span> <span class="string">remove docker \</span></span><br><span class="line">    <span class="meta">docker-client</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-client-latest</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-common</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-latest</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-latest-logrotate</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-logrotate</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-selinux</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-engine-selinux</span> <span class="string">\</span></span><br><span class="line">    <span class="attr">docker-engine</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-确定yum更新到最新版本">2. 确定yum更新到最新版本</h3>
-<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">sudo yum update -y</span></span><br></pre></td></tr></table></figure>
-<h3 id="3-安装需要的软件包">3. 安装需要的软件包</h3>
-<figure class="highlight gml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -<span class="symbol">y</span> yum-utils device-mapper-<span class="symbol">persistent</span>-data lvm2 -<span class="symbol">y</span></span><br></pre></td></tr></table></figure>
-<h3 id="4-设置yum源">4. 设置yum源</h3>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">sudo</span> <span class="string">yum-config-manager</span> <span class="string">--add-repo</span> <span class="string">https://download.docker.com/linux/centos/docker-ce.repo</span></span><br><span class="line"><span class="comment">#若出现错误则改为阿里云yum源</span></span><br><span class="line"><span class="string">yum-config-manager</span>  <span class="string">--add-repo</span>  <span class="string">http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span> </span><br></pre></td></tr></table></figure>
-<h3 id="5安装docker">5.安装docker</h3>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/28/docker/Docker%E5%AE%89%E8%A3%85/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2082,7 +2093,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">84</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

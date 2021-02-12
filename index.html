@@ -287,6 +287,186 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2021/02/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B/AQS%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/02/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B/AQS%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url">AQS源码分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-11T00:00:00+08:00">
+                2021-02-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4.3k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>当我们提到 juc 包下的锁，就不得不联系到 AbstractQueuedSynchronizer 这个类，这个类就是大名鼎鼎的 AQS，AQS 按字面意思翻译为抽象队列同步器，调用者可以通过继承该类快速的实现同步多线程下的同步容器。不管是我们熟悉的 ReadWriteLock 亦或是 ReentrantLock，或者 CountDownLatch 与 Semaphore，甚至是线程池类 ThreadPoolExecutor 都继承了 AQS。</p>
+<p>在本文，将深入源码，了解 AQS 的运行机制，了解通过 AQS 实现非公平锁，公平锁，可重入锁等的原理。</p>
+<h2 id="一-aqs-中的数据结构">一、AQS 中的数据结构</h2>
+<p>AQS 的底层数据结构其实是一条双向链表以及一个代表锁状态的变量 <code>state</code>。当加锁后，<code>state</code>会改变，而竞争锁的线程会被封装到节点中形成链表，并且尝试改变 <code>state</code>以获取锁。</p>
+<h3 id="1等待队列">1.等待队列</h3>
+<p>在 AQS 中有一个 Node 内部类，该类即为链表的节点类。当通过 AQS 竞争锁的时候，线程会被封装到一个对应的节点中，多个竞争不到锁的线程最终会连成一条链表，<strong>这条链表上节点代表的线程处于等待状态，因此我们称之为等待队列，也就是 CLH</strong>。</p>
+<p>节点类中封装了竞争锁的线程的等待状态：</p>
+<ul>
+<li>CANCELLED：1，表示<strong>当前结点已取消等待</strong>。当timeout或被中断（响应中断的情况下），会触发变更为此状态，进入该状态后的结点将不会再变化。</li>
+<li>SIGNAL：-1，表示<strong>后继结点在等待当前结点唤醒</strong>。后继结点入队时，会将前继结点的状态更新为SIGNAL。</li>
+<li>CONDITION：-2，表示<strong>结点等待在Condition上</strong>，当其他线程调用了Condition的signal()方法后，CONDITION状态的结点将<strong>从等待队列转移到同步队列中</strong>，等待获取同步锁。</li>
+<li>PROPAGATE：-3，<strong>共享模式下，前继结点不仅会唤醒其后继结点，同时也可能会唤醒后继的后继结点</strong>。</li>
+<li><strong>0</strong>：新节点入队时的默认状态。</li>
+</ul>
+<p>和线程池中的状态一样，<strong>Node 只有小于 0 的时候才处于正常的等待状态中，因此很多地方通过判断是否小于 0 来确定节点是否处于等待状态</strong>。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/02/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B/AQS%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2021/02/09/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1889,180 +2069,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/12/21/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/next5%E4%B8%BB%E9%A2%98%E8%87%AA%E5%AE%9A%E4%B9%89%E6%91%98%E8%A6%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/12/21/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/next5%E4%B8%BB%E9%A2%98%E8%87%AA%E5%AE%9A%E4%B9%89%E6%91%98%E8%A6%81/" itemprop="url">next5主题自定义摘要</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-21T00:00:00+08:00">
-                2020-12-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/" itemprop="url" rel="index">
-                    <span itemprop="name">杂七乱八</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  680
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>最近 next6 折腾了一段时间，最后还是回到了 next5，但是添加阅读全文按钮以后，默认的摘要生成不太方便，于是就把注意打到了 js 上。</p>
-<p>这里整理一下 next5 生成摘要的方法。</p>
-<h2 id="一-yaml">一、yaml</h2>
-<p>这个是 hexo 自带的，通过直接在 yaml 里面配置</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">next5主题自定义摘要</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2020-12-21</span></span><br><span class="line"><span class="attr">tags:</span> [<span class="string">杂七乱八</span>]</span><br><span class="line"><span class="attr">categories:</span> [<span class="string">杂七乱八</span>]</span><br><span class="line"><span class="attr">description:</span> <span class="string">这里是一段摘要</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
-<p>不过加完以后， next 会默认在文章详情页面的发布信息下也生成摘要，个人觉得不是很美观。</p>
-<h2 id="二-文章截断">二、文章截断</h2>
-<p>这个是 next 自带的，可以通过在文章中插入：</p>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="comment">&lt;!-- more --&gt;</span></span></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/12/21/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/next5%E4%B8%BB%E9%A2%98%E8%87%AA%E5%AE%9A%E4%B9%89%E6%91%98%E8%A6%81/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2117,7 +2123,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">84</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

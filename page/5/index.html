@@ -287,6 +287,187 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/29/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B4%A2%E5%BC%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/10/29/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B4%A2%E5%BC%95/" itemprop="url">《MySQL45讲》读书笔记(四)：索引</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-10-29T00:00:00+08:00">
+                2020-10-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5.8k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>此文为极客时间：MySQL实战45讲的 4、5、9、10、11、15、18节索引相关部分的总结</p>
+</blockquote>
+<h2 id="一-innodb索引模型">一、Innodb索引模型</h2>
+<h3 id="1主键非主键索引的区别">1.主键/非主键索引的区别</h3>
+<p>每个索引在Innodb中都是一颗B+树，其中根据索引叶子节点的不同，分为主键索引和非主键索引。</p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20200930164149290.png" alt="image-20200930164149290"><figcaption aria-hidden="true">image-20200930164149290</figcaption>
+</figure>
+<p>我们可以看到：</p>
+<ul>
+<li>主键索引将索引和整行的数据都放在了一起，所以又叫<strong>聚簇索引</strong></li>
+<li>非主键索引的叶子节点内容是主键的值。所以又叫<strong>二级索引</strong></li>
+</ul>
+<p>其中，如果非主键索引查询字段没有做到覆盖索引，就需要先从非主键索引树中找到对应的主键，然后再回到主键索引树找到对应的行数据，这个过程叫做<strong>回表</strong>。</p>
+<p>而相应的，直接把全部的主键索引过一遍，然后每拿到一个主键索引，就把相应的数据拿出来，这个过程叫做<strong>全表扫描</strong>。</p>
+<h3 id="2索引维护">2.索引维护</h3>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/10/29/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B4%A2%E5%BC%95/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/10/28/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%86%85%E5%AD%98%E6%95%B0%E6%8D%AE%E5%88%B7%E7%9B%98%E6%9C%BA%E5%88%B6/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1889,193 +2070,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/" itemprop="url">String类小结</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-11T00:00:00+08:00">
-                2020-08-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4.3k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>java 的 String 类可以说是日常中使用的最多的类，但是大多数时候都只是简单的拼接或者调用 API，只知其然不知其所以然。为了改变这个情况，我决定结合网上的资料，参考源码，深入一点去了解 String 这个熟悉的陌生人。</p>
-<p>要第一时间了解一个类，没有什么比官方的javaDoc文档更直观的了：</p>
-<blockquote>
-<p>String类表示字符串。Java程序中的所有字符串文本（如“abc”）都作为此类的实例实现。</p>
-<p><strong>字符串是常量；它们的值在创建后不能更改</strong>。字符串缓冲区支持可变字符串。<strong>因为字符串对象是不可变的，所以可以共享它们</strong>。</p>
-<p>类字符串包括用于检查序列的单个字符、比较字符串、搜索字符串、提取子字符串以及创建字符串副本的方法，其中所有字符都转换为大写或小写。大小写映射基于Character类指定的Unicode标准版本。</p>
-<p><strong>Java语言提供了对字符串连接运算符（+）以及将其他对象转换为字符串的特殊支持。字符串连接是通过<code>StringBuilder</code>（或<code>StringBuffer</code>）类及其<code>append</code>方法实现的。字符串转换是通过<code>toString</code>方法实现的</strong>，由Object定义并由Java中的所有类继承。有关字符串连接和转换的更多信息，请参阅Gosling、Joy和Steele，Java语言规范。</p>
-<p>除非另有说明，否则向此类中的构造函数或方法传递null参数将导致引发<code>NullPointerException</code>。 字符串表示UTF-16格式的字符串，其中补充字符由代理项对表示（有关详细信息，请参阅<code>Character</code>类中的Unicode字符表示部分）。索引值引用字符代码单位，因此补充字符在字符串中使用两个位置。</p>
-<p>除了处理Unicode代码单元（即字符值）的方法外，String类还提供了处理Unicode代码点（即字符）的方法。</p>
-</blockquote>
-<p>根据文档，对于String类，我们关注三个问题：</p>
-<ul>
-<li>String对象的不可变性（为什么是不可变的，这么设计的必要性）</li>
-<li>String对象的创建方式（两种创建方式，字符串常量池）</li>
-<li>String对象的拼接（StringBuffer，StringBuilder，加号拼接的本质）</li>
-</ul>
-<h2 id="一-string对象的不可变性">一、String对象的不可变性</h2>
-<h3 id="1string为什么是不可变的">1.String为什么是不可变的</h3>
-<p>文档中提到：</p>
-<blockquote>
-<p>字符串是常量；它们的值在创建后不能更改。</p>
-</blockquote>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2130,7 +2124,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">84</span>
+                  <span class="site-state-item-count">85</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
