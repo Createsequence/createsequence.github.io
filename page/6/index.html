@@ -287,7 +287,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/11/java/String%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="">
@@ -306,7 +306,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/" itemprop="url">String类小结</a></h1>
+                <a class="post-title-link" href="/2020/08/11/java/String%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url">String类源码分析</a></h1>
         
 
         <div class="post-meta">
@@ -372,7 +372,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  4.3k
+                  4.1k
                 </span>
               
 
@@ -400,14 +400,12 @@
         
           <h2 id="概述">概述</h2>
 <p>java 的 String 类可以说是日常中使用的最多的类，但是大多数时候都只是简单的拼接或者调用 API，只知其然不知其所以然。为了改变这个情况，我决定结合网上的资料，参考源码，深入一点去了解 String 这个熟悉的陌生人。</p>
-<p>要第一时间了解一个类，没有什么比官方的javaDoc文档更直观的了：</p>
+<p>要第一时间了解一个类，没有什么比官方的文档更直观的了：</p>
 <blockquote>
 <p>String类表示字符串。Java程序中的所有字符串文本（如“abc”）都作为此类的实例实现。</p>
 <p><strong>字符串是常量；它们的值在创建后不能更改</strong>。字符串缓冲区支持可变字符串。<strong>因为字符串对象是不可变的，所以可以共享它们</strong>。</p>
-<p>类字符串包括用于检查序列的单个字符、比较字符串、搜索字符串、提取子字符串以及创建字符串副本的方法，其中所有字符都转换为大写或小写。大小写映射基于Character类指定的Unicode标准版本。</p>
-<p><strong>Java语言提供了对字符串连接运算符（+）以及将其他对象转换为字符串的特殊支持。字符串连接是通过<code>StringBuilder</code>（或<code>StringBuffer</code>）类及其<code>append</code>方法实现的。字符串转换是通过<code>toString</code>方法实现的</strong>，由Object定义并由Java中的所有类继承。有关字符串连接和转换的更多信息，请参阅Gosling、Joy和Steele，Java语言规范。</p>
-<p>除非另有说明，否则向此类中的构造函数或方法传递null参数将导致引发<code>NullPointerException</code>。 字符串表示UTF-16格式的字符串，其中补充字符由代理项对表示（有关详细信息，请参阅<code>Character</code>类中的Unicode字符表示部分）。索引值引用字符代码单位，因此补充字符在字符串中使用两个位置。</p>
-<p>除了处理Unicode代码单元（即字符值）的方法外，String类还提供了处理Unicode代码点（即字符）的方法。</p>
+<p><strong>Java语言提供了对字符串连接运算符（+）以及将其他对象转换为字符串的特殊支持。字符串连接是通过<code>StringBuilder</code>（或<code>StringBuffer</code>）类及其<code>append</code>方法实现的。字符串转换是通过<code>toString</code>方法实现的</strong></p>
+<p>… …</p>
 </blockquote>
 <p>根据文档，对于String类，我们关注三个问题：</p>
 <ul>
@@ -423,7 +421,7 @@
 </blockquote>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2020/08/11/java/String%E7%B1%BB%E5%B0%8F%E7%BB%93/#more" rel="contents">
+            <a class="btn" href="/2020/08/11/java/String%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -763,10 +761,9 @@
 
       
         
-          <h2 id></h2>
-<h2 id="概述">概述</h2>
+          <h2 id="概述">概述</h2>
 <p>我们知道java代码先编译为.class文件，然后再将.class文件交由jvm执行。在程序运行的这一过程中，jvm会将其管理的内存空间划分为不同的区域，这些区域各有各的用途，我们将其分为五类：</p>
-<ol type="1">
+<ol>
 <li>方法区</li>
 <li>堆</li>
 <li>虚拟机栈</li>
@@ -775,12 +772,11 @@
 </ol>
 <p>其中方法区和堆是线程共享的，随jvm启动和停止而创建和销毁；</p>
 <p>而虚拟机栈、本地方法栈和程序计数器则是线程私有的，随线程的创建和结束而创建和销毁。</p>
-<figure>
-<img src="http://img.xiajibagao.top/jvm内存体系.png" alt="jvm内存体系"><figcaption aria-hidden="true">jvm内存体系</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/jvm%E5%86%85%E5%AD%98%E4%BD%93%E7%B3%BB.png" alt="jvm内存体系"></p>
 <h2 id="一-线程隔离数据区">一、线程隔离数据区</h2>
 <p>包括程序计数器，虚拟机栈，本地方法栈三部分，是线程私有的数据区。</p>
 <h3 id="1程序计数器">1.程序计数器</h3>
+<p><img src="http://img.xiajibagao.top/%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8.png" alt="程序计数器"></p>
           <!--noindex-->
           <div class="post-button text-center">
             <a class="btn" href="/2020/08/09/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9Ajvm%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/#more" rel="contents">
@@ -2177,7 +2173,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

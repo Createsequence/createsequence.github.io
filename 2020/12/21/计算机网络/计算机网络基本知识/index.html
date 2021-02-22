@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="计算机网络，趣谈网络协议," />
+  <meta name="keywords" content="计算机网络," />
 
 
 
@@ -81,20 +81,20 @@
 
 
 
-<meta name="description" content="概述 本文为阅读《趣谈网络协议》之前需要了解的一些基本概念与知识，包括 OSI 七层模型与 TCP&#x2F;IP 四层模型，不同层级的作用，不同层级之间的主要协议等。 一、为什么需要网络协议 网络协议为计算机网络中进行数据交换而建立的规则、标准或约定的集合。 例如，网络中一个微机用户和一个大型主机的操作员进行通信，由于这两个数据终端所用字符集不同，因此操作员所输入的命令彼此不认识。为了能进行通信，">
+<meta name="description" content="概述 本文为阅读《趣谈网络协议》之前需要了解的一些基本概念与知识，包括 OSI 七层模型与 TCP&#x2F;IP 四层模型，不同层级的作用，不同层级之间的主要协议等。 一、为什么需要网络协议 网络协议为计算机网络中进行数据交换而建立的规则、标准或约定的集合。 例如，网络中一个微机用户和一个大型主机的操作员进行通信，由于这两个数据终端所用字符集不同，因此操作员所输入的命令彼此不认识。为了能进行通信，规定每个">
 <meta property="og:type" content="article">
 <meta property="og:title" content="计算机网络基本知识">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/12/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 本文为阅读《趣谈网络协议》之前需要了解的一些基本概念与知识，包括 OSI 七层模型与 TCP&#x2F;IP 四层模型，不同层级的作用，不同层级之间的主要协议等。 一、为什么需要网络协议 网络协议为计算机网络中进行数据交换而建立的规则、标准或约定的集合。 例如，网络中一个微机用户和一个大型主机的操作员进行通信，由于这两个数据终端所用字符集不同，因此操作员所输入的命令彼此不认识。为了能进行通信，">
+<meta property="og:description" content="概述 本文为阅读《趣谈网络协议》之前需要了解的一些基本概念与知识，包括 OSI 七层模型与 TCP&#x2F;IP 四层模型，不同层级的作用，不同层级之间的主要协议等。 一、为什么需要网络协议 网络协议为计算机网络中进行数据交换而建立的规则、标准或约定的集合。 例如，网络中一个微机用户和一个大型主机的操作员进行通信，由于这两个数据终端所用字符集不同，因此操作员所输入的命令彼此不认识。为了能进行通信，规定每个">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201223110909686.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201223110933627.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20201223111234415.png">
 <meta property="article:published_time" content="2020-12-20T16:00:00.000Z">
-<meta property="article:modified_time" content="2020-12-24T12:09:24.541Z">
+<meta property="article:modified_time" content="2021-02-22T02:41:43.893Z">
 <meta property="article:author" content="Createsequence">
-<meta property="article:tag" content="计算机网络，趣谈网络协议">
+<meta property="article:tag" content="计算机网络">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="http://img.xiajibagao.top/image-20201223110909686.png">
 
@@ -409,7 +409,7 @@
 <h2 id="二-网络的分层模型">二、网络的分层模型</h2>
 <h3 id="1网络的分层模型">1.网络的分层模型</h3>
 <p>根据 OSI 提出的模型，计算机网络体系结构的通讯协议应当分为七层，而除了标准的 OSI七层模型以外，常见的网络层次划分还有 TCP/IP 四层协议以及 TCP/IP 五层协议，它们之间的关系如下：</p>
-<p><img src="http://img.xiajibagao.top/image-20201223110909686.png" alt="image-20201223110909686" style="zoom: 67%;"></p>
+<img src="http://img.xiajibagao.top/image-20201223110909686.png" alt="image-20201223110909686" style="zoom: 67%;">
 <h3 id="2tcpip模型与osi模型">2.TCP/IP模型与OSI模型</h3>
 <p>首先，<strong>TCP/IP 协议既不是 TCP 协议也不是 IP 协议，它是网络通信协议，即包括 TCP 协议和 IP 协议在内的一个网络协议体系</strong>，也是目前实际使用的通用网络协议体系。</p>
 <p>OSI 提出了七层模型，而 TCP/IP 借鉴了并提出了自己的四层模型。</p>
@@ -422,24 +422,27 @@
 <h3 id="1功能划分">1.功能划分</h3>
 <p>从下往上有：</p>
 <ul>
-<li><strong>物理层</strong>：物理层负责最后将信息编码成电流脉冲或其它信号用于网上传输； <code>eg：RJ45等将数据转化成0和1；</code></li>
-<li><strong>数据链路层</strong>：数据链路层通过物理网络链路􏰁供数据传输。不同的数据链路层定义了不同的网络和协 议特征,其中包括物理编址、网络拓扑结构、错误校验、数据帧序列以及流控; <code>可以简单的理解为：规定了0和1的分包形式，确定了网络数据包的形式；</code></li>
-<li><strong>网络层</strong>：网络层负责在源和终点之间建立连接; <code>可以理解为，此处需要确定计算机的位置，怎么确定？IPv4，IPv6！</code></li>
-<li><strong>传输层</strong>：传输层向高层提供可靠的端到端的网络数据流服务。 <code>可以理解为：每一个应用程序都会在网卡注册一个端口号，该层就是端口与端口的通信！常用的（TCP／IP）协议；</code></li>
-<li><strong>会话层</strong>：会话层建立、管理和终止表示层与实体之间的通信会话； <code>建立一个连接（自动的手机信息、自动的网络寻址）;</code></li>
-<li><strong>表示层</strong>:：表示层提供供多种功能用于应用层数据编码和转化,以确保以一个系统应用层发送的信息 可以被另一个系统应用层识别; <code>可以理解为：解决不同系统之间的通信，eg：Linux下的QQ和Windows下的QQ可以通信；</code></li>
-<li><strong>应用层</strong>：OSI 的应用层协议包括文件的传输、访问及管理协议(FTAM) ,以及文件虚拟终端协议(VIP)和公用管理系统信息(CMIP)等; <code>规定数据的传输协议；</code></li>
+<li><strong>物理层</strong>：物理层负责最后将信息编码成电流脉冲或其它信号用于网上传输；<br>
+<code>eg：RJ45等将数据转化成0和1；</code></li>
+<li><strong>数据链路层</strong>：数据链路层通过物理网络链路􏰁供数据传输。不同的数据链路层定义了不同的网络和协 议特征,其中包括物理编址、网络拓扑结构、错误校验、数据帧序列以及流控;<br>
+<code>可以简单的理解为：规定了0和1的分包形式，确定了网络数据包的形式；</code></li>
+<li><strong>网络层</strong>：网络层负责在源和终点之间建立连接;<br>
+<code>可以理解为，此处需要确定计算机的位置，怎么确定？IPv4，IPv6！</code></li>
+<li><strong>传输层</strong>：传输层向高层提供可靠的端到端的网络数据流服务。<br>
+<code>可以理解为：每一个应用程序都会在网卡注册一个端口号，该层就是端口与端口的通信！常用的（TCP／IP）协议；</code></li>
+<li><strong>会话层</strong>：会话层建立、管理和终止表示层与实体之间的通信会话；<br>
+<code>建立一个连接（自动的手机信息、自动的网络寻址）;</code></li>
+<li><strong>表示层</strong>:：表示层提供供多种功能用于应用层数据编码和转化,以确保以一个系统应用层发送的信息 可以被另一个系统应用层识别;<br>
+<code>可以理解为：解决不同系统之间的通信，eg：Linux下的QQ和Windows下的QQ可以通信；</code></li>
+<li><strong>应用层</strong>：OSI 的应用层协议包括文件的传输、访问及管理协议(FTAM) ,以及文件虚拟终端协议(VIP)和公用管理系统信息(CMIP)等;<br>
+<code>规定数据的传输协议；</code></li>
 </ul>
 <h3 id="2实际使用">2.实际使用</h3>
 <p>假如我们有主机 A 和主机 B，现在他们需要发起通讯，现在根据七层模型有如下流程：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201223110933627.png" alt="主机之间发送数据"><figcaption aria-hidden="true">主机之间发送数据</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201223110933627.png" alt="主机之间发送数据"></p>
 <p>可以看到，一个网络包从应用层开始，会一层一层的根据协议添加对应的数据，最后将网络包通过物理层传输到达另一主机，接着再从物理层开始，一层一层的解析网络包，最终发送给应用层。</p>
 <h3 id="3不同层级对应的协议">3.不同层级对应的协议</h3>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201223111234415.png" alt="来自https://www.cnblogs.com/Robin-YB/p/6668762.html"><figcaption aria-hidden="true">来自https://www.cnblogs.com/Robin-YB/p/6668762.html</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201223111234415.png" alt="来自https://www.cnblogs.com/Robin-YB/p/6668762.html"></p>
 
       
     </div>
@@ -457,7 +460,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%EF%BC%8C%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE/" rel="tag"># 计算机网络，趣谈网络协议</a>
+            <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag"># 计算机网络</a>
           
         </div>
       
@@ -585,7 +588,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>

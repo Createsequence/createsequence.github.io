@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="概述 此文为极客时间趣谈网络协议第一模块“通信协议综述”的学习笔记。 主要内容包括数据包在如何在层间传输， IP 地址与 MAC 地址的介绍，IP 地址的设置与分配。 一、网络分层 1.数据包如何在层间流转 分层是一个复杂程序的必然趋势，因而复杂的网络协议就会有分层的要求。 以下图为例，下图描述了我们输入网址并回车后，整个大体的请求流程：  我们知道，按 TCP&#x2F;IP 的四层模型，">
+<meta name="description" content="概述 此文为极客时间趣谈网络协议第一模块“通信协议综述”的学习笔记。 主要内容包括数据包在如何在层间传输， IP 地址与 MAC 地址的介绍，IP 地址的设置与分配。 一、网络分层 1.数据包如何在层间流转 分层是一个复杂程序的必然趋势，因而复杂的网络协议就会有分层的要求。 以下图为例，下图描述了我们输入网址并回车后，整个大体的请求流程：  我们知道，按 TCP&#x2F;IP 的四层模型，HTTP 协议属">
 <meta property="og:type" content="article">
 <meta property="og:title" content="《趣谈网络协议》读书笔记（一）：网络分层，IP与MAC">
 <meta property="og:url" content="http://blog.xiajibagao.top/2020/12/22/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%EF%BC%8CIP%E4%B8%8EMAC/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 此文为极客时间趣谈网络协议第一模块“通信协议综述”的学习笔记。 主要内容包括数据包在如何在层间传输， IP 地址与 MAC 地址的介绍，IP 地址的设置与分配。 一、网络分层 1.数据包如何在层间流转 分层是一个复杂程序的必然趋势，因而复杂的网络协议就会有分层的要求。 以下图为例，下图描述了我们输入网址并回车后，整个大体的请求流程：  我们知道，按 TCP&#x2F;IP 的四层模型，">
+<meta property="og:description" content="概述 此文为极客时间趣谈网络协议第一模块“通信协议综述”的学习笔记。 主要内容包括数据包在如何在层间传输， IP 地址与 MAC 地址的介绍，IP 地址的设置与分配。 一、网络分层 1.数据包如何在层间流转 分层是一个复杂程序的必然趋势，因而复杂的网络协议就会有分层的要求。 以下图为例，下图描述了我们输入网址并回车后，整个大体的请求流程：  我们知道，按 TCP&#x2F;IP 的四层模型，HTTP 协议属">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/5c00f6e610f533d17fb4ad7decacc776.jpg">
 <meta property="og:image" content="http://img.xiajibagao.top/fa9a00346b8a83a84f4c00de948a5b5e.jpg">
@@ -96,7 +96,7 @@
 <meta property="og:image" content="http://img.xiajibagao.top/a52c8c87b925b52059febe9dfcd6be6b.jpg">
 <meta property="og:image" content="http://img.xiajibagao.top/cca8b0baa4749bb359e453b1b482e1a9.jpg">
 <meta property="article:published_time" content="2020-12-21T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-02-09T05:36:40.047Z">
+<meta property="article:modified_time" content="2021-02-22T02:16:48.279Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="计算机网络">
 <meta name="twitter:card" content="summary">
@@ -412,7 +412,7 @@
 <h3 id="1数据包如何在层间流转">1.数据包如何在层间流转</h3>
 <p>分层是一个复杂程序的必然趋势，因而复杂的网络协议就会有分层的要求。</p>
 <p>以下图为例，下图描述了我们输入网址并回车后，整个大体的请求流程：</p>
-<p><img src="http://img.xiajibagao.top/5c00f6e610f533d17fb4ad7decacc776.jpg" alt="img" style="zoom: 25%;"></p>
+<img src="http://img.xiajibagao.top/5c00f6e610f533d17fb4ad7decacc776.jpg" alt="img" style="zoom: 25%;">
 <p>我们知道，按 TCP/IP 的四层模型，HTTP 协议属于应用层。假设用伪代码代表不同层级间对数据包的处理流程，当我们从应用层发起请求时：</p>
 <ul>
 <li>从应用层进入传输层。经过 <code>send_tcp()</code>的处理，会加上 TCP 头，里面有端口；</li>
@@ -437,15 +437,15 @@
 <p>以 <code>10.100.122.2</code> 为例，我们最常见到的 IPv4 地址通常都是这样的的结构。</p>
 <p>IP 地址由点分为4段，每段是8个 bit，因此一串 IP 地址就是 32位，由于后来联网设备越来越多，传统的32位的 IPv4 地址不够用，于是就有了 128 位的 IPv6 地址，他的格式是这样的：<code>fe80::f816:3eff:fec7:7975/64</code>，共 128 位。</p>
 <h3 id="3ip地址的构成">3.IP地址的构成</h3>
-<p><img src="http://img.xiajibagao.top/fa9a00346b8a83a84f4c00de948a5b5e.jpg" alt="img" style="zoom:33%;"></p>
+<img src="http://img.xiajibagao.top/fa9a00346b8a83a84f4c00de948a5b5e.jpg" alt="img" style="zoom:33%;">
 <p>IP 地址被分为五类，其中 ABC 都由两部分组成：网络号+主机号。网络号表示网段，而主机号代表主机，加起来一串 IP 地址就是主机在某一网段内的地址。</p>
 <p>但是实际上，由于位数的不同，决定了同一网段下最多第地址数量，换句话说，如果超过这个数量主机就拿不到 IP，就不能联网。其中，A 类最多可有 16777214 个地址，B 类可有 65534 个地址，而 C 类只可有最多 254 个地址。</p>
-<p><img src="http://img.xiajibagao.top/6de9d39a68520c8e3b75aa919fadb24c.jpg" alt="img" style="zoom:33%;"></p>
+<img src="http://img.xiajibagao.top/6de9d39a68520c8e3b75aa919fadb24c.jpg" alt="img" style="zoom:33%;">
 <h3 id="4无类型域间选路cidr">4.无类型域间选路（CIDR）</h3>
 <p>对于 A 类和 B 类地址，一般企业达不到这样的规模，地址会出现闲置，而 C 类地址又太少。因此就有了一个无类型域间选路（CIDR），也就是不再直接按固定类型划分 IP，而是通过斜杠来分割网络号与主机号，比如<code>10.100.122.2/24</code>这样的 IP，<strong>斜杠后24的意思是，在32位的地址中，前24位是网络号，后8位是主机号</strong>。</p>
 <p>与 CIDR 一起出现的，是广播地址 <code>10.100.122.255</code>和子网掩码 <code>255.255.255.0</code>。</p>
 <p><strong>广播地址就是如果发送数据到这个地址，那么统一网段下的所有地址都能收到</strong>。</p>
-<p>而<strong>子网掩码则是用于通过与运算根据 IP 计算网络号</strong>。255转为二进制就是8个1，也就是1111111，换句话说，<code>255.255.255.0</code>转为二进制，前24位都为1，后8位都为0，将其与二进制的 IP 地址进行与运算，由于与运算要求都为1才为1，运算后第8位就一定会是0，最后得到的就是存粹的网络号。</p>
+<p>而<strong>子网掩码则是用于通过与运算根据 IP 计算网络号</strong>。255转为二进制就是8个1，也就是1111111，换句话说，<code>255.255.255.0</code>转为二进制，前24位都为1，后8位都为0，将其与二进制的 IP 地址进行与运算，由于与运算要求都为1才为1，运算后第8位就一定会是0，最后得到的就是纯粹的网络号。</p>
 <h3 id="5共有ip和私有ip">5.共有IP和私有IP</h3>
 <p>在局域网里面，我们可以自己分配 IP，因为 IP 只在局域网内使用，因此不同的局域网允许同时存在相同的 IP，但是从外部是无法访问私有的 IP 的，因为这个 IP 只在局域网有效，就像拿中国的地址去美国找人，是肯定找不到的。如果要是真正可以在任何地方都能访问的到的地址，需要去 IANA 申请。</p>
 <p>一般，在局域网里，第一个地址往往就是出口设备的 IP 地址。比如 wifi 提供的家庭局域网通常地址是 <code>192.168.0.x</code>，这个一眼就能看出 <code>192.168.0.0</code>就是网络号，因而第一个 IP ，也就是 <code>192.168.0.1</code>一般就会是路由器地址，而<code>192.168.0.255</code>就会是广播地址。</p>
@@ -456,10 +456,10 @@
 <h3 id="1什么是mac">1.什么是MAC</h3>
 <p>我们可以看到，<code>ip addr</code>命令展示的网卡信息里，eth0 的 IP 地址上有 <code>link/ether 00:16:3e:06:5d:0f brd ff:ff:ff:ff:ff:ff</code>一行，这个就是网卡的 MAC 地址，用十六进制，6 个 byte 表示。</p>
 <p>MAC 的全程是 Media Access Control Address ，即媒体访问控制。它是网卡的物理地址，从生产的时候就带着这个地址，是唯一的。不过虽然如此，MAC 是不能取代 IP 的，因为 MAC 并没有导航定位功能，就像一个人的身份证，而你是不可能在寄快递的时候直接填收件人的身份证。</p>
-<p>MAC 地址的<strong>主要作用是在局域网中作为设备的唯一标识</strong>，换句话说，只在一个子网内是可以光凭 MAC 找到对应设备的，比如从 <code>192.168.0.2/24</code> 访问 <code>192.168.0.3/24</code> 但是跨网络就不行了，比如去访问 <code>192.168.1.2/24</code> 。这就像你在一个房间里可以直接通过身份证找到人，放大到一个城市里就不行了。</p>
+<p>MAC 地址的<strong>主要作用是在局域网中作为设备的唯一标识</strong>，换句话说，只在一个子网内是可以光凭 MAC 找到对应设备的，比如从 <code>192.168.0.2/24</code> 访问 <code>192.168.0.3/24</code>  但是跨网络就不行了，比如去访问 <code>192.168.1.2/24</code> 。这就像你在一个房间里可以直接通过身份证找到人，放大到一个城市里就不行了。</p>
 <h3 id="2网络设备的状态标识">2.网络设备的状态标识</h3>
 <p><strong>网络设备状态标识</strong></p>
-<p>还是上述的 <code>ip addr</code>展示的信息，我们可以在 eth0 看到 <code>&lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</code>，这个叫做<code>net_device flags</code>，即网络设备的状态标识。</p>
+<p>还是上述的 <code>ip addr</code>展示的信息，我们可以在 eth0 看到  <code>&lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt;</code>，这个叫做<code>net_device flags</code>，即网络设备的状态标识。</p>
 <ul>
 <li>UP：表示网卡处于启动状态；</li>
 <li>BROADCAST：表示网卡有广播地址，可以发送广播；</li>
@@ -485,22 +485,22 @@
 <h3 id="2什么是dhcp">2.什么是DHCP</h3>
 <p>实际上，如果每次设备接入设备都需要手动配置 IP 是很不方便的，因此就有了动态分配 IP 的动态主机配置协议（DHCP）：管理员设置好一个网段，然后接入的机器就会直接获取一个 IP。</p>
 <h2 id="五-dhcp的工作方式">五、DHCP的工作方式</h2>
-<p><img src="http://img.xiajibagao.top/image-20201223162722289.png" alt="image-20201223162722289" style="zoom: 67%;"></p>
+<img src="http://img.xiajibagao.top/image-20201223162722289.png" alt="image-20201223162722289" style="zoom: 67%;">
 <h3 id="1主机发起申请">1.主机发起申请</h3>
 <p>当一台主机加入网络时，它仍然未获取一个可用的 IP 地址，因此此时它的 IP 为 <code>0.0.0.0</code>。</p>
 <p>首先，主机通过广播地址 <code>255.255.255.255</code>发送一个封装了 UDP 协议的广播包以申请可用 IP，这个 UDP 协议里头封装了 BOOTP 协议。我们管这个<strong>申请 IP 的请求叫做 Boot Request</strong></p>
 <p>现在，本次请求的数据包格式是这样的：</p>
-<p><img src="http://img.xiajibagao.top/90b4d41ee38e891031705d987d5d8481.jpg" alt="img" style="zoom:33%;"></p>
+<img src="http://img.xiajibagao.top/90b4d41ee38e891031705d987d5d8481.jpg" alt="img" style="zoom:33%;">
 <h3 id="2server响应申请">2.Server响应申请</h3>
 <p>如果管理员配置了 DHCP Server 的话，它就会响应这次请求，分配一个可用 IP，并且记录申请 IP 的主机的 MAC 以及 MAC 和 IP 的对应关系，以防止下一个主机申请到相同的 IP。</p>
 <p>现在，DHCP Server 要发送数据包给申请 IP 的主机，这个数据包中会包括分配给主机的 IP，IP 的租用期限，子网掩码，网关等信息。我们管这个 <strong>DHCP Server 回复主机的响应叫做 Boot Offer</strong></p>
-<p><img src="http://img.xiajibagao.top/a52c8c87b925b52059febe9dfcd6be6b.jpg" alt="img" style="zoom:33%;"></p>
+<img src="http://img.xiajibagao.top/a52c8c87b925b52059febe9dfcd6be6b.jpg" alt="img" style="zoom:33%;">
 <p><strong>注意，现在的 Boot Offer 可能会广播也可能会直接发送给主机，这取决于 IP 的数据头中的 BROADCAST 位是1还是0，1表示能接受，则单发，否则就广播</strong>。</p>
 <h3 id="3主机回复响应">3.主机回复响应</h3>
 <p>主机会收到 DHCP Server 发送的 Boot Offer，如果有多个 DHCP Server 则会受到多个 Boot Offer。一般主机会选择第一个接收到的 Boot Offer，并且在接受到以后继续通过 <code>255.255.255.255</code>广播发送 Boot Request，里面会有主机接受的 IP，MAC，提供 IP 的 DHCP Server 的 IP 等。</p>
 <h3 id="4server接受响应">4.Server接受响应</h3>
 <p>被拒绝的 DHCP Server 会取消分配的 IP 以供下一次使用，而被接受的 DHCP Server 会返回一个 DHCP ACK 消息包，表明收到主机同意的消息。</p>
-<p><img src="http://img.xiajibagao.top/cca8b0baa4749bb359e453b1b482e1a9.jpg" alt="img" style="zoom:33%;"></p>
+<img src="http://img.xiajibagao.top/cca8b0baa4749bb359e453b1b482e1a9.jpg" alt="img" style="zoom:33%;">
 <h3 id="5主机设置ip">5.主机设置IP</h3>
 <p>最终，主机收到了 DHCP Server 的响应，将自己的 IP 以及子网掩码等数据变更为 Server 提供的。</p>
 <p>不过 IP 的租用是有期限的，当租期过去50%的时候，主机会主动发送 request，向 Server 申请新的配置数据。</p>
@@ -661,7 +661,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">20</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
