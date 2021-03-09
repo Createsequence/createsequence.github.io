@@ -170,7 +170,7 @@
 <p>根据分代收集算法，堆中内存分配时一般遵循以下原则：</p>
 <ul>
 <li>
-<p><strong>对象优先分配给<code>eden</code>区域</strong>。当eden区域没有足够弓箭时，发起一次GC。当垃圾回收时，根据复制算法：</p>
+<p><strong>对象优先分配给<code>eden</code>区域</strong>。当eden区域没有足够空间时，发起一次GC。当垃圾回收时，根据复制算法：</p>
 <p><code>eden</code>和一个<code>survivorSpace</code>中还存活的对象会复制到另一个<code>survivorSpace</code>中，然后清理原先的空间</p>
 </li>
 <li>
@@ -473,14 +473,14 @@
 <h2 id="一-类的加载时机">一、类的加载时机</h2>
 <h3 id="1类的生命周期">1.类的生命周期</h3>
 <p>类从被加载到虚拟机内存中开始，到卸载出内存为止，整个生命周期包括<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。其中验证、准备、解析统称为<strong>连接</strong>。</p>
-<figure>
-<img src="http://img.xiajibagao.top/类加载的时机.png" alt="类加载的时机"><figcaption aria-hidden="true">类加载的时机</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%9A%84%E6%97%B6%E6%9C%BA.png" alt="类加载的时机"></p>
 <p>值得一提的是，加载，验证，准备，初始化和卸载是固定的，<strong>但是解析阶段不是：它在一定情况下可以在初始化后再开始，以支持java语言的动态绑定</strong>。</p>
 <p>这里解释一下动态绑定和静态绑定：</p>
 <blockquote>
-<p>静态绑定： 在程序执行前方法已经被绑定（也就是说在编译过程中就已经知道这个方法到底是哪个类中的方法），此时由编译器或其它连接程序实现。</p>
-<p>动态绑定： 后期绑定：在运行时根据具体对象的类型进行绑定。</p>
+<p>静态绑定：<br>
+在程序执行前方法已经被绑定（也就是说在编译过程中就已经知道这个方法到底是哪个类中的方法），此时由编译器或其它连接程序实现。</p>
+<p>动态绑定：<br>
+后期绑定：在运行时根据具体对象的类型进行绑定。</p>
 </blockquote>
 <p>另外，类的加载过程必须按步骤“开始”，但是并不等前一个步骤完成后才进行下一个步骤，而是在前一个步骤进行时就开始下一个步骤。</p>
 <h3 id="2类的加载时机">2.类的加载时机</h3>
@@ -496,28 +496,35 @@
 <p>凡是有以下四种行为的成为对一个类进行<strong>主动引用</strong>，<strong>只有主动引用会触发类的初始化</strong>：</p>
 <ul>
 <li><strong>遇到四条字节码指令</strong>：
-<ol type="1">
+<ol>
 <li>new：使用new关键字实例化对象;</li>
 <li>getstatic：获取一个不被final修饰的类的静态字段;</li>
 <li>putstatic：设置一个不被final修饰的类的静态字段;</li>
 <li>invokestatic：调用一个类的静态方法;</li>
-</ol></li>
+</ol>
+</li>
 <li><strong>使用java.lang.reflect包中的方法对类进行反射调用时，如果类还没有初始化，则必须首先对其初始化;</strong></li>
 <li><strong>当初始化一个类时，如果其父类还没有初始化，则必须首先初始化其父类;</strong></li>
 <li><strong>当虚拟机启动时，用户需要指定一个要执行的主类（包含main()方法的那个类），虚拟机会先初始化这个主类。</strong></li>
 <li><strong>当使用JDK7动态语言支持时，如果一个java.lang.invoke.MethodHandle实例最后的解析结果REF_getstatic,REF_putstatic,REF_invokeStatic的方法句柄，并且这个方法句柄所对应的类没有进行初始化，则需要先触发其初始化。</strong></li>
 </ul>
-<p>除了以上五种方式以外引用类的方式成为<strong>被动引用</strong>，并不会触发初始化。</p>
+<p>除了以上五种方式以外引用类的方式称为<strong>被动引用</strong>，并不会触发初始化。</p>
 <p>被动引用有以下几种代表性的例子：</p>
 <p>假设我们有以下两种类：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：CreateSequence</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-08-08 21:28</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：Parent类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Parent</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">int</span> ParentAge = <span class="number">10</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;我是Parent,我被初始化了！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：CreateSequence</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-08-08 21:28</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：Child类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Child</span> <span class="keyword">extends</span> <span class="title">Parent</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="keyword">int</span> cons = <span class="number">55</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">static</span> &#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;我是Child，我被初始化了！&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <ul>
-<li><p>通过子类引用父类的静态字段，不会导致子类初始化；</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">( String[] args )</span> </span>&#123;</span><br><span class="line">    System.out.println(Child.ParentAge);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line">我是Parent,我被初始化了！</span><br><span class="line"><span class="number">10</span></span><br></pre></td></tr></table></figure></li>
-<li><p>通过数组定义引用类不会初始化；</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">( String[] args )</span> </span>&#123;</span><br><span class="line">    Parent[] Parent = <span class="keyword">new</span> Parent[<span class="number">10</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
-<li><p>常量在编译阶段会存入调用类的常量池中，本质上并没有引用到定义常量的类，因此不会触发定义常量的类的初始化</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">( String[] args )</span> </span>&#123;</span><br><span class="line">    System.out.println(Child.cons);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line"><span class="number">55</span></span><br></pre></td></tr></table></figure></li>
+<li>
+<p>通过子类引用父类的静态字段，不会导致子类初始化；</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">( String[] args )</span> </span>&#123;</span><br><span class="line">    System.out.println(Child.ParentAge);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line">我是Parent,我被初始化了！</span><br><span class="line"><span class="number">10</span></span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>通过数组定义引用类不会初始化；</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">( String[] args )</span> </span>&#123;</span><br><span class="line">    Parent[] Parent = <span class="keyword">new</span> Parent[<span class="number">10</span>];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li>
+<p>常量在编译阶段会存入调用类的常量池中，本质上并没有引用到定义常量的类，因此不会触发定义常量的类的初始化</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">( String[] args )</span> </span>&#123;</span><br><span class="line">    System.out.println(Child.cons);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//输出</span></span><br><span class="line"><span class="number">55</span></span><br></pre></td></tr></table></figure>
+</li>
 </ul>
 <h3 id="4类的存放位置">4.类的存放位置</h3>
 <p>当一个类被加载的时候，类的信息（有啥方法有啥遍历）会被存放到方法区，而常量会被存放到方法区里的常量池。完成这一切以后JVM会拷贝一份类的信息放到堆里方便使用。</p>
@@ -540,13 +547,21 @@
 </blockquote>
 <p>验证阶段完成以下四件事：</p>
 <ul>
-<li><p><strong>文件格式验证</strong>：验证字节流是否符合Class文件格式的规范，</p>
-<p>比如是否以魔数0xCAFEBABE开头、主次版本号是否在当前虚拟机处理范围内、常量池的常量中是否有不被支持的常量类型等等；</p></li>
-<li><p><strong>元数据验证</strong>：对字节码描述的信息进行语义分析，以保证其描述的信息符合Java语言规范的要求，</p>
-<p>比如父类是否继承了被final修饰的类，非抽象类是否都实现了父类或者接口的方法等等；</p></li>
-<li><p><strong>字节码验证</strong>：通过数据流和控制流分析，确定程序语义是合法的、符合逻辑的；</p></li>
-<li><p><strong>符号引用验证</strong>：对类自身以外的信息进行匹配性校验,</p>
-<p>比如符号引用中通过字符串描述的全限定名是否能找到对应的类等等。</p></li>
+<li>
+<p><strong>文件格式验证</strong>：验证字节流是否符合Class文件格式的规范，</p>
+<p>比如是否以魔数0xCAFEBABE开头、主次版本号是否在当前虚拟机处理范围内、常量池的常量中是否有不被支持的常量类型等等；</p>
+</li>
+<li>
+<p><strong>元数据验证</strong>：对字节码描述的信息进行语义分析，以保证其描述的信息符合Java语言规范的要求，</p>
+<p>比如父类是否继承了被final修饰的类，非抽象类是否都实现了父类或者接口的方法等等；</p>
+</li>
+<li>
+<p><strong>字节码验证</strong>：通过数据流和控制流分析，确定程序语义是合法的、符合逻辑的；</p>
+</li>
+<li>
+<p><strong>符号引用验证</strong>：对类自身以外的信息进行匹配性校验,</p>
+<p>比如符号引用中通过字符串描述的全限定名是否能找到对应的类等等。</p>
+</li>
 </ul>
 <h3 id="3准备">3.准备</h3>
 <blockquote>
@@ -4479,10 +4494,8 @@
 <p>首先有一个接口，叫做购房者，然后这个类地下有一个实现类，叫做小明:</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">//购房者接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Buyers</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 买房</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">buy</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//小明实现了购房者接口</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">XiaoMing</span> <span class="keyword">implements</span> <span class="title">Buyers</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">buy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(<span class="string">&quot;小明买了一套房&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>买房子还要货比三家，小明没时间，于是就把买房子这件事情委托给中介</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Intermediary</span> <span class="keyword">implements</span> <span class="title">Buyers</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> XiaoMing xiaoMing ;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 小明把权限委托给了中介</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Intermediary</span><span class="params">(XiaoMing xiaoMing)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.xiaoMing = xiaoMing;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">buy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 在这基础上又添加了挑选方法</span></span><br><span class="line">        System.out.println(<span class="string">&quot;房中介先挑了最合适的房&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 中介让XiaoMing这个类执行了购房的动作</span></span><br><span class="line">        xiaoMing.buy();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 在这基础上又添加了抽成方法</span></span><br><span class="line">        System.out.println(<span class="string">&quot;买完房中介要那点抽成&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<figure>
-<img src="D:\代码及jar包\学习记录\设计模式\小明买房（静态代理）.png" alt="小明买房（静态代理）"><figcaption aria-hidden="true">小明买房（静态代理）</figcaption>
-</figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Intermediary</span> <span class="keyword">implements</span> <span class="title">Buyers</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> Buyers xiaoMing ;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 小明把权限委托给了中介</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">IntermediaryProxy</span><span class="params">(Buyers xiaoMing)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.xiaoMing = xiaoMing;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">buy</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// 在这基础上又添加了挑选方法</span></span><br><span class="line">        System.out.println(<span class="string">&quot;房中介先挑了最合适的房&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 中介让XiaoMing这个类执行了购房的动作</span></span><br><span class="line">        xiaoMing.buy();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 在这基础上又添加了抽成方法</span></span><br><span class="line">        System.out.println(<span class="string">&quot;买完房中介要那点抽成&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><img src="D:%5C%E4%BB%A3%E7%A0%81%E5%8F%8Ajar%E5%8C%85%5C%E5%AD%A6%E4%B9%A0%E8%AE%B0%E5%BD%95%5C%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%5C%E5%B0%8F%E6%98%8E%E4%B9%B0%E6%88%BF%EF%BC%88%E9%9D%99%E6%80%81%E4%BB%A3%E7%90%86%EF%BC%89.png" alt="小明买房（静态代理）"></p>
 <p>在这个例子里：</p>
 <ul>
 <li>被代理对象是小明这个类，是我们最终要访问的；</li>
@@ -4521,15 +4534,15 @@
 <p>要使用 CGLib 代理，需要引入 jar 包 （ Spring 的动态代理就是基于 CGLib 实现的，所以 Spring 的依赖里默认就会引入）</p>
 <figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- https://mvnrepository.com/artifact/cglib/cglib --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>cglib<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>cglib<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.3.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
 <p>然后我们实现一下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">XiaoMing xiaoMing = <span class="keyword">new</span> XiaoMing();</span><br><span class="line"><span class="comment">//获取代理对象</span></span><br><span class="line">Buyers proxyBuyers = (Buyers) Enhancer.create(</span><br><span class="line">    <span class="comment">//获取被代理对象的类</span></span><br><span class="line">    xiaoMing.getClass(),</span><br><span class="line">    <span class="comment">//实现代理逻辑切入类</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> MethodInterceptor() &#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> o 代理类对象</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> method 要拦截的被代理类的方法</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> objects 被代理类的方法参数</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> methodProxy 要触发父类的方法对象</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span> </span></span><br><span class="line"><span class="comment">         * <span class="doctag">@throws</span> Throwable</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Object o, Method method, Object[] objects, MethodProxy methodProxy)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (method.getName() != <span class="string">&quot;buy&quot;</span>) &#123;</span><br><span class="line">                <span class="comment">//注意，这里参数是o，调用的是invokeSuper</span></span><br><span class="line">                <span class="keyword">return</span> methodProxy.invokeSuper(o, objects);</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot;中介帮小明找到了最合适的房源&quot;</span>);</span><br><span class="line">            <span class="comment">//注意，这里参数是xiaoMing，调用的是invoke</span></span><br><span class="line">            methodProxy.invoke(xiaoMing, objects);</span><br><span class="line">            System.out.println(<span class="string">&quot;中介抽了一笔中介费&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">);</span><br><span class="line">proxyBuyers.buy();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">XiaoMing xiaoMing = <span class="keyword">new</span> XiaoMing();</span><br><span class="line"><span class="comment">//获取代理对象</span></span><br><span class="line">Buyers proxyBuyers = (Buyers) Enhancer.create(</span><br><span class="line">    <span class="comment">//获取被代理对象的类</span></span><br><span class="line">    xiaoMing.getClass(),</span><br><span class="line">    <span class="comment">//实现代理逻辑切入类</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">new</span> MethodInterceptor() &#123;</span><br><span class="line">        <span class="comment">/**</span></span><br><span class="line"><span class="comment">         *</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> o 代理类对象</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> method 要拦截的被代理类的方法</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> objects 被代理类的方法参数</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@param</span> methodProxy 要触发父类的方法对象</span></span><br><span class="line"><span class="comment">         * <span class="doctag">@return</span> </span></span><br><span class="line"><span class="comment">         * <span class="doctag">@throws</span> Throwable</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Object <span class="title">intercept</span><span class="params">(Object o, Method method, Object[] objects, MethodProxy methodProxy)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">            <span class="keyword">if</span> (method.getName() != <span class="string">&quot;buy&quot;</span>) &#123;</span><br><span class="line">                <span class="comment">//注意，这里参数是o，调用的是invokeSuper</span></span><br><span class="line">                <span class="keyword">return</span> methodProxy.invokeSuper(o, objects);</span><br><span class="line">            &#125;</span><br><span class="line">            System.out.println(<span class="string">&quot;中介帮小明找到了最合适的房源&quot;</span>);</span><br><span class="line">            <span class="comment">//注意，这里参数是xiaoMing，调用的是invoke</span></span><br><span class="line">            methodProxy.invoke(xiaoMing, objects);</span><br><span class="line">            System.out.println(<span class="string">&quot;中介抽了一笔中介费&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 调用被代理对象</span></span><br><span class="line">proxyBuyers.buy();</span><br></pre></td></tr></table></figure>
 <p>一般为了方便使用，我们会将代理过程整合到一个代理工厂类中。</p>
-<p><strong>由于需要生成子类，所以要被代理的类最好不能用final修饰</strong></p>
+<p><strong>由于需要生成子类，所以要被代理的类最好不能用 final 修饰</strong></p>
 <p><strong>如何选择代理模式</strong></p>
 <ul>
-<li>JDK在创建代理对象时的性能要高于CGLib代理，而生成代理对象的运行性能却比CGLib的低。</li>
-<li>如果是单例的代理，推荐使用CGLib</li>
+<li>JDK 在创建代理对象时的性能要高于 CGLib 代理，而生成代理对象的运行性能却比 CGLib 的低。</li>
+<li>如果是单例的代理，推荐使用 CGLib</li>
 </ul>
-<p>也就是说，<strong>如果需要频繁的创建代理对象（多例），那么就该选择JDK代理，否则（单例）使用CGLib代理</strong></p>
+<p>也就是说，<strong>如果需要频繁的创建代理对象（多例），那么就该选择JDK代理，否则（单例）使用 CGLib 代理</strong></p>
 <h2 id="四-总结">四、总结</h2>
 <p>对于两种代理模式：</p>
 <ul>
@@ -5232,23 +5245,22 @@
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>HashSet 是 Set 接口下一个不允许重复但允许 null、无序并且线程不安全的集合。它基于 HashMap 实现。</p>
 <p>从数据结构来说，他与 HashMap 相同，但是由于 HashSet 借助 HashMap 的 key 来存储数据，因而 HashMap 的 value 在 HashSet 中无意义。</p>
-<p><img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;"></p>
+<img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;">
 <p>这是关于 java 集合类源码的第九篇文章。往期文章：</p>
 <blockquote>
-<ol type="1">
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
-</li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/">java集合源码分析（四）：LinkedList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/">java集合源码分析（六）：HashMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/21/java/集合类源码分析/java集合源码分析（七）：LinkedHashMap/">java集合源码分析（七）：LinkedHashMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/22/java/集合类源码分析/java集合源码分析（八）：Set与AbstracSet/">java集合源码分析（八）：Set与AbstractSet</a></li>
+<ol>
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/">java集合源码分析（四）：LinkedList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/">java集合源码分析（六）：HashMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/21/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ALinkedHashMap/">java集合源码分析（七）：LinkedHashMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/">java集合源码分析（八）：Set与AbstractSet</a></li>
 </ol>
 </blockquote>
 <h2 id="一-数据结构">一、数据结构</h2>
-<p>HashSet 基于 HashMap 实现，也就是说，HashSet 用于存储数据的容器实际上就是一个 HashMap 实例。（关于 HashMap 的数据结构，可以参考前文<a href="https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/">java集合源码分析（六）：HashMap</a>中的第一部分。）</p>
+<p>HashSet 基于 HashMap 实现，也就是说，HashSet 用于存储数据的容器实际上就是一个 HashMap 实例。（关于 HashMap 的数据结构，可以参考前文<a href="https://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/">java集合源码分析（六）：HashMap</a>中的第一部分。）</p>
 <p>HashSet 使用 HashMap 的 key 作为存储数据的位置，而 value 的位置使用一个默认的全局空对象填充。大部分方法通过直接包装调用 HashMap 的来实现，也就是说，我们可以把 HashSet 看成 HashMap 的一个大号包装器——或者说适配器类。</p>
 <h2 id="二-成员变量">二、成员变量</h2>
 <p>由于直接基于 HashMap 实现，因而 HashSet 中只提供两个成员变量，一个 map 用于存放 HashMap 实例，一个 PRESENT 用于作为填充 value 的空对象。</p>
@@ -8013,17 +8025,16 @@
 <p>对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式，能否存放空值；作为使用了数组作为底层结构的集合，我们还需要关注其扩容的实现；同时，针对哈希表的特性，我们还需要关注它如何通过哈希算法取模快速定位下标。</p>
 <blockquote>
 <p>这是关于 java 集合类源码的第六篇文章。往期文章：</p>
-<ol type="1">
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
-</li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/">java集合源码分析（四）：LinkedList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
+<ol>
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/">java集合源码分析（四）：LinkedList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
 </ol>
 </blockquote>
 <h2 id="一-hashmap-的数据结构">一、HashMap 的数据结构</h2>
-<p><img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;"></p>
+<img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;">
 <p><strong>在 JDK8 之前，HashMap 的数据结构是数组+链表。在 JDK8 以后是数组 + 链表 + 红黑树</strong>。</p>
 <p>在 HashMap 中，每一个 value 都被存储在一个 Node 或 TreeNode 实例中，容器中有一个 <code>Node[] table</code> 数组成员变量，数组中的每一格称为一个“桶”。当添加元素时，根据元素的 key 通过哈希值计算得到对应下标，将 Node 类的形式存入“桶”中。如果 table 容量不足时，就会发生扩容，同时对容器内部的元素进行重哈希。</p>
 <p>当发生哈希冲突，也就是不同元素计算得到了相同的下标时，会将节点接到“桶”的中的第一个元素后，后续操作亦同，最后就会形成链表。</p>
@@ -8052,7 +8063,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(Map&lt;? extends K, ? extends V&gt; m)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.loadFactor = DEFAULT_LOAD_FACTOR;</span><br><span class="line">    putMapEntries(m, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里涉及到一个将合并集合的方法 <code>putMapEntries()</code>，<code>putAll()</code>方法也是基于这个方法实现的。由于添加还涉及到扩容以及其他方法，这里暂不介绍，等下面再详细的了解。</p>
 <h2 id="四-hashmap的内部类">四、HashMap的内部类</h2>
-<p>基于前文<a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a>中第五部分 “AbstractMap 的视图”里对 AbstractMap 的分析，我们知道，HashMap 作为继承了 AbstractMap 的子类，因此它内部会拥有三个集合视图</p>
+<p>基于前文<a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a>中第五部分 “AbstractMap 的视图”里对 AbstractMap 的分析，我们知道，HashMap 作为继承了 AbstractMap 的子类，因此它内部会拥有三个集合视图</p>
 <ul>
 <li>存放 key 的 Set 集合：<code>Set&lt;K&gt; keySet</code></li>
 <li>存放 value 的 Collection 集合：<code>Collection&lt;V&gt; valuse</code></li>
@@ -8065,7 +8076,7 @@
 <p><code>3种视图容器 + 1种迭代器抽象类 + 3种视图容器的迭代器 + 1种并行迭代器抽象类 + 3种视图容器对应的并行迭代器 + 1种Entry实现类 + 1种Entry的红黑树节点实现类</code></p>
 <p>总计 13 种内部类</p>
 <h3 id="1-node-treenode">1. Node / TreeNode</h3>
-<p><img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom: 50%;"></p>
+<img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom: 50%;">
 <p>Node 是 HashMap 中的节点类，在 JDK8 之前对应的是 Entry 类。他是 Map 接口中 Entry 的实现类。</p>
 <p>在 HashMap 中数组的每一个位置都是一个“桶”，而“桶”中存放的就是带有数据的节点对象 Node。当哈希冲突时，多个 Node 会在同一个“桶”中形成链表。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 节点的hashcode</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="comment">// key</span></span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    <span class="comment">// value</span></span><br><span class="line">    V value;</span><br><span class="line">    <span class="comment">// 下一节点</span></span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -8073,13 +8084,13 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">LinkedHashMap</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 父节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; parent;</span><br><span class="line">    <span class="comment">// 左子节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; left;</span><br><span class="line">    <span class="comment">// 右子节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; right;</span><br><span class="line">    <span class="comment">// 前驱节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; prev;</span><br><span class="line">    <span class="comment">// 是否为红色节点</span></span><br><span class="line">    <span class="keyword">boolean</span> red;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>值得一提的是，TreeNode 继承了 LinkedHashMap.Entry 类，但是 LinkedHashMap.Entry 类又继承了 HashMap.Node，因此，实际上 TreeNode 也是 Node 类的子类，这是 Node 转变为 TreeNode 的结构基础。</p>
 <p>另外，TreeNode 尽管是树，但是他仍然通过 prev 维持了隐式的链表结构，理论上每一个节点都可以获取他上一次插入的节点，这仍然可以理解为单向链表。</p>
-<h3 id="2-keyset-keyiterator">2. KeySet / KeyIterator</h3>
+<h3 id="2-keyset-keyiterator">2.  KeySet / KeyIterator</h3>
 <p><code>Set&lt;K&gt; keySet</code> 是在 AbstractMap 中已经定义好了变量，它是一个存放 key 的集合，HashMap 的哈希算法保证了 key 的唯一性，这恰好也符合 Set 集合的特征。在 HashMap 中，<strong>为其提供了实现类 KeySet</strong> 。</p>
-<p>KeySet 继承了 AbstractSet 抽象类，并且直接使用 HashMap 中的方法去实现了抽象类中的大多数抽象方法。值得一提的是，他实现的 <code>iterator()</code><strong>返回的也是 HashMap 的一个内部类 KeyIterator</strong>。</p>
-<h3 id="3-values-valueiterator">3. Values / ValueIterator</h3>
+<p>KeySet  继承了 AbstractSet 抽象类，并且直接使用 HashMap 中的方法去实现了抽象类中的大多数抽象方法。值得一提的是，他实现的 <code>iterator()</code><strong>返回的也是 HashMap 的一个内部类 KeyIterator</strong>。</p>
+<h3 id="3-values-valueiterator">3. Values  /  ValueIterator</h3>
 <p>和 KeySet 类一样，<strong>Values 也是给 AbstractMap 中的 <code>Collection&lt;V&gt; values</code> 提供的实现类</strong>，他继承了 AbstractCollection 抽象类，并且使用 HashMap 的方法实现了大部分抽象方法。</p>
 <p>同样的，它的<code>iterator()</code>返回的也是 HashMap 的一个<strong>内部类 ValueIterator</strong>。</p>
-<h3 id="4-entryset-entryiterator">4. EntrySet / EntryIterator</h3>
+<h3 id="4-entryset-entryiterator">4. EntrySet  /  EntryIterator</h3>
 <p>A<strong>bstractMap 中有一个留给子类去实现的核心抽象方法 <code>entrySet()</code>，而 EntrySet 就是为了实现该方法而创建的类</strong>。它继承了 <code>AbstractSet&lt;Map.Entry&lt;K,V&gt;&gt;</code>，<strong>表示的是容器中的一对键值对对象</strong>。在注释中，作者将其称为视图。</p>
 <p>通过 EntrySet 类，我们就可以<strong>像 Collection 的 toArray 一样，将 Map 以 Set 集合视图的形式表现出来</strong>。</p>
 <p>同样的，作为一个 AbstractSet 的实现类，HashMap 也专门为其实现了一个<strong>内部迭代器类 EntryIterator</strong> 。EntrySet 的<code>iterator()</code>方法返回的就是该类。</p>
@@ -8100,9 +8111,7 @@
 <p>这是来自知乎大佬一个非常详细的回答：<a href="https://www.zhihu.com/question/20733617/answer/32513376">JDK 源码中 HashMap 的 hash 方法原理是什么？ - 知乎</a>；</p>
 <p>这里我简单的概括一下：</p>
 <p>该方法实际上是一个“扰动函数”，作用是对<code>Object.hashCode()</code>获取到的 hash 值进行<strong>高低位混淆</strong>。</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201209140746276.png" alt="HashMap的哈希算法"><figcaption aria-hidden="true">HashMap的哈希算法</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201209140746276.png" alt="HashMap的哈希算法"></p>
 <p>我们可以看到，<strong>符号右移16位后，新二进制数的前16位都为0，后16位就是原始 hashcode 的高16位</strong>。</p>
 <p><strong>将原始 hashcode 与 位运算得到的二进制数再进行异或运算以后，我们就得到的 hash 前16全部都为1，后16位则同时混淆了高16位和低16位的特征，进一步增加了随机性。</strong></p>
 <p>现在我们得到了 key 的 hashcode，这是计算下标的基础。</p>
@@ -8112,9 +8121,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">    ... ...</span><br><span class="line">    <span class="comment">// n 即为当前数组长度</span></span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">            n = (tab = resize()).length;</span><br><span class="line">    <span class="comment">// 根据 n 与 hash 计算插入下标</span></span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    </span><br><span class="line">    ... ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>也就是说，当通过扰动函数<code>hash()</code>获取到了已经混淆高低位的 key 的 hashcode 以后， <strong>会将其与数组长度-1进行与运算</strong>：<code>(n - 1) &amp; hash</code>。</p>
 <p>以默认是容量16为例，它转换为二进制数是 10000，而 （16-1）转换为二进制数就是 1111，补零以后它与 <code>hash()</code> 计算得到的 hashcode 进行与运算过程如下：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201209142455463.png" alt="与运算取模"><figcaption aria-hidden="true">与运算取模</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201209142455463.png" alt="与运算取模"></p>
 <p>在这个过程，之前留下的两个问题就得到了解答：</p>
 <h4 id="为什么容量需要是2的幂">为什么容量需要是2的幂？</h4>
 <p>我们可以看到，按位的与运算只有 1&amp;1 = 1，<strong>由于数组长度转为二进制只有4位，所有高于4位的位数都为0，因此运算结果高于4位的位置也都会是0，这里巧妙的实现了取模的效果，数组长度起到了低位掩码的作用。这也整是为什么 HashMap 的容量要是2的幂的原因。</strong></p>
@@ -8123,7 +8130,7 @@
 <p>我们举个例子：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>key</th>
 <th>hashCode</th>
 <th>不混淆取后四位</th>
@@ -8131,19 +8138,19 @@
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>808321199</td>
 <td>110000001011100000000010101111</td>
 <td>1111</td>
 <td>0001</td>
 </tr>
-<tr class="even">
+<tr>
 <td>7015199</td>
 <td>11010110000101100011111</td>
 <td>1111</td>
 <td>0100</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>9999</td>
 <td>10011100001111</td>
 <td>1111</td>
@@ -8169,8 +8176,8 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> <span class="keyword">void</span> <span class="title">treeify</span><span class="params">(Node&lt;K,V&gt;[] tab)</span> </span>&#123;</span><br><span class="line">    TreeNode&lt;K,V&gt; root = <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">// 遍历链表</span></span><br><span class="line">    <span class="keyword">for</span> (TreeNode&lt;K,V&gt; x = <span class="keyword">this</span>, next; x != <span class="keyword">null</span>; x = next) &#123;</span><br><span class="line">        <span class="comment">// 获取下一节点</span></span><br><span class="line">        next = (TreeNode&lt;K,V&gt;)x.next;</span><br><span class="line">        x.left = x.right = <span class="keyword">null</span>;</span><br><span class="line">        <span class="comment">// 队首元素为根节点</span></span><br><span class="line">        <span class="keyword">if</span> (root == <span class="keyword">null</span>) &#123;</span><br><span class="line">            x.parent = <span class="keyword">null</span>;</span><br><span class="line">            x.red = <span class="keyword">false</span>;</span><br><span class="line">            root = x;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 不是队首元素，则构建子节点</span></span><br><span class="line">            K k = x.key;</span><br><span class="line">            <span class="keyword">int</span> h = x.hash;</span><br><span class="line">            Class&lt;?&gt; kc = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">for</span> (TreeNode&lt;K,V&gt; p = root;;) &#123;</span><br><span class="line">                <span class="keyword">int</span> dir, ph;</span><br><span class="line">                K pk = p.key;</span><br><span class="line">                <span class="comment">// 向右</span></span><br><span class="line">                <span class="keyword">if</span> ((ph = p.hash) &gt; h)</span><br><span class="line">                    dir = -<span class="number">1</span>;</span><br><span class="line">                <span class="comment">// 向左</span></span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> (ph &lt; h)</span><br><span class="line">                    dir = <span class="number">1</span>;</span><br><span class="line">                <span class="comment">// 使用比较器进行比较</span></span><br><span class="line">                <span class="keyword">else</span> <span class="keyword">if</span> ((kc == <span class="keyword">null</span> &amp;&amp;</span><br><span class="line">                          (kc = comparableClassFor(k)) == <span class="keyword">null</span>) ||</span><br><span class="line">                         (dir = compareComparables(kc, k, pk)) == <span class="number">0</span>)</span><br><span class="line">                    dir = tieBreakOrder(k, pk);</span><br><span class="line"></span><br><span class="line">                <span class="comment">// 构建子节点</span></span><br><span class="line">                TreeNode&lt;K,V&gt; xp = p;</span><br><span class="line">                <span class="keyword">if</span> ((p = (dir &lt;= <span class="number">0</span>) ? p.left : p.right) == <span class="keyword">null</span>) &#123;</span><br><span class="line">                    x.parent = xp;</span><br><span class="line">                    <span class="keyword">if</span> (dir &lt;= <span class="number">0</span>)</span><br><span class="line">                        xp.left = x;</span><br><span class="line">                    <span class="keyword">else</span></span><br><span class="line">                        xp.right = x;</span><br><span class="line">                    </span><br><span class="line">                    <span class="comment">// 再平衡</span></span><br><span class="line">                    root = balanceInsertion(root, x);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 再平衡，保证链表头节点是树的根节点</span></span><br><span class="line">    moveRootToFront(tab, root);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 <p>以上是链表树化的过程，虽然实现过程不简单，但是流程很简单：</p>
 <ul>
-<li>判断是否链表是否大于8；</li>
 <li>判断元素总数量是否大于最小树化阈值64；</li>
+<li>判断是否链表是否大于8；</li>
 <li>将原本链表的Node节点转为TreeNode节点；</li>
 <li>构建树，添加每一个子节点的时候判断是否需要再平衡;</li>
 <li>构建完后，若原本链表的头结点不是树的根节点，则再平衡确保头节点变为根节点</li>
@@ -8199,7 +8206,7 @@
 <h4 id="扩容的大小">扩容的大小</h4>
 <p>扩容的时候，分为两种情况：已经扩容过，还未扩容过。</p>
 <p>我们仅针对获取新容量 <code>newCap</code> 与新扩容阈值 <code>newThr</code> 这段代码逻辑，画出大致流程图：</p>
-<p><img src="http://img.xiajibagao.top/未命名文件.jpg" alt="未命名文件" style="zoom:50%;"></p>
+<img src="http://img.xiajibagao.top/未命名文件.jpg" alt="未命名文件" style="zoom:50%;">
 <p>这里比较需要注意的是，<strong>当 oldCap 已经大于等于理论最大值的时候，会在设置 <code>newThr=Integer.MAX_VALUE</code>后直接返回，不会执行后序扩容过程</strong>。</p>
 <p>另外，当新扩容阈值被设置为 <code>Integer.MAX_VALUE</code>以后，<strong>由于该值已经是最大的整数值了，所以设置为该值以后 HashMap 就不会再触发扩容了</strong>。</p>
 <h3 id="3重哈希过程">3.重哈希过程</h3>
@@ -8212,7 +8219,7 @@
 <p>以初始容量 <code>oldCap = 16,newCap = 32</code> 为例，我们先看看他的换算过程：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th></th>
 <th>十进制 Cap</th>
 <th>二进制 Cap</th>
@@ -8221,14 +8228,14 @@
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td><strong>oldCap</strong></td>
 <td>16</td>
 <td>10000</td>
 <td>1111</td>
 <td>15</td>
 </tr>
-<tr class="even">
+<tr>
 <td><strong>newCap</strong></td>
 <td>32</td>
 <td>100000</td>
@@ -8240,7 +8247,7 @@
 <p>以上述数据为基础，我们模拟下面三个 key 在扩容过程中的计算：</p>
 <table>
 <thead>
-<tr class="header">
+<tr>
 <th>key</th>
 <th>hash</th>
 <th>(oldCap-1) &amp; hash</th>
@@ -8249,21 +8256,21 @@
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
+<tr>
 <td>808321199</td>
 <td>110000001011100000000010101111</td>
 <td>1111（15）</td>
 <td>0</td>
 <td>01111（15）</td>
 </tr>
-<tr class="even">
+<tr>
 <td>7015199</td>
 <td>11010110000101100011111</td>
 <td>1111（15）</td>
 <td>10000</td>
 <td>11111（31）</td>
 </tr>
-<tr class="odd">
+<tr>
 <td>9999</td>
 <td>10011100001111</td>
 <td>1111（15）</td>
@@ -8272,7 +8279,7 @@
 </tr>
 </tbody>
 </table>
-<p>不难看出，<strong>只有当 <code>oldCap &amp; hash &gt; 0</code>的时候元素才需要移动</strong>，而由于容量必然是2的冥，每次扩容新容量都是旧容量的两倍，换成二进制，相同的 hash 值与运算算出来的坐标总是多1，因此相当于每次需要移动的距离都是旧容量。</p>
+<p>不难看出，<strong>只有当 <code>oldCap &amp; hash &gt; 0 </code>的时候元素才需要移动</strong>，而由于容量必然是2的冥，每次扩容新容量都是旧容量的两倍，换成二进制，相同的 hash 值与运算算出来的坐标总是多1，因此相当于每次需要移动的距离都是旧容量。</p>
 <p><strong>也就是说，如果 <code>oldCap &amp; hash &gt; 0</code>，那么就有 <code>新坐标=原下标+oldCap</code></strong>，这个逻辑对应的代码就是 <code>newTab[j + oldCap] = hiHead;</code>这一行。</p>
 <p>这样做的好处显而易见，<strong>少移动一些元素可以减少扩容的性能消耗，同时同一桶中的元素也有可能在重哈希之后被移动，使得哈希冲突得以在扩容后减缓，元素散列更均匀。</strong></p>
 <h2 id="八-hashmap-获取元素">八、HashMap 获取元素</h2>
@@ -8315,9 +8322,7 @@
 <p>我们暂且只关注链化的判断条件，也就是在 <code>removeTreeNode()</code>中的这一段代码：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 根节点为null，根节点的左或右子节点为null，根节点左子节点的左子节点为null</span></span><br><span class="line"><span class="keyword">if</span> (root == <span class="keyword">null</span> || root.right == <span class="keyword">null</span> ||</span><br><span class="line">    (rl = root.left) == <span class="keyword">null</span> || rl.left == <span class="keyword">null</span>) &#123;</span><br><span class="line">    tab[index] = first.untreeify(map);  <span class="comment">// too small</span></span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>也就是说，如果可能存在的最小红黑树如下：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201217204231973.png" alt="删除中可能存在的最小红黑树"><figcaption aria-hidden="true">删除中可能存在的最小红黑树</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20201217204231973.png" alt="删除中可能存在的最小红黑树"></p>
 <p>可以看到，此时树共有四个及节点，需要再删除一个节点才会导致链化，也就是说，在 remove 中，触发链化的最小树可能只有3个节点，而最大树需要考虑到变色和平衡，是十个（待考证）。</p>
 <p>也就是说，和网上所说的小于6就链化不同，<strong>在删除中，链化触发值是一个范围，在 [3,10] 之间</strong>。</p>
 <h3 id="3红黑树在扩容过程的链化">3.红黑树在扩容过程的链化</h3>
