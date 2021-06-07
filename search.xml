@@ -9492,4 +9492,119 @@
         <tag>java</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Mybatis源码学习（一）：配置文件的加载</title>
+    <url>/2021/02/09/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/</url>
+    <content><![CDATA[<h2 id="概述">概述</h2>
+<p>我们根据源码给的测试用例，可以知道 Mybatis 可以通过以下代码获取 Xml 配置文件并转为配置类：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String resource = <span class="string">&quot;org/apache/ibatis/builder/MinimalMapperConfig.xml&quot;</span>;</span><br><span class="line"><span class="keyword">try</span> (InputStream inputStream = Resources.getResourceAsStream(resource)) &#123;</span><br><span class="line">    XMLConfigBuilder builder = <span class="keyword">new</span> XMLConfigBuilder(inputStream);</span><br><span class="line">    Configuration config = builder.parse();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>拿到 <code>Configuration</code> 以后就可以通过<code>SqlSessionFactoryBuilder().build()</code>方法去创建<code>SqlSessionFactory</code>了。当然，<code>SqlSessionFactoryBuilder().build()</code>有多个重载方法，但是无外乎都要经过转换为 <code>Configuration</code> 这一步。</p>
+<p>整个过程就分为三步：</p>
+<ul>
+<li>获取配置文件输入流：<code>getResourceAsStream()</code></li>
+<li>解析得到配置文件：<code>XMLConfigBuilder</code></li>
+<li>将解析得到的结果转为配置类：<code>XMLConfigBuilder.parse()</code></li>
+</ul>
+<h2 id="一-输入流的读取">一、输入流的读取</h2>
+<p><strong>资源加载主要的包都在 <code>org.apache.ibatis.io</code>包下。</strong></p>
+<h3 id="1程序入口">1.程序入口</h3>
+<p>点进<code>Resources.getResourceAsStream(resource)</code>，发现它是一个重载方法，原本的方法是需要传入 <code>ClassLoader</code> 的，但是这里直接传了个 null：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> InputStream <span class="title">getResourceAsStream</span><span class="params">(String resource)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> getResourceAsStream(<span class="keyword">null</span>, resource);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 被重载的方法</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> InputStream <span class="title">getResourceAsStream</span><span class="params">(ClassLoader loader, String resource)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">    InputStream in = classLoaderWrapper.getResourceAsStream(resource, loader);</span><br><span class="line">    <span class="keyword">if</span> (in == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IOException(<span class="string">&quot;Could not find resource &quot;</span> + resource);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> in;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法实际依赖于<code>classLoaderWrapper.getResourceAsStream(resource, loader)</code>方法，而<code>classLoaderWrapper</code>是一个 Resources 中的一个使用饿汉式单例化的成员变量：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> ClassLoaderWrapper classLoaderWrapper = <span class="keyword">new</span> ClassLoaderWrapper();</span><br></pre></td></tr></table></figure>
+<p>在整个<code>Resources</code>类中，几乎绝大部分的输入流都通过 <code>ClassLoaderWrapper</code>的方法进行读取。</p>
+<h3 id="2类加载器包装类">2.类加载器包装类</h3>
+<p><code>ClassLoaderWrapper</code>是一个类加载器的包装器，包含了多个类加载器，当我们使用时，它会按顺序检查类加载器是否为目标加载器，我们可以通过它去加载资源而不必考虑加载器的正确性问题。</p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20210602102537931.png" alt="image-20210602102537931"><figcaption aria-hidden="true">image-20210602102537931</figcaption>
+</figure>
+<p>他的成员变量主要有两个：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 默认类加载器</span></span><br><span class="line">ClassLoader defaultClassLoader;</span><br><span class="line"><span class="comment">// 系统加载器</span></span><br><span class="line">ClassLoader systemClassLoader; </span><br><span class="line"></span><br><span class="line">ClassLoaderWrapper() &#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 系统加载器在类包装类创建时直接获取</span></span><br><span class="line">        systemClassLoader = ClassLoader.getSystemClassLoader();</span><br><span class="line">    &#125; <span class="keyword">catch</span> (SecurityException ignored) &#123;</span><br><span class="line">        <span class="comment">// AccessControlException on Google App Engine</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中系统加载器在类包装类创建时直接获取，而默认加载器由外部类调用时去设置。</p>
+<p>他主要提供了三种获取资源的方法：</p>
+<ul>
+<li>获取 url：<code>getResourceAsURL()</code></li>
+<li>获取输入流：<code>getResourceAsStream()</code></li>
+<li>获取类：<code>classForName()</code></li>
+</ul>
+<h3 id="3使用类加载器获取输入流">3.使用类加载器获取输入流</h3>
+<p>我们以<code>getResourceAsStream(String resource, ClassLoader classLoader)</code>为例，看看他是如何实现的：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> InputStream <span class="title">getResourceAsStream</span><span class="params">(String resource, ClassLoader classLoader)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 先通过 getClassLoaders(classLoader) 获取类加载器</span></span><br><span class="line">    <span class="comment">// 再通过 getResourceAsStream(resource, classLoader) 获取输入流</span></span><br><span class="line">    <span class="keyword">return</span> getResourceAsStream(resource, getClassLoaders(classLoader));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中，<code>getClassLoaders(classLoader)</code>方法主要用于获取按顺序获取一组类加载器，同时会把参数传入的自定义类加载器类加载器插到最前面：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">ClassLoader[] getClassLoaders(ClassLoader classLoader) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> ClassLoader[]&#123;</span><br><span class="line">        classLoader, <span class="comment">// 自定义类加载器</span></span><br><span class="line">        defaultClassLoader, <span class="comment">// 默认类加载器</span></span><br><span class="line">        Thread.currentThread().getContextClassLoader(), <span class="comment">// 线程上下文类加载器</span></span><br><span class="line">        getClass().getClassLoader(), <span class="comment">// ClassLoaderWrapper的类加载器</span></span><br><span class="line">        systemClassLoader&#125;;<span class="comment">// 系统加载器</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>接着，拿到一组 <code>ClassLoader</code> 以后，再去执行 <code>getResourceAsStream(String resource, ClassLoader[] classLoader)</code></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function">InputStream <span class="title">getResourceAsStream</span><span class="params">(String resource, ClassLoader[] classLoader)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 遍历类加载器，执行非空加载器</span></span><br><span class="line">    <span class="keyword">for</span> (ClassLoader cl : classLoader) &#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">null</span> != cl) &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 读取输入流</span></span><br><span class="line">            InputStream returnValue = cl.getResourceAsStream(resource);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 如果拿不到，尝试改个路径再试试</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">null</span> == returnValue) &#123;</span><br><span class="line">                returnValue = cl.getResourceAsStream(<span class="string">&quot;/&quot;</span> + resource);</span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// 如果能获取到输入流，说明需要的类加载器已经找到了，直接终止循环返回输入流</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="keyword">null</span> != returnValue) &#123;</span><br><span class="line">                <span class="keyword">return</span> returnValue;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="4总体流程">4.总体流程</h3>
+<p>综合以上步骤，当我们调用<code>Resources.getResourceAsStream()</code>方法时，整个流程其实是这样的：</p>
+<ul>
+<li>先调用<code>getClassLoaders()</code>方法，获取一个类加载数组；</li>
+<li>类加载数组按顺序放入传入的自定义类加载器、默认类加载器、线程上下文类加载器、<code>ClassLoaderWrapper</code>的类加载器、系统加载器；</li>
+<li>遍历类加载器数组，使用类加载器根据传入路径加载资源，如果其中一个能加载到资源，就不再使用后面的加载器。</li>
+<li>返回输入流。</li>
+</ul>
+<p>以上流程同样使用于<code>classForName()</code>或者<code>getResourceAsURL()</code>。</p>
+<p>也不难看出，<code>Resouces</code>这个类实际上就是在 <code>ClassLoaderWrapper</code> 的基础上对获取到的结果进行进一步处理，比如把输入流转为 Reader 或者文件再返回。</p>
+<p>至此，我们读取到了配置文件。</p>
+<h2 id="二-输入流的解析">二、输入流的解析</h2>
+<p><strong>资源加载主要的包都在 <code>org.apache.ibatis.parsing</code>包下。</strong></p>
+<p>当我们获取到配置文件以后，解析并将其转为<code>XMLConfigBuilder</code>类，他的构造函数很多，我们以<code>XMLConfigBuilder(InputStream inputStream)</code>为例：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">XMLConfigBuilder</span><span class="params">(InputStream inputStream)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>(inputStream, <span class="keyword">null</span>, <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">XMLConfigBuilder</span><span class="params">(Reader reader, String environment, Properties props)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 创建一个XPathParser</span></span><br><span class="line">    <span class="keyword">this</span>(<span class="keyword">new</span> XPathParser(reader, <span class="keyword">true</span>, props, <span class="keyword">new</span> XMLMapperEntityResolver()), environment, props);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 全参构造函数</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">XMLConfigBuilder</span><span class="params">(XPathParser parser, String environment, Properties props)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 初始化一个具有默认参数的Configuration</span></span><br><span class="line">    <span class="keyword">super</span>(<span class="keyword">new</span> Configuration());</span><br><span class="line">    </span><br><span class="line">    ErrorContext.instance().resource(<span class="string">&quot;SQL Mapper Configuration&quot;</span>);</span><br><span class="line">    <span class="keyword">this</span>.configuration.setVariables(props);</span><br><span class="line">    <span class="keyword">this</span>.parsed = <span class="keyword">false</span>;</span><br><span class="line">    <span class="keyword">this</span>.environment = environment;</span><br><span class="line">    <span class="keyword">this</span>.parser = parser;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，<code>XMLConfigBuilder</code>创建实际上也分为两部分：</p>
+<ul>
+<li>初始化一个 <code>XPathParser</code>用于后续解析；</li>
+<li>初始一个具有基本参数的 <code>Configuration</code></li>
+</ul>
+<h3 id="1解析器的构建">1.解析器的构建</h3>
+<p><code>XPathParser</code>类看名字，很容易知道这是一个解析类，他的构造函数还需要传入一个 <code>XMLMapperEntityResolver</code>。</p>
+<p>关于<code>XMLMapperEntityResolver</code>这个类，他实现了 <code>java.io.EntityResolver</code>接口，这个接口的作用如下：</p>
+<blockquote>
+<p>对于解析一个 SAX 文件，程序首先会读取该 Xml 文档上的声明，根据声明去寻找相应的 DTD 声明，以便对文档格式的进行验证。</p>
+<p>默认的寻找规则即通过实现上声明的 DTD 的 URI 地址来下载DTD声明，但是当相应的 DTD 没找到就会报错，所以理想情况是我们直接在本地放一个 DTD 文件，程序加载时直接去本地对应的地址加载。而 EntityResolver 的接口作用就是规定程序如何去寻找 DTD 。</p>
+<p>当我们实现接口的 <code>setEntityResolver()</code> 并向 SAX 驱动器注册一个实例后，程序就会有有限根据 SAX 驱动器里面的规则进行寻址。</p>
+</blockquote>
+<p>而<code>XMLMapperEntityResolver</code>里面就规定了程序如何去指定位置找到 Mybatis 的 DTD 文件，比如 Mybaits 的配置文件与 Mapper 文件就在这两个常量：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String MYBATIS_CONFIG_DTD = <span class="string">&quot;org/apache/ibatis/builder/xml/mybatis-3-config.dtd&quot;</span>;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> String MYBATIS_MAPPER_DTD = <span class="string">&quot;org/apache/ibatis/builder/xml/mybatis-3-mapper.dtd&quot;</span>;</span><br></pre></td></tr></table></figure>
+<p>接着，在构建 xml 解析器 <code>XPathParser</code>的时候，放入<code>XMLMapperEntityResolver</code>与输入流以及其他必要参数</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">XPathParser parser = <span class="keyword">new</span> XPathParser(inputStream, <span class="keyword">true</span>, <span class="keyword">null</span>, <span class="keyword">new</span> XMLMapperEntityResolver());</span><br></pre></td></tr></table></figure>
+<p>此时 <code>XPathParser</code> 实例完成初始化，输入流的 XML 文件被解析为 <code>dom</code> 树并存放在了一个 <code>org.w3c.dom.Document</code>类型的成员变量 <code>document</code>中，通过内部提供 <code>evalNode()</code>方法可以解析为节点 <code>XNode</code> 实例，通过对 <code>XNode</code> 类型的节点进一步解析，使用 <code>evalXXX()</code>为开口的各种方法解析处对应的数据。</p>
+<p>关于 <code>XPathParser</code>，更具体的可以参考<a href="https://blog.csdn.net/hou_ge/article/details/100179262">Mybatis源码学习(5)-解析器模块之XNode、XPathParser_向心行者-CSDN博客</a>。</p>
+<h3 id="2获取解析结果">2.获取解析结果</h3>
+<p><code>XMLConfigBuilder</code>类内部提供诸如<code>dataSourceElement()</code>这类 <code>XXXElement()</code>的方法去直接获取指定的一组标签数据，通过针对配置文件的各个节点的解析，最终得到完整的配置文件数据。</p>
+<p>整个逻辑看起来不简单，实际上对应的代码就两行：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">XMLConfigBuilder builder = <span class="keyword">new</span> XMLConfigBuilder(inputStream);</span><br><span class="line">Configuration config = builder.parse();</span><br></pre></td></tr></table></figure>
+<p>其中 <code>parse()</code>方法如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Configuration <span class="title">parse</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 转换一次以后就不允许转换第二次了</span></span><br><span class="line">    <span class="keyword">if</span> (parsed) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> BuilderException(<span class="string">&quot;Each XMLConfigBuilder can only be used once.&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    parsed = <span class="keyword">true</span>;</span><br><span class="line">    parseConfiguration(parser.evalNode(<span class="string">&quot;/configuration&quot;</span>));</span><br><span class="line">    <span class="keyword">return</span> configuration;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>实际上调用的是 <code>parseConfiguration()</code>方法：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">parseConfiguration</span><span class="params">(XNode root)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        propertiesElement(root.evalNode(<span class="string">&quot;properties&quot;</span>));</span><br><span class="line">        Properties settings = settingsAsProperties(root.evalNode(<span class="string">&quot;settings&quot;</span>));</span><br><span class="line">        loadCustomVfs(settings);</span><br><span class="line">        loadCustomLogImpl(settings);</span><br><span class="line">        typeAliasesElement(root.evalNode(<span class="string">&quot;typeAliases&quot;</span>));</span><br><span class="line">        pluginElement(root.evalNode(<span class="string">&quot;plugins&quot;</span>));</span><br><span class="line">        objectFactoryElement(root.evalNode(<span class="string">&quot;objectFactory&quot;</span>));</span><br><span class="line">        objectWrapperFactoryElement(root.evalNode(<span class="string">&quot;objectWrapperFactory&quot;</span>));</span><br><span class="line">        reflectorFactoryElement(root.evalNode(<span class="string">&quot;reflectorFactory&quot;</span>));</span><br><span class="line">        settingsElement(settings);</span><br><span class="line">        environmentsElement(root.evalNode(<span class="string">&quot;environments&quot;</span>));</span><br><span class="line">        databaseIdProviderElement(root.evalNode(<span class="string">&quot;databaseIdProvider&quot;</span>));</span><br><span class="line">        typeHandlerElement(root.evalNode(<span class="string">&quot;typeHandlers&quot;</span>));</span><br><span class="line">        mapperElement(root.evalNode(<span class="string">&quot;mappers&quot;</span>));</span><br><span class="line">    &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> BuilderException(<span class="string">&quot;Error parsing SQL Mapper Configuration. Cause: &quot;</span> + e, e);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这些数据最终被解析至它的内部变量 <code>configuration</code>中，也就是<code>parse()</code>获取到的对象。</p>
+<h2 id="总结">总结</h2>
+<figure>
+<img src="http://img.xiajibagao.top/image-20210603100220028.png" alt="image-20210603100220028"><figcaption aria-hidden="true">image-20210603100220028</figcaption>
+</figure>
+<p>当 Maybtis 获取配置文件的主要流程如下：</p>
+<p>1.配置读取阶段</p>
+<ul>
+<li>通过 <code>Resources</code> 获取文件输入流；</li>
+<li><code>Resources</code>内部维护了一个 <code>ClassLoaderWrapper</code> 实例，通过<code>ClassLoaderWrapper</code> 先调用<code>getClassLoaders()</code>方法，获取一个类加载数组；</li>
+<li>类加载数组按顺序放入传入的自定义类加载器、默认类加载器、线程上下文类加载器、<code>ClassLoaderWrapper</code>的类加载器、系统加载器；</li>
+<li>遍历类加载器数组，使用类加载器根据传入路径加载资源，如果其中一个能加载到资源，就不再使用后面的加载器。</li>
+<li>返回输入流。</li>
+</ul>
+<p>2.配置解析阶段</p>
+<ul>
+<li>通过<code>XMLConfigBuilder</code>去解析文件输入流；</li>
+<li><code>XMLConfigBuilder</code>内部维护了<code>XPathParser</code>作为解析器，并通过<code>XMLMapperEntityResolver</code>指定解析器寻找的 DTD 文件路径；</li>
+<li>解析器将 Xml 文件解析为标签树；</li>
+<li><code>XMLConfigBuilder</code>根据标签名，通过解析器获取相关配置，并放入<code>configuration</code>配置类；</li>
+<li>返回配置类。</li>
+</ul>
+<p>值得一提的是，这里面提到了<code>XPathParser</code>这么个工具类，理论上只要自己通过 DTD 规定一下 Xml 文件格式，我们也能自己 DIY 一下配置文件读取器。</p>
+]]></content>
+      <categories>
+        <category>Mybatis</category>
+      </categories>
+      <tags>
+        <tag>Mybatis</tag>
+      </tags>
+  </entry>
 </search>

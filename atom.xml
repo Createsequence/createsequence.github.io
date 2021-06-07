@@ -87,6 +87,38 @@
   </entry>
   
   <entry>
+    <title>Mybatis源码学习（一）：配置文件的加载</title>
+    <link href="http://blog.xiajibagao.top/2021/02/09/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/"/>
+    <id>http://blog.xiajibagao.top/2021/02/09/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/</id>
+    <published>2021-02-08T16:00:00.000Z</published>
+    <updated>2021-06-07T09:28:29.877Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
+&lt;p&gt;我们根据源码给的测试用例，可以知道 Mybatis 可以通过以下代码获取 Xml 配置文件并转为配置类：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;String resource = &lt;span class=&quot;string&quot;&gt;&amp;quot;org/apache/ibatis/builder/MinimalMapperConfig.xml&amp;quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;try&lt;/span&gt; (InputStream inputStream = Resources.getResourceAsStream(resource)) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    XMLConfigBuilder builder = &lt;span class=&quot;keyword&quot;&gt;new&lt;/span&gt; XMLConfigBuilder(inputStream);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    Configuration config = builder.parse();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;拿到 &lt;code&gt;Configuration&lt;/code&gt; 以后就可以通过&lt;code&gt;SqlSessionFactoryBuilder().build()&lt;/code&gt;方法去创建&lt;code&gt;SqlSessionFactory&lt;/code&gt;了。当然，&lt;code&gt;SqlSessionFactoryBuilder().build()&lt;/code&gt;有多个重载方法，但是无外乎都要经过转换为 &lt;code&gt;Configuration&lt;/code&gt; 这一步。&lt;/p&gt;
+&lt;p&gt;整个过程就分为三步：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;获取配置文件输入流：&lt;code&gt;getResourceAsStream()&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;解析得到配置文件：&lt;code&gt;XMLConfigBuilder&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;将解析得到的结果转为配置类：&lt;code&gt;XMLConfigBuilder.parse()&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;一-输入流的读取&quot;&gt;一、输入流的读取&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;资源加载主要的包都在 &lt;code&gt;org.apache.ibatis.io&lt;/code&gt;包下。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3 id=&quot;1程序入口&quot;&gt;1.程序入口&lt;/h3&gt;
+&lt;p&gt;点进&lt;code&gt;Resources.getResourceAsStream(resource)&lt;/code&gt;，发现它是一个重载方法，原本的方法是需要传入 &lt;code&gt;ClassLoader&lt;/code&gt; 的，但是这里直接传了个 null：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Mybatis" scheme="http://blog.xiajibagao.top/categories/Mybatis/"/>
+    
+    
+    <category term="Mybatis" scheme="http://blog.xiajibagao.top/tags/Mybatis/"/>
+    
+  </entry>
+  
+  <entry>
     <title>synchronized底层原理探究</title>
     <link href="http://blog.xiajibagao.top/2021/02/06/%E5%A4%9A%E7%BA%BF%E7%A8%8B/synchronized%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E6%8E%A2%E7%A9%B6/"/>
     <id>http://blog.xiajibagao.top/2021/02/06/%E5%A4%9A%E7%BA%BF%E7%A8%8B/synchronized%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E6%8E%A2%E7%A9%B6/</id>
@@ -653,45 +685,6 @@
 &lt;p&gt;他实现了 List 接口，但是也实现了 Queue 的子接口 Deque，因此除了列表，他也具备双端队列的特性。&lt;/p&gt;
 &lt;p&gt;他的父类不再是 AbstractList，而是另一个继承了 AbstractList 的抽象类 AbstractSequentialList，这个类重写了 AbstractList 的一些方法，使之更适合 LinkedList 这样的链表。&lt;/p&gt;
 &lt;h2 id=&quot;二-abstractsequentialist&quot;&gt;二、AbstractSequentiaList&lt;/h2&gt;</summary>
-    
-    
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>java集合源码分析（三）：ArrayList</title>
-    <link href="http://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/"/>
-    <id>http://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/</id>
-    <published>2020-12-01T16:00:00.000Z</published>
-    <updated>2020-12-22T08:13:58.344Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;ArrayList 是 List 接口下一个基于可扩展数组的实现类，它和它的兄弟类 Vector 有着一样的继承关系，也都能随机访问，但是不同的是不能保证线程安全。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;这是关于 java 集合类源码的第三篇文章。往期文章：&lt;/p&gt;
-&lt;ol type=&quot;1&quot;&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;一-arraylist-的类关系&quot;&gt;一、ArrayList 的类关系&lt;/h2&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201201161347920.png&quot; alt=&quot;image-20201201161347920&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20201201161347920&lt;/figcaption&gt;
-&lt;/figure&gt;
-&lt;p&gt;ArrayList 实现了三个接口，继承了一个抽象类，其中 Serializable ，Cloneable 与 RandomAccess 接口都是用于标记的空接口，他的主要抽象方法来自于 List，一些实现来自于 AbstractList。&lt;/p&gt;
-&lt;h3 id=&quot;1abstractlist-与-list&quot;&gt;1.AbstractList 与 List&lt;/h3&gt;
-&lt;p&gt;ArrayList 实现了 List 接口，是 List 接口的实现类之一，他通过继承抽象类 AbstractList 获得的大部分方法的实现。&lt;/p&gt;
-&lt;p&gt;比较特别的是，理论上父类 AbstractList 已经实现类 AbstractList 接口，那么理论上 ArrayList 就已经可以通过父类获取 List 中的抽象方法了，不必再去实现 List 接口。&lt;/p&gt;
-&lt;p&gt;网上关于这个问题的答案众说纷纭，有说是为了通过共同的接口便于实现 JDK 代理，也有说是为了代码规范性与可读性的，在 Stack Overflow 上 &lt;a href=&quot;https://stackoverflow.com/questions/2165204/why-does-linkedhashsete-extend-hashsete-and-implement-sete&quot;&gt;Why does LinkedHashSet extend HashSet and implement Set&lt;/a&gt; 一个据说问过原作者的老哥给出了一个 &lt;code&gt;it was a mistake&lt;/code&gt; 的回答，但是这似乎不足以解释为什么几乎所有的容器类都有类似的行为。事实到底是怎么回事，也许只有真正的原作者知道了。&lt;/p&gt;</summary>
     
     
     
