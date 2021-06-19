@@ -287,6 +287,195 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/07/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E5%9B%9B%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E7%BC%96%E7%A0%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/07/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E5%9B%9B%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E7%BC%96%E7%A0%81/" itemprop="url">数据结构与算法（十四）：赫夫曼编码</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-19T00:00:00+08:00">
+                2020-07-19
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4.5k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="一-什么是赫夫曼编码">一、什么是赫夫曼编码</h2>
+<p>哈夫曼编码(Huffman Coding)，又称霍夫曼编码，是一种编码方式，可变字长编码(VLC)的一种。Huffman于1952年提出一种编码方法，该方法完全依据字符出现概率来构造异字头的平均长度最短的码字，有时称之为最佳编码，</p>
+<p>使用赫夫曼编码可以有效的压缩数据，通常可以节省20%~90%的空间。</p>
+<p>在理解赫夫曼编码前，我们需要对通讯领域的两种编码方式有个粗略的了解。</p>
+<p>假设我们需要传输 <code>I'm a jvav programmer and I love programming</code>这样一句话，我们有两种传输方式：</p>
+<ol type="1">
+<li><p>定长编码</p>
+<p>直接转换为对应长度的二进制格式</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">01101111</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100111</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100111</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span></span><br></pre></td></tr></table></figure>
+<p>总长度为296个字符</p></li>
+<li><p>变长编码</p>
+<p>按照各个字符出现的次数进行编码，按出现次数编码，出现次数越多的，则编码越小：</p>
+<p>比如空格出现最多次，然后是a，以此类推......</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>=  ，<span class="number">1</span>=a，<span class="number">10</span>=i，<span class="number">11</span>=o......</span><br></pre></td></tr></table></figure>
+<p>当传输的信息越多的时候，变长编码实际传输的长度相对定长编码就越小</p></li>
+</ol>
+<p>另外，我们还需要了解一下什么是补码：</p>
+<blockquote>
+<p>计算机里面只有加法器，没有减法器，所以减法必须用加法来完成。 对于 100 以内的十进制数，“-1”就可以用"+99"代替。比如 25 － 1 ＝ 24，可以写成 25 ＋ 99 ＝ (1)24。 如果限定了两位数，那“-1”和“+99”就是等效的。同样，“-2”可以用“+98”代替。</p>
+<p>它们之间，称为<strong>补数</strong>，而100就称为<strong>模</strong>。</p>
+<p>对于<strong>8位二进制数</strong>：0000 0000~1111 1111(255)，<strong>模为256</strong>。 －1，可以用 +255(1111 1111)代替。 －2，可以用 +254(1111 1110)代替</p>
+<p>这些二进制数，就称为负数的<strong>补码</strong></p>
+</blockquote>
+<h2 id="二-赫夫曼编码思路">二、赫夫曼编码思路</h2>
+<p>同样举个例子，我们要传输 <code>i like like like java do you like a java</code>这段话</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/07/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E5%9B%9B%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E7%BC%96%E7%A0%81/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/07/17/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1953,185 +2142,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E8%BF%B7%E5%AE%AB%E5%9B%9E%E6%BA%AF%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E8%BF%B7%E5%AE%AB%E5%9B%9E%E6%BA%AF%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/" itemprop="url">数据结构与算法（七）：迷宫回溯和八皇后问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-26T00:00:00+08:00">
-                2020-06-26
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.9k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一-迷宫回溯问题">一、迷宫回溯问题</h2>
-<h3 id="1问题">1.问题</h3>
-<p>一个7*8的数组模拟迷宫，障碍用1表示，通路使用0表示，给定起点（1,1）和终点（6,5），要求给出起点到终点的通路</p>
-<p><img src="http://img.xiajibagao.top/20200626224906.png"><img src="http://img.xiajibagao.top/20200626224701.png"></p>
-<h3 id="2解题思路">2.解题思路</h3>
-<ol type="1">
-<li>首先，我们需要给程序一个寻向的基本策略，我们先假定寻向顺序为“下-右-上-左”，也就是说从起点出发，先往下走，往下走不通就往右.....以此类推</li>
-<li>然后我们需要给走过的路一个标记，暂记为2</li>
-<li>而当从一个方向走到一个只能原路返回的死胡同时，就给这段路标记为3</li>
-<li>当抵达终点坐标（6,5）时程序结束</li>
-</ol>
-<h3 id="3代码实现">3.代码实现</h3>
-<h4 id="31生成地图">3.1生成地图</h4>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 创建一个二维数组,用于模拟8*7迷宫</span></span><br><span class="line"><span class="comment"> * 使用1表示不可通过的实心方块，0表示可通过砖块</span></span><br><span class="line"><span class="comment"> * （6,5）为默认终点，（1,1）为默认起点</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span>[][] getMap()&#123;</span><br><span class="line">    <span class="keyword">int</span>[][] map = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">8</span>][<span class="number">7</span>];</span><br><span class="line">    <span class="comment">//上下全置为1</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;i &lt;<span class="number">7</span> ;i++)&#123;</span><br><span class="line">        map[<span class="number">0</span>][i] = <span class="number">1</span>;</span><br><span class="line">        map[<span class="number">7</span>][i] = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//左右全置为1</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; <span class="number">8</span>;i++)&#123;</span><br><span class="line">        map[i][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">        map[i][<span class="number">6</span>] = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//设置挡板</span></span><br><span class="line">    map[<span class="number">3</span>][<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">    map[<span class="number">3</span>][<span class="number">2</span>] = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//输出地图</span></span><br><span class="line">    System.out.println(<span class="string">&quot;地图的初始情况:&quot;</span>);</span><br><span class="line">    showMap(map);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> map;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 展示地图</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> map</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">showMap</span><span class="params">(<span class="keyword">int</span>[][] map)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; <span class="number">8</span>;i++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>;j &lt; <span class="number">7</span>;j++)&#123;</span><br><span class="line">            System.out.print(map[i][j] + <span class="string">&quot; &quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="32-寻路逻辑的实现">3.2 寻路逻辑的实现</h4>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E8%BF%B7%E5%AE%AB%E5%9B%9E%E6%BA%AF%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2186,7 +2196,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">86</span>
+                  <span class="site-state-item-count">87</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
