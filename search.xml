@@ -9497,6 +9497,9 @@
     <url>/2021/06/05/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>我们知道，一个框架的运行，往往都从配置文件的加载开始，本篇文章作为 Mybatis 源码学习的第一篇文章，将结合源码，阐述 Mybatis 是如何加载 mybatis-config.xml 配置文件的。</p>
+<p>Mybatis 版本：3.5.8</p>
+<p>JDK 版本：1.8</p>
+<p>Mysql 版本：</p>
 <h2 id="一-输入流的读取">一、输入流的读取</h2>
 <p>我们根据源码给的测试用例，可以知道 Mybatis 可以通过以下代码获取 Xml 配置文件并转为配置类：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">String resource = <span class="string">&quot;org/apache/ibatis/builder/MinimalMapperConfig.xml&quot;</span>;</span><br><span class="line"><span class="keyword">try</span> (InputStream inputStream = Resources.getResourceAsStream(resource)) &#123;</span><br><span class="line">    XMLConfigBuilder builder = <span class="keyword">new</span> XMLConfigBuilder(inputStream);</span><br><span class="line">    Configuration config = builder.parse();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -9595,7 +9598,6 @@
 <li>返回配置类。</li>
 </ul>
 <p>值得一提的是，这里面提到了<code>XPathParser</code>这么个工具类，理论上只要自己通过 DTD 规定一下 Xml 文件格式，我们也能自己 DIY 一下配置文件读取器。</p>
-<p><strong>另外，我有个问题是，为啥要通过类加载器去加载资源？不能直接用io流吗？</strong></p>
 ]]></content>
       <categories>
         <category>Mybatis</category>
@@ -9605,8 +9607,8 @@
       </tags>
   </entry>
   <entry>
-    <title>Mybatis源码学习（二）：Mapper接口与映射文件的加载</title>
-    <url>/2021/06/14/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMapper%E6%8E%A5%E5%8F%A3%E4%B8%8E%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/</url>
+    <title>Mybatis源码学习（二）：Mapper接口的绑定</title>
+    <url>/2021/06/14/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMapper%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%BB%91%E5%AE%9A/</url>
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>根据上一篇文章，我们了解了 Mybatis 的配置文件是如何被加载的。在完成这一步之后，Mybatis 还需要根据配置文件中指定的路径去加载 Mapper 接口与写有 sql 的相应映射文件，最终完成两者的绑定。</p>
 <p>在本篇文章，我们将结合源码阐述这个过程。</p>
@@ -9615,9 +9617,7 @@
 <p><a href="https://blog.xiajibagao.top/2021/06/05/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/">Mybatis源码学习（一）：配置文件的加载</a></p>
 </blockquote>
 <h2 id="一-加载接口">一、加载接口</h2>
-<figure>
-<img src="http://img.xiajibagao.top/image-20210609000011106.png" alt="image-20210609000011106"><figcaption aria-hidden="true">image-20210609000011106</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20210609000011106.png" alt="image-20210609000011106"></p>
 <h3 id="1xmlconfigbuilder">1.XMLConfigBuilder</h3>
 <p>见名知意，这个类的作用在于<strong>解析映射文件</strong>，根据上文，我们会了解到他里面有各种 <code>标签名+Element</code>为名的解析方法，其中，针对 Mapper 映射文件解析方法就是<code>mapperElement()</code>。</p>
 <p>在开始之前，我们需要知道，在映射文件中有四种指定 Mybatis 接口的方式：</p>
@@ -9640,9 +9640,7 @@
 </ul>
 <p>后者在下文就会讲到，前者将在实现类部分的文章细说。总而言之，至此所有 Xml 文件中指定的 Mapper 接口都加载完毕了。</p>
 <h2 id="二-映射文件的解析">二、映射文件的解析</h2>
-<figure>
-<img src="http://img.xiajibagao.top/image-20210619202948385.png" alt="image-20210619202948385"><figcaption aria-hidden="true">image-20210619202948385</figcaption>
-</figure>
+<p><img src="http://img.xiajibagao.top/image-20210619202948385.png" alt="image-20210619202948385"></p>
 <h3 id="1标签与对象之间的关系">1.标签与对象之间的关系</h3>
 <p>我们以最简单的映射文件配置为例：</p>
 <figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.huang.read.base.PersonDao&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;selectByPrimaryKey&quot;</span> <span class="attr">parameterType</span>=<span class="string">&quot;java.lang.Integer&quot;</span> <span class="attr">resultMap</span>=<span class="string">&quot;BaseResultMap&quot;</span>&gt;</span></span><br><span class="line">        select</span><br><span class="line">        id, `name`</span><br><span class="line">        from Person</span><br><span class="line">        where id = #&#123;id,jdbcType=INTEGER&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -9670,9 +9668,9 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">loadXmlResource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Spring may not know the real resource name so we check a flag</span></span><br><span class="line">    <span class="comment">// to prevent loading again a resource twice</span></span><br><span class="line">    <span class="comment">// this flag is set at XMLMapperBuilder#bindMapperForNamespace</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 是否已经被加载过</span></span><br><span class="line">    <span class="keyword">if</span> (!configuration.isResourceLoaded(<span class="string">&quot;namespace:&quot;</span> + type.getName())) &#123;</span><br><span class="line">        <span class="comment">// 将 xxx.xxx.xxx 的接口全限定名替换为 xxx/xxx/xxx.xml，获取对应的xml文件</span></span><br><span class="line">        String xmlResource = type.getName().replace(<span class="string">&#x27;.&#x27;</span>, <span class="string">&#x27;/&#x27;</span>) + <span class="string">&quot;.xml&quot;</span>;</span><br><span class="line">        <span class="comment">// 如果 xxx/xxx/xxx.xml 不行，换成 /xxx/xxx/xxx.xml 再试试</span></span><br><span class="line">        InputStream inputStream = type.getResourceAsStream(<span class="string">&quot;/&quot;</span> + xmlResource);</span><br><span class="line">        <span class="keyword">if</span> (inputStream == <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="comment">// Search XML mapper that is not in the module but in the classpath.</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 如果加载不到，就通过相对路径找</span></span><br><span class="line">                inputStream = Resources.getResourceAsStream(type.getClassLoader(), xmlResource);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e2) &#123;</span><br><span class="line">                <span class="comment">// ignore, resource is not required</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (inputStream != <span class="keyword">null</span>) &#123;</span><br><span class="line">            XMLMapperBuilder xmlParser = <span class="keyword">new</span> XMLMapperBuilder(inputStream, assistant.getConfiguration(), xmlResource, configuration.getSqlFragments(), type.getName());</span><br><span class="line">            xmlParser.parse();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里的 <code>XMLMapperBuilder</code>实际上跟 <code>XMLConfigBuilder</code>作用类似，最后也是通过 <code>XPathParser</code> 工具类去解析 Xml 文件，只不过<code>XMLMapperBuilder</code>解析的是映射文件而不是配置文件。</p>
 <p>我们查看它的入口方法 <code>parse()</code> ：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">parse</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 检查配置文件是否被加载过</span></span><br><span class="line">    <span class="keyword">if</span> (!configuration.isResourceLoaded(resource)) &#123;</span><br><span class="line">        <span class="comment">// 解析根节点mapper标签，然后标记为已解析</span></span><br><span class="line">        configurationElement(parser.evalNode(<span class="string">&quot;/mapper&quot;</span>));</span><br><span class="line">        configuration.addLoadedResource(resource);</span><br><span class="line">        <span class="comment">// 解析映射文件，并且绑定到接口对应的Namespace</span></span><br><span class="line">        bindMapperForNamespace();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 解析ResultMap</span></span><br><span class="line">    parsePendingResultMaps();</span><br><span class="line">    <span class="comment">// 解析二级缓存</span></span><br><span class="line">    parsePendingCacheRefs();</span><br><span class="line">    <span class="comment">// 转为Mapper中的方法声明</span></span><br><span class="line">    parsePendingStatements();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">parse</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 检查配置文件是否被加载过</span></span><br><span class="line">    <span class="keyword">if</span> (!configuration.isResourceLoaded(resource)) &#123;</span><br><span class="line">        <span class="comment">// 解析根节点mapper标签，然后标记为已解析</span></span><br><span class="line">        <span class="comment">// 注意，方法声明在这一步进行解析</span></span><br><span class="line">        configurationElement(parser.evalNode(<span class="string">&quot;/mapper&quot;</span>));</span><br><span class="line">        configuration.addLoadedResource(resource);</span><br><span class="line">        <span class="comment">// 解析映射文件，并且绑定到接口对应的Namespace</span></span><br><span class="line">        bindMapperForNamespace();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 解析ResultMap</span></span><br><span class="line">    parsePendingResultMaps();</span><br><span class="line">    <span class="comment">// 解析二级缓存</span></span><br><span class="line">    parsePendingCacheRefs();</span><br><span class="line">    <span class="comment">// 转为Mapper中的方法声明</span></span><br><span class="line">    parsePendingStatements();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h3 id="4bindmapperfornamespace-方法">4.bindMapperForNamespace 方法</h3>
-<p><code>parse()</code>里调用了 <code>bindMapperForNamespace()</code> 方法，这里根据映射文件的 namespace 属性把映射文件与接口绑定起来了：</p>
+<p><code>parse()</code>里调用了 <code>bindMapperForNamespace()</code>  方法，这里根据映射文件的 namespace 属性把映射文件与接口绑定起来了：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">bindMapperForNamespace</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取配置文件中的namespace属性</span></span><br><span class="line">    String namespace = builderAssistant.getCurrentNamespace();</span><br><span class="line">    <span class="keyword">if</span> (namespace != <span class="keyword">null</span>) &#123;</span><br><span class="line">        Class&lt;?&gt; boundType = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 根据配置文件找到接口类</span></span><br><span class="line">            boundType = Resources.classForName(namespace);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">            <span class="comment">// ignore, bound type is not required</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果这个接口类还未加载过，则加载进全局配置类的映射注册表MapperRegistry中</span></span><br><span class="line">        <span class="keyword">if</span> (boundType != <span class="keyword">null</span> &amp;&amp; !configuration.hasMapper(boundType)) &#123;</span><br><span class="line">            <span class="comment">// Spring may not know the real resource name so we set a flag</span></span><br><span class="line">            <span class="comment">// to prevent loading again this resource from the mapper interface</span></span><br><span class="line">            <span class="comment">// look at MapperAnnotationBuilder#loadXmlResource</span></span><br><span class="line">            configuration.addLoadedResource(<span class="string">&quot;namespace:&quot;</span> + namespace);</span><br><span class="line">            configuration.addMapper(boundType);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里的 <code>addMapper()</code>方法其实还是要往 <code>MapperRegister</code>里面注册接口。也就是说<strong>同一个接口实际上可能会被注册两次</strong>，在 <code>XMLConfigBuilder</code>的 <code>mapperElement()</code>里注册一次，在现在 <code>XMLMapperBuilder</code>的<code>bindMapperForNamespace()</code>里面再注册一次，这也是<strong>为什么第二次注册需要检查接口是否重复注册的原因</strong>了。</p>
 <h3 id="5parsependingstatements-方法">5.parsePendingStatements 方法</h3>
@@ -9690,46 +9688,70 @@
 <p>关于这个问题，我们回头看看 <code>XMLConfigBuilder</code> 里的 <code>mapperElement()</code>，其实就能理明白接口与映射文件的加载顺序。</p>
 <p>首先，Myabtis 的四种配置方式，其实本质上对应着两种顺序：</p>
 <ul>
-<li><strong>先找接口，再根据接口全限定名找映射文件</strong>：<code>&lt;package&gt;</code>和 <code>&lt;mapper class="xxx.xxx.xxx"&gt;</code>；</li>
-<li><strong>先找映射文件，再根据 namespace 找接口</strong>： <code>&lt;mapper url="xxx/xxx/xxx.xml"&gt;</code> 和 <code>&lt;mapper resource="xxx/xxx/xxx.xml"&gt;</code></li>
+<li><strong>先找接口，再根据接口全限定名找映射文件</strong>：<code>&lt;package&gt;</code>和 <code>&lt;mapper class=&quot;xxx.xxx.xxx&quot;&gt;</code>；</li>
+<li><strong>先找映射文件，再根据 namespace 找接口</strong>： <code>&lt;mapper url=&quot;xxx/xxx/xxx.xml&quot;&gt;</code> 和  <code>&lt;mapper resource=&quot;xxx/xxx/xxx.xml&quot;&gt;</code></li>
 </ul>
 <p><strong>先找接口</strong></p>
-<ol type="1">
-<li><p>直接先在指定位置找到接口类，注册到 <code>MapperRegister</code>里面；</p></li>
-<li><p>在此时创建 <code>MapperAnnotationBuilder</code>，解析<code>@Select</code>这样的 sql 标签；</p></li>
-<li><p>接着将接口类的全限定名 <code>com.xxx.xxx.class</code> 转成 <code>com/xxx/xxx/xml</code>作为映射文件路径，然后创建 <code>XMLMapperBuilder</code>去根据路径解析映射文件，表现出来的形式就是接口与映射文件需要同包同名；</p></li>
-<li><p>解析映射文件的过程中，再根据映射文件的 namespace 属性找接口，试着再注册一次，如果已经注册过就不注册。</p>
-<p>另外需要注意的是，这里如果映射文件的 namespace 跟 <code>MapperAnnotationBuilder</code>的全限定名不一样就会报错。</p></li>
+<ol>
+<li>
+<p>直接先在指定位置找到接口类，注册到 <code>MapperRegister</code>里面；</p>
+</li>
+<li>
+<p>在此时创建 <code>MapperAnnotationBuilder</code>，解析<code>@Select</code>这样的 sql 标签；</p>
+</li>
+<li>
+<p>接着将接口类的全限定名 <code>com.xxx.xxx.class</code> 转成 <code>com/xxx/xxx/xml</code>作为映射文件路径，然后创建 <code>XMLMapperBuilder</code>去根据路径解析映射文件，表现出来的形式就是接口与映射文件需要同包同名；</p>
+</li>
+<li>
+<p>解析映射文件的过程中，再根据映射文件的 namespace 属性找接口，试着再注册一次，如果已经注册过就不注册。</p>
+<p>另外需要注意的是，这里如果映射文件的 namespace 跟 <code>MapperAnnotationBuilder</code>的全限定名不一样就会报错。</p>
+</li>
 </ol>
 <p><strong>先找映射文件</strong></p>
-<ol type="1">
+<ol>
 <li>直接根据配置文件路径找到映射文件；</li>
 <li>根据映射文件 namespace 找到并且注册接口。</li>
 </ol>
 <p>这里我们就完全明白了：</p>
 <ul>
-<li><p>为什么<code>XMLMapperBuilder</code>解析映射文件注册接口的时候要做重复校验？</p>
-<p>因为根据配置方式的不同，可能在加载映射文件之前接口已经被注册一次了；</p></li>
-<li><p>为什么 package 和 class 的配置方式需要接口和映射文件同包同名？</p>
-<p>因为加载完接口会直接根据接口全限定名找对应的映射文件；</p></li>
+<li>
+<p>为什么<code>XMLMapperBuilder</code>解析映射文件注册接口的时候要做重复校验？</p>
+<p>因为根据配置方式的不同，可能在加载映射文件之前接口已经被注册一次了；</p>
+</li>
+<li>
+<p>为什么 package 和 class 的配置方式需要接口和映射文件同包同名？</p>
+<p>因为加载完接口会直接根据接口全限定名找对应的映射文件；</p>
+</li>
 </ul>
 <h3 id="2接口可不可以有多个映射文件">2.接口可不可以有多个映射文件？</h3>
 <p>答案是<strong>可以</strong>，根据上述理论，一个接口是可以有多个映射文件的。</p>
-<p>也就是说，如果有一个接口叫 <code>Person.class</code>，里面的 <code>selectOne()</code> 方法在 <code>Person.xml</code>，而 <code>selectList()</code>方法在<code>Person2.xml</code>，而两个映射文件的 namespace 都指向了 <code>Person.class</code>。</p>
-<p>当我们在配置文件中以 <code>&lt;mapper url="xxx/xxx/xxx.xml"&gt;</code> 或 <code>&lt;mapper resource="xxx/xxx/xxx.xml"&gt;</code> 的方式配置它并运行程序，那么实际上 <code>Person.class</code>所有的方法都可以正常调用。</p>
+<p>也就是说，如果有一个接口叫 <code>Person.class</code>，里面的 <code>selectOne()</code> 方法在 <code>Person.xml</code>，而  <code>selectList()</code>方法在<code>Person2.xml</code>，而两个映射文件的 namespace 都指向了 <code>Person.class</code>。</p>
+<p>当我们在配置文件中以 <code>&lt;mapper url=&quot;xxx/xxx/xxx.xml&quot;&gt;</code> 或  <code>&lt;mapper resource=&quot;xxx/xxx/xxx.xml&quot;&gt;</code> 的方式配置它并运行程序，那么实际上 <code>Person.class</code>所有的方法都可以正常调用。</p>
 <p>从理论上来说，<code>Person.xml</code> 和 <code>Person2.xml</code>的信息最终都会合并到一个 <code>Statement</code> 里头，这两个映射文件除了 <code>&lt;Mapper&gt;&lt;/Mapper&gt;</code>跟标签外，其他<strong>内容都是互通的</strong>，在<code>Person.xml</code>配置的 <code>&lt;Sql&gt;</code>或者 <code>&lt;ResultMap&gt;</code> 标签在 <code>Person2.xml</code>中一样可以正常使用。</p>
 <h2 id="总结">总结</h2>
 <p>我们总结一下 Mapper 接口与映射文件的加载过程：</p>
-<ol type="1">
-<li><p>在 <code>XmlConfigBuilder</code> 解析 <code>&lt;mappers&gt;&lt;/ mappers&gt;</code>标签，获取要解析的 Mapper 集合</p>
-<p>如果 mapper 是以 package 标签或者 mapper 的 class 属性配置的，就带着配置文件路径直接跳到步骤 4</p>
-<p>如果 mapper 是以 mapper 的 resource 或者 url 属性配置的，就继续步骤 2；</p></li>
-<li><p>在 <code>MapperRegister</code> 中注册接口；</p></li>
-<li><p>对每一个 Mapper 接口创建一个 <code>MapperAnnotationBuilder</code>，用于解析 <code>@Select</code>这样的 sql 标签</p>
-<p>将 <code>xxx.xxx.xxx</code> 的接口全限定名转为 <code>xxx/xxx/xxx.xml</code>作为步骤 4 的配置文件路径；</p></li>
-<li><p>创建一个 <code>XMLMapperBUilder</code>，并根据配置文件路径找到映射文件并解析；</p></li>
-<li><p>调用 <code>bindMapperForNamespace()</code>方法，解析映射文件并获取映射文件的 namespace 属性，找到并将接口注册到 <code>MapperRegister</code> 中；</p></li>
-<li><p>调用 <code>parsePendingStatements()</code>方法，解析映射文件的方法声明，然后通过 <code>XMLStatementBuilder</code>转为 <code>MappedStatement</code>。</p></li>
+<ol>
+<li>
+<p>在 <code>XmlConfigBuilder</code> 解析 <code>&lt;mappers&gt;&lt;/ mappers&gt;</code>标签，获取要解析的 Mapper 集合</p>
+<p>如果 mapper 是以 package 标签或者  mapper 的 class 属性配置的，就带着配置文件路径直接跳到步骤 4</p>
+<p>如果 mapper 是以 mapper 的 resource 或者 url 属性配置的，就继续步骤 2；</p>
+</li>
+<li>
+<p>在 <code>MapperRegister</code> 中注册接口；</p>
+</li>
+<li>
+<p>对每一个 Mapper 接口创建一个 <code>MapperAnnotationBuilder</code>，用于解析 <code>@Select</code>这样的 sql 标签</p>
+<p>将 <code>xxx.xxx.xxx</code> 的接口全限定名转为 <code>xxx/xxx/xxx.xml</code>作为步骤 4 的配置文件路径；</p>
+</li>
+<li>
+<p>创建一个 <code>XMLMapperBUilder</code>，并根据配置文件路径找到映射文件并解析；</p>
+</li>
+<li>
+<p>调用 <code>bindMapperForNamespace()</code>方法，解析映射文件并获取映射文件的 namespace 属性，找到并将接口注册到 <code>MapperRegister</code> 中；</p>
+</li>
+<li>
+<p>调用 <code>parsePendingStatements()</code>方法，解析映射文件的方法声明，然后通过 <code>XMLStatementBuilder</code>转为 <code>MappedStatement</code>。</p>
+</li>
 </ol>
 ]]></content>
       <categories>
