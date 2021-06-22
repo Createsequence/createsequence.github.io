@@ -372,7 +372,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  4.4k
+                  4.6k
                 </span>
               
 
@@ -578,7 +578,7 @@
 <p>我们知道，一个框架的运行，往往都从配置文件的加载开始，本篇文章作为 Mybatis 源码学习的第一篇文章，将结合源码，阐述 Mybatis 是如何加载 mybatis-config.xml 配置文件的。</p>
 <p>Mybatis 版本：3.5.8</p>
 <p>JDK 版本：1.8</p>
-<p>Mysql 版本：</p>
+<p>Mysql 版本：5.6.51</p>
 <h2 id="一-输入流的读取">一、输入流的读取</h2>
 <p>我们根据源码给的测试用例，可以知道 Mybatis 可以通过以下代码获取 Xml 配置文件并转为配置类：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String resource = <span class="string">&quot;org/apache/ibatis/builder/MinimalMapperConfig.xml&quot;</span>;</span><br><span class="line"><span class="keyword">try</span> (InputStream inputStream = Resources.getResourceAsStream(resource)) &#123;</span><br><span class="line">    XMLConfigBuilder builder = <span class="keyword">new</span> XMLConfigBuilder(inputStream);</span><br><span class="line">    Configuration config = builder.parse();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

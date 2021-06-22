@@ -81,17 +81,17 @@
 
 
 
-<meta name="description" content="概述 我们知道，一个框架的运行，往往都从配置文件的加载开始，本篇文章作为 Mybatis 源码学习的第一篇文章，将结合源码，阐述 Mybatis 是如何加载 mybatis-config.xml 配置文件的。 Mybatis 版本：3.5.8 JDK 版本：1.8 Mysql 版本： 一、输入流的读取 我们根据源码给的测试用例，可以知道 Mybatis 可以通过以下代码获取 Xml 配置文件并转为">
+<meta name="description" content="概述 我们知道，一个框架的运行，往往都从配置文件的加载开始，本篇文章作为 Mybatis 源码学习的第一篇文章，将结合源码，阐述 Mybatis 是如何加载 mybatis-config.xml 配置文件的。 Mybatis 版本：3.5.8 JDK 版本：1.8 Mysql 版本：5.6.51 一、输入流的读取 我们根据源码给的测试用例，可以知道 Mybatis 可以通过以下代码获取 Xml 配">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Mybatis源码学习（一）：配置文件的加载">
 <meta property="og:url" content="http://blog.xiajibagao.top/2021/06/05/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="概述 我们知道，一个框架的运行，往往都从配置文件的加载开始，本篇文章作为 Mybatis 源码学习的第一篇文章，将结合源码，阐述 Mybatis 是如何加载 mybatis-config.xml 配置文件的。 Mybatis 版本：3.5.8 JDK 版本：1.8 Mysql 版本： 一、输入流的读取 我们根据源码给的测试用例，可以知道 Mybatis 可以通过以下代码获取 Xml 配置文件并转为">
+<meta property="og:description" content="概述 我们知道，一个框架的运行，往往都从配置文件的加载开始，本篇文章作为 Mybatis 源码学习的第一篇文章，将结合源码，阐述 Mybatis 是如何加载 mybatis-config.xml 配置文件的。 Mybatis 版本：3.5.8 JDK 版本：1.8 Mysql 版本：5.6.51 一、输入流的读取 我们根据源码给的测试用例，可以知道 Mybatis 可以通过以下代码获取 Xml 配">
 <meta property="og:locale">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20210602102537931.png">
 <meta property="og:image" content="http://img.xiajibagao.top/image-20210603100220028.png">
 <meta property="article:published_time" content="2021-06-04T16:00:00.000Z">
-<meta property="article:modified_time" content="2021-06-19T16:06:40.926Z">
+<meta property="article:modified_time" content="2021-06-21T14:44:39.088Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="Mybatis">
 <meta name="twitter:card" content="summary">
@@ -404,7 +404,7 @@
 <p>我们知道，一个框架的运行，往往都从配置文件的加载开始，本篇文章作为 Mybatis 源码学习的第一篇文章，将结合源码，阐述 Mybatis 是如何加载 mybatis-config.xml 配置文件的。</p>
 <p>Mybatis 版本：3.5.8</p>
 <p>JDK 版本：1.8</p>
-<p>Mysql 版本：</p>
+<p>Mysql 版本：5.6.51</p>
 <h2 id="一-输入流的读取">一、输入流的读取</h2>
 <p>我们根据源码给的测试用例，可以知道 Mybatis 可以通过以下代码获取 Xml 配置文件并转为配置类：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String resource = <span class="string">&quot;org/apache/ibatis/builder/MinimalMapperConfig.xml&quot;</span>;</span><br><span class="line"><span class="keyword">try</span> (InputStream inputStream = Resources.getResourceAsStream(resource)) &#123;</span><br><span class="line">    XMLConfigBuilder builder = <span class="keyword">new</span> XMLConfigBuilder(inputStream);</span><br><span class="line">    Configuration config = builder.parse();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
