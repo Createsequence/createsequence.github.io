@@ -9903,26 +9903,27 @@
   </entry>
   <entry>
     <title>发布自己的jar包到Maven官方仓库</title>
-    <url>/2021/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/</url>
+    <url>/2022/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/</url>
     <content><![CDATA[<h2 id="一-申请groupid">一、申请GroupId</h2>
 <p>我们知道，一个maven坐标由<code>groupId</code>，<code>artifactId</code>和<code>version</code>组成，后两者可以在pom中调整，而可以用在中央仓库的 <code>groupId</code>需要申请。由于 Maven 中央仓库由 sonatype 公司进行运营，所以我们首先需要<a href="https://issues.sonatype.org/secure/Signup!default.jspa">注册一个sonatype账号</a>，通过该账号去申请一个 <code>groupId</code>。</p>
 <h3 id="1-注册">1、注册</h3>
 <p>注册没什么好说的，按顺序填就行，需要注意用户名最好不要用中文。</p>
-<img src="https://img.xiajibagao.top/image-20220215144939190.png" alt="image-20220215144939190" style="zoom: 50%;">
+<p><img src="https://img.xiajibagao.top/image-20220215144939190.png" alt="image-20220215144939190" style="zoom: 50%;"></p>
 <h3 id="2-申请">2、申请</h3>
 <p>这里的操作跟GitHub很像，新增相当于提出一个issues：</p>
-<p><img src="https://img.xiajibagao.top/image-20220215150018531.png" alt="image-20220215150018531"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220215150018531.png" alt="image-20220215150018531"><figcaption aria-hidden="true">image-20220215150018531</figcaption>
+</figure>
 <p>然后填写信息：</p>
-<img src="https://img.xiajibagao.top/image-20220215150401093.png" alt="image-20220215150401093" style="zoom: 67%;">
+<p><img src="https://img.xiajibagao.top/image-20220215150401093.png" alt="image-20220215150401093" style="zoom: 67%;"></p>
 <p>我们从上往下看：</p>
-<ol>
+<ol type="1">
 <li>摘要：简单写点；</li>
 <li>Group Id：你想要申请的 Group Id，可以是：
 <ul>
 <li>你的 GitHub 或者 Gitee 的 <code>GitPage</code>地址倒序：我的个人主页是<code>createsequence.github.io</code>，这里就可以填<code>io.github.createsequence</code>；</li>
 <li>你的域名倒序：比如我的域名是<code>xiajibagao.top</code>，这里就是 <code>top.xiajibagao</code>。</li>
-</ul>
-</li>
+</ul></li>
 <li>Project URL：项目的仓库地址；</li>
 <li>SCM url：项目 clone 的地址；</li>
 <li>Username：即你的 sonatype 账户名称；</li>
@@ -9930,7 +9931,9 @@
 <p>然后点击新建就会创建一个编号为<code>OSSRH-xxx</code>的申请/issues。</p>
 <h3 id="3-验证">3、验证</h3>
 <p>当你的申请被受理后，工作人员会给你发邮件，让你证明你申请的 Group Id 对应的域名是你自己的：</p>
-<p><img src="https://img.xiajibagao.top/image-20220215154451409.png" alt="image-20220215154451409"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220215154451409.png" alt="image-20220215154451409"><figcaption aria-hidden="true">image-20220215154451409</figcaption>
+</figure>
 <p>这里根据 URL 是个人域名还是托管平台的会有两种情况：</p>
 <ul>
 <li>托管平台：会让你根据在仓库中创建一个指定名字的仓库；</li>
@@ -9979,28 +9982,18 @@
 <p>当执行 <code>mvn clean deploy</code>后，项目会成功上传的远程仓库，此时访问https://s01.oss.sonatype.org/#stagingRepositories</p>
 <p>注意，有些教程说的是https://oss.sonatype.org/#stagingRepositories，实际上 2021-02-25 以后的新用户使用的仓库都换为了 s01 这个地址。</p>
 <p>然后：</p>
-<ol>
-<li>
-<p>点击 <code>Staging Repositories</code>查看待处理的 jar 包；</p>
-</li>
-<li>
-<p>选择需要发布的 jar 包；</p>
-</li>
-<li>
-<p>点击 <code>Close</code>进行检查；<img src="https://img.xiajibagao.top/image-20220216091800813.png" alt="image-20220216091800813"></p>
-</li>
-<li>
-<p>系统自动检查是否可发布，若有问题可以在 Activity 中查看；</p>
-</li>
-<li>
-<p>校验完成后，点击 <code>Release</code>即可发布到中央仓库，一般首次发布需要等一天左右，后续再发布就只要半小时即可。</p>
-<p><img src="https://img.xiajibagao.top/image-20220216092214049.png" alt="image-20220216092214049"></p>
-</li>
-<li>
-<p>成功发布后，jar 包坐标可在<a href="https://mvnrepository.com/artifact/top.xiajibagao/mybatis-plus-join/1.0.0">中央仓库</a>中查到，可以在 pom 中引用了。</p>
+<ol type="1">
+<li><p>点击 <code>Staging Repositories</code>查看待处理的 jar 包；</p></li>
+<li><p>选择需要发布的 jar 包；</p></li>
+<li><p>点击 <code>Close</code>进行检查；<img src="https://img.xiajibagao.top/image-20220216091800813.png" alt="image-20220216091800813"></p></li>
+<li><p>系统自动检查是否可发布，若有问题可以在 Activity 中查看；</p></li>
+<li><p>校验完成后，点击 <code>Release</code>即可发布到中央仓库，一般首次发布需要等一天左右，后续再发布就只要半小时即可。</p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220216092214049.png" alt="image-20220216092214049"><figcaption aria-hidden="true">image-20220216092214049</figcaption>
+</figure></li>
+<li><p>成功发布后，jar 包坐标可在<a href="https://mvnrepository.com/artifact/top.xiajibagao/mybatis-plus-join/1.0.0">中央仓库</a>中查到，可以在 pom 中引用了。</p>
 <p>比如我这个示例项目：<a href="https://github.com/Createsequence/mybaits-plus-join">mybaits-plus-join</a>，对应 Maven 坐标即为：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>top.xiajibagao<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-join<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-</li>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>top.xiajibagao<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-join<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure></li>
 </ol>
 <p>注意：</p>
 <p>有时候校验的时候会卡在 <code>Evaluating：Signature Validation</code>这一步，这个时候需要注意一下上面获取到的 gpg 签名的公钥是否成功上传，或者是否在 pom.xml 中把 gpg 插件给关了，这两个问题都会导致这一步校验不通过。</p>

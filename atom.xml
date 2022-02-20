@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2021-07-11T02:10:35.267Z</updated>
+  <updated>2022-02-20T06:10:03.180Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -15,6 +15,36 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>发布自己的jar包到Maven官方仓库</title>
+    <link href="http://blog.xiajibagao.top/2022/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/"/>
+    <id>http://blog.xiajibagao.top/2022/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/</id>
+    <published>2022-02-17T16:00:00.000Z</published>
+    <updated>2022-02-20T06:10:03.180Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;一-申请groupid&quot;&gt;一、申请GroupId&lt;/h2&gt;
+&lt;p&gt;我们知道，一个maven坐标由&lt;code&gt;groupId&lt;/code&gt;，&lt;code&gt;artifactId&lt;/code&gt;和&lt;code&gt;version&lt;/code&gt;组成，后两者可以在pom中调整，而可以用在中央仓库的 &lt;code&gt;groupId&lt;/code&gt;需要申请。由于 Maven 中央仓库由 sonatype 公司进行运营，所以我们首先需要&lt;a href=&quot;https://issues.sonatype.org/secure/Signup!default.jspa&quot;&gt;注册一个sonatype账号&lt;/a&gt;，通过该账号去申请一个 &lt;code&gt;groupId&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id=&quot;1-注册&quot;&gt;1、注册&lt;/h3&gt;
+&lt;p&gt;注册没什么好说的，按顺序填就行，需要注意用户名最好不要用中文。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.xiajibagao.top/image-20220215144939190.png&quot; alt=&quot;image-20220215144939190&quot; style=&quot;zoom: 50%;&quot;&gt;&lt;/p&gt;
+&lt;h3 id=&quot;2-申请&quot;&gt;2、申请&lt;/h3&gt;
+&lt;p&gt;这里的操作跟GitHub很像，新增相当于提出一个issues：&lt;/p&gt;
+&lt;figure&gt;
+&lt;img src=&quot;https://img.xiajibagao.top/image-20220215150018531.png&quot; alt=&quot;image-20220215150018531&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20220215150018531&lt;/figcaption&gt;
+&lt;/figure&gt;
+&lt;p&gt;然后填写信息：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.xiajibagao.top/image-20220215150401093.png&quot; alt=&quot;image-20220215150401093&quot; style=&quot;zoom: 67%;&quot;&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="杂七乱八" scheme="http://blog.xiajibagao.top/categories/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
+    
+    
+    <category term="杂七乱八" scheme="http://blog.xiajibagao.top/tags/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
+    
+  </entry>
   
   <entry>
     <title>Mybatis源码学习（三）：映射文件中sql的解析</title>
@@ -102,34 +132,6 @@
     
     
     <category term="Mybatis" scheme="http://blog.xiajibagao.top/tags/Mybatis/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>发布自己的jar包到Maven官方仓库</title>
-    <link href="http://blog.xiajibagao.top/2021/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/"/>
-    <id>http://blog.xiajibagao.top/2021/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/</id>
-    <published>2021-02-17T16:00:00.000Z</published>
-    <updated>2022-02-20T06:03:01.387Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;一-申请groupid&quot;&gt;一、申请GroupId&lt;/h2&gt;
-&lt;p&gt;我们知道，一个maven坐标由&lt;code&gt;groupId&lt;/code&gt;，&lt;code&gt;artifactId&lt;/code&gt;和&lt;code&gt;version&lt;/code&gt;组成，后两者可以在pom中调整，而可以用在中央仓库的 &lt;code&gt;groupId&lt;/code&gt;需要申请。由于 Maven 中央仓库由 sonatype 公司进行运营，所以我们首先需要&lt;a href=&quot;https://issues.sonatype.org/secure/Signup!default.jspa&quot;&gt;注册一个sonatype账号&lt;/a&gt;，通过该账号去申请一个 &lt;code&gt;groupId&lt;/code&gt;。&lt;/p&gt;
-&lt;h3 id=&quot;1-注册&quot;&gt;1、注册&lt;/h3&gt;
-&lt;p&gt;注册没什么好说的，按顺序填就行，需要注意用户名最好不要用中文。&lt;/p&gt;
-&lt;img src=&quot;https://img.xiajibagao.top/image-20220215144939190.png&quot; alt=&quot;image-20220215144939190&quot; style=&quot;zoom: 50%;&quot;&gt;
-&lt;h3 id=&quot;2-申请&quot;&gt;2、申请&lt;/h3&gt;
-&lt;p&gt;这里的操作跟GitHub很像，新增相当于提出一个issues：&lt;/p&gt;
-&lt;p&gt;&lt;img src=&quot;https://img.xiajibagao.top/image-20220215150018531.png&quot; alt=&quot;image-20220215150018531&quot;&gt;&lt;/p&gt;
-&lt;p&gt;然后填写信息：&lt;/p&gt;
-&lt;img src=&quot;https://img.xiajibagao.top/image-20220215150401093.png&quot; alt=&quot;image-20220215150401093&quot; style=&quot;zoom: 67%;&quot;&gt;</summary>
-    
-    
-    
-    <category term="杂七乱八" scheme="http://blog.xiajibagao.top/categories/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
-    
-    
-    <category term="杂七乱八" scheme="http://blog.xiajibagao.top/tags/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
     
   </entry>
   
