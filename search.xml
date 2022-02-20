@@ -9901,4 +9901,122 @@
         <tag>Mybatis</tag>
       </tags>
   </entry>
+  <entry>
+    <title>发布自己的jar包到Maven官方仓库</title>
+    <url>/2021/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/</url>
+    <content><![CDATA[<h2 id="一-申请groupid">一、申请GroupId</h2>
+<p>我们知道，一个maven坐标由<code>groupId</code>，<code>artifactId</code>和<code>version</code>组成，后两者可以在pom中调整，而可以用在中央仓库的 <code>groupId</code>需要申请。由于 Maven 中央仓库由 sonatype 公司进行运营，所以我们首先需要<a href="https://issues.sonatype.org/secure/Signup!default.jspa">注册一个sonatype账号</a>，通过该账号去申请一个 <code>groupId</code>。</p>
+<h3 id="1-注册">1、注册</h3>
+<p>注册没什么好说的，按顺序填就行，需要注意用户名最好不要用中文。</p>
+<img src="https://img.xiajibagao.top/image-20220215144939190.png" alt="image-20220215144939190" style="zoom: 50%;">
+<h3 id="2-申请">2、申请</h3>
+<p>这里的操作跟GitHub很像，新增相当于提出一个issues：</p>
+<p><img src="https://img.xiajibagao.top/image-20220215150018531.png" alt="image-20220215150018531"></p>
+<p>然后填写信息：</p>
+<img src="https://img.xiajibagao.top/image-20220215150401093.png" alt="image-20220215150401093" style="zoom: 67%;">
+<p>我们从上往下看：</p>
+<ol>
+<li>摘要：简单写点；</li>
+<li>Group Id：你想要申请的 Group Id，可以是：
+<ul>
+<li>你的 GitHub 或者 Gitee 的 <code>GitPage</code>地址倒序：我的个人主页是<code>createsequence.github.io</code>，这里就可以填<code>io.github.createsequence</code>；</li>
+<li>你的域名倒序：比如我的域名是<code>xiajibagao.top</code>，这里就是 <code>top.xiajibagao</code>。</li>
+</ul>
+</li>
+<li>Project URL：项目的仓库地址；</li>
+<li>SCM url：项目 clone 的地址；</li>
+<li>Username：即你的 sonatype 账户名称；</li>
+</ol>
+<p>然后点击新建就会创建一个编号为<code>OSSRH-xxx</code>的申请/issues。</p>
+<h3 id="3-验证">3、验证</h3>
+<p>当你的申请被受理后，工作人员会给你发邮件，让你证明你申请的 Group Id 对应的域名是你自己的：</p>
+<p><img src="https://img.xiajibagao.top/image-20220215154451409.png" alt="image-20220215154451409"></p>
+<p>这里根据 URL 是个人域名还是托管平台的会有两种情况：</p>
+<ul>
+<li>托管平台：会让你根据在仓库中创建一个指定名字的仓库；</li>
+<li>个人域名：会让你在域名的 DNS 解析记录下添加一个指定内容的 text 记录；</li>
+</ul>
+<p>此时，申请的状态会变为是 <code>Waiting for Response</code>，当你完成操作后，需要手动将申请的状态改为 <code>Open</code>，然后工作人员就会再一次审批。</p>
+<p>到此为止，等待审批完成 Group Id 下发即可。</p>
+<h2 id="二-申请-gpg-签名">二、申请 gpg 签名</h2>
+<p>为了防止任何人都可以拿着你的账号密码去部署 jar 包，打包和发布代码前需要先根据 gpg 密匙进行加密。因此我们需要先获取一个 gpg 签名。</p>
+<p>首先，window 电脑可以<a href="https://link.juejin.cn/?target=https%3A%2F%2Fgpg4win.org%2Fdownload.html">直接下载</a>，Linux 系统用命令行 install gpg 即可。后续操作都可在命令行进行。</p>
+<h3 id="1生成签名">1.生成签名</h3>
+<p>安装完毕后执行<code>gpg --version</code>查看是否成功安装，然后使用 <code>gpg --gen-key</code>命令生成签名，然后会让你输入邮箱和密码，按流程走下来即可。</p>
+<p>生成密匙后，可以使用 <code>gpg --list-keys</code>查看已生成的密匙对应的签名：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">gpg: checking the trustdb</span><br><span class="line">gpg: marginals needed: 3  completes needed: 1  trust model: pgp</span><br><span class="line">gpg: depth: 0  valid:   2  signed:   0  trust: 0-, 0q, 0n, 0m, 0f, 2u</span><br><span class="line">C:/Users/huang/AppData/Roaming/gnupg/pubring.kbx</span><br><span class="line">---------------------------------------------</span><br><span class="line">pub   rsa3072 2021-07-06 [SC]</span><br><span class="line">      9E02D0E104E3D3517B5B0E54DF7B4B4D1A32FB02 # 这个就是签名</span><br><span class="line">uid           [ultimate] username &lt;email@gmail.com&gt;</span><br></pre></td></tr></table></figure>
+<h3 id="2上传公钥到服务器">2.上传公钥到服务器</h3>
+<p>使用 <code>gpg --keyserver hkp://URL --send-keys 签名</code>上传公钥，然后使用 <code>gpg --keyserver hkp://URL --recv-keys 签名</code>查看是否上传成功。</p>
+<p>URL 可以用：</p>
+<ul>
+<li><code>pool.sks-keyservers.net</code>：这个不太稳定，容易出错；</li>
+<li><code>keyserver.ubuntu.com:11371</code>：这个相对稳定，<strong>推荐</strong>。</li>
+</ul>
+<h3 id="3在其他设备导入秘钥">3.在其他设备导入秘钥</h3>
+<p>如果更换的设备，需要在其他设备继续用这个秘钥，可以参考：<a href="https://www.ttzero.org/blog/2019/10/21/gpg-import.html">发布项目到Maven中央仓库(换机器后)</a></p>
+<h2 id="三-maven配置">三、Maven配置</h2>
+<p>原则上，拿着 gpg 签名，并且申请完以后就可以拿着 Group Id 去上传项目了，但是还需要先把 Maven 配置好。</p>
+<h3 id="1-配置-maven-服务">1、配置 Maven 服务</h3>
+<p>首先，将 sonatype 账号密码，将其添加到<code>setting.xml</code>的<code>&lt;servers&gt;&lt;/servers&gt;</code>配置中：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- Maven公共仓库 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">server</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>maven-public<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">username</span>&gt;</span><span class="tag">&lt;/<span class="name">username</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">password</span>&gt;</span>password<span class="tag">&lt;/<span class="name">password</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">server</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-项目信息">2、项目信息</h3>
+<p>然后，需要在项目的 <code>pom.xml</code>文件中配置基本信息，这些信息会在上传到<a href="https://mvnrepository.com/">中央仓库</a>后在 jar 包页面展示：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 许可证类型，一般与项目仓库保持一致 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">licenses</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">license</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>The Apache Software License, Version 2.0<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>http://www.apache.org/licenses/LICENSE-2.0.txt<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">distribution</span>&gt;</span>repo<span class="tag">&lt;/<span class="name">distribution</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">license</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">licenses</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 开发者信息 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">developers</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">developer</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>Createsequence<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">email</span>&gt;</span>841396397@qq.com<span class="tag">&lt;/<span class="name">email</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">organization</span>&gt;</span>xiajibagao<span class="tag">&lt;/<span class="name">organization</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">developer</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">developers</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- groupId, artifactid, version --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">groupId</span>&gt;</span>top.xiajibagao<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-join<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">version</span>&gt;</span>1.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">name</span>&gt;</span>mybatis-plus-join<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">description</span>&gt;</span>mybatis plus join extend<span class="tag">&lt;/<span class="name">description</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">packaging</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">packaging</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="3-打包插件">3、打包插件</h3>
+<p>接着，为了可以正常部署，需要在 pom.xml 中添加以下四个插件：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- 生成javadoc --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-javadoc-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.2.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">id</span>&gt;</span>attach-javadocs<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">goal</span>&gt;</span>jar<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span>&gt;</span>$&#123;java.version&#125;<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">additionalJOption</span>&gt;</span>-Xdoclint:none<span class="tag">&lt;/<span class="name">additionalJOption</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">failOnError</span>&gt;</span>false<span class="tag">&lt;/<span class="name">failOnError</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 打包resources --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-source-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.2.1<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">id</span>&gt;</span>attach-sources<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">goal</span>&gt;</span>jar-no-fork<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- 打包源码 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-compiler-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>3.8.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">source</span>&gt;</span>$&#123;java.version&#125;<span class="tag">&lt;/<span class="name">source</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">target</span>&gt;</span>$&#123;java.version&#125;<span class="tag">&lt;/<span class="name">target</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">showWarnings</span>&gt;</span>true<span class="tag">&lt;/<span class="name">showWarnings</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">&lt;!-- gpg认证 --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">plugin</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.apache.maven.plugins<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>maven-gpg-plugin<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>1.6<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">executions</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">execution</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">phase</span>&gt;</span>verify<span class="tag">&lt;/<span class="name">phase</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">goals</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">goal</span>&gt;</span>sign<span class="tag">&lt;/<span class="name">goal</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">goals</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;/<span class="name">execution</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">executions</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">plugin</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>注意：</p>
+<p><code>maven-javadoc-plugin</code>插件会检查 javadoc 格式是否严格符合标准，比如 <code>&lt;p&gt;</code>标签是否闭合之类的，如果注释很多不标准的话可以在插件上添加配置跳过检查：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 禁用doclint，不严格检查 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">additionalJOption</span>&gt;</span>-Xdoclint:none<span class="tag">&lt;/<span class="name">additionalJOption</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!-- 文档解析出错时仍然继续 --&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">failOnError</span>&gt;</span>false<span class="tag">&lt;/<span class="name">failOnError</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h3 id="4-发布到oss">4、发布到OSS</h3>
+<p>最后，需要在 pom.xml 中添加部署配置</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">distributionManagement</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">snapshotRepository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>maven-public<span class="tag">&lt;/<span class="name">id</span>&gt;</span> <span class="comment">&lt;!-- 此处id与setting.xml中的服务id保持一致 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>oss Snapshots Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://s01.oss.sonatype.org/content/repositories/snapshots/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">snapshotRepository</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">repository</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">id</span>&gt;</span>maven-public<span class="tag">&lt;/<span class="name">id</span>&gt;</span> <span class="comment">&lt;!-- 此处id与setting.xml中的服务id保持一致 --&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>oss Staging Repository<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">url</span>&gt;</span>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/<span class="tag">&lt;/<span class="name">url</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">repository</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">distributionManagement</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<p>然后执行 <code>mvn clean deploy</code>命令，会出现弹框让你输入之前在 gpg 创建签名时输入的密码，完成后等待上传完毕。</p>
+<p>注意：</p>
+<p>gpg 在命令行中确认没问题，但是实际上使用mvn命令部署时仍然会出现找不到命令的问题，因此若出现找不到 gpg 命令之类的问题需要直接在<code>&lt;profiles&gt;&lt;/profiles&gt;</code>中配置脚本路径：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="comment">&lt;!-- gpg --&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">profile</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">id</span>&gt;</span>maven-public<span class="tag">&lt;/<span class="name">id</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">activation</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">activeByDefault</span>&gt;</span>true<span class="tag">&lt;/<span class="name">activeByDefault</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">activation</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">properties</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">gpg.executable</span>&gt;</span>C:\programs\GnuPG\bin\gpg<span class="tag">&lt;/<span class="name">gpg.executable</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">gpg.passphrase</span>&gt;</span>you pass<span class="tag">&lt;/<span class="name">gpg.passphrase</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">properties</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">profile</span>&gt;</span></span><br></pre></td></tr></table></figure>
+<h2 id="四-同步到-maven-中央仓库">四、同步到 Maven 中央仓库</h2>
+<p>当执行 <code>mvn clean deploy</code>后，项目会成功上传的远程仓库，此时访问https://s01.oss.sonatype.org/#stagingRepositories</p>
+<p>注意，有些教程说的是https://oss.sonatype.org/#stagingRepositories，实际上 2021-02-25 以后的新用户使用的仓库都换为了 s01 这个地址。</p>
+<p>然后：</p>
+<ol>
+<li>
+<p>点击 <code>Staging Repositories</code>查看待处理的 jar 包；</p>
+</li>
+<li>
+<p>选择需要发布的 jar 包；</p>
+</li>
+<li>
+<p>点击 <code>Close</code>进行检查；<img src="https://img.xiajibagao.top/image-20220216091800813.png" alt="image-20220216091800813"></p>
+</li>
+<li>
+<p>系统自动检查是否可发布，若有问题可以在 Activity 中查看；</p>
+</li>
+<li>
+<p>校验完成后，点击 <code>Release</code>即可发布到中央仓库，一般首次发布需要等一天左右，后续再发布就只要半小时即可。</p>
+<p><img src="https://img.xiajibagao.top/image-20220216092214049.png" alt="image-20220216092214049"></p>
+</li>
+<li>
+<p>成功发布后，jar 包坐标可在<a href="https://mvnrepository.com/artifact/top.xiajibagao/mybatis-plus-join/1.0.0">中央仓库</a>中查到，可以在 pom 中引用了。</p>
+<p>比如我这个示例项目：<a href="https://github.com/Createsequence/mybaits-plus-join">mybaits-plus-join</a>，对应 Maven 坐标即为：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>top.xiajibagao<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>mybatis-plus-join<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">version</span>&gt;</span>2.0.0<span class="tag">&lt;/<span class="name">version</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>注意：</p>
+<p>有时候校验的时候会卡在 <code>Evaluating：Signature Validation</code>这一步，这个时候需要注意一下上面获取到的 gpg 签名的公钥是否成功上传，或者是否在 pom.xml 中把 gpg 插件给关了，这两个问题都会导致这一步校验不通过。</p>
+<h2 id="参考">参考</h2>
+<ul>
+<li><a href="https://juejin.cn/post/6984018498385084447">快速发布组件到mavenCentral</a></li>
+<li><a href="https://blog.csdn.net/pdsu161530247/article/details/105429597">Java上传本地jar包到maven中央仓库的坑逼经历</a></li>
+<li><a href="https://zhengqing.blog.csdn.net/article/details/94381467?spm=1001.2101.3001.6650.2&amp;utm_medium=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2.pc_relevant_aa&amp;depth_1-utm_source=distribute.pc_relevant.none-task-blog-2%7Edefault%7ECTRLIST%7ERate-2.pc_relevant_aa&amp;utm_relevant_index=5">Maven(6) Java上传本地jar包到maven中央仓库</a></li>
+<li><a href="http://blog.gopersist.com/2020/05/28/maven-center-repository/index.html">Java项目发布到Maven中央仓库</a></li>
+</ul>
+]]></content>
+      <categories>
+        <category>杂七乱八</category>
+      </categories>
+      <tags>
+        <tag>杂七乱八</tag>
+      </tags>
+  </entry>
 </search>

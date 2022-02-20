@@ -106,6 +106,34 @@
   </entry>
   
   <entry>
+    <title>发布自己的jar包到Maven官方仓库</title>
+    <link href="http://blog.xiajibagao.top/2021/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/"/>
+    <id>http://blog.xiajibagao.top/2021/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/</id>
+    <published>2021-02-17T16:00:00.000Z</published>
+    <updated>2022-02-20T06:03:01.387Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;一-申请groupid&quot;&gt;一、申请GroupId&lt;/h2&gt;
+&lt;p&gt;我们知道，一个maven坐标由&lt;code&gt;groupId&lt;/code&gt;，&lt;code&gt;artifactId&lt;/code&gt;和&lt;code&gt;version&lt;/code&gt;组成，后两者可以在pom中调整，而可以用在中央仓库的 &lt;code&gt;groupId&lt;/code&gt;需要申请。由于 Maven 中央仓库由 sonatype 公司进行运营，所以我们首先需要&lt;a href=&quot;https://issues.sonatype.org/secure/Signup!default.jspa&quot;&gt;注册一个sonatype账号&lt;/a&gt;，通过该账号去申请一个 &lt;code&gt;groupId&lt;/code&gt;。&lt;/p&gt;
+&lt;h3 id=&quot;1-注册&quot;&gt;1、注册&lt;/h3&gt;
+&lt;p&gt;注册没什么好说的，按顺序填就行，需要注意用户名最好不要用中文。&lt;/p&gt;
+&lt;img src=&quot;https://img.xiajibagao.top/image-20220215144939190.png&quot; alt=&quot;image-20220215144939190&quot; style=&quot;zoom: 50%;&quot;&gt;
+&lt;h3 id=&quot;2-申请&quot;&gt;2、申请&lt;/h3&gt;
+&lt;p&gt;这里的操作跟GitHub很像，新增相当于提出一个issues：&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.xiajibagao.top/image-20220215150018531.png&quot; alt=&quot;image-20220215150018531&quot;&gt;&lt;/p&gt;
+&lt;p&gt;然后填写信息：&lt;/p&gt;
+&lt;img src=&quot;https://img.xiajibagao.top/image-20220215150401093.png&quot; alt=&quot;image-20220215150401093&quot; style=&quot;zoom: 67%;&quot;&gt;</summary>
+    
+    
+    
+    <category term="杂七乱八" scheme="http://blog.xiajibagao.top/categories/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
+    
+    
+    <category term="杂七乱八" scheme="http://blog.xiajibagao.top/tags/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
+    
+  </entry>
+  
+  <entry>
     <title>AQS源码分析</title>
     <link href="http://blog.xiajibagao.top/2021/02/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B/AQS%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
     <id>http://blog.xiajibagao.top/2021/02/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B/AQS%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/</id>
@@ -636,49 +664,6 @@
     <category term="数据结构与算法" scheme="http://blog.xiajibagao.top/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
     
     <category term="资源推荐" scheme="http://blog.xiajibagao.top/tags/%E8%B5%84%E6%BA%90%E6%8E%A8%E8%8D%90/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>java集合源码分析（五）：Map与AbstractMap</title>
-    <link href="http://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/"/>
-    <id>http://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/</id>
-    <published>2020-12-06T16:00:00.000Z</published>
-    <updated>2020-12-17T06:37:59.244Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;Map 接口是 java 中两大集合接口之一，相对于 Collection，Map 接口结构规定了所有键值对形式的集合容器。同时，它与 Collection 的子接口 Set 又密切相关，Map 一部分实现依赖于 Set 集合，而 Set 集合的一些实现也依赖于 Map。&lt;/p&gt;
-&lt;p&gt;Map 接口下有四个主要实现类 TreeMap，HashMap，LinkedMap，Hashtable。基于以上四大实现类，这是他们的类关系图：&lt;/p&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201208151954095.png&quot; alt=&quot;Map 接口的类关系图&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;Map 接口的类关系图&lt;/figcaption&gt;
-&lt;/figure&gt;
-&lt;p&gt;与其相关的还有 Dictionary 类，这是一个已过时的早期键值对集合接口，后期的新集合都基于 Map 接口实现，唯一依赖与他的 Hashtable 因为性能原因也很少被使用，因此这个类是一个过时类。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;这是关于 java 集合类源码的第五篇文章。往期文章：&lt;/p&gt;
-&lt;ol type=&quot;1&quot;&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;一-map-接口&quot;&gt;一、Map 接口&lt;/h2&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201207201537859.png&quot; alt=&quot;image-20201207201537859&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20201207201537859&lt;/figcaption&gt;
-&lt;/figure&gt;
-&lt;p&gt;Map 接口就是所有键值对类型集合接口的最上层接口，他规定了一个所有 Map 类型集合应该实现的抽象方法，同时提供了一个用于视图操作的默认接口类 Entry。&lt;/p&gt;
-&lt;h3 id=&quot;1抽象方法&quot;&gt;1.抽象方法&lt;/h3&gt;</summary>
-    
-    
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
     
   </entry>
   

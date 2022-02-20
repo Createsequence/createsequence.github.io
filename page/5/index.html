@@ -287,6 +287,185 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/11/03/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81%EF%BC%8C%E9%97%B4%E9%9A%99%E9%94%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/11/03/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81%EF%BC%8C%E9%97%B4%E9%9A%99%E9%94%81/" itemprop="url">《MySQL45讲》读书笔记(七)：全局锁，表锁，行锁，间隙锁</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-03T00:00:00+08:00">
+                2020-11-03
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/mysql/" itemprop="url" rel="index">
+                    <span itemprop="name">mysql</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5.7k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <blockquote>
+<p>此文为极客时间：MySQL实战45讲的 6、7、20 节锁相关部分的总结</p>
+</blockquote>
+<h2 id="一-全局锁">一、全局锁</h2>
+<h3 id="1概述">1.概述</h3>
+<p>全局锁就是对整个数据库实例加锁。通过使用 <code>Flush tables with read lock</code>（FTWRL）语句加锁，此后整个库都会处于只读状态，这时，其他线程的数据定义语句（DDL），数据操作语句（DML）以及更新类事务的提交语句都会被阻塞。</p>
+<p>也就是说，<strong>加了全局锁以后，其他线程不能对数据增删改，也不能对表增删改</strong>。</p>
+<p>另外值得一提的是，在此之前，数据库会<strong>等待 FTWRL 操作前的所有读写操作完成，事务提交完毕；并且把脏页的数据从缓存刷入磁盘，保证数据的一致性</strong>。</p>
+<p>全局锁的典型使用场景是对数据库进行整库备份。</p>
+<h3 id="2全局锁的缺陷和解决方案">2.全局锁的缺陷和解决方案</h3>
+<p>全局锁有以下问题：</p>
+<ul>
+<li>如果你在主库上备份，那么在备份期间都不能执行更新，业务基本上就得停摆；</li>
+<li>如果你在从库上备份，那么备份期间从库不能执行主库同步过来的 binlog，会导致主从延迟。</li>
+</ul>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/11/03/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E5%85%A8%E5%B1%80%E9%94%81%EF%BC%8C%E8%A1%A8%E9%94%81%EF%BC%8C%E8%A1%8C%E9%94%81%EF%BC%8C%E9%97%B4%E9%9A%99%E9%94%81/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/11/02/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%E6%95%B0%E6%8D%AE%E5%BA%93%E4%BA%8B%E5%8A%A1%E6%A6%82%E8%BF%B0/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1885,185 +2064,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/19/spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/08/19/spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/" itemprop="url">SpringAOP知识小结</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-19T00:00:00+08:00">
-                2020-08-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Spring/" itemprop="url" rel="index">
-                    <span itemprop="name">Spring</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>提起Spring，必然就会联想到AOP（面向切面编程）和IOC（控制反转）这两个词，众所周知，Spring框架对这两种思想进行了很好的实现。</p>
-<p>在这篇文章，我将大致的介绍Spring对AOP这思想的实现流程。</p>
-<p>对于AOP，关注的两个问题：</p>
-<ul>
-<li>什么是是AOP/IOC？</li>
-<li>AOP/IOC解决了什么问题？</li>
-</ul>
-<h2 id="一-什么是aop">一、什么是AOP</h2>
-<blockquote>
-<p>Aspect oriented programming 面向切面编程，AOP 是 OOP（面向对象编程）的一种延续。</p>
-</blockquote>
-<p>我们知道，根据面向对象编程的思想，对于一些具有相同属性和方法的类，我们可以抽象出他们共同部分作为一个父类，然后这些子类通过继承来获得他们共同的属性。比如<code>Cat</code>类和<code>Dog</code>都有<code>eat()</code>方法，那么我们可以将<code>eat()</code>方法抽象到他们的父类<code>Animal</code>，让他们去继承父类。</p>
-<p>我们管这个抽取成类的方法叫做<strong>纵向抽取</strong>。</p>
-<p>而如果他们的父类的方法中有相同方法，那么就直接抽取成公共方法。，但是有一些一开始就耦合到业务逻辑里的重复代码，比如下面统计方法执行时间的方法：</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/08/19/spring/SpringAOP%E7%9F%A5%E8%AF%86%E5%B0%8F%E7%BB%93/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2118,7 +2118,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">88</span>
+                  <span class="site-state-item-count">89</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2184,7 +2184,7 @@
 
     <footer id="footer" class="footer">
       <div class="footer-inner">
-        <div class="copyright">&copy; <span itemprop="copyrightYear">2021</span>
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-user"></i>
   </span>
