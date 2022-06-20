@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2022-02-20T06:10:03.180Z</updated>
+  <updated>2022-06-20T13:47:56.592Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -15,6 +15,36 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>spring源码解析：元注解功能的实现</title>
+    <link href="http://blog.xiajibagao.top/2022/06/19/spring/spring%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%9A%E5%85%83%E6%B3%A8%E8%A7%A3%E5%8A%9F%E8%83%BD%E7%9A%84%E5%AE%9E%E7%8E%B0/"/>
+    <id>http://blog.xiajibagao.top/2022/06/19/spring/spring%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%9A%E5%85%83%E6%B3%A8%E8%A7%A3%E5%8A%9F%E8%83%BD%E7%9A%84%E5%AE%9E%E7%8E%B0/</id>
+    <published>2022-06-18T16:00:00.000Z</published>
+    <updated>2022-06-20T13:47:56.592Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+&lt;p&gt;众所周知，&lt;code&gt;spring&lt;/code&gt; 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 &lt;code&gt;springboot&lt;/code&gt; 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 &lt;code&gt;@Service&lt;/code&gt;：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Target(&amp;#123;ElementType.TYPE&amp;#125;)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Retention(RetentionPolicy.RUNTIME)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Documented&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Component&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;// @Component&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;meta&quot;&gt;@interface&lt;/span&gt; Service &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@AliasFor(annotation = Component.class)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;String &lt;span class=&quot;title&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;default&lt;/span&gt; &amp;quot;&amp;quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;大部分情况下，我们可以将 &lt;code&gt;@Service&lt;/code&gt; 注解等同于 &lt;code&gt;@Component&lt;/code&gt; 注解使用，则是因为 spring 基于其 JDK 对元注解的机制进行了扩展。&lt;/p&gt;
+&lt;p&gt;在 java 中，元注解是指可以注解在其他注解上的注解，spring 中通过对这个机制进行了扩展，实现了一些原生 JDK 不支持的功能，比如允许在注解中让两个属性互为别名，或者将一个带有元注解的子注解直接作为元注解看待，或者在这个基础上，通过 &lt;code&gt;@AlisaFor&lt;/code&gt; 或者同名策略让子注解的值覆盖元注解的值。&lt;/p&gt;
+&lt;p&gt;笔者今天将基于 &lt;code&gt;spring 5.2.x&lt;/code&gt; 的源码研究 spring 如何实现这套功能的。&lt;/p&gt;
+&lt;h2 id=&quot;一-查找注解&quot;&gt;一、查找注解&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;入口&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;我们从最常用的 &lt;code&gt;AnnotatedElementUtils#findMergedAnnotation&lt;/code&gt; 方法开始。&lt;/p&gt;
+&lt;p&gt;在 spring 中， 常见的&lt;code&gt;get&lt;/code&gt;表示从某个元素直接声明的注解中获取注解，而 &lt;code&gt;find&lt;/code&gt; 语义表示从一个元素的直接以及间接声明的注解中查找注解。换而言之，即从包括该元素的注解、注解的元注解、接口或类的复杂层级结构中查找。&lt;code&gt;MergedAnnotation&lt;/code&gt; 则表示一个存在层级结构的根注解聚合得到的“合并注解”，这个注解的各项属性将会因为根注解和元注解的层级结构而有所不同。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="SpringBoot" scheme="http://blog.xiajibagao.top/categories/SpringBoot/"/>
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/tags/Spring/"/>
+    
+    <category term="源码解析" scheme="http://blog.xiajibagao.top/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"/>
+    
+  </entry>
   
   <entry>
     <title>发布自己的jar包到Maven官方仓库</title>
@@ -638,34 +668,6 @@
     <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
     
     <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>资源推荐：数据结构可视化网站</title>
-    <link href="http://blog.xiajibagao.top/2020/12/15/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E8%B5%84%E6%BA%90%E6%8E%A8%E8%8D%90%EF%BC%9A%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BD%91%E7%AB%99/"/>
-    <id>http://blog.xiajibagao.top/2020/12/15/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E8%B5%84%E6%BA%90%E6%8E%A8%E8%8D%90%EF%BC%9A%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E5%8F%AF%E8%A7%86%E5%8C%96%E7%BD%91%E7%AB%99/</id>
-    <published>2020-12-14T16:00:00.000Z</published>
-    <updated>2020-12-23T09:09:05.555Z</updated>
-    
-    
-    <summary type="html">&lt;p&gt;最近偶然发现一个神奇的网站，来自美国南弗罗里达大学计算机科学系的一个在线的数据结构可视化的网站。&lt;/p&gt;
-&lt;p&gt;里面提供了各种数据结构与算法的动态演示，可以调整动画速度，或者根据输入的参数动态展示数据结构或者算法的整个变化过程。&lt;/p&gt;
-&lt;p&gt;比如这个红黑树的演示: &lt;a href=&quot;Red/Black%20Tree&quot;&gt;Red/Black Tree&lt;/a&gt;&lt;/p&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201223170637182.png&quot; alt=&quot;image-20201223170637182&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20201223170637182&lt;/figcaption&gt;
-&lt;/figure&gt;
-&lt;p&gt;这里是完整的功能目录：&lt;a href=&quot;https://www.cs.usfca.edu/~galles/visualization/Algorithms.html&quot;&gt;Data Structure Visualizations&lt;/a&gt;&lt;/p&gt;
-</summary>
-    
-    
-    
-    <category term="资源推荐" scheme="http://blog.xiajibagao.top/categories/%E8%B5%84%E6%BA%90%E6%8E%A8%E8%8D%90/"/>
-    
-    
-    <category term="数据结构与算法" scheme="http://blog.xiajibagao.top/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/"/>
-    
-    <category term="资源推荐" scheme="http://blog.xiajibagao.top/tags/%E8%B5%84%E6%BA%90%E6%8E%A8%E8%8D%90/"/>
     
   </entry>
   
