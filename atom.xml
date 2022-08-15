@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2022-06-20T13:47:56.592Z</updated>
+  <updated>2022-08-15T14:17:42.616Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -17,32 +17,271 @@
   <generator uri="https://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>spring源码解析：元注解功能的实现</title>
-    <link href="http://blog.xiajibagao.top/2022/06/19/spring/spring%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%9A%E5%85%83%E6%B3%A8%E8%A7%A3%E5%8A%9F%E8%83%BD%E7%9A%84%E5%AE%9E%E7%8E%B0/"/>
-    <id>http://blog.xiajibagao.top/2022/06/19/spring/spring%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90%EF%BC%9A%E5%85%83%E6%B3%A8%E8%A7%A3%E5%8A%9F%E8%83%BD%E7%9A%84%E5%AE%9E%E7%8E%B0/</id>
-    <published>2022-06-18T16:00:00.000Z</published>
-    <updated>2022-06-20T13:47:56.592Z</updated>
+    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <link href="http://blog.xiajibagao.top/2022/08/14/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%90%88%E5%B9%B6%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%90%88%E6%88%90/"/>
+    <id>http://blog.xiajibagao.top/2022/08/14/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%90%88%E5%B9%B6%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%90%88%E6%88%90/</id>
+    <published>2022-08-13T16:00:00.000Z</published>
+    <updated>2022-08-15T14:17:42.616Z</updated>
     
     
     <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
 &lt;p&gt;众所周知，&lt;code&gt;spring&lt;/code&gt; 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 &lt;code&gt;springboot&lt;/code&gt; 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 &lt;code&gt;@Service&lt;/code&gt;：&lt;/p&gt;
 &lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Target(&amp;#123;ElementType.TYPE&amp;#125;)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Retention(RetentionPolicy.RUNTIME)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Documented&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Component&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;// @Component&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;meta&quot;&gt;@interface&lt;/span&gt; Service &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@AliasFor(annotation = Component.class)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;String &lt;span class=&quot;title&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;default&lt;/span&gt; &amp;quot;&amp;quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;大部分情况下，我们可以将 &lt;code&gt;@Service&lt;/code&gt; 注解等同于 &lt;code&gt;@Component&lt;/code&gt; 注解使用，则是因为 spring 基于其 JDK 对元注解的机制进行了扩展。&lt;/p&gt;
-&lt;p&gt;在 java 中，元注解是指可以注解在其他注解上的注解，spring 中通过对这个机制进行了扩展，实现了一些原生 JDK 不支持的功能，比如允许在注解中让两个属性互为别名，或者将一个带有元注解的子注解直接作为元注解看待，或者在这个基础上，通过 &lt;code&gt;@AlisaFor&lt;/code&gt; 或者同名策略让子注解的值覆盖元注解的值。&lt;/p&gt;
-&lt;p&gt;笔者今天将基于 &lt;code&gt;spring 5.2.x&lt;/code&gt; 的源码研究 spring 如何实现这套功能的。&lt;/p&gt;
-&lt;h2 id=&quot;一-查找注解&quot;&gt;一、查找注解&lt;/h2&gt;
-&lt;p&gt;&lt;strong&gt;入口&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;我们从最常用的 &lt;code&gt;AnnotatedElementUtils#findMergedAnnotation&lt;/code&gt; 方法开始。&lt;/p&gt;
-&lt;p&gt;在 spring 中， 常见的&lt;code&gt;get&lt;/code&gt;表示从某个元素直接声明的注解中获取注解，而 &lt;code&gt;find&lt;/code&gt; 语义表示从一个元素的直接以及间接声明的注解中查找注解。换而言之，即从包括该元素的注解、注解的元注解、接口或类的复杂层级结构中查找。&lt;code&gt;MergedAnnotation&lt;/code&gt; 则表示一个存在层级结构的根注解聚合得到的“合并注解”，这个注解的各项属性将会因为根注解和元注解的层级结构而有所不同。&lt;/p&gt;</summary>
+&lt;p&gt;大部分情况下，我们可以将 &lt;code&gt;@Service&lt;/code&gt; 注解等同于 &lt;code&gt;@Component&lt;/code&gt; 注解使用，则是因为 spring 基于其 JDK 对&lt;a href=&quot;https://github.com/spring-projects/spring-framework/wiki/Spring-Annotation-Programming-Model&quot;&gt;元注解的机制&lt;/a&gt;进行了扩展。&lt;/p&gt;
+&lt;p&gt;在 java 中，元注解是指可以注解在其他注解上的注解，spring 中通过对这个机制进行了扩展，实现了一些原生 JDK 不支持的功能，比如允许在注解中让两个属性互为别名，或者将一个带有元注解的子注解直接作为元注解看待，或者在这个基础上，通过 &lt;code&gt;@AliasFor&lt;/code&gt; 或者同名策略让子注解的值覆盖元注解的值。&lt;/p&gt;
+&lt;p&gt;本文将基于 spring 源码 &lt;code&gt;5.2.x&lt;/code&gt; 分支，解析 spring 如何实现这套功能的。&lt;/p&gt;
+&lt;p&gt;这是系列的第三篇文章，将详细介绍 Spring 是如何在经过搜索与属性映射后，将处理后的注解合成为合并注解的。&lt;/p&gt;
+&lt;p&gt;相关文章：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16585516.html&quot;&gt;深入理解Spring注解机制（一）：注解的搜索与处理机制&lt;/a&gt;；&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16585518.html&quot;&gt;深入理解Spring注解机制（二）：元注解解析与属性映射&lt;/a&gt;；&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16585519.html&quot;&gt;深入理解Spring注解机制（三）：合并注解的合成&lt;/a&gt;；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;一-合并注解&quot;&gt;一、合并注解&lt;/h2&gt;</summary>
     
     
     
-    <category term="SpringBoot" scheme="http://blog.xiajibagao.top/categories/SpringBoot/"/>
+    <category term="Spring" scheme="http://blog.xiajibagao.top/categories/Spring/"/>
     
     
     <category term="Spring" scheme="http://blog.xiajibagao.top/tags/Spring/"/>
     
-    <category term="源码解析" scheme="http://blog.xiajibagao.top/tags/%E6%BA%90%E7%A0%81%E8%A7%A3%E6%9E%90/"/>
+    <category term="源码分析" scheme="http://blog.xiajibagao.top/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <link href="http://blog.xiajibagao.top/2022/08/10/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%85%83%E6%B3%A8%E8%A7%A3%E8%A7%A3%E6%9E%90%E4%B8%8E%E5%B1%9E%E6%80%A7%E6%98%A0%E5%B0%84/"/>
+    <id>http://blog.xiajibagao.top/2022/08/10/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%85%83%E6%B3%A8%E8%A7%A3%E8%A7%A3%E6%9E%90%E4%B8%8E%E5%B1%9E%E6%80%A7%E6%98%A0%E5%B0%84/</id>
+    <published>2022-08-09T16:00:00.000Z</published>
+    <updated>2022-08-15T14:17:52.338Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+&lt;p&gt;众所周知，&lt;code&gt;spring&lt;/code&gt; 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 &lt;code&gt;springboot&lt;/code&gt; 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 &lt;code&gt;@Service&lt;/code&gt;：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Target(&amp;#123;ElementType.TYPE&amp;#125;)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Retention(RetentionPolicy.RUNTIME)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Documented&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Component&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;// @Component&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;meta&quot;&gt;@interface&lt;/span&gt; Service &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@AliasFor(annotation = Component.class)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;String &lt;span class=&quot;title&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;default&lt;/span&gt; &amp;quot;&amp;quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;大部分情况下，我们可以将 &lt;code&gt;@Service&lt;/code&gt; 注解等同于 &lt;code&gt;@Component&lt;/code&gt; 注解使用，则是因为 spring 基于其 JDK 对&lt;a href=&quot;https://github.com/spring-projects/spring-framework/wiki/Spring-Annotation-Programming-Model&quot;&gt;元注解的机制&lt;/a&gt;进行了扩展。&lt;/p&gt;
+&lt;p&gt;在 java 中，元注解是指可以注解在其他注解上的注解，spring 中通过对这个机制进行了扩展，实现了一些原生 JDK 不支持的功能，比如允许在注解中让两个属性互为别名，或者将一个带有元注解的子注解直接作为元注解看待，或者在这个基础上，通过 &lt;code&gt;@AliasFor&lt;/code&gt; 或者同名策略让子注解的值覆盖元注解的值。&lt;/p&gt;
+&lt;p&gt;本文将基于 spring 源码 &lt;code&gt;5.2.x&lt;/code&gt; 分支，解析 spring 如何实现这套功能的。&lt;/p&gt;
+&lt;p&gt;这是系列的第二篇文章，将详细介绍 Spring 是如何解析 &lt;code&gt;@AliasFor&lt;/code&gt;，实现各种别名功能。&lt;/p&gt;
+&lt;p&gt;相关文章：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16585516.html&quot;&gt;深入理解Spring注解机制（一）：注解的搜索与处理机制&lt;/a&gt;；&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16585518.html&quot;&gt;深入理解Spring注解机制（二）：元注解解析与属性映射&lt;/a&gt;；&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16585519.html&quot;&gt;深入理解Spring注解机制（三）：合并注解的合成&lt;/a&gt;；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;一-创建合并注解聚合&quot;&gt;一、创建合并注解聚合&lt;/h2&gt;</summary>
+    
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/categories/Spring/"/>
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/tags/Spring/"/>
+    
+    <category term="源码分析" scheme="http://blog.xiajibagao.top/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <link href="http://blog.xiajibagao.top/2022/08/06/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%B3%A8%E8%A7%A3%E7%9A%84%E6%90%9C%E7%B4%A2%E4%B8%8E%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/"/>
+    <id>http://blog.xiajibagao.top/2022/08/06/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%B3%A8%E8%A7%A3%E7%9A%84%E6%90%9C%E7%B4%A2%E4%B8%8E%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/</id>
+    <published>2022-08-05T16:00:00.000Z</published>
+    <updated>2022-08-15T14:17:49.068Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+&lt;p&gt;众所周知，&lt;code&gt;spring&lt;/code&gt; 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 &lt;code&gt;springboot&lt;/code&gt; 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 &lt;code&gt;@Service&lt;/code&gt;：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Target(&amp;#123;ElementType.TYPE&amp;#125;)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Retention(RetentionPolicy.RUNTIME)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Documented&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;@Component&lt;/span&gt; &lt;span class=&quot;comment&quot;&gt;// @Component&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;meta&quot;&gt;@interface&lt;/span&gt; Service &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;meta&quot;&gt;@AliasFor(annotation = Component.class)&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;function&quot;&gt;String &lt;span class=&quot;title&quot;&gt;value&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;default&lt;/span&gt; &amp;quot;&amp;quot;&lt;/span&gt;;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;大部分情况下，我们可以将 &lt;code&gt;@Service&lt;/code&gt; 注解等同于 &lt;code&gt;@Component&lt;/code&gt; 注解使用，则是因为 spring 基于其 JDK 对&lt;a href=&quot;https://github.com/spring-projects/spring-framework/wiki/Spring-Annotation-Programming-Model&quot;&gt;元注解的机制&lt;/a&gt;进行了扩展。&lt;/p&gt;
+&lt;p&gt;在 java 中，元注解是指可以注解在其他注解上的注解，spring 中通过对这个机制进行了扩展，实现了一些原生 JDK 不支持的功能，比如允许在注解中让两个属性互为别名，或者将一个带有元注解的子注解直接作为元注解看待，或者在这个基础上，通过 &lt;code&gt;@AliasFor&lt;/code&gt; 或者同名策略让子注解的值覆盖元注解的值。&lt;/p&gt;
+&lt;p&gt;本文将基于 spring 源码 &lt;code&gt;5.2.x&lt;/code&gt; 分支，解析 spring 如何实现这套功能的。&lt;/p&gt;
+&lt;p&gt;这是系列的第一篇文章，将详细介绍 Spring 是如何从 &lt;code&gt;AnnotatedElement&lt;/code&gt; 的层级结构中完成对注解的搜索与处理的。&lt;/p&gt;
+&lt;p&gt;相关文章：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16585516.html&quot;&gt;深入理解Spring注解机制（一）：注解的搜索与处理机制&lt;/a&gt;；&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16585518.html&quot;&gt;深入理解Spring注解机制（二）：元注解解析与属性映射&lt;/a&gt;；&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16585519.html&quot;&gt;深入理解Spring注解机制（三）：合并注解的合成&lt;/a&gt;；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;一-层级结构&quot;&gt;一、层级结构&lt;/h2&gt;</summary>
+    
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/categories/Spring/"/>
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/tags/Spring/"/>
+    
+    <category term="源码分析" scheme="http://blog.xiajibagao.top/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <link href="http://blog.xiajibagao.top/2022/07/26/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%88%AB%E5%90%8D%E6%9C%BA%E5%88%B6/"/>
+    <id>http://blog.xiajibagao.top/2022/07/26/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%88%AB%E5%90%8D%E6%9C%BA%E5%88%B6/</id>
+    <published>2022-07-25T16:00:00.000Z</published>
+    <updated>2022-08-15T14:18:04.368Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+&lt;p&gt;在 spring 容器中，允许通过名称或别名来获取 bean ，这个能力来自于顶层接口 &lt;code&gt;AliasRegistry&lt;/code&gt;，分析类下属的关系图，可以看到，几乎所有主要容器都直接或间接的实现了 &lt;code&gt;AliasRegistry&lt;/code&gt; 接口。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.xiajibagao.top/image-20220621134756391.png&quot; alt=&quot;image-20220621134756391&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;AliasRegistry&lt;/code&gt; 的结构非常简单，主要的类就是 &lt;code&gt;AliasRegistry&lt;/code&gt; 接口与他的实现类 &lt;code&gt;SimpleAliasRegistry&lt;/code&gt;，后续的实现类基本都直接或间接的继承了 &lt;code&gt;SimpleAliasRegistry&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;本文将基于 spring 源码 &lt;code&gt;5.2.x&lt;/code&gt; 分支，围绕 &lt;code&gt;SimpleAliasRegistry&lt;/code&gt; 解析 spring 的别名机制是如何实现的。&lt;/p&gt;
+&lt;h2 id=&quot;一-aliasregistry&quot;&gt;一、AliasRegistry&lt;/h2&gt;
+&lt;p&gt;在 spring 的容器中，一个 bean 必须至少有一个名称，而一个名称可以有多个别名，别名亦可以有别名，若我们把这个最原始的名称称为 &lt;code&gt;id&lt;/code&gt;，则结构可以有：&lt;/p&gt;
+&lt;figure class=&quot;highlight text&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;id -&amp;gt; id&amp;#x27;s alias1 -&amp;gt; alias of id&amp;#x27;s alias1 ... ...&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;   -&amp;gt; id&amp;#x27;s alias2 -&amp;gt; alias of id&amp;#x27;s alias2 ... ...&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;通过 bean 的 &lt;code&gt;id&lt;/code&gt;，或与该 &lt;code&gt;id&lt;/code&gt; 直接、间接相关的别名，都可以从容器中获取到对应的 bean。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;AliasRegistry&lt;/code&gt; 的作用就是定义这一套规则：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/categories/Spring/"/>
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/tags/Spring/"/>
+    
+    <category term="源码分析" scheme="http://blog.xiajibagao.top/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <link href="http://blog.xiajibagao.top/2022/07/05/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BA%8B%E4%BB%B6%E5%8F%8A%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/"/>
+    <id>http://blog.xiajibagao.top/2022/07/05/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BA%8B%E4%BB%B6%E5%8F%8A%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</id>
+    <published>2022-07-04T16:00:00.000Z</published>
+    <updated>2022-08-15T14:17:58.743Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+&lt;p&gt;我们知道，spring 的启动其实就是容器的启动，而一般情况下，容器指的其实就是上下文 &lt;code&gt;ApplicationContext&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;AbstractApplicationContext&lt;/code&gt; 作为整个 &lt;code&gt;ApplicationContext&lt;/code&gt; 体系中最高级的抽象类，为除了 &lt;code&gt;ComplexWebApplicationContext&lt;/code&gt; 和 &lt;code&gt;SimpleWebApplicationContext&lt;/code&gt; 这两个容器外的全部容器，规定好了 &lt;code&gt;refresh&lt;/code&gt; 的整体流程，所有的容器在完成一些自己的初始化配置后，都需要调用该 &lt;code&gt;refresh&lt;/code&gt; 方法，依次完成指定内容的初始化。&lt;/p&gt;
+&lt;p&gt;也就是说，读懂了 &lt;code&gt;AbstractApplicationContext.refresh()&lt;/code&gt; 方法，其实就读懂了容器的启动流程：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;33&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;35&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;36&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;37&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;38&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;39&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;40&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;41&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;42&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;43&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;44&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;45&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;46&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;47&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;48&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;49&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;50&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;51&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;52&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;53&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;54&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;refresh&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;throws&lt;/span&gt; BeansException, IllegalStateException &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;synchronized&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;.startupShutdownMonitor) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// ================= 一、上下文的初始化 =================&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 准备上下文&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        prepareRefresh();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 通知子类刷新内部工厂&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 准备bean工厂以便在当前上下文中使用&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        prepareBeanFactory(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;try&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// ================= 二、BeanFactory的初始化 =================&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 对工厂进行默认后置处理&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            postProcessBeanFactory(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 使用后置处理器对工厂进行处理&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            invokeBeanFactoryPostProcessors(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 注册Bean后置处理器&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            registerBeanPostProcessors(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// ================= 三、事件，Bean及其他配置的初始化 =================&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 初始化此上下文的消息源&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            initMessageSource();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 为此上下文初始化事件广播者&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            initApplicationEventMulticaster();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 初始化特定上下文子类中的其他特殊bean&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            onRefresh();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 检查侦听器bean并注册&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            registerListeners();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 实例化所有非懒加载的剩余单例&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            finishBeanFactoryInitialization(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 完成刷新&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            finishRefresh();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// ================= 异常处理 =================&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;catch&lt;/span&gt; (BeansException ex) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (logger.isWarnEnabled()) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                logger.warn(&lt;span class=&quot;string&quot;&gt;&amp;quot;Exception encountered during context initialization - &amp;quot;&lt;/span&gt; +&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                            &lt;span class=&quot;string&quot;&gt;&amp;quot;cancelling refresh attempt: &amp;quot;&lt;/span&gt; + ex);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 销毁已创建的单例&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            destroyBeans();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 重置上下文的激活状态&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            cancelRefresh(ex);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;throw&lt;/span&gt; ex;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;finally&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 重置内部的一些元数据缓存&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            resetCommonCaches();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;从总体来看，该方法描述的初始化过程大概分为三步：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] 上下文的初始化；&lt;/li&gt;
+&lt;li&gt;[x] &lt;code&gt;BeanFactory&lt;/code&gt; 初始化；&lt;/li&gt;
+&lt;li&gt;[x] 事件，Bean及其他配置的初始化；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;笔者将基于 spring 源码 &lt;code&gt;5.2.x&lt;/code&gt; 分支，分别通过五篇文章从源码分析 spring 容器的初始化过程。&lt;/p&gt;
+&lt;p&gt;本文是其中的第三篇文章，将介绍上下文中事件，Bean及其他配置的初始化。&lt;/p&gt;
+&lt;p&gt;相关文章：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/categories/Spring/"/>
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/tags/Spring/"/>
+    
+    <category term="源码分析" scheme="http://blog.xiajibagao.top/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <link href="http://blog.xiajibagao.top/2022/06/08/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ABeanFactory%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/"/>
+    <id>http://blog.xiajibagao.top/2022/06/08/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ABeanFactory%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</id>
+    <published>2022-06-07T16:00:00.000Z</published>
+    <updated>2022-08-15T14:18:01.801Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+&lt;p&gt;我们知道，spring 的启动其实就是容器的启动，而一般情况下，容器指的其实就是上下文 &lt;code&gt;ApplicationContext&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;AbstractApplicationContext&lt;/code&gt; 作为整个 &lt;code&gt;ApplicationContext&lt;/code&gt; 体系中最高级的抽象类，为除了 &lt;code&gt;ComplexWebApplicationContext&lt;/code&gt; 和 &lt;code&gt;SimpleWebApplicationContext&lt;/code&gt; 这两个容器外的全部容器，规定好了 &lt;code&gt;refresh&lt;/code&gt; 的整体流程，所有的容器在完成一些自己的初始化配置后，都需要调用该 &lt;code&gt;refresh&lt;/code&gt; 方法，依次完成指定内容的初始化。&lt;/p&gt;
+&lt;p&gt;也就是说，读懂了 &lt;code&gt;AbstractApplicationContext.refresh()&lt;/code&gt; 方法，其实就读懂了容器的启动流程：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;33&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;35&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;36&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;37&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;38&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;39&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;40&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;41&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;42&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;43&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;44&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;45&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;46&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;47&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;48&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;49&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;50&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;51&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;52&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;53&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;54&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;refresh&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;throws&lt;/span&gt; BeansException, IllegalStateException &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;synchronized&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;.startupShutdownMonitor) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// ================= 一、上下文的初始化 =================&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 准备上下文&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        prepareRefresh();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 通知子类刷新内部工厂&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 准备bean工厂以便在当前上下文中使用&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        prepareBeanFactory(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;try&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// ================= 二、BeanFactory的初始化 =================&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 对工厂进行默认后置处理&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            postProcessBeanFactory(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 使用后置处理器对工厂进行处理&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            invokeBeanFactoryPostProcessors(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 注册Bean后置处理器&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            registerBeanPostProcessors(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// ================= 三、事件，Bean及其他配置的初始化 =================&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 初始化此上下文的消息源&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            initMessageSource();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 为此上下文初始化事件广播者&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            initApplicationEventMulticaster();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 初始化特定上下文子类中的其他特殊bean&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            onRefresh();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 检查侦听器bean并注册&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            registerListeners();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 实例化所有非懒加载的剩余单例&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            finishBeanFactoryInitialization(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 完成刷新&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            finishRefresh();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// ================= 异常处理 =================&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;catch&lt;/span&gt; (BeansException ex) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (logger.isWarnEnabled()) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                logger.warn(&lt;span class=&quot;string&quot;&gt;&amp;quot;Exception encountered during context initialization - &amp;quot;&lt;/span&gt; +&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                            &lt;span class=&quot;string&quot;&gt;&amp;quot;cancelling refresh attempt: &amp;quot;&lt;/span&gt; + ex);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 销毁已创建的单例&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            destroyBeans();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 重置上下文的激活状态&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            cancelRefresh(ex);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;throw&lt;/span&gt; ex;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;finally&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 重置内部的一些元数据缓存&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            resetCommonCaches();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;从总体来看，该方法描述的初始化过程大概分为三步：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] 上下文的初始化；&lt;/li&gt;
+&lt;li&gt;[x] &lt;code&gt;BeanFactory&lt;/code&gt; 初始化；&lt;/li&gt;
+&lt;li&gt;[ ] 事件，Bean及其他配置的初始化；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;笔者将基于 spring 源码 &lt;code&gt;5.2.x&lt;/code&gt; 分支，分别通过五篇文章从源码分析 spring 容器的初始化过程。&lt;/p&gt;
+&lt;p&gt;本文是其中的第二篇文章，将介绍 &lt;code&gt;BeanFactory&lt;/code&gt; 初始化。&lt;/p&gt;
+&lt;p&gt;相关文章：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/categories/Spring/"/>
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/tags/Spring/"/>
+    
+    <category term="源码分析" scheme="http://blog.xiajibagao.top/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <link href="http://blog.xiajibagao.top/2022/05/19/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%B8%8A%E4%B8%8B%E6%96%87%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/"/>
+    <id>http://blog.xiajibagao.top/2022/05/19/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%B8%8A%E4%B8%8B%E6%96%87%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</id>
+    <published>2022-05-18T16:00:00.000Z</published>
+    <updated>2022-08-15T14:17:56.990Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+&lt;p&gt;我们知道，spring 的启动其实就是容器的启动，而一般情况下，容器指的其实就是上下文 &lt;code&gt;ApplicationContext&lt;/code&gt;。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;AbstractApplicationContext&lt;/code&gt; 作为整个 &lt;code&gt;ApplicationContext&lt;/code&gt; 体系中最高级的抽象类，为除了 &lt;code&gt;ComplexWebApplicationContext&lt;/code&gt; 和 &lt;code&gt;SimpleWebApplicationContext&lt;/code&gt; 这两个容器外的全部容器，规定好了 &lt;code&gt;refresh&lt;/code&gt; 的整体流程，所有的容器在完成一些自己的初始化配置后，都需要调用该 &lt;code&gt;refresh&lt;/code&gt; 方法，依次完成指定内容的初始化。&lt;/p&gt;
+&lt;p&gt;也就是说，读懂了 &lt;code&gt;AbstractApplicationContext.refresh()&lt;/code&gt; 方法，其实就读懂了容器的启动流程：&lt;/p&gt;
+&lt;figure class=&quot;highlight java&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;8&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;9&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;10&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;11&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;12&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;13&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;14&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;15&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;16&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;17&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;18&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;19&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;20&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;21&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;22&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;23&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;24&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;25&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;26&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;27&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;28&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;29&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;30&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;31&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;32&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;33&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;34&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;35&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;36&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;37&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;38&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;39&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;40&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;41&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;42&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;43&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;44&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;45&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;46&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;47&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;48&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;49&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;50&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;51&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;52&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;53&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;54&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;function&quot;&gt;&lt;span class=&quot;keyword&quot;&gt;public&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;void&lt;/span&gt; &lt;span class=&quot;title&quot;&gt;refresh&lt;/span&gt;&lt;span class=&quot;params&quot;&gt;()&lt;/span&gt; &lt;span class=&quot;keyword&quot;&gt;throws&lt;/span&gt; BeansException, IllegalStateException &lt;/span&gt;&amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &lt;span class=&quot;keyword&quot;&gt;synchronized&lt;/span&gt; (&lt;span class=&quot;keyword&quot;&gt;this&lt;/span&gt;.startupShutdownMonitor) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// ================= 一、上下文的初始化 =================&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 准备上下文&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        prepareRefresh();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 通知子类刷新内部工厂&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// 准备bean工厂以便在当前上下文中使用&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        prepareBeanFactory(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;try&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// ================= 二、BeanFactory的初始化 =================&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 对工厂进行默认后置处理&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            postProcessBeanFactory(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 使用后置处理器对工厂进行处理&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            invokeBeanFactoryPostProcessors(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 注册Bean后置处理器&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            registerBeanPostProcessors(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// ================= 三、事件，Bean及其他配置的初始化 =================&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 初始化此上下文的消息源&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            initMessageSource();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 为此上下文初始化事件广播者&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            initApplicationEventMulticaster();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 初始化特定上下文子类中的其他特殊bean&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            onRefresh();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 检查侦听器bean并注册&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            registerListeners();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 实例化所有非懒加载的剩余单例&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            finishBeanFactoryInitialization(beanFactory);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 完成刷新&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            finishRefresh();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;comment&quot;&gt;// ================= 异常处理 =================&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;catch&lt;/span&gt; (BeansException ex) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;if&lt;/span&gt; (logger.isWarnEnabled()) &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                logger.warn(&lt;span class=&quot;string&quot;&gt;&amp;quot;Exception encountered during context initialization - &amp;quot;&lt;/span&gt; +&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;                            &lt;span class=&quot;string&quot;&gt;&amp;quot;cancelling refresh attempt: &amp;quot;&lt;/span&gt; + ex);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 销毁已创建的单例&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            destroyBeans();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 重置上下文的激活状态&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            cancelRefresh(ex);&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;keyword&quot;&gt;throw&lt;/span&gt; ex;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &lt;span class=&quot;keyword&quot;&gt;finally&lt;/span&gt; &amp;#123;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            &lt;span class=&quot;comment&quot;&gt;// 重置内部的一些元数据缓存&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;            resetCommonCaches();&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;        &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;    &amp;#125;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&amp;#125;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
+&lt;p&gt;从总体来看，该方法描述的初始化过程大概分为三步：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;[x] 上下文的初始化；&lt;/li&gt;
+&lt;li&gt;[ ] &lt;code&gt;BeanFactory&lt;/code&gt; 初始化；&lt;/li&gt;
+&lt;li&gt;[ ] 事件，Bean及其他配置的初始化；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;笔者将基于 spring 源码 &lt;code&gt;5.2.x&lt;/code&gt; 分支，分别通过五篇文章从源码分析 spring 容器的初始化过程。&lt;/p&gt;
+&lt;p&gt;本文是其中的第一篇文章，将介绍上下文的初始化过程。&lt;/p&gt;
+&lt;p&gt;相关文章：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/categories/Spring/"/>
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/tags/Spring/"/>
+    
+    <category term="源码分析" scheme="http://blog.xiajibagao.top/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <link href="http://blog.xiajibagao.top/2022/04/02/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/"/>
+    <id>http://blog.xiajibagao.top/2022/04/02/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/</id>
+    <published>2022-04-01T16:00:00.000Z</published>
+    <updated>2022-08-15T14:17:55.149Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+&lt;p&gt;在 spring 中，任何实现了 &lt;code&gt;BeanFactory&lt;/code&gt; 接口的类都可以视为容器，它是 &lt;code&gt;IOC&lt;/code&gt; 功能实现的核心，用于完成类实例从加载到销毁的整个生命周期的控制，这些被 spring 所管理的实例统称为 bean。&lt;/p&gt;
+&lt;p&gt;根据抽象层级的不同，容器又分为 &lt;code&gt;BeanFactory&lt;/code&gt; 的直接实现，与基于 &lt;code&gt;BeanFactory&lt;/code&gt; 的扩展实现 &lt;code&gt;ApplicationContext&lt;/code&gt;，后者在前者的基础继承了 &lt;code&gt;ResourceLoader&lt;/code&gt;和&lt;code&gt;EnvironmentCapable&lt;/code&gt;接口，因而具备从某类运行环境的资源中直接加载 bean 的能力。&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.xiajibagao.top/image-20220620142154578.png&quot; alt=&quot;image-20220620142154578&quot;&gt;&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;ApplicationContext&lt;/code&gt; 最常用的两个实现 &lt;code&gt;ClassPathXmlApplicationContext&lt;/code&gt; 和 &lt;code&gt;AnnotationConfigApplicationContext&lt;/code&gt; ，前者用于从项目路径下根据 &lt;code&gt;xml&lt;/code&gt; 文件加载 bean，而后者通过扫描类注解完成 bean 的加载。这两者 &lt;code&gt;ApplicationContext&lt;/code&gt; 实际上就对应了我们所熟悉的两类配置方式，前者就是传统的 xml 配置，后者则是通过 &lt;code&gt;@Component&lt;/code&gt; 与 &lt;code&gt;@Bean&lt;/code&gt; 等注解对 bean 进行配置。&lt;/p&gt;
+&lt;p&gt;本文将基于 spring 源码 &lt;code&gt;5.2.x&lt;/code&gt; 分支，基于 &lt;code&gt;BeanFactory&lt;/code&gt; 与 &lt;code&gt;ApplicationContext&lt;/code&gt; 两大接口，介绍 spring 的两类容器的结构体系。&lt;/p&gt;
+&lt;h2 id=&quot;一-beanfactory-接口体系&quot;&gt;一、BeanFactory 接口体系&lt;/h2&gt;
+&lt;p&gt;总览 &lt;code&gt;BeanFactory&lt;/code&gt; 体系，按照接口的抽象层次，大体可以分层四层：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;第一层：&lt;code&gt;BeanFactory&lt;/code&gt;；&lt;/li&gt;
+&lt;li&gt;第二层：&lt;code&gt;HierarchicalBeanFactory&lt;/code&gt;，&lt;code&gt;ListableBeanFactory&lt;/code&gt;，&lt;code&gt;AutowireCapableBeanFactory&lt;/code&gt;；&lt;/li&gt;
+&lt;li&gt;第三层：&lt;code&gt;ConfigurableBeanFactory&lt;/code&gt;，此外还有一个关联性较强&lt;code&gt;SingletonBeanRegistry&lt;/code&gt;；&lt;/li&gt;
+&lt;li&gt;第四层：&lt;code&gt;ConfigurableListableBeanFactory&lt;/code&gt;；&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src=&quot;https://img.xiajibagao.top/image-20220620151809732.png&quot; alt=&quot;image-20220620151809732&quot;&gt;&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/categories/Spring/"/>
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/tags/Spring/"/>
+    
+    <category term="源码分析" scheme="http://blog.xiajibagao.top/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/"/>
     
   </entry>
   
@@ -413,261 +652,6 @@
     
     
     <category term="计算机网络" scheme="http://blog.xiajibagao.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>java集合源码分析（九）：HashSet与TreeSet.md</title>
-    <link href="http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9AHashSet/"/>
-    <id>http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9AHashSet/</id>
-    <published>2020-12-21T16:00:00.000Z</published>
-    <updated>2021-02-27T13:14:00.072Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;HashSet 是 Set 接口下一个不允许重复但允许 null、无序并且线程不安全的集合。它基于 HashMap 实现。&lt;/p&gt;
-&lt;p&gt;从数据结构来说，他与 HashMap 相同，但是由于 HashSet 借助 HashMap 的 key 来存储数据，因而 HashMap 的 value 在 HashSet 中无意义。&lt;/p&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201208205304527.png&quot; alt=&quot;HashMap的数据结构&quot; style=&quot;zoom:67%;&quot;&gt;
-&lt;p&gt;这是关于 java 集合类源码的第九篇文章。往期文章：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/&quot;&gt;java集合源码分析（五）：Map与AbstractMap&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/&quot;&gt;java集合源码分析（六）：HashMap&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/21/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ALinkedHashMap/&quot;&gt;java集合源码分析（七）：LinkedHashMap&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/&quot;&gt;java集合源码分析（八）：Set与AbstractSet&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;一-数据结构&quot;&gt;一、数据结构&lt;/h2&gt;
-&lt;p&gt;HashSet 基于 HashMap 实现，也就是说，HashSet 用于存储数据的容器实际上就是一个 HashMap 实例。（关于 HashMap 的数据结构，可以参考前文&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/&quot;&gt;java集合源码分析（六）：HashMap&lt;/a&gt;中的第一部分。）&lt;/p&gt;
-&lt;p&gt;HashSet 使用 HashMap 的 key 作为存储数据的位置，而 value 的位置使用一个默认的全局空对象填充。大部分方法通过直接包装调用 HashMap 的来实现，也就是说，我们可以把 HashSet 看成 HashMap 的一个大号包装器——或者说适配器类。&lt;/p&gt;
-&lt;h2 id=&quot;二-成员变量&quot;&gt;二、成员变量&lt;/h2&gt;</summary>
-    
-    
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>java集合源码分析（八）：Set与AbstractSet</title>
-    <link href="http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/"/>
-    <id>http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/</id>
-    <published>2020-12-21T16:00:00.000Z</published>
-    <updated>2020-12-22T08:50:10.381Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;Set 接口是 Collection 接口下三大子接口之一。其下实现类都为元素不可重复的，不保证线程安全的集合。他有两个主要实现，即无序的 HashSet 与有序的 TreeSet。&lt;/p&gt;
-&lt;p&gt;Set 相对 List 集合与 Queue 集合不同之处在于，他的实现类需要依赖与 Map 集合的实现类密切相关。这体现在以下两点：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;HashSet 实际依赖于 HashMap，他使用 HashMap 的 key 作为存储容器。TreeSet 同理，依赖于 TreeMap实现。&lt;/li&gt;
-&lt;li&gt;Map 集合中的 keySet 与 EntrySet 视图集合往往以实现了 Set 接口的内部类出现在 Map 的实现类中。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201222152520801.png&quot; alt=&quot;image-20201222152520801&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20201222152520801&lt;/figcaption&gt;
-&lt;/figure&gt;
-&lt;p&gt;这是关于 java 集合类源码的第八篇文章。往期文章：&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;ol type=&quot;1&quot;&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/&quot;&gt;java集合源码分析（五）：Map与AbstractMap&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/&quot;&gt;java集合源码分析（六）：HashMap&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/21/java/集合类源码分析/java集合源码分析（七）：LinkedHashMap/&quot;&gt;java集合源码分析（七）：LinkedHashMap&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;一-set-接口的类关系&quot;&gt;一、Set 接口的类关系&lt;/h2&gt;
-&lt;h3 id=&quot;1父接口&quot;&gt;1.父接口&lt;/h3&gt;
-&lt;p&gt;Set 接口继承了 Collection 接口，而 Collection 接口又继承了 Iterable 接口，这表明 Set 集合具有 Collection 的通性，是一维的元素集合，并且可以使用迭代器或者 &lt;code&gt;forEach()&lt;/code&gt; 迭代。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>next5主题自定义摘要</title>
-    <link href="http://blog.xiajibagao.top/2020/12/21/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/next5%E4%B8%BB%E9%A2%98%E8%87%AA%E5%AE%9A%E4%B9%89%E6%91%98%E8%A6%81/"/>
-    <id>http://blog.xiajibagao.top/2020/12/21/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/next5%E4%B8%BB%E9%A2%98%E8%87%AA%E5%AE%9A%E4%B9%89%E6%91%98%E8%A6%81/</id>
-    <published>2020-12-20T16:00:00.000Z</published>
-    <updated>2020-12-21T12:09:15.832Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;最近 next6 折腾了一段时间，最后还是回到了 next5，但是添加阅读全文按钮以后，默认的摘要生成不太方便，于是就把注意打到了 js 上。&lt;/p&gt;
-&lt;p&gt;这里整理一下 next5 生成摘要的方法。&lt;/p&gt;
-&lt;h2 id=&quot;一-yaml&quot;&gt;一、yaml&lt;/h2&gt;
-&lt;p&gt;这个是 hexo 自带的，通过直接在 yaml 里面配置&lt;/p&gt;
-&lt;figure class=&quot;highlight yaml&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;2&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;3&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;4&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;5&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;6&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;7&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;---&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;attr&quot;&gt;title:&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;next5主题自定义摘要&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;attr&quot;&gt;date:&lt;/span&gt; &lt;span class=&quot;number&quot;&gt;2020-12-21&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;attr&quot;&gt;tags:&lt;/span&gt; [&lt;span class=&quot;string&quot;&gt;杂七乱八&lt;/span&gt;]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;attr&quot;&gt;categories:&lt;/span&gt; [&lt;span class=&quot;string&quot;&gt;杂七乱八&lt;/span&gt;]&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;attr&quot;&gt;description:&lt;/span&gt; &lt;span class=&quot;string&quot;&gt;这里是一段摘要&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;meta&quot;&gt;---&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;
-&lt;p&gt;不过加完以后， next 会默认在文章详情页面的发布信息下也生成摘要，个人觉得不是很美观。&lt;/p&gt;
-&lt;h2 id=&quot;二-文章截断&quot;&gt;二、文章截断&lt;/h2&gt;
-&lt;p&gt;这个是 next 自带的，可以通过在文章中插入：&lt;/p&gt;
-&lt;figure class=&quot;highlight markdown&quot;&gt;&lt;table&gt;&lt;tr&gt;&lt;td class=&quot;gutter&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;1&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;td class=&quot;code&quot;&gt;&lt;pre&gt;&lt;span class=&quot;line&quot;&gt;&lt;span class=&quot;xml&quot;&gt;&lt;span class=&quot;comment&quot;&gt;&amp;lt;!-- more --&amp;gt;&lt;/span&gt;&lt;/span&gt;&lt;/span&gt;&lt;br&gt;&lt;/pre&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/figure&gt;</summary>
-    
-    
-    
-    <category term="杂七乱八" scheme="http://blog.xiajibagao.top/categories/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
-    
-    
-    <category term="杂七乱八" scheme="http://blog.xiajibagao.top/tags/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>计算机网络基本知识</title>
-    <link href="http://blog.xiajibagao.top/2020/12/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/"/>
-    <id>http://blog.xiajibagao.top/2020/12/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/</id>
-    <published>2020-12-20T16:00:00.000Z</published>
-    <updated>2021-02-22T02:41:43.893Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;本文为阅读《趣谈网络协议》之前需要了解的一些基本概念与知识，包括 OSI 七层模型与 TCP/IP 四层模型，不同层级的作用，不同层级之间的主要协议等。&lt;/p&gt;
-&lt;h2 id=&quot;一-为什么需要网络协议&quot;&gt;一、为什么需要网络协议&lt;/h2&gt;
-&lt;p&gt;网络协议为计算机网络中进行数据交换而建立的规则、标准或约定的集合。&lt;/p&gt;
-&lt;p&gt;例如，网络中一个微机用户和一个大型主机的操作员进行通信，由于这两个数据终端所用字符集不同，因此操作员所输入的命令彼此不认识。为了能进行通信，规定每个终端都要将各自字符集中的字符先变换为标准字符集的字符后，才进入网络传送，到达目的终端之后，再变换为该终端字符集的字符。&lt;/p&gt;
-&lt;h2 id=&quot;二-网络的分层模型&quot;&gt;二、网络的分层模型&lt;/h2&gt;
-&lt;h3 id=&quot;1网络的分层模型&quot;&gt;1.网络的分层模型&lt;/h3&gt;
-&lt;p&gt;根据 OSI 提出的模型，计算机网络体系结构的通讯协议应当分为七层，而除了标准的 OSI七层模型以外，常见的网络层次划分还有 TCP/IP 四层协议以及 TCP/IP 五层协议，它们之间的关系如下：&lt;/p&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201223110909686.png&quot; alt=&quot;image-20201223110909686&quot; style=&quot;zoom: 67%;&quot;&gt;
-&lt;h3 id=&quot;2tcpip模型与osi模型&quot;&gt;2.TCP/IP模型与OSI模型&lt;/h3&gt;</summary>
-    
-    
-    
-    <category term="计算机网络" scheme="http://blog.xiajibagao.top/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
-    
-    
-    <category term="计算机网络" scheme="http://blog.xiajibagao.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>java集合源码分析（七）：LinkedHashMap</title>
-    <link href="http://blog.xiajibagao.top/2020/12/21/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ALinkedHashMap/"/>
-    <id>http://blog.xiajibagao.top/2020/12/21/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ALinkedHashMap/</id>
-    <published>2020-12-20T16:00:00.000Z</published>
-    <updated>2020-12-21T09:22:09.233Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;LinkedHashMap 是 Map 接口下一个线程不安全的，允许 null 的，基于哈希表的实现。它是 HashMap 的子类， 由于引入了双向链表的数据结构，除了拥有 HashMap 的所有特征外，他还可以以双向链表的方式操作和访问，并且提供按插入顺序或访问顺序两种顺序访问方式。&lt;/p&gt;
-&lt;p&gt;由于结构的特殊性，通过 LinkedHashMap，我们可以非常便捷的实现一个基于 LRU 算法的缓存容器。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;这是关于 java 集合类源码的第七篇文章。往期文章：&lt;/p&gt;
-&lt;ol type=&quot;1&quot;&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;br&gt;
-&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/&quot;&gt;java集合源码分析（五）：Map与AbstractMap&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/&quot;&gt;java集合源码分析（六）：HashMap&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;一-linkedhashmap-的数据结构&quot;&gt;一、LinkedHashMap 的数据结构&lt;/h2&gt;
-&lt;p&gt;LinkedHashMap 是 HashMap 的子类，他的节点类 Entry 也继承了 HashMap 的节点类 Node 类。所以 LinkedHashMap 保留了 HashMap 的所有基本特征。&lt;/p&gt;
-&lt;p&gt;但是，不同的是，LinkedHashMap 在节点类 Entry 中增加了 after 和 before 两个指针用于指向前驱和后继节点，并且提供了头节点和尾节点的指针，也就是说，他实际上也可以认为是一条双向链表。&lt;/p&gt;
-&lt;p&gt;比如下图，依次按顺序插入三个节点：&lt;/p&gt;
-&lt;figure&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201221133625968.png&quot; alt=&quot;image-20201221133625968&quot;&gt;&lt;figcaption aria-hidden=&quot;true&quot;&gt;image-20201221133625968&lt;/figcaption&gt;
-&lt;/figure&gt;
-&lt;p&gt;实际上，从链表的角度来看，也可以理解为这样：&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>如何解决next5主题目录无法跳转的问题</title>
-    <link href="http://blog.xiajibagao.top/2020/12/17/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3next5%E4%B8%BB%E9%A2%98%E7%9B%AE%E5%BD%95%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%AC%E7%9A%84%E9%97%AE%E9%A2%98/"/>
-    <id>http://blog.xiajibagao.top/2020/12/17/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3next5%E4%B8%BB%E9%A2%98%E7%9B%AE%E5%BD%95%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%AC%E7%9A%84%E9%97%AE%E9%A2%98/</id>
-    <published>2020-12-16T16:00:00.000Z</published>
-    <updated>2020-12-17T09:18:53.930Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;目前使用的 next 版本是 5.1.4 ，文章左侧的目录一直不能跳转也不能展开，按网上的办法一直没法解决，今天自己琢磨了一阵总算搞定了。&lt;/p&gt;
-&lt;p&gt;由于发现遇到这个问题的人不少，特此总结一下。&lt;/p&gt;
-&lt;p&gt;一般分为两种情况：渲染错误和超链接乱码。&lt;/p&gt;
-&lt;h2 id=&quot;一-渲染错误&quot;&gt;一、渲染错误&lt;/h2&gt;
-&lt;h3 id=&quot;1问题描述&quot;&gt;1.问题描述&lt;/h3&gt;
-&lt;p&gt;最典型的特征就是目录上的超链接为 &lt;code&gt;undefined&lt;/code&gt;，或者点击的时候报错： &lt;code&gt;Cannot read property &#39;replace&#39; of null&lt;/code&gt;。&lt;/p&gt;
-&lt;p&gt;前一情况 GitHub 中已有相应的 Issues：&lt;a href=&quot;https://github.com/Haojen/hexo-theme-Anisina/issues/34&quot;&gt;根据 markdown 生成的 TOC 锚点的内容是 undefined&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;这个情况一般是 &lt;code&gt;markdown-it&lt;/code&gt; 渲染出错，渲染时候把应该加在标题的锚点加到了标题内的 sapn 标签里，导致生成目录的时候获取不到对应的锚点。&lt;/p&gt;
-&lt;p&gt;比如原本 &lt;code&gt;##一级标题&lt;/code&gt; 应该是渲染成 &lt;code&gt;&amp;lt;h2 id=&quot;一级标题&quot;&amp;gt;一级标题&amp;lt;/h2&amp;gt;&lt;/code&gt;，然后生成目录的时候扫描所有 &lt;code&gt;h2&lt;/code&gt; 标签获取 id 作为链接，但是实际上 marked-it 渲染出来的是这样的： &lt;code&gt;&amp;lt;h2&amp;gt;&amp;lt;span id=&quot;一级标题&quot;&amp;gt;一级标题&amp;lt;/span&amp;gt;&amp;lt;/h2&amp;gt;&lt;/code&gt;&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="杂七乱八" scheme="http://blog.xiajibagao.top/categories/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
-    
-    
-    <category term="杂七乱八" scheme="http://blog.xiajibagao.top/tags/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/"/>
-    
-    <category term="hexo" scheme="http://blog.xiajibagao.top/tags/hexo/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>java集合源码分析（六）：HashMap</title>
-    <link href="http://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/"/>
-    <id>http://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/</id>
-    <published>2020-12-15T16:00:00.000Z</published>
-    <updated>2021-02-27T12:44:05.406Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;HashMap 是 Map 接口下一个线程不安全的，基于哈希表的实现类。由于他解决哈希冲突的方式是分离链表法，也就是拉链法，因此他的数据结构是数组+链表，在 JDK8 以后，当哈希冲突严重时，HashMap 的链表会在一定条件下转为红黑树以优化查询性能，因此在 JDK8 以后，他的数据结构是数组+链表+红黑树。&lt;/p&gt;
-&lt;p&gt;对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式，能否存放空值；作为使用了数组作为底层结构的集合，我们还需要关注其扩容的实现；同时，针对哈希表的特性，我们还需要关注它如何通过哈希算法取模快速定位下标。&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;这是关于 java 集合类源码的第六篇文章。往期文章：&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/&quot;&gt;java集合源码分析（一）：Collection 与 AbstractCollection&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/&quot;&gt;java集合源码分析（二）：List与AbstractList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/&quot;&gt;java集合源码分析（三）：ArrayList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/&quot;&gt;java集合源码分析（四）：LinkedList&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;&lt;a href=&quot;https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/&quot;&gt;java集合源码分析（五）：Map与AbstractMap&lt;/a&gt;&lt;/li&gt;
-&lt;/ol&gt;
-&lt;/blockquote&gt;
-&lt;h2 id=&quot;一-hashmap-的数据结构&quot;&gt;一、HashMap 的数据结构&lt;/h2&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/image-20201208205304527.png&quot; alt=&quot;HashMap的数据结构&quot; style=&quot;zoom:67%;&quot;&gt;
-&lt;p&gt;&lt;strong&gt;在 JDK8 之前，HashMap 的数据结构是数组+链表。在 JDK8 以后是数组 + 链表 + 红黑树&lt;/strong&gt;。&lt;/p&gt;
-&lt;p&gt;在 HashMap 中，每一个 value 都被存储在一个 Node 或 TreeNode 实例中，容器中有一个 &lt;code&gt;Node[] table&lt;/code&gt; 数组成员变量，数组中的每一格称为一个“桶”。当添加元素时，根据元素的 key 通过哈希值计算得到对应下标，将 Node 类的形式存入“桶”中。如果 table 容量不足时，就会发生扩容，同时对容器内部的元素进行重哈希。&lt;/p&gt;
-&lt;p&gt;当发生哈希冲突，也就是不同元素计算得到了相同的下标时，会将节点接到“桶”的中的第一个元素后，后续操作亦同，最后就会形成链表。&lt;/p&gt;
-&lt;p&gt;在 JDK8 以后，由于考虑到&lt;strong&gt;哈希冲突严重时，“桶”中的链表会影响查询效率，因此在一定条件下，链表元素多到一定程度，Node 就会转为 TreeNode，也就是把链表转为红黑树&lt;/strong&gt;。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
-    
-    
-    <category term="java" scheme="http://blog.xiajibagao.top/tags/java/"/>
-    
-    <category term="java集合容器" scheme="http://blog.xiajibagao.top/tags/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/"/>
     
   </entry>
   

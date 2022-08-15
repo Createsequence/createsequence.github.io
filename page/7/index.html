@@ -287,6 +287,1273 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/12/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/12/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/" itemprop="url">JVM初探（四）：类加载器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-12T00:00:00+08:00">
+                2020-08-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.4k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>虚拟机设计团队把类加载阶段中的“<strong>通过一个类的全限定名来获取描述此类的二进制字节流</strong>”这个动作放到Java虚拟机外部去实现，以便让应用程序自己决定如何去获取所需要的类。<strong>实现这个动作的代码模块称为类加载器。</strong></p>
+<p>对于类加载，我们关注两个方面的问题：</p>
+<ul>
+<li>JVM定义的三个类加载器（Bootstrap，Extension，System）</li>
+<li>双亲委派模型（机制，JDBC违背案例）</li>
+</ul>
+<h2 id="一-类加载器">一、类加载器</h2>
+<p>JVM使用以下三种类型的类加载器：</p>
+<ul>
+<li><p><strong>启动类（Bootstrap）类加载器</strong>：</p>
+<p>这个类存放在<java_home>，无法被Java程序直接引用；</java_home></p></li>
+<li><p><strong>扩展（Extension）类加载器</strong>：</p>
+<p>这个类加载器负责加载<java_home>，开发者可以直接使用；</java_home></p></li>
+<li><p><strong>引用程序（Application）类加载器</strong>：</p>
+<p>这个类加载器是ClassLoader中的getSystemClassLoader（）方法的返回值，所以<strong>一般也称它为系统类加载器</strong>，负责加载用户类路径上所指定的类库。开发者可以直接使用。</p></li>
+</ul>
+<p>从java虚拟机的角度来说，一种是启动类加载器，是JVM的一部分；另一种是其他类加载器，独立于JVM，全部继承自抽象类java.lang.ClassLoader。只有其他类加载器程序员才能自己使用。</p>
+<h2 id="二-双亲委派模型">二、双亲委派模型</h2>
+<h3 id="1什么是双亲委派模型">1.什么是双亲委派模型</h3>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/08/12/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E5%99%A8/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/11/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/11/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/" itemprop="url">JVM初探（三）：类加载机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-11T00:00:00+08:00">
+                2020-08-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>我们知道java代码会被编译为.class文件，这里class文件中的类信息最终还是需要jvm加载以后才能使用。</p>
+<p>事实上，虚拟机把描述类的数据<strong>从Class文件加载到内存，并对数据进行校验，转换解析和初始化，最终形成可以被虚拟机直接使用的Java类型的过程就是虚拟机的类加载机制</strong>。</p>
+<p>对于jvm类的加载机制，我们主要关注两个问题：</p>
+<ul>
+<li>类的加载时机？(初始化的五种情况)</li>
+<li>类的加载过程？（类的五个加载过程）</li>
+</ul>
+<h2 id="一-类的加载时机">一、类的加载时机</h2>
+<h3 id="1类的生命周期">1.类的生命周期</h3>
+<p>类从被加载到虚拟机内存中开始，到卸载出内存为止，整个生命周期包括<strong>加载、验证、准备、解析、初始化、使用和卸载</strong>。其中验证、准备、解析统称为<strong>连接</strong>。</p>
+<p><img src="http://img.xiajibagao.top/%E7%B1%BB%E5%8A%A0%E8%BD%BD%E7%9A%84%E6%97%B6%E6%9C%BA.png" alt="类加载的时机"></p>
+<p>值得一提的是，加载，验证，准备，初始化和卸载是固定的，<strong>但是解析阶段不是：它在一定情况下可以在初始化后再开始，以支持java语言的动态绑定</strong>。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/08/11/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E7%B1%BB%E5%8A%A0%E8%BD%BD%E6%9C%BA%E5%88%B6/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/11/java/String%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/11/java/String%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url">String类源码分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-11T00:00:00+08:00">
+                2020-08-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4.1k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>java 的 String 类可以说是日常中使用的最多的类，但是大多数时候都只是简单的拼接或者调用 API，只知其然不知其所以然。为了改变这个情况，我决定结合网上的资料，参考源码，深入一点去了解 String 这个熟悉的陌生人。</p>
+<p>要第一时间了解一个类，没有什么比官方的文档更直观的了：</p>
+<blockquote>
+<p>String类表示字符串。Java程序中的所有字符串文本（如“abc”）都作为此类的实例实现。</p>
+<p><strong>字符串是常量；它们的值在创建后不能更改</strong>。字符串缓冲区支持可变字符串。<strong>因为字符串对象是不可变的，所以可以共享它们</strong>。</p>
+<p><strong>Java语言提供了对字符串连接运算符（+）以及将其他对象转换为字符串的特殊支持。字符串连接是通过<code>StringBuilder</code>（或<code>StringBuffer</code>）类及其<code>append</code>方法实现的。字符串转换是通过<code>toString</code>方法实现的</strong></p>
+<p>… …</p>
+</blockquote>
+<p>根据文档，对于String类，我们关注三个问题：</p>
+<ul>
+<li>String对象的不可变性（为什么是不可变的，这么设计的必要性）</li>
+<li>String对象的创建方式（两种创建方式，字符串常量池）</li>
+<li>String对象的拼接（StringBuffer，StringBuilder，加号拼接的本质）</li>
+</ul>
+<h2 id="一-string对象的不可变性">一、String对象的不可变性</h2>
+<h3 id="1string为什么是不可变的">1.String为什么是不可变的</h3>
+<p>文档中提到：</p>
+<blockquote>
+<p>字符串是常量；它们的值在创建后不能更改。</p>
+</blockquote>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/08/11/java/String%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/10/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/10/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/" itemprop="url">JVM初探（二）：垃圾回收机制</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-10T00:00:00+08:00">
+                2020-08-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.8k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>我们知道自动的垃圾回收机制是Java语言一个特点，它让我们在写程序的时候不再需要考虑内存管理问题。内存管理实际上就是<strong>分配内存</strong>和<strong>回收内存</strong>这两个问题，在<a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/13447923.html">上一篇文章</a>我大概介绍了jvm是如何划分内存空间以合理的分配内存的，而这篇文章就介绍一下jvm是如何回收内存的。</p>
+<p>对于线程私有的程序计数器，虚拟机栈和本地方法栈三块数据区域而言，生命周期是和线程绑定的，线程结束时自然就回收内存了；而对于栈，每一个方法代表每一个栈帧，方法结束的时候就出栈，这时内存也跟着回收了。这些区域的内存回收都是具有确定性的，而堆就不同。</p>
+<p>我们知道，堆主要用与存放对象实例，而只有运行时才知道要创建那些对象，而只有对象完全不被使用时才能回收其占用的内存空间。对于这块内容，我们需要明确三个问题：</p>
+<ul>
+<li><strong>哪些对象可以回收？</strong>（引用计数法、可达性算法）</li>
+<li><strong>这些内存什么时候回收？</strong>（新生代、老年代、永久代，MinorGC和FullGC）</li>
+<li><strong>这些内存怎么回收？</strong>（三种垃圾收集算法和分代收集算法，七种垃圾收集器）</li>
+</ul>
+<h2 id="一-判断对象是否可回收">一、判断对象是否可回收</h2>
+<p>我们要判断对象是否可以回收，最有效的方式就是判断这个对象是否正在被别的对象引用。针对这个问题，有两种算法：<strong>引用计数算法</strong>和<strong>可达性分析算法</strong>。</p>
+<h3 id="1引用计数算法">1.引用计数算法</h3>
+<p><strong>引用计数算法是通过判断对象的引用数量来决定对象是否可以被回收</strong>。</p>
+<p>简单的来说，就是为每一个对象实例配置一个计数器：</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/08/10/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/09/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9Ajvm%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/09/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9Ajvm%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/" itemprop="url">JVM初探（一）：jvm内存结构</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-09T00:00:00+08:00">
+                2020-08-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>我们知道java代码先编译为.class文件，然后再将.class文件交由jvm执行。在程序运行的这一过程中，jvm会将其管理的内存空间划分为不同的区域，这些区域各有各的用途，我们将其分为五类：</p>
+<ol>
+<li>方法区</li>
+<li>堆</li>
+<li>虚拟机栈</li>
+<li>本地方法栈</li>
+<li>程序计数器</li>
+</ol>
+<p>其中方法区和堆是线程共享的，随jvm启动和停止而创建和销毁；</p>
+<p>而虚拟机栈、本地方法栈和程序计数器则是线程私有的，随线程的创建和结束而创建和销毁。</p>
+<p><img src="http://img.xiajibagao.top/jvm%E5%86%85%E5%AD%98%E4%BD%93%E7%B3%BB.png" alt="jvm内存体系"></p>
+<h2 id="一-线程隔离数据区">一、线程隔离数据区</h2>
+<p>包括程序计数器，虚拟机栈，本地方法栈三部分，是线程私有的数据区。</p>
+<h3 id="1程序计数器">1.程序计数器</h3>
+<p><img src="http://img.xiajibagao.top/%E7%A8%8B%E5%BA%8F%E8%AE%A1%E6%95%B0%E5%99%A8.png" alt="程序计数器"></p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/08/09/jvm/JVM%E5%88%9D%E6%8E%A2%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9Ajvm%E5%86%85%E5%AD%98%E7%BB%93%E6%9E%84/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/05/java/java%E6%98%AF%E5%80%BC%E4%BC%A0%E9%80%92%E8%BF%98%E6%98%AF%E5%BC%95%E7%94%A8%E4%BC%A0%E9%80%92/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/05/java/java%E6%98%AF%E5%80%BC%E4%BC%A0%E9%80%92%E8%BF%98%E6%98%AF%E5%BC%95%E7%94%A8%E4%BC%A0%E9%80%92/" itemprop="url">java是值传递还是引用传递</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-05T00:00:00+08:00">
+                2020-08-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/java/" itemprop="url" rel="index">
+                    <span itemprop="name">java</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.3k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>以前一鳞半爪的了解过 java 的参数传递方式是什么样的，后面粗略的了解了一鳞半爪以后有了大概的印象：“传参数就是值传递，传对象就是引用传递”，今天同事说起这件事，他却说 java 只有值传递。抱着疑问，我专门查了相关资料和文章，发现我原来的理解确实有问题。</p>
+<p>这里先放结论：</p>
+<ul>
+<li>java中参数的传递可以理解为<strong>都是值传递</strong></li>
+<li>基础数据类型传递的是<strong>值的拷贝</strong></li>
+<li>对象类型是共享对象传递，传递的是<strong>地址的拷贝</strong></li>
+</ul>
+<h2 id="一-形参和实参">一、形参和实参</h2>
+<p>要理解参数的传递就必须先理解形参和实参：</p>
+<ul>
+<li><p>形参：就是形式参数，用于<strong>定义方法的时候使用的参数</strong>，是用来接收调用者传递的参数的。</p>
+<p>形参只有在方法被调用的时候，虚拟机才会分配内存单元，在方法调用结束之后便会释放所分配的内存单元。</p>
+<p>因此,<strong>形参只在方法内部有效</strong>，所以针对引用对象的改动也无法影响到方法外。</p></li>
+<li><p>实参：就是实际参数，用于调用时<strong>传递给方法的参数</strong>。</p></li>
+</ul>
+<p>举个例子：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">( String[] args )</span> </span>&#123;</span><br><span class="line">    String string = <span class="string">&quot;Hello&quot;</span>;</span><br><span class="line">    <span class="comment">//string是实际参数</span></span><br><span class="line">    sout(string);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">sout</span><span class="params">(String str)</span></span>&#123;</span><br><span class="line">    <span class="comment">//str为形式参数</span></span><br><span class="line">    System.out.println(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="二-值传递和引用传递与共享对象传递">二、值传递和引用传递与共享对象传递</h2>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/08/05/java/java%E6%98%AF%E5%80%BC%E4%BC%A0%E9%80%92%E8%BF%98%E6%98%AF%E5%BC%95%E7%94%A8%E4%BC%A0%E9%80%92/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/08/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E5%85%AB%EF%BC%89%EF%BC%9A%E5%9B%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/08/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E5%85%AB%EF%BC%89%EF%BC%9A%E5%9B%BE/" itemprop="url">数据结构与算法（十八）：图</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-08-04T00:00:00+08:00">
+                2020-08-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.3k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="一-什么是图">一、什么是图</h2>
+<h3 id="1概述">1.概述</h3>
+<p>首先，我们已经在之前学习过了树这种数据结构，树能反映一对多的关系，但是却无法反映多对多的关系，因此我们引入了图这种数据结构。</p>
+<p>对于图，其节点也可以叫做<strong>顶点</strong>，每个节点具有<strong>零或者多个相连节点</strong>，每个节点之间的连接称为<strong>边</strong>，从一个节点到达另一个节点路线都称为<strong>路径</strong>。</p>
+<figure>
+<img src="http://img.xiajibagao.top/图.png" alt="image-20200804155639505"><figcaption aria-hidden="true">image-20200804155639505</figcaption>
+</figure>
+<p>以上图为例，其中：</p>
+<ul>
+<li>无向图：顶点之间连接没有方向。比如从A到C，可是A -&gt; B -&gt; C，也可以是A -&gt; D -&gt; B -&gt; C。</li>
+<li>有向图：顶点之间连接有方向。如果A到B，必须是A -&gt; B，不能是B -&gt; A</li>
+<li>带权图：边带有权值。</li>
+</ul>
+<h3 id="2树与图的关系">2.树与图的关系</h3>
+<p>实际上，对于有向图还分为两种情况，即图中含环或者图中不含环的单向图，其中含环的图可以从某个顶点出发最终返回原点。</p>
+<p>结合对图的定义，我们不难发现，<strong>树也可以理解为不含有环的单向图</strong>，是图的子集。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/08/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E5%85%AB%EF%BC%89%EF%BC%9A%E5%9B%BE/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/07/25/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%83%EF%BC%89%EF%BC%9AB%E6%A0%91%EF%BC%8CB+%E6%A0%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -821,1334 +2088,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/07/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E5%9B%9B%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E7%BC%96%E7%A0%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/07/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E5%9B%9B%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E7%BC%96%E7%A0%81/" itemprop="url">数据结构与算法（十四）：赫夫曼编码</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-19T00:00:00+08:00">
-                2020-07-19
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4.5k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一-什么是赫夫曼编码">一、什么是赫夫曼编码</h2>
-<p>哈夫曼编码(Huffman Coding)，又称霍夫曼编码，是一种编码方式，可变字长编码(VLC)的一种。Huffman于1952年提出一种编码方法，该方法完全依据字符出现概率来构造异字头的平均长度最短的码字，有时称之为最佳编码，</p>
-<p>使用赫夫曼编码可以有效的压缩数据，通常可以节省20%~90%的空间。</p>
-<p>在理解赫夫曼编码前，我们需要对通讯领域的两种编码方式有个粗略的了解。</p>
-<p>假设我们需要传输 <code>I'm a jvav programmer and I love programming</code>这样一句话，我们有两种传输方式：</p>
-<ol type="1">
-<li><p>定长编码</p>
-<p>直接转换为对应长度的二进制格式</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">01101111</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100111</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100111</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span> <span class="number">00100000</span></span><br></pre></td></tr></table></figure>
-<p>总长度为296个字符</p></li>
-<li><p>变长编码</p>
-<p>按照各个字符出现的次数进行编码，按出现次数编码，出现次数越多的，则编码越小：</p>
-<p>比如空格出现最多次，然后是a，以此类推......</p>
-<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>=  ，<span class="number">1</span>=a，<span class="number">10</span>=i，<span class="number">11</span>=o......</span><br></pre></td></tr></table></figure>
-<p>当传输的信息越多的时候，变长编码实际传输的长度相对定长编码就越小</p></li>
-</ol>
-<p>另外，我们还需要了解一下什么是补码：</p>
-<blockquote>
-<p>计算机里面只有加法器，没有减法器，所以减法必须用加法来完成。 对于 100 以内的十进制数，“-1”就可以用"+99"代替。比如 25 － 1 ＝ 24，可以写成 25 ＋ 99 ＝ (1)24。 如果限定了两位数，那“-1”和“+99”就是等效的。同样，“-2”可以用“+98”代替。</p>
-<p>它们之间，称为<strong>补数</strong>，而100就称为<strong>模</strong>。</p>
-<p>对于<strong>8位二进制数</strong>：0000 0000~1111 1111(255)，<strong>模为256</strong>。 －1，可以用 +255(1111 1111)代替。 －2，可以用 +254(1111 1110)代替</p>
-<p>这些二进制数，就称为负数的<strong>补码</strong></p>
-</blockquote>
-<h2 id="二-赫夫曼编码思路">二、赫夫曼编码思路</h2>
-<p>同样举个例子，我们要传输 <code>i like like like java do you like a java</code>这段话</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/07/19/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E5%9B%9B%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E7%BC%96%E7%A0%81/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/07/17/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%91/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/07/17/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%91/" itemprop="url">数据结构与算法（十三）：赫夫曼树</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-17T00:00:00+08:00">
-                2020-07-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  742
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一-什么是赫夫曼树">一、什么是赫夫曼树</h2>
-<p>给定n个权值作为n个叶子节点，构造一课二叉树，若该树的带权路径长度和（wpl）达到最小，称这样的二叉树为<strong>最优二叉树</strong>，也就是<strong>赫夫曼树</strong>。</p>
-<p>要理解这句话，我们需要了解几个关键词：</p>
-<ul>
-<li>路径：从一个节点往下一个节点之间的通路。若根节点层数为1，则根节点通往L层的节点路径长度为L-1</li>
-<li>带权路径：权可以理解为节点值，而从根节点到某节点之间的路径长度与该点的权的成绩称为带权路径长度</li>
-</ul>
-<p>举个例子：</p>
-<figure>
-<img src="http://img.xiajibagao.top/赫夫曼树.png" alt="image-20200717165237484"><figcaption aria-hidden="true">image-20200717165237484</figcaption>
-</figure>
-<p>如上图所示，节点13到根节点的路径长度是2，而权是13，所以带权路径长度就是2*13=26，同理，节点7的带权路径长度是14，8是16,3是6，最终该树的带权路径长度之和（wpl）就是26+14+16+6=62。</p>
-<figure>
-<img src="http://img.xiajibagao.top/赫夫曼树2.png" alt="image-20200717165733984"><figcaption aria-hidden="true">image-20200717165733984</figcaption>
-</figure>
-<p>而该树与上图有相同的叶子节点，但是wpl却是13+16+21+9=59，这<strong>是拥有这几个相同叶子节点的树里面wpl最小的</strong>，所以这颗树就是一颗赫夫曼树。</p>
-<p>我们不难看出，赫夫曼树最大的特点：<strong>权越大的节点越靠近根节点</strong></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/07/17/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%89%EF%BC%89%EF%BC%9A%E8%B5%AB%E5%A4%AB%E6%9B%BC%E6%A0%91/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/07/16/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%A0%86%E6%8E%92%E5%BA%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/07/16/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%A0%86%E6%8E%92%E5%BA%8F/" itemprop="url">数据结构与算法（十二）：堆排序</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-16T00:00:00+08:00">
-                2020-07-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.4k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一-什么是堆排序">一、什么是堆排序</h2>
-<h3 id="1堆堆排序">1.堆，堆排序</h3>
-<p>对于“<strong>堆</strong>”我们可以理解为具有以下性质的<strong>完全二叉树</strong>：</p>
-<ul>
-<li>每个结点的值都<strong>大于或等于</strong>其左右孩子结点的值，称为<strong>大顶堆</strong></li>
-<li>每个结点的值都<strong>小于或等于</strong>其左右孩子结点的值，称为<strong>小顶堆</strong></li>
-</ul>
-<p>堆排序是利用堆这种数据结构而设计的一种排序算法，堆排序是一种选择排序，它的最坏，最好，平均时间复杂度均为O(nlogn)，它也是不稳定排序。</p>
-<p>在排序时，一般<strong>升序</strong>采用大顶堆，<strong>降序</strong>采用小顶堆。</p>
-<h3 id="2大顶堆">2.大顶堆</h3>
-<p><img src="http://img.xiajibagao.top/大顶堆.png"></p>
-<p>我们可以看到，层数从小到大，节点的数字是越来越小的，映射到数组有：<code>&#123;50,45,40,20,25,35,30,10,15&#125;</code></p>
-<p>特点是<code>arr[i] &gt;= arr[2*i+1] &amp;&amp; arr[i] &gt;= arr[2*i+2]</code></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/07/16/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%A0%86%E6%8E%92%E5%BA%8F/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/07/14/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8D%9A%E5%AE%A2%E5%9B%AD%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BB%A3%E7%A0%81%E5%9D%97%E6%A0%B7%E5%BC%8F/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/07/14/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8D%9A%E5%AE%A2%E5%9B%AD%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BB%A3%E7%A0%81%E5%9D%97%E6%A0%B7%E5%BC%8F/" itemprop="url">博客园自定义代码块样式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-14T00:00:00+08:00">
-                2020-07-14
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/" itemprop="url" rel="index">
-                    <span itemprop="name">杂七乱八</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  840
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id></h2>
-<p>一直都用博客园写博客，后面自己曾经想自己写一个博客项目，但是因为各种各样的事情最后做了一半就没能继续做下去。但是中间定制markdawn样式的时候接触到的代码高亮插件highlight.js倒是给我留下了很深的影响，今天有时间于是决定利用当初的经验重新diy一下博客园的代码块样式，算是对夭折的博客项目的一个弥补吧。</p>
-<h2 id="一-下载highlightjs">一、下载highlight.js</h2>
-<p>可以去<a target="_blank" rel="noopener" href="https://highlightjs.org/">highlight.js官网</a>直接下载。</p>
-<p>下载完的文件里有highlight.pack.js，决定你的代码哪里高亮，而styles文件夹存放各种样式，决定你的代码怎么样高亮。</p>
-<p>按照官网文档引入三行代码即可生效：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">&lt;!--选择你想要的引入的样式--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">&quot;stylesheet&quot;</span> <span class="attr">href</span>=<span class="string">&quot;/path/to/styles/default.css&quot;</span>&gt;</span></span><br><span class="line"><span class="comment">&lt;!--引入highlight.js--&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">&quot;/path/to/highlight.min.js&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span>hljs.initHighlightingOnLoad();<span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<p>可以自己建一个页面试一试，样式有很多种，我个人比较喜欢darcula.css这个样式，接下来就以这个样式为例。</p>
-<h2 id="二-将样式引入博客园">二、将样式引入博客园</h2>
-<p>首先自定义css需要开通自定义权限，这个跟着流程来即可，我就不再赘述了。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/07/14/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8D%9A%E5%AE%A2%E5%9B%AD%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BB%A3%E7%A0%81%E5%9D%97%E6%A0%B7%E5%BC%8F/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/07/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BA%8C%E5%8F%89%E6%A0%91/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/07/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BA%8C%E5%8F%89%E6%A0%91/" itemprop="url">数据结构与算法（十一）：二叉树</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-12T00:00:00+08:00">
-                2020-07-12
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2.1k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一-什么是二叉树">一、什么是二叉树</h2>
-<h3 id="1概述">1.概述</h3>
-<p>首先，需要了解树这种数据结构的定义：</p>
-<blockquote>
-<p>树：是一类重要的非线性数据结构，是以分支关系定义的层次结构。每个结点有零个或多个子结点；没有父结点的结点称为根结点；每一个非根结点有且只有一个父结点；除了根结点外，每个子结点可以分为多个不相交的子树</p>
-</blockquote>
-<p><img src="http://img.xiajibagao.top/20200711203743.PNG"></p>
-<p>树的结构类似现实中的树，一个父节点有若干子节点，而一个子节点又有若干子节点，以此类推。</p>
-<h3 id="2名词解释">2.名词解释</h3>
-<table>
-<thead>
-<tr class="header">
-<th>名称</th>
-<th>含义</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>根节点</td>
-<td>树的顶端结点</td>
-</tr>
-<tr class="even">
-<td>父节点</td>
-<td>若一个节点含有子节点，则这个节点称为其子节点的父节点</td>
-</tr>
-<tr class="odd">
-<td>子节点</td>
-<td>具有相同父节点的节点</td>
-</tr>
-<tr class="even">
-<td>兄弟节点</td>
-<td>彼此都拥有同一个父节点的节点</td>
-</tr>
-<tr class="odd">
-<td>叶子节点</td>
-<td>即没有子节点的节点</td>
-</tr>
-<tr class="even">
-<td>节点的权</td>
-<td>即节点值</td>
-</tr>
-<tr class="odd">
-<td>路节点的度</td>
-<td>一个节点含有的子树的个数</td>
-</tr>
-<tr class="even">
-<td>树的度</td>
-<td>一棵树中，最大的节点的度称为树的度</td>
-</tr>
-<tr class="odd">
-<td>深度</td>
-<td><strong>根结点到这个结点</strong>所经历的边的个数</td>
-</tr>
-<tr class="even">
-<td>层数</td>
-<td>该节点的深度+1</td>
-</tr>
-<tr class="odd">
-<td>高度</td>
-<td><strong>结点到叶子结点</strong>的最长路径所经历的边的个数</td>
-</tr>
-<tr class="even">
-<td>树高度</td>
-<td>即根节点的高度</td>
-</tr>
-<tr class="odd">
-<td>森林</td>
-<td>由m（m&gt;=0）棵互不相交的树的集合称为森林</td>
-</tr>
-</tbody>
-</table>
-<h3 id="3二叉树">3.二叉树</h3>
-<p>二叉树就是每个节点最多只有两颗子树的树：</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/07/12/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%E4%B8%80%EF%BC%89%EF%BC%9A%E4%BA%8C%E5%8F%89%E6%A0%91/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/07/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%EF%BC%89%EF%BC%9A%E5%93%88%E5%B8%8C%E8%A1%A8/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/07/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%EF%BC%89%EF%BC%9A%E5%93%88%E5%B8%8C%E8%A1%A8/" itemprop="url">数据结构与算法（十）：哈希表</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-04T00:00:00+08:00">
-                2020-07-04
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.7k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一-什么是哈希表">一、什么是哈希表</h2>
-<h3 id="1概述">1.概述</h3>
-<blockquote>
-<p>哈希表（Hash table，也叫散列表），是根据关键码值(Key value)而直接进行访问的数据结构。也就是说，它通过把关键码值映射到表中一个位置来访问记录，以加快查找的速度这个映射函数叫做<strong>散列函数</strong>，存放记录的数组叫做<strong>散列表</strong>。</p>
-</blockquote>
-<p><img src="http://img.xiajibagao.top/20200704134654.png"></p>
-<p>通俗的理解一下：</p>
-<ul>
-<li>如果我们有n个元素要存储，那我们就用l个内存单元来存储他们</li>
-<li>然后我们有一个哈希函数f(x)，我们把<strong>元素n用函数计算得到哈希值</strong>，也就是f(n)</li>
-<li><strong>f(n)就是存储元素n的那个内存单位的位置</strong>，也就是元素在l中的下标</li>
-</ul>
-<h3 id="2为什么哈希表查询速度快">2.为什么哈希表查询速度快</h3>
-<p>理解了哈希表的基本思路，我们也就不难理解为什么哈希表查询效率高了：</p>
-<p>由于每个元素都能通过哈希函数直接计算获得地址，所以查找消耗时间非常少。</p>
-<p>举个例子：</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/07/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%EF%BC%89%EF%BC%9A%E5%93%88%E5%B8%8C%E8%A1%A8/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/07/01/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E6%9F%A5%E6%89%BE/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/07/01/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E6%9F%A5%E6%89%BE/" itemprop="url">数据结构与算法（九）：查找</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-01T00:00:00+08:00">
-                2020-07-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
-                    <span itemprop="name">数据结构与算法</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="什么是查找">什么是查找？</h2>
-<p>查找是在大量的信息中寻找一个特定的信息元素，在计算机应用中，查找是常用的基本运算，例如编译程序中符号表的查找。</p>
-<p>定义：根据给定的某个值，在查找表中确定一个其关键字等于给定值的数据元素（或记录）。</p>
-<p>分类：</p>
-<ol type="1">
-<li>静态查找和动态查找
-<ul>
-<li>静态查找：不对表的数据元素和结构进行任何改变。</li>
-<li>动态查找：在查找过程同时插入查找表中不存在的数据元素，或者从查找表中删除已经存在的某个数据元素。</li>
-</ul></li>
-<li>无序查找和有序查找。
-<ul>
-<li>无序查找：被查找数列有序无序均可</li>
-<li>有序查找：被查找数列必须为有序数列。</li>
-</ul></li>
-</ol>
-<h2 id="一-线性查找">一、线性查找</h2>
-<p>遍历数组并且依次对比值，相等时返回下标</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 在给定数组中线性查找指定元素</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> arr</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> target</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">search</span><span class="params">(<span class="keyword">int</span>[] arr,<span class="keyword">int</span> target)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; arr.length; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (arr[i] == target) &#123;</span><br><span class="line">            <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="二-二分查找">二、二分查找</h2>
-<h3 id="1思路分析">1.思路分析</h3>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/07/01/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E6%9F%A5%E6%89%BE/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/page/6/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/6/">6</a><span class="page-number current">7</span><a class="page-number" href="/page/8/">8</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/8/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2198,7 +2142,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">97</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

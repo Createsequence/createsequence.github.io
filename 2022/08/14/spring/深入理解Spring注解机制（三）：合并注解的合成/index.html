@@ -1,0 +1,1210 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/%E5%8D%9A%E5%AE%A2.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/%E5%8D%9A%E5%AE%A2.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/%E5%8D%9A%E5%AE%A2.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,源码分析," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Createsequence's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言 众所周知，spring 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 springboot 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 @Service： 12345678@Target(&amp;#123;ElementType.TYPE&amp;#125;)@Retention(RetentionPolicy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Spring容器初始化（一）：上下文的初始化">
+<meta property="og:url" content="http://blog.xiajibagao.top/2022/08/14/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%90%88%E5%B9%B6%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%90%88%E6%88%90/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="前言 众所周知，spring 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 springboot 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 @Service： 12345678@Target(&amp;#123;ElementType.TYPE&amp;#125;)@Retention(RetentionPolicy">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-08-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-08-15T14:17:42.616Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="源码分析">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.xiajibagao.top/2022/08/14/spring/深入理解Spring注解机制（三）：合并注解的合成/"/>
+
+
+
+
+
+  <title>深入理解Spring容器初始化（一）：上下文的初始化 | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Createsequence's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个努力前进的程序猿</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2022/08/14/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%90%88%E5%B9%B6%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%90%88%E6%88%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">深入理解Spring容器初始化（一）：上下文的初始化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-14T00:00:00+08:00">
+                2022-08-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.7k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言">前言</h2>
+<p>众所周知，<code>spring</code> 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 <code>springboot</code> 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 <code>@Service</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Target(&#123;ElementType.TYPE&#125;)</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Documented</span></span><br><span class="line"><span class="meta">@Component</span> <span class="comment">// @Component</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> Service &#123;</span><br><span class="line">    <span class="meta">@AliasFor(annotation = Component.class)</span></span><br><span class="line">    <span class="function">String <span class="title">value</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>大部分情况下，我们可以将 <code>@Service</code> 注解等同于 <code>@Component</code> 注解使用，则是因为 spring 基于其 JDK 对<a target="_blank" rel="noopener" href="https://github.com/spring-projects/spring-framework/wiki/Spring-Annotation-Programming-Model">元注解的机制</a>进行了扩展。</p>
+<p>在 java 中，元注解是指可以注解在其他注解上的注解，spring 中通过对这个机制进行了扩展，实现了一些原生 JDK 不支持的功能，比如允许在注解中让两个属性互为别名，或者将一个带有元注解的子注解直接作为元注解看待，或者在这个基础上，通过 <code>@AliasFor</code> 或者同名策略让子注解的值覆盖元注解的值。</p>
+<p>本文将基于 spring 源码 <code>5.2.x</code> 分支，解析 spring 如何实现这套功能的。</p>
+<p>这是系列的第三篇文章，将详细介绍 Spring 是如何在经过搜索与属性映射后，将处理后的注解合成为合并注解的。</p>
+<p>相关文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16585516.html">深入理解Spring注解机制（一）：注解的搜索与处理机制</a>；</li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16585518.html">深入理解Spring注解机制（二）：元注解解析与属性映射</a>；</li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16585519.html">深入理解Spring注解机制（三）：合并注解的合成</a>；</li>
+</ul>
+<h2 id="一-合并注解">一、合并注解</h2>
+<p>我们在前文了解用于搜索注解的合并注解聚合 <code>MergedAnnotations</code>与用于完成注解属性映射的 <code>AnnotationTypeMappings</code> 和<code>AnnotationTypeMapping</code>，现在我们需要知道在 <code>MergedAnnotations</code> 这个容器中，<code>AnnotationTypeMappings</code> 和<code>AnnotationTypeMapping</code> 是如何转为一个我们所需要的合并注解 <code>MergedAnnotation</code> 的。</p>
+<p>与前文一样，我们以 <code>AnnotatedElementUtils.findMergedAnnotations</code> 方法作为入口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;A extends Annotation&gt; <span class="function">A <span class="title">findMergedAnnotation</span><span class="params">(AnnotatedElement element, Class&lt;A&gt; annotationType)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 1、下述任意情况下直接获取元素上声明的注解：</span></span><br><span class="line">    <span class="comment">// a.查找的注解属于java、javax或者org.springframework.lang包</span></span><br><span class="line">    <span class="comment">// b.被处理的元素属于java包，或被java包中的对象声明，或者就是Ordered.class</span></span><br><span class="line">    <span class="keyword">if</span> (AnnotationFilter.PLAIN.matches(annotationType) ||</span><br><span class="line">        AnnotationsScanner.hasPlainJavaAnnotationsOnly(element)) &#123;</span><br><span class="line">        <span class="keyword">return</span> element.getDeclaredAnnotation(annotationType);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2、将元素上的全部注解合成MergedAnnotation</span></span><br><span class="line">    <span class="keyword">return</span> findAnnotations(element)</span><br><span class="line">        <span class="comment">// 3、从MergedAnnotation获取与该类型对应的MergedAnnotations</span></span><br><span class="line">        .get(annotationType, <span class="keyword">null</span>, MergedAnnotationSelectors.firstDirectlyDeclared())</span><br><span class="line">        <span class="comment">// 4、根据MergedAnnotation通过动态代理生成一个注解实例</span></span><br><span class="line">        .synthesize(MergedAnnotation::isPresent).orElse(<span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们在上文顺着 <code>MergedAnnotations.get</code> 一路找到 <code>TypeMappedAnnotations.MergedAnnotationFinder</code> 的 <code>process</code> 方法，在这里我们目睹了一个普通的注解的元注解被解析为 <code>AnnotationTypeMappings</code> 与 <code>AnnotationTypeMapping</code> 的过程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> MergedAnnotation&lt;A&gt; <span class="title">process</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    Object type, <span class="keyword">int</span> aggregateIndex, <span class="meta">@Nullable</span> Object source, Annotation annotation)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    Annotation[] repeatedAnnotations = repeatableContainers.findRepeatedAnnotations(annotation);</span><br><span class="line">    <span class="keyword">if</span> (repeatedAnnotations != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> doWithAnnotations(type, aggregateIndex, source, repeatedAnnotations);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将该注解上的元注解解析为由多个AnnotationTypeMapping聚合的AnnotationTypeMappings</span></span><br><span class="line">    AnnotationTypeMappings mappings = AnnotationTypeMappings.forAnnotationType(</span><br><span class="line">        annotation.annotationType(), repeatableContainers, annotationFilter);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; mappings.size(); i++) &#123;</span><br><span class="line">        <span class="comment">// 获取元注解对应的AnnotationTypeMapping</span></span><br><span class="line">        AnnotationTypeMapping mapping = mappings.get(i);</span><br><span class="line">        <span class="keyword">if</span> (isMappingForType(mapping, annotationFilter, <span class="keyword">this</span>.requiredType)) &#123;</span><br><span class="line">            <span class="comment">// 使用AnnotationTypeMapping创建一个合并注解</span></span><br><span class="line">            MergedAnnotation&lt;A&gt; candidate = TypeMappedAnnotation.createIfPossible(</span><br><span class="line">                mapping, source, annotation, aggregateIndex, IntrospectionFailureLogger.INFO);</span><br><span class="line">            <span class="keyword">if</span> (candidate != <span class="keyword">null</span> &amp;&amp; (<span class="keyword">this</span>.predicate == <span class="keyword">null</span> || <span class="keyword">this</span>.predicate.test(candidate))) &#123;</span><br><span class="line">                <span class="keyword">if</span> (<span class="keyword">this</span>.selector.isBestCandidate(candidate)) &#123;</span><br><span class="line">                    <span class="keyword">return</span> candidate;</span><br><span class="line">                &#125;</span><br><span class="line">                updateLastResult(candidate);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其他部分在上文已经详细的分析了，因此此处我们仅需关注 <code>TypeMappedAnnotation.createIfPossible</code> 这一个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> &lt;A extends Annotation&gt; <span class="function">TypeMappedAnnotation&lt;A&gt; <span class="title">createIfPossible</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    AnnotationTypeMapping mapping, <span class="meta">@Nullable</span> Object source, Annotation annotation,</span></span></span><br><span class="line"><span class="function"><span class="params">    <span class="keyword">int</span> aggregateIndex, IntrospectionFailureLogger logger)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> createIfPossible(mapping, source, annotation,</span><br><span class="line">                            ReflectionUtils::invokeMethod, aggregateIndex, logger);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该方法是 <code>AnnotationTypeMapping</code> 转为 <code>MergedAnnotation</code> 的关键。</p>
+<h3 id="1-合并注解的创建">1、合并注解的创建</h3>
+<p><code>TypeMappedAnnotation</code> 是 <code>MergedAnnotation</code> 一个通用实现，在大部分情况下，我们所说的合并注解其实指的就是这个类。</p>
+<p>通过它的构造方法我们得以了解其创建过程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="title">TypeMappedAnnotation</span><span class="params">(AnnotationTypeMapping mapping, <span class="meta">@Nullable</span> ClassLoader classLoader,</span></span></span><br><span class="line"><span class="function"><span class="params">                             <span class="meta">@Nullable</span> Object source, <span class="meta">@Nullable</span> Object rootAttributes, ValueExtractor valueExtractor,</span></span></span><br><span class="line"><span class="function"><span class="params">                             <span class="keyword">int</span> aggregateIndex, <span class="meta">@Nullable</span> <span class="keyword">int</span>[] resolvedRootMirrors)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 当前合并注解对应的AnnotationTypeMapping</span></span><br><span class="line">    <span class="keyword">this</span>.mapping = mapping;</span><br><span class="line">    <span class="comment">// 类加载器</span></span><br><span class="line">    <span class="keyword">this</span>.classLoader = classLoader;</span><br><span class="line">    <span class="comment">// 当前注解的数据源</span></span><br><span class="line">    <span class="keyword">this</span>.source = source;</span><br><span class="line">    <span class="comment">// AnnotationTypeMapping对应的root注解</span></span><br><span class="line">    <span class="keyword">this</span>.rootAttributes = rootAttributes;</span><br><span class="line">    <span class="comment">// 通过属性方法对象获得属性值的方法，一般是ReflectionUtils::invokeMethod</span></span><br><span class="line">    <span class="keyword">this</span>.valueExtractor = valueExtractor;</span><br><span class="line">    <span class="comment">// 该注解对应的聚合索引</span></span><br><span class="line">    <span class="keyword">this</span>.aggregateIndex = aggregateIndex;</span><br><span class="line">    <span class="comment">// 是否使用映射过的属性值</span></span><br><span class="line">    <span class="keyword">this</span>.useMergedValues = <span class="keyword">true</span>;</span><br><span class="line">    <span class="comment">// 属性过滤器</span></span><br><span class="line">    <span class="keyword">this</span>.attributeFilter = <span class="keyword">null</span>;</span><br><span class="line">    <span class="comment">// 通过MirrorSets解析得到的确认属性</span></span><br><span class="line">    <span class="keyword">this</span>.resolvedRootMirrors = (resolvedRootMirrors != <span class="keyword">null</span> ? resolvedRootMirrors :</span><br><span class="line">                                mapping.getRoot().getMirrorSets().resolve(source, rootAttributes, <span class="keyword">this</span>.valueExtractor));</span><br><span class="line">    <span class="keyword">this</span>.resolvedMirrors = (getDistance() == <span class="number">0</span> ? <span class="keyword">this</span>.resolvedRootMirrors :</span><br><span class="line">                            mapping.getMirrorSets().resolve(source, <span class="keyword">this</span>, <span class="keyword">this</span>::getValueForMirrorResolution));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看得出，<code>TypeMappedAnnotation</code> 基本可以认为是 <code>AnnotationTypeMapping</code> 的包装类，它以一个 <code>AnnotationTypeMapping</code> 实例作为数据源，从而提供一些关于映射后的属性的相关功能。</p>
+<p>它本身并没有很多特殊的逻辑，我们仅需要关注通过它合成注解的代理对象，以及后续调用代理对象时，是如何从映射过的属性获取值的。</p>
+<h3 id="2-合并注解的合成">2、合并注解的合成</h3>
+<p>回到 <code>AnnotatedElementUtils.findMergedAnnotations</code>，我们可以看到，在通过 <code>MergedAnnotations</code> 获得了一个 <code>MergedAnnotation</code> 对象——实际上是 <code>TypeMappedAnnotation</code> 对象——之后，又调用了 <code>MergedAnnotation.synthesize</code> 方法，将 <code>MergedAnnotation</code> 转成了一个调用方指定类型的注解对象。</p>
+<p>该方法先调用了 <code>AbstractMergedAnnotation</code> 的 <code>synthesize</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> Optional&lt;A&gt; <span class="title">synthesize</span><span class="params">(Predicate&lt;? <span class="keyword">super</span> MergedAnnotation&lt;A&gt;&gt; condition)</span></span></span><br><span class="line"><span class="function">    <span class="keyword">throws</span> NoSuchElementException </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> (condition.test(<span class="keyword">this</span>) ? Optional.of(synthesize()) : Optional.empty());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>随后再调用了实现类 <code>TypeMappedAnnotation</code> 的 <code>synthesize</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> A <span class="title">synthesize</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!isPresent()) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> NoSuchElementException(<span class="string">&quot;Unable to synthesize missing annotation&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果已经合成过就直接返回缓存的实例</span></span><br><span class="line">    A synthesized = <span class="keyword">this</span>.synthesizedAnnotation;</span><br><span class="line">    <span class="keyword">if</span> (synthesized == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 合成注解</span></span><br><span class="line">        synthesized = createSynthesized();</span><br><span class="line">        <span class="keyword">this</span>.synthesizedAnnotation = synthesized;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> synthesized;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>继续点开 <code>createSynthesized</code> ：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> A <span class="title">createSynthesized</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 满足下述条件时，直接返回根注解：</span></span><br><span class="line">    <span class="comment">// 1.若当前注解的属性与根注解相同</span></span><br><span class="line">    <span class="comment">// 2.且该合成注解还没有被合成过</span></span><br><span class="line">    <span class="comment">// 3.该注解存在映射后的属性</span></span><br><span class="line">    <span class="keyword">if</span> (getType().isInstance(<span class="keyword">this</span>.rootAttributes) &amp;&amp; !isSynthesizable()) &#123;</span><br><span class="line">        <span class="keyword">return</span> (A) <span class="keyword">this</span>.rootAttributes;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 使用动态代理创建一个代理注解</span></span><br><span class="line">    <span class="keyword">return</span> SynthesizedMergedAnnotationInvocationHandler.createProxy(<span class="keyword">this</span>, getType());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isSynthesizable</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// Already synthesized?</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.rootAttributes <span class="keyword">instanceof</span> SynthesizedAnnotation) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.mapping.isSynthesizable();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而 <code>SynthesizedMergedAnnotationInvocationHandler</code> 是一个用于 JDK 动态代理的 <code>InvocationHandler</code>，我们不需要完全站看，仅需看看它的构造函数与 <code>InvocationHandler.invoke</code> 就能明白它的运作机制了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">SynthesizedMergedAnnotationInvocationHandler</span>&lt;<span class="title">A</span> <span class="keyword">extends</span> <span class="title">Annotation</span>&gt; <span class="keyword">implements</span> <span class="title">InvocationHandler</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 合并注解实例</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> MergedAnnotation&lt;?&gt; annotation;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 代理注解的类型</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Class&lt;A&gt; type;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 代理注解的注解方法</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> AttributeMethods attributes;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注解属性的值缓存</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, Object&gt; valueCache = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;(<span class="number">8</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// hashcode</span></span><br><span class="line">    <span class="meta">@Nullable</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> Integer hashCode;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// toString的值</span></span><br><span class="line">    <span class="meta">@Nullable</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">volatile</span> String string;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">SynthesizedMergedAnnotationInvocationHandler</span><span class="params">(MergedAnnotation&lt;A&gt; annotation, Class&lt;A&gt; type)</span> </span>&#123;</span><br><span class="line">        Assert.notNull(annotation, <span class="string">&quot;MergedAnnotation must not be null&quot;</span>);</span><br><span class="line">        Assert.notNull(type, <span class="string">&quot;Type must not be null&quot;</span>);</span><br><span class="line">        Assert.isTrue(type.isAnnotation(), <span class="string">&quot;Type must be an annotation&quot;</span>);</span><br><span class="line">        <span class="keyword">this</span>.annotation = annotation;</span><br><span class="line">        <span class="keyword">this</span>.type = type;</span><br><span class="line">        <span class="keyword">this</span>.attributes = AttributeMethods.forAnnotationType(type);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>至此，合并注解的合成机制已经很明确了：</p>
+<ul>
+<li>先通过 <code>AnnotationTypeMapping</code> 创建 <code>TypeMappedAnnotation</code>；</li>
+<li>通过 <code>TypeMappedAnnotation.synthesize</code> 创建一个对应的类型的注解对象；</li>
+<li>如果该 <code>TypeMappedAnnotation</code> 无需合成，则直接返回对应的原始注解对象，否则返回基于该合并注解生成的JDK动态代理对象；</li>
+</ul>
+<h2 id="二-合并注解的取值">二、合并注解的取值</h2>
+<p>承接上文，当我们使用 <code>MergedAnnotation.synthesize</code> 方法时，我们可能会得到两种对象：</p>
+<ul>
+<li>第一种就是原始的注解对象，这个没什么好说的；</li>
+<li>第二种就是通过 <code>SynthesizedMergedAnnotationInvocationHandler</code> 生成的注解代理对象；</li>
+</ul>
+<p>而通过注解代理对象取值时，这些方法会被代理到 <code>SynthesizedMergedAnnotationInvocationHandler</code> 中存放的 <code>MergedAnnotation</code> 对象上，从而让这个代理对象通过原始注解的属性，获得与原始注解不一样的属性值。</p>
+<h3 id="1-方法代理">1、方法代理</h3>
+<p>当我们调用代理对象的属性值时，它会在 <code>SynthesizedMergedAnnotationInvocationHandler</code> 中，通过 <code>invoke</code> 代理到对应的方法上：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Object <span class="title">invoke</span><span class="params">(Object proxy, Method method, Object[] args)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 代理 equals 方法</span></span><br><span class="line">    <span class="keyword">if</span> (ReflectionUtils.isEqualsMethod(method)) &#123;</span><br><span class="line">        <span class="keyword">return</span> annotationEquals(args[<span class="number">0</span>]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 代理 hashCode 方法</span></span><br><span class="line">    <span class="keyword">if</span> (ReflectionUtils.isHashCodeMethod(method)) &#123;</span><br><span class="line">        <span class="keyword">return</span> annotationHashCode();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 代理 toString 方法</span></span><br><span class="line">    <span class="keyword">if</span> (ReflectionUtils.isToStringMethod(method)) &#123;</span><br><span class="line">        <span class="keyword">return</span> annotationToString();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 代理 isAnnotationTypeMethod 方法</span></span><br><span class="line">    <span class="keyword">if</span> (isAnnotationTypeMethod(method)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.type;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 代理获取注解属性的方法</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.attributes.indexOf(method.getName()) != -<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> getAttributeValue(method);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> AnnotationConfigurationException(String.format(</span><br><span class="line">        <span class="string">&quot;Method [%s] is unsupported for synthesized annotation type [%s]&quot;</span>, method, <span class="keyword">this</span>.type));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-注解属性的获取">2、注解属性的获取</h3>
+<p>这里我们代理对象是如何获取注解属性值的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Object <span class="title">getAttributeValue</span><span class="params">(Method method)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 缓存属性值</span></span><br><span class="line">    Object value = <span class="keyword">this</span>.valueCache.computeIfAbsent(method.getName(), attributeName -&gt; &#123;</span><br><span class="line">        <span class="comment">// 获取代理方法的返回值类型</span></span><br><span class="line">        Class&lt;?&gt; type = ClassUtils.resolvePrimitiveIfNecessary(method.getReturnType());</span><br><span class="line">        <span class="comment">// 从 MergedAnnotation 获取对应属性值</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.annotation.getValue(attributeName, type).orElseThrow(</span><br><span class="line">            () -&gt; <span class="keyword">new</span> NoSuchElementException(<span class="string">&quot;No value found for attribute named &#x27;&quot;</span> + attributeName +</span><br><span class="line">                                             <span class="string">&quot;&#x27; in merged annotation &quot;</span> + <span class="keyword">this</span>.annotation.getType().getName()));</span><br><span class="line">    &#125;);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Clone non-empty arrays so that users cannot alter the contents of values in our cache.</span></span><br><span class="line">    <span class="keyword">if</span> (value.getClass().isArray() &amp;&amp; Array.getLength(value) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">        value = cloneArray(value);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里的 <code>MergedAnnotation.getValue</code> 最终在经过多次跳转后，调到 <code>TypeMappedAnnotation.getAttributeValue</code> 上：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">protected</span> &lt;T&gt; <span class="function">T <span class="title">getAttributeValue</span><span class="params">(String attributeName, Class&lt;T&gt; type)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取方法在AttributeMethods中的下标</span></span><br><span class="line">    <span class="keyword">int</span> attributeIndex = getAttributeIndex(attributeName, <span class="keyword">false</span>);</span><br><span class="line">    <span class="comment">// 若方法存在，则通过下标调用</span></span><br><span class="line">    <span class="keyword">return</span> (attributeIndex != -<span class="number">1</span> ? getValue(attributeIndex, type) : <span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> &lt;T&gt; <span class="function">T <span class="title">getValue</span><span class="params">(<span class="keyword">int</span> attributeIndex, Class&lt;T&gt; type)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取属性对应的方法</span></span><br><span class="line">    Method attribute = <span class="keyword">this</span>.mapping.getAttributes().get(attributeIndex);</span><br><span class="line">    <span class="comment">// 获取属性值，若有必要则进行属性映射</span></span><br><span class="line">    Object value = getValue(attributeIndex, <span class="keyword">true</span>, <span class="keyword">false</span>);</span><br><span class="line">    <span class="keyword">if</span> (value == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 如果没有值则尝试获得默认值</span></span><br><span class="line">        value = attribute.getDefaultValue();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 进行类型适配</span></span><br><span class="line">    <span class="keyword">return</span> adapt(attribute, value, type);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而这边的 <code>getValue</code> 方法就是真正要获取属性值的地方。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Object <span class="title">getValue</span><span class="params">(<span class="keyword">int</span> attributeIndex, <span class="keyword">boolean</span> useConventionMapping, <span class="keyword">boolean</span> forMirrorResolution)</span> </span>&#123;</span><br><span class="line">    AnnotationTypeMapping mapping = <span class="keyword">this</span>.mapping;</span><br><span class="line">    <span class="comment">// 是否要获取合并后的属性</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.useMergedValues) &#123;</span><br><span class="line">        <span class="comment">// 如果有必要，属性是否会被来自根注解的属性覆盖</span></span><br><span class="line">        <span class="keyword">int</span> mappedIndex = <span class="keyword">this</span>.mapping.getAliasMapping(attributeIndex);</span><br><span class="line">        <span class="comment">// 如果不会被来自根注解的属性覆盖，并且允许使用子注解属性覆盖该属性</span></span><br><span class="line">        <span class="keyword">if</span> (mappedIndex == -<span class="number">1</span> &amp;&amp; useConventionMapping) &#123;</span><br><span class="line">            mappedIndex = <span class="keyword">this</span>.mapping.getConventionMapping(attributeIndex);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果上述两情况只要有任意一点符合，则令attributeIndex变为根/子注解中覆盖属性的下标</span></span><br><span class="line">        <span class="keyword">if</span> (mappedIndex != -<span class="number">1</span>) &#123;</span><br><span class="line">            mapping = mapping.getRoot();</span><br><span class="line">            attributeIndex = mappedIndex;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 若有必要，且当前属性下标对应的属性在注解内还存在别名属性，则通过MirrorSets获得唯一确定的属性的下标</span></span><br><span class="line">    <span class="keyword">if</span> (!forMirrorResolution) &#123;</span><br><span class="line">        attributeIndex =</span><br><span class="line">            (mapping.getDistance() != <span class="number">0</span> ? <span class="keyword">this</span>.resolvedMirrors : <span class="keyword">this</span>.resolvedRootMirrors)[attributeIndex];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (attributeIndex == -<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果自己就是根节点，则从自己身上获取</span></span><br><span class="line">    <span class="keyword">if</span> (mapping.getDistance() == <span class="number">0</span>) &#123;</span><br><span class="line">        Method attribute = mapping.getAttributes().get(attributeIndex);</span><br><span class="line">        Object result = <span class="keyword">this</span>.valueExtractor.extract(attribute, <span class="keyword">this</span>.rootAttributes);</span><br><span class="line">        <span class="keyword">return</span> (result != <span class="keyword">null</span> ? result : attribute.getDefaultValue());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果自己不是根节点，则从元注解上获取</span></span><br><span class="line">    <span class="keyword">return</span> getValueFromMetaAnnotation(attributeIndex, forMirrorResolution);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Nullable</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> Object <span class="title">getValueFromMetaAnnotation</span><span class="params">(<span class="keyword">int</span> attributeIndex, <span class="keyword">boolean</span> forMirrorResolution)</span> </span>&#123;</span><br><span class="line">    Object value = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.useMergedValues || forMirrorResolution) &#123;</span><br><span class="line">        value = <span class="keyword">this</span>.mapping.getMappedAnnotationValue(attributeIndex, forMirrorResolution);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (value == <span class="keyword">null</span>) &#123;</span><br><span class="line">        Method attribute = <span class="keyword">this</span>.mapping.getAttributes().get(attributeIndex);</span><br><span class="line">        value = ReflectionUtils.invokeMethod(attribute, <span class="keyword">this</span>.mapping.getAnnotation());</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function">Object <span class="title">getMappedAnnotationValue</span><span class="params">(<span class="keyword">int</span> attributeIndex, <span class="keyword">boolean</span> metaAnnotationsOnly)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> mappedIndex = <span class="keyword">this</span>.annotationValueMappings[attributeIndex];</span><br><span class="line">    <span class="keyword">if</span> (mappedIndex == -<span class="number">1</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    AnnotationTypeMapping source = <span class="keyword">this</span>.annotationValueSource[attributeIndex];</span><br><span class="line">    <span class="keyword">if</span> (source == <span class="keyword">this</span> &amp;&amp; metaAnnotationsOnly) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> ReflectionUtils.invokeMethod(source.attributes.get(mappedIndex), source.annotation);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这一步有点复杂，主要是根据不同的情况，通过 <code>AnnotationTypeMapping</code> 中的几个属性映射数组，包括 <code>aliasMappings</code>、<code>conventionMappings</code>，<code>annotationValueMappings</code> 与 <code>annotationValueSource</code> 来确定最终用于取值的 <code>AnnotationTypeMapping</code> 对象与调用的方法在 <code>AttributeMethods</code> 中的下标：</p>
+<ul>
+<li>如果要合并属性值，则：
+<ol>
+<li>若该属性被 <code>root</code> 中的同名属性覆盖，即 <code>aliasMappings</code> 数组对应下标不为 <code>-1</code>，则记录该 <code>root</code> 属性下标；</li>
+<li>若该属性不被 <code>root</code> 中同名属性覆盖，则确定是否被子注解中的同名属性覆盖，即 <code>conventionMappings</code> 数组对应下标不为 <code>-1</code>，则记录该覆盖属性下标；</li>
+</ol>
+</li>
+<li>若允许别名，则在上述基础上，继续进行处理：
+<ol>
+<li>若当前注解已经是根注解，则从 <code>resolvedRootMirrors</code> 上，获得该属性在同一注解下关联的别名属性中，唯一确定的有效属性的下标；</li>
+<li>若当前注解不是根注解，则从 <code>resolvedRootMirrors</code> 上，获得该属性在同一注解下关联的别名属性中，唯一确定的有效属性的下标；</li>
+</ol>
+</li>
+<li>若当前注解是根注解，则使用从根注解对象 <code>rootAttributes</code> 上根据属性下标获取对应方法，然后通过反射调用获取属性值；</li>
+<li>若当前注解不是根注解，则：
+<ol>
+<li>若不支持属性覆盖以及别名，则直接和获取该注解属性下标对应方法，并通过反射调用获取属性值；</li>
+<li>若支持属性覆盖以及别名，则通过属性下标从 <code>annotationValueSource</code> 找到对应的注解对象，再通过 <code>annotationValueMappings</code> 找到要在该注解中调用的属性下标，然后在通过属性下标找到对应的属性方法后，通过反射调用获取属性值；</li>
+</ol>
+</li>
+</ul>
+<p>至此，获取属性值的方法流程也走完了。</p>
+<h2 id="总结">总结</h2>
+<p>在这一章，我们了解了当通过 <code>MergedAnnotations</code> 获得注解并解析得到 <code>AnnotationTypeMapping</code> 后，<code>AnnotationTypeMapping</code> 是如何再转为我们所需的 <code>MergedAnnotation</code> ，以及在此之后，<code>MergedAnnotation</code> 又是如何生成我们最终所需要的代理注解的。</p>
+<p>简而言之，当解析注解的元注解获得所需的 <code>AnnotationTypeMapping</code> 后，<code>MergedAnnotation</code> 会判断 <code>AnnotationTypeMapping</code> 是否发生过属性映射，如果没有则返回该映射对象对应的原始注解，否则就通过 <code>SynthesizedMergedAnnotationInvocationHandler</code> 生成一个对应类型的 JDK 动态代理对象。</p>
+<p>当我们通过代理对象去调用注解的方法，获取注解的属性的时候，<code>SynthesizedMergedAnnotationInvocationHandler</code> 会把方法代理到对应的内部方法中，而获取属性时，还会通过 <code>MergedAnnotation.getValue</code> ，最终绕到 <code>AnnotationTypeMapping</code> 中获取被映射后的属性值。</p>
+<h2 id="题外话">题外话</h2>
+<p>至此，关于 Spring 注解机制的三篇文章已经全部写完了，在了解了它是实现原理的同时，笔者也深刻的认识到了其功能的强大，尤其是 <code>MergeAnnotation</code> 真切的弥补了 java 注解不支持继承所带来的的一些痛点，这点笔者在自己的<a target="_blank" rel="noopener" href="https://gitee.com/CreateSequence/crane">项目</a>尝试了全面拥抱 spring 的增强注解后深有感触。</p>
+<p>出于巩固知识，也出于为想要在非 Spring 环境下享受这个功能的同学考虑，作者决定搞一套类似的开源项目，目前也已经有了一些成果：</p>
+<ul>
+<li>笔者尝试为常用的开源工具类库 <code>hutool</code> 提了一个 <a target="_blank" rel="noopener" href="https://gitee.com/dromara/hutool/pulls/702">PR</a> ，也有幸被作者大佬采纳了，有需要的同学可以在 <code>Hutool-5.8.5</code> 及以上版本使用该功能；</li>
+<li>由于考虑有些项目并没有引入 <code>Hutool</code>，以及跟作者沟通后觉得这个特性并不适合搬到即将发布的 <code>Hutool-6.x</code> ，因此笔者单独将作为一个注解工具类库开源了，有兴趣的同学可以了解一下 <a target="_blank" rel="noopener" href="https://gitee.com/CreateSequence/powerful-annotation"><code>powerful-annotation</code></a> ；</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+            <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/08/10/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%85%83%E6%B3%A8%E8%A7%A3%E8%A7%A3%E6%9E%90%E4%B8%8E%E5%B1%9E%E6%80%A7%E6%98%A0%E5%B0%84/" rel="next" title="深入理解Spring容器初始化（一）：上下文的初始化">
+                <i class="fa fa-chevron-left"></i> 深入理解Spring容器初始化（一）：上下文的初始化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Createsequence.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7Carchive">
+              
+                  <span class="site-state-item-count">97</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E5%90%88%E5%B9%B6%E6%B3%A8%E8%A7%A3"><span class="nav-text">一、合并注解</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%90%88%E5%B9%B6%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-text">1、合并注解的创建</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%90%88%E5%B9%B6%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%90%88%E6%88%90"><span class="nav-text">2、合并注解的合成</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E5%90%88%E5%B9%B6%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%8F%96%E5%80%BC"><span class="nav-text">二、合并注解的取值</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%96%B9%E6%B3%95%E4%BB%A3%E7%90%86"><span class="nav-text">1、方法代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%B3%A8%E8%A7%A3%E5%B1%9E%E6%80%A7%E7%9A%84%E8%8E%B7%E5%8F%96"><span class="nav-text">2、注解属性的获取</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A2%98%E5%A4%96%E8%AF%9D"><span class="nav-text">题外话</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Createsequence</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 引入目录截取js -->
+  <script type="text/javascript" src="/js/src/custom/custom.js"></script>
+</body>
+</html>

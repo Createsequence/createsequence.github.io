@@ -1,0 +1,1248 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/%E5%8D%9A%E5%AE%A2.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/%E5%8D%9A%E5%AE%A2.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/%E5%8D%9A%E5%AE%A2.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,源码分析," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Createsequence's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言 我们知道，spring 的启动其实就是容器的启动，而一般情况下，容器指的其实就是上下文 ApplicationContext。 AbstractApplicationContext 作为整个 ApplicationContext 体系中最高级的抽象类，为除了 ComplexWebApplicationContext 和 SimpleWebApplicationContext 这两个容器外的全">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Spring容器初始化（一）：上下文的初始化">
+<meta property="og:url" content="http://blog.xiajibagao.top/2022/07/05/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BA%8B%E4%BB%B6%E5%8F%8A%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="前言 我们知道，spring 的启动其实就是容器的启动，而一般情况下，容器指的其实就是上下文 ApplicationContext。 AbstractApplicationContext 作为整个 ApplicationContext 体系中最高级的抽象类，为除了 ComplexWebApplicationContext 和 SimpleWebApplicationContext 这两个容器外的全">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-07-04T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-08-15T14:17:58.743Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="源码分析">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.xiajibagao.top/2022/07/05/spring/深入理解Spring容器初始化（三）：事件及其他配置的初始化/"/>
+
+
+
+
+
+  <title>深入理解Spring容器初始化（一）：上下文的初始化 | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Createsequence's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个努力前进的程序猿</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2022/07/05/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BA%8B%E4%BB%B6%E5%8F%8A%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">深入理解Spring容器初始化（一）：上下文的初始化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-05T00:00:00+08:00">
+                2022-07-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Spring/" itemprop="url" rel="index">
+                    <span itemprop="name">Spring</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.5k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言">前言</h2>
+<p>我们知道，spring 的启动其实就是容器的启动，而一般情况下，容器指的其实就是上下文 <code>ApplicationContext</code>。</p>
+<p><code>AbstractApplicationContext</code> 作为整个 <code>ApplicationContext</code> 体系中最高级的抽象类，为除了 <code>ComplexWebApplicationContext</code> 和 <code>SimpleWebApplicationContext</code> 这两个容器外的全部容器，规定好了 <code>refresh</code> 的整体流程，所有的容器在完成一些自己的初始化配置后，都需要调用该 <code>refresh</code> 方法，依次完成指定内容的初始化。</p>
+<p>也就是说，读懂了 <code>AbstractApplicationContext.refresh()</code> 方法，其实就读懂了容器的启动流程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">refresh</span><span class="params">()</span> <span class="keyword">throws</span> BeansException, IllegalStateException </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>.startupShutdownMonitor) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ================= 一、上下文的初始化 =================</span></span><br><span class="line">        <span class="comment">// 准备上下文</span></span><br><span class="line">        prepareRefresh();</span><br><span class="line">        <span class="comment">// 通知子类刷新内部工厂</span></span><br><span class="line">        ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();</span><br><span class="line">        <span class="comment">// 准备bean工厂以便在当前上下文中使用</span></span><br><span class="line">        prepareBeanFactory(beanFactory);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// ================= 二、BeanFactory的初始化 =================</span></span><br><span class="line">            <span class="comment">// 对工厂进行默认后置处理</span></span><br><span class="line">            postProcessBeanFactory(beanFactory);</span><br><span class="line">            <span class="comment">// 使用后置处理器对工厂进行处理</span></span><br><span class="line">            invokeBeanFactoryPostProcessors(beanFactory);</span><br><span class="line">            <span class="comment">// 注册Bean后置处理器</span></span><br><span class="line">            registerBeanPostProcessors(beanFactory);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// ================= 三、事件，Bean及其他配置的初始化 =================</span></span><br><span class="line">            <span class="comment">// 初始化此上下文的消息源</span></span><br><span class="line">            initMessageSource();</span><br><span class="line">            <span class="comment">// 为此上下文初始化事件广播者</span></span><br><span class="line">            initApplicationEventMulticaster();</span><br><span class="line">            <span class="comment">// 初始化特定上下文子类中的其他特殊bean</span></span><br><span class="line">            onRefresh();</span><br><span class="line">            <span class="comment">// 检查侦听器bean并注册</span></span><br><span class="line">            registerListeners();</span><br><span class="line">            <span class="comment">// 实例化所有非懒加载的剩余单例</span></span><br><span class="line">            finishBeanFactoryInitialization(beanFactory);</span><br><span class="line">            <span class="comment">// 完成刷新</span></span><br><span class="line">            finishRefresh();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// ================= 异常处理 =================</span></span><br><span class="line">        <span class="keyword">catch</span> (BeansException ex) &#123;</span><br><span class="line">            <span class="keyword">if</span> (logger.isWarnEnabled()) &#123;</span><br><span class="line">                logger.warn(<span class="string">&quot;Exception encountered during context initialization - &quot;</span> +</span><br><span class="line">                            <span class="string">&quot;cancelling refresh attempt: &quot;</span> + ex);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 销毁已创建的单例</span></span><br><span class="line">            destroyBeans();</span><br><span class="line">            <span class="comment">// 重置上下文的激活状态</span></span><br><span class="line">            cancelRefresh(ex);</span><br><span class="line">            <span class="keyword">throw</span> ex;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">// 重置内部的一些元数据缓存</span></span><br><span class="line">            resetCommonCaches();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从总体来看，该方法描述的初始化过程大概分为三步：</p>
+<ul>
+<li>[x] 上下文的初始化；</li>
+<li>[x] <code>BeanFactory</code> 初始化；</li>
+<li>[x] 事件，Bean及其他配置的初始化；</li>
+</ul>
+<p>笔者将基于 spring 源码 <code>5.2.x</code> 分支，分别通过五篇文章从源码分析 spring 容器的初始化过程。</p>
+<p>本文是其中的第三篇文章，将介绍上下文中事件，Bean及其他配置的初始化。</p>
+<p>相关文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16585528.html">深入理解Spring容器初始化（一）：上下文的初始化</a>；</li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16585530.html">深入理解Spring容器初始化（二）：BeanFactory的初始化</a>；</li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16585531.html">深入理解Spring容器初始化（三）：事件及其他配置的初始化</a>；</li>
+</ul>
+<h2 id="一-初始化数据源">一、初始化数据源</h2>
+<p>调用 <code>AbstarctApplicationContext.initMessageSource()</code> 用于初始化上下文所使用的数据源对象 <code>MessageSource</code>，这个配置用于支持国际化的信息处理，一般情况下比较少会直接去配置它：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initMessageSource</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConfigurableListableBeanFactory beanFactory = getBeanFactory();</span><br><span class="line">    <span class="comment">// 如果当前上下文否存在名为“messageSource”的Bean</span></span><br><span class="line">    <span class="keyword">if</span> (beanFactory.containsLocalBean(MESSAGE_SOURCE_BEAN_NAME)) &#123;</span><br><span class="line">        <span class="keyword">this</span>.messageSource = beanFactory.getBean(MESSAGE_SOURCE_BEAN_NAME, MessageSource.class);</span><br><span class="line">        <span class="comment">// Make MessageSource aware of parent MessageSource.</span></span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.parent != <span class="keyword">null</span> &amp;&amp; <span class="keyword">this</span>.messageSource <span class="keyword">instanceof</span> HierarchicalMessageSource) &#123;</span><br><span class="line">            <span class="comment">// 若父容器没有MessageSource，就把它设置为父容器的MessageSource</span></span><br><span class="line">            HierarchicalMessageSource hms = (HierarchicalMessageSource) <span class="keyword">this</span>.messageSource;</span><br><span class="line">            <span class="keyword">if</span> (hms.getParentMessageSource() == <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// Only set parent context as parent MessageSource if no parent MessageSource</span></span><br><span class="line">                <span class="comment">// registered already.</span></span><br><span class="line">                hms.setParentMessageSource(getInternalParentMessageSource());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">            logger.trace(<span class="string">&quot;Using MessageSource [&quot;</span> + <span class="keyword">this</span>.messageSource + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 不存在就尝试获取父容器的MessageSource</span></span><br><span class="line">        DelegatingMessageSource dms = <span class="keyword">new</span> DelegatingMessageSource();</span><br><span class="line">        dms.setParentMessageSource(getInternalParentMessageSource());</span><br><span class="line">        <span class="keyword">this</span>.messageSource = dms;</span><br><span class="line">        beanFactory.registerSingleton(MESSAGE_SOURCE_BEAN_NAME, <span class="keyword">this</span>.messageSource);</span><br><span class="line">        <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">            logger.trace(<span class="string">&quot;No &#x27;&quot;</span> + MESSAGE_SOURCE_BEAN_NAME + <span class="string">&quot;&#x27; bean, using [&quot;</span> + <span class="keyword">this</span>.messageSource + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="二-初始化事件广播者">二、初始化事件广播者</h2>
+<p>调用 <code>AbstarctApplicationContext.initApplicationEventMulticaster()</code> 是初始化 spring 事件机制的第一步，它的作用很简单：</p>
+<p>如果当前 <code>BeanFactory</code> 有名为 <code>“applicationEventMulticaster”</code> 的 <code>ApplicationEventMulticaster</code>，就把它设置为当前上下文的事件广播器，否则就创建并在 <code>BeanFactory</code> 中注册一个<code>SimpleApplicationEventMulticaster</code> 实例作为当前上下文的事件广播器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initApplicationEventMulticaster</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConfigurableListableBeanFactory beanFactory = getBeanFactory();</span><br><span class="line">    <span class="comment">// 是否存在“applicationEventMulticaster”这个Bean</span></span><br><span class="line">    <span class="keyword">if</span> (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) &#123;</span><br><span class="line">        <span class="comment">// 如果存在就把它设置为当前上下文的事件广播器</span></span><br><span class="line">        <span class="keyword">this</span>.applicationEventMulticaster =</span><br><span class="line">            beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);</span><br><span class="line">        <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">            logger.trace(<span class="string">&quot;Using ApplicationEventMulticaster [&quot;</span> + <span class="keyword">this</span>.applicationEventMulticaster + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 没有就创建一个SimpleApplicationEventMulticaster作为当前上下文的事件广播器</span></span><br><span class="line">        <span class="keyword">this</span>.applicationEventMulticaster = <span class="keyword">new</span> SimpleApplicationEventMulticaster(beanFactory);</span><br><span class="line">        beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, <span class="keyword">this</span>.applicationEventMulticaster);</span><br><span class="line">        <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">            logger.trace(<span class="string">&quot;No &#x27;&quot;</span> + APPLICATION_EVENT_MULTICASTER_BEAN_NAME + <span class="string">&quot;&#x27; bean, using &quot;</span> +</span><br><span class="line">                         <span class="string">&quot;[&quot;</span> + <span class="keyword">this</span>.applicationEventMulticaster.getClass().getSimpleName() + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="三-初始化特殊bean">三、初始化特殊Bean</h2>
+<p><code>AbstarctApplicationContext.onRefresh()</code> 用于在完成上下文与 <code>BeanFactory</code> 初始化后去初始化一些特殊的 <code>Bean</code>，其实从方法名就可以看出来，这个方法主要是作为上下文初步刷新完毕后的回调使用。</p>
+<p>在 <code>AbstarctApplicationContext</code> 中只提供了空实现，实际上也只有很少的实现类会去重新实现这个方法，至少在 <code>5.2.x</code> 里面，关于这个方法的有用实现只有：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">UiApplicationContextUtils.initThemeSource(<span class="keyword">this</span>)</span><br></pre></td></tr></table></figure>
+<p>该代码用于初始化一些 spring 的“主题资源”，一般用于配合消息国际化进行一些处理。</p>
+<h2 id="四-注册事件监听器">四、注册事件监听器</h2>
+<p>当消息和事件相关的内容都准备就绪后，上下文会调用 <code>AbstarctApplicationContext.registerListeners</code> 方法以注册事件监听器 <code>ApplicationListener</code>。</p>
+<p>这一步代码不动，实际上逻辑也很简单：</p>
+<ul>
+<li>向事件广播器注册已经被注册的上下文中的监听器；</li>
+<li>向事件广播器注册还没有被实例化的监听器的 <code>BeanName</code>；</li>
+<li>发布一些早期事件；</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">registerListeners</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 向事件广播器注册已经被注册的上下文中的监听器</span></span><br><span class="line">    <span class="keyword">for</span> (ApplicationListener&lt;?&gt; listener : getApplicationListeners()) &#123;</span><br><span class="line">        getApplicationEventMulticaster().addApplicationListener(listener);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 向事件广播器注册指定的监听器，不过这里只注册BeanName，</span></span><br><span class="line">    <span class="comment">// 因为有些监听器Bean是由FactoryBean生产的，而在这里FactoryBean实际上还没被生成出来</span></span><br><span class="line">    String[] listenerBeanNames = getBeanNamesForType(ApplicationListener.class, <span class="keyword">true</span>, <span class="keyword">false</span>);</span><br><span class="line">    <span class="keyword">for</span> (String listenerBeanName : listenerBeanNames) &#123;</span><br><span class="line">        getApplicationEventMulticaster().addApplicationListenerBean(listenerBeanName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发布一些早期事件</span></span><br><span class="line">    Set&lt;ApplicationEvent&gt; earlyEventsToProcess = <span class="keyword">this</span>.earlyApplicationEvents;</span><br><span class="line">    <span class="keyword">this</span>.earlyApplicationEvents = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (!CollectionUtils.isEmpty(earlyEventsToProcess)) &#123;</span><br><span class="line">        <span class="keyword">for</span> (ApplicationEvent earlyEvent : earlyEventsToProcess) &#123;</span><br><span class="line">            getApplicationEventMulticaster().multicastEvent(earlyEvent);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里有两个比较有意思的地方：</p>
+<ul>
+<li><code>getApplicationListeners</code> 获取的监听器实际上也是通过一个名为 <code>EventListenerMethodProcessor</code> 的 <code>BeanFactoryPostProcessor</code> 注册到上下文的；</li>
+<li>注册 <code>BeanName</code> 而不是直接注册 <code>Bean</code> 这一点是为了迁就 <code>FactoryBean</code>。实际上在初始化 <code>BeanFactory</code> 的时候，调用 <code>BeanFactoryPostProcessor</code> 和注册 <code>BeanPostProcessor</code> 也都专门对此进行了处理；</li>
+</ul>
+<h2 id="五-实例化工厂中的bean">五、实例化工厂中的Bean</h2>
+<p>当调用 <code>AbstarctApplicationContext.finishBeanFactoryInitialization</code> 的时候，spring 会根据 <code>BeanFactory</code> 中已经注册的 <code>BeanDefinition</code> 实例化所有非懒加载的单例 <code>Bean</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">finishBeanFactoryInitialization</span><span class="params">(ConfigurableListableBeanFactory beanFactory)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 为BeanFactory设置ConversionService</span></span><br><span class="line">    <span class="comment">// 该接口为spring转换器体系的入口</span></span><br><span class="line">    <span class="keyword">if</span> (beanFactory.containsBean(CONVERSION_SERVICE_BEAN_NAME) &amp;&amp;</span><br><span class="line">        beanFactory.isTypeMatch(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class)) &#123;</span><br><span class="line">        beanFactory.setConversionService(</span><br><span class="line">            beanFactory.getBean(CONVERSION_SERVICE_BEAN_NAME, ConversionService.class));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注册一个StringValueResolver，没有就从上下文的环境对象中获取</span></span><br><span class="line">    <span class="comment">// 该解析器用于解析配置文件中的一些占位符以及SpEL表达式</span></span><br><span class="line">    <span class="keyword">if</span> (!beanFactory.hasEmbeddedValueResolver()) &#123;</span><br><span class="line">        beanFactory.addEmbeddedValueResolver(strVal -&gt; getEnvironment().resolvePlaceholders(strVal));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 若存在AOP使用的支持类加载时织入切面逻辑的类加载器，则优先将该Bean初始化</span></span><br><span class="line">    String[] weaverAwareNames = beanFactory.getBeanNamesForType(LoadTimeWeaverAware.class, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">    <span class="keyword">for</span> (String weaverAwareName : weaverAwareNames) &#123;</span><br><span class="line">        getBean(weaverAwareName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 由于类加载器已经初始化完成，所以可以停用临时的类加载器了</span></span><br><span class="line">    beanFactory.setTempClassLoader(<span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 锁定当前工厂的配置</span></span><br><span class="line">    beanFactory.freezeConfiguration();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化剩余未初始化的非懒加载单例Bean</span></span><br><span class="line">    beanFactory.preInstantiateSingletons();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个方法总共干了五件事：</p>
+<ul>
+<li>为 <code>BeanFactory</code> 设置类型转换服务 <code>ConversionService</code>；</li>
+<li>为 <code>BeanFactory</code> 设置占位符转换器 <code>StringValueResolver</code>；</li>
+<li>禁用临时的类加载器，若有则启用支持类加载时织入切面逻辑的类加载器；</li>
+<li>锁定当前 <code>BeanFactory</code> 的配置；</li>
+<li>初始化剩余未初始化的非懒加载单例 <code>Bean</code>；</li>
+</ul>
+<p>这里我们重点关注 <code>BeanFactory.preInstantiateSingletons()</code> 方法，此处是实际上完成 <code>Bean</code> 初始化的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">preInstantiateSingletons</span><span class="params">()</span> <span class="keyword">throws</span> BeansException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">        logger.trace(<span class="string">&quot;Pre-instantiating singletons in &quot;</span> + <span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Iterate over a copy to allow for init methods which in turn register new bean definitions.</span></span><br><span class="line">    <span class="comment">// While this may not be part of the regular factory bootstrap, it does otherwise work fine.</span></span><br><span class="line">    List&lt;String&gt; beanNames = <span class="keyword">new</span> ArrayList&lt;&gt;(<span class="keyword">this</span>.beanDefinitionNames);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 遍历beanName，若BeanName是可以实例化的非懒加载单例Bean，则将其实例化</span></span><br><span class="line">    <span class="keyword">for</span> (String beanName : beanNames) &#123;</span><br><span class="line">        RootBeanDefinition bd = getMergedLocalBeanDefinition(beanName);</span><br><span class="line">        <span class="keyword">if</span> (!bd.isAbstract() &amp;&amp; bd.isSingleton() &amp;&amp; !bd.isLazyInit()) &#123;</span><br><span class="line">			<span class="comment">// 如果是FactoryBean</span></span><br><span class="line">            <span class="keyword">if</span> (isFactoryBean(beanName)) &#123;</span><br><span class="line">                Object bean = getBean(FACTORY_BEAN_PREFIX + beanName);</span><br><span class="line">                <span class="keyword">if</span> (bean <span class="keyword">instanceof</span> FactoryBean) &#123;</span><br><span class="line">                    FactoryBean&lt;?&gt; factory = (FactoryBean&lt;?&gt;) bean;</span><br><span class="line">                    <span class="keyword">boolean</span> isEagerInit;</span><br><span class="line">                    <span class="comment">// 类型为SmartFactoryBean，则是否立刻实例化由SmartFactoryBean.isEagerInit()决定</span></span><br><span class="line">                    <span class="keyword">if</span> (System.getSecurityManager() != <span class="keyword">null</span> &amp;&amp; factory <span class="keyword">instanceof</span> SmartFactoryBean) &#123;</span><br><span class="line">                        isEagerInit = AccessController.doPrivileged(</span><br><span class="line">                            (PrivilegedAction&lt;Boolean&gt;) ((SmartFactoryBean&lt;?&gt;) factory)::isEagerInit,</span><br><span class="line">                            getAccessControlContext());</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// 类型不为SmartFactoryBean，则不立刻实例化</span></span><br><span class="line">                        isEagerInit = (factory <span class="keyword">instanceof</span> SmartFactoryBean &amp;&amp;</span><br><span class="line">                                       ((SmartFactoryBean&lt;?&gt;) factory).isEagerInit());</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">if</span> (isEagerInit) &#123;</span><br><span class="line">                        getBean(beanName);</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 实例化bean</span></span><br><span class="line">                getBean(beanName);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取所有实现了SmartInitializingSingleton接口的Bean，调用Bean初始化后回调afterSingletonsInstantiated</span></span><br><span class="line">    <span class="keyword">for</span> (String beanName : beanNames) &#123;</span><br><span class="line">        Object singletonInstance = getSingleton(beanName);</span><br><span class="line">        <span class="keyword">if</span> (singletonInstance <span class="keyword">instanceof</span> SmartInitializingSingleton) &#123;</span><br><span class="line">            SmartInitializingSingleton smartSingleton = (SmartInitializingSingleton) singletonInstance;</span><br><span class="line">            <span class="keyword">if</span> (System.getSecurityManager() != <span class="keyword">null</span>) &#123;</span><br><span class="line">                AccessController.doPrivileged((PrivilegedAction&lt;Object&gt;) () -&gt; &#123;</span><br><span class="line">                    smartSingleton.afterSingletonsInstantiated();</span><br><span class="line">                    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">                &#125;, getAccessControlContext());</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                smartSingleton.afterSingletonsInstantiated();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这一步主要干了两件事：</p>
+<ul>
+<li>如果是允许实例化的非懒加载普通 <code>Bean</code>，就直接初始化；</li>
+<li>如果是允许实例化的非懒加载 <code>FactoryBean</code>，则判断它是否是 <code>SmartFactoryBean</code> ：
+<ol>
+<li>如果不是，则放弃直接初始化；</li>
+<li>如果是，则根据 <code>SmartFactoryBean.isEagerInit()</code> 判断是否要直接初始化；</li>
+</ol>
+</li>
+<li>初始化所有可初始化的 <code>Bean</code> 后，如果这些 <code>Bean</code> 实现了 <code>SmartInitializingSingleton</code> 接口，则调用该接口提供的回调函数；</li>
+</ul>
+<p>这里需要注意两点：</p>
+<ul>
+<li><code>BeanFactory.getBean()</code> 实际才是最终完成 <code>BeanFactory</code> 创建 <code>Bean</code> 实例操作的方法，在这个方法中将根据 <code>BeanDefinition</code> 完成各自依赖的自动装配、<code>Bean</code> 的后置处理等操作，三级缓存也是在这个时候使用的，这部分的内容将会在后续另起一篇文章分析；</li>
+<li>此处仅预加载了 <code>FactoryBean</code>，而没有懒加载 <code>FactoryBean</code> 里面的 <code>Bean</code>，因此 <code>FactoryBean</code> 提供的 <code>Bean</code> 总是懒加载的；</li>
+<li><code>SmartInitializingSingleton</code> 接口用于提供 <code>BeanFactory</code> 在初始化全部非懒加载 <code>Bean</code> 时调用的回调函数；</li>
+</ul>
+<p>至此，<code>BeanFactory</code> 中所有可以预先初始化的 <code>Bean</code> 都完成的初始化，我们已经可以通过 <code>BeanFactory</code> 正常的去获取 <code>Bean</code> 了。</p>
+<h2 id="六-完成刷新">六、完成刷新</h2>
+<p><code>AbstractApplicationContext.finishRefresh()</code> 是完成容器刷新的最后一步，它跟 <code>AbstractApplicationContext.onRefresh()</code> 一样是一个钩子方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">finishRefresh</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 清空资源缓存</span></span><br><span class="line">    clearResourceCaches();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化上下文的生命周期处理器</span></span><br><span class="line">    initLifecycleProcessor();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 调用上下文的生命周期处理器</span></span><br><span class="line">    getLifecycleProcessor().onRefresh();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发布上下文刷新完毕事件</span></span><br><span class="line">    publishEvent(<span class="keyword">new</span> ContextRefreshedEvent(<span class="keyword">this</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注册用于支持通过JMX管理spring的组件，这里不过多分析，</span></span><br><span class="line">    <span class="comment">// 关于JMX具体可以参考这篇文章：https://www.wdbyte.com/java/jmx.html#_3-2-%E8%B5%84%E6%BA%90%E4%BB%A3%E7%90%86-mbean-server</span></span><br><span class="line">    LiveBeansView.registerApplicationContext(<span class="keyword">this</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1-清空上下文资源缓存">1、清空上下文资源缓存</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">clearResourceCaches</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.resourceCaches.clear();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-初始化上下文的生命周期处理器">2、初始化上下文的生命周期处理器</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initLifecycleProcessor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConfigurableListableBeanFactory beanFactory = getBeanFactory();</span><br><span class="line">    <span class="comment">// 若存在名为“lifecycleProcessor”的bean，则设置为生命周期处理器</span></span><br><span class="line">    <span class="keyword">if</span> (beanFactory.containsLocalBean(LIFECYCLE_PROCESSOR_BEAN_NAME)) &#123;</span><br><span class="line">        <span class="keyword">this</span>.lifecycleProcessor =</span><br><span class="line">            beanFactory.getBean(LIFECYCLE_PROCESSOR_BEAN_NAME, LifecycleProcessor.class);</span><br><span class="line">        <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">            logger.trace(<span class="string">&quot;Using LifecycleProcessor [&quot;</span> + <span class="keyword">this</span>.lifecycleProcessor + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 若不存在名为“lifecycleProcessor”的bean，则创建一个DefaultLifecycleProcessor并设置为生命周期处理器</span></span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        DefaultLifecycleProcessor defaultProcessor = <span class="keyword">new</span> DefaultLifecycleProcessor();</span><br><span class="line">        defaultProcessor.setBeanFactory(beanFactory);</span><br><span class="line">        <span class="keyword">this</span>.lifecycleProcessor = defaultProcessor;</span><br><span class="line">        beanFactory.registerSingleton(LIFECYCLE_PROCESSOR_BEAN_NAME, <span class="keyword">this</span>.lifecycleProcessor);</span><br><span class="line">        <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">            logger.trace(<span class="string">&quot;No &#x27;&quot;</span> + LIFECYCLE_PROCESSOR_BEAN_NAME + <span class="string">&quot;&#x27; bean, using &quot;</span> +</span><br><span class="line">                         <span class="string">&quot;[&quot;</span> + <span class="keyword">this</span>.lifecycleProcessor.getClass().getSimpleName() + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="3-生命周期处理">3、生命周期处理</h3>
+<p>这里需要着重研究一下生命周期处理器的调用。</p>
+<p>在 <code>getLifecycleProcessor().onRefresh()</code> 这一步，将会获取上一步设置到上下文中的 <code>LifecycleProcessor</code> 然后调用：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AbstraceApplicationContext.getLifecycleProcessor()</span></span><br><span class="line"><span class="function">LifecycleProcessor <span class="title">getLifecycleProcessor</span><span class="params">()</span> <span class="keyword">throws</span> IllegalStateException </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.lifecycleProcessor == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;LifecycleProcessor not initialized - &quot;</span> +</span><br><span class="line">                                        <span class="string">&quot;call &#x27;refresh&#x27; before invoking lifecycle methods via the context: &quot;</span> + <span class="keyword">this</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.lifecycleProcessor;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里我们以默认的生命周期处理器 <code>DefaultLifecycleProcessor</code> 为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">onRefresh</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    startBeans(<span class="keyword">true</span>);</span><br><span class="line">    <span class="keyword">this</span>.running = <span class="keyword">true</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">startBeans</span><span class="params">(<span class="keyword">boolean</span> autoStartupOnly)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取所有实现了Lifecycle接口的Bean，并按阶段分组装到不同的LifecycleGroup里</span></span><br><span class="line">    Map&lt;String, Lifecycle&gt; lifecycleBeans = getLifecycleBeans();</span><br><span class="line">    Map&lt;Integer, LifecycleGroup&gt; phases = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    lifecycleBeans.forEach((beanName, bean) -&gt; &#123;</span><br><span class="line">        <span class="comment">// 同时满足下述条件的Bean不会被处理</span></span><br><span class="line">        <span class="comment">// 1.入参的autoStartupOnly为true</span></span><br><span class="line">        <span class="comment">// 2.bean实现了SmartLifecycle接口</span></span><br><span class="line">        <span class="comment">// 3.SmartLifecycle.isAutoStartup()方法返回false</span></span><br><span class="line">        <span class="keyword">if</span> (!autoStartupOnly || (bean <span class="keyword">instanceof</span> SmartLifecycle &amp;&amp; ((SmartLifecycle) bean).isAutoStartup())) &#123;</span><br><span class="line">            <span class="comment">// 若实现了SmartLifecycle接口，则返回SmartLifecycle.getPhase()，否则默认返回0</span></span><br><span class="line">            <span class="keyword">int</span> phase = getPhase(bean); </span><br><span class="line">            LifecycleGroup group = phases.get(phase);</span><br><span class="line">            <span class="keyword">if</span> (group == <span class="keyword">null</span>) &#123;</span><br><span class="line">                group = <span class="keyword">new</span> LifecycleGroup(phase, <span class="keyword">this</span>.timeoutPerShutdownPhase, lifecycleBeans, autoStartupOnly);</span><br><span class="line">                phases.put(phase, group);</span><br><span class="line">            &#125;</span><br><span class="line">            group.add(beanName, bean);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 按阶段从小到大排序，依次处理</span></span><br><span class="line">    <span class="keyword">if</span> (!phases.isEmpty()) &#123;</span><br><span class="line">        List&lt;Integer&gt; keys = <span class="keyword">new</span> ArrayList&lt;&gt;(phases.keySet());</span><br><span class="line">        Collections.sort(keys);</span><br><span class="line">        <span class="keyword">for</span> (Integer key : keys) &#123;</span><br><span class="line">            phases.get(key).start();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到，这里针对 <code>SmartLifecycle</code> 接口的实现类做了很多特殊化的处理，默认情况下：</p>
+<ul>
+<li>实现了 <code>SmartLifecycle</code> 接口的 <code>Bean</code>，需要保证 <code>SmartLifecycle.isAutoStartup</code> 返回 <code>true</code> 才会被处理；</li>
+<li>没实现 <code>SmartLifecycle</code> 接口，但是实现了 <code>Lifecycle</code> 接口的 <code>Bean</code> 会被直接处理；</li>
+</ul>
+<p>并且，在处理 <code>Bean</code> 的时候，还会根据声明周期“阶段”按顺序从小到大排序：</p>
+<ul>
+<li>实现了 <code>SmartLifecycle</code> 接口的 <code>Bean</code>，按照 <code>SmartLifecycle.getPhase</code> 返回值排序从小到大执行；</li>
+<li>没实现 <code>SmartLifecycle</code> 接口，但是实现了 <code>Lifecycle</code> 接口的 <code>Bean</code> ，“阶段”视为 0，会被最先处理；</li>
+</ul>
+<h3 id="4-发布上下文刷新完毕事件">4、发布上下文刷新完毕事件</h3>
+<p>这个操作其实也很简单，其实就是调用时间广播器推送一个 <code>ContextRefreshedEvent</code> 事件：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ContextRefreshedEvent</span> <span class="keyword">extends</span> <span class="title">ApplicationContextEvent</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">ContextRefreshedEvent</span><span class="params">(ApplicationContext source)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>(source);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个事件里唯一一个参数就是上下文本身。</p>
+<p>这一部分主要逻辑在事件推送上，后续会在专门的文章分析 spring 提供的事件机制，这里就不过多展开。</p>
+<h2 id="总结">总结</h2>
+<p>本文内容比较零散，主要干三件事：</p>
+<ul>
+<li>初始化消息源相关组件：
+<ol>
+<li><code>initMessageSource</code>：初始化上下文使用的消息源；</li>
+<li><code>onRefresh</code>：上下文刷新时的回调函数，但是一般只用于加载 <code>ThemeSource</code>；</li>
+</ol>
+</li>
+<li>初始化事件相关组件：
+<ol>
+<li><code>initApplicationEventMulticaster</code>：初始化事件广播器；</li>
+<li><code>registerListeners</code>：注册容器中的事件监听器 <code>ApplicationListener</code>；</li>
+</ol>
+</li>
+<li>初始化 <code>BeanFactory</code> 中所有非抽象的非懒加载 <code>Bean</code>；</li>
+<li>完成刷新：
+<ol>
+<li>清空上下文中的资源缓存；</li>
+<li>初始化并调用 <code>Bean</code> 生命周期处理器；</li>
+<li>发布上下文刷新时间；</li>
+<li>注册并初始化用于支持 JMX 的组件；</li>
+</ol>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+            <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># 源码分析</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/06/08/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ABeanFactory%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/" rel="next" title="深入理解Spring容器初始化（一）：上下文的初始化">
+                <i class="fa fa-chevron-left"></i> 深入理解Spring容器初始化（一）：上下文的初始化
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/07/26/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%88%AB%E5%90%8D%E6%9C%BA%E5%88%B6/" rel="prev" title="深入理解Spring容器初始化（一）：上下文的初始化">
+                深入理解Spring容器初始化（一）：上下文的初始化 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Createsequence.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7Carchive">
+              
+                  <span class="site-state-item-count">97</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E5%88%9D%E5%A7%8B%E5%8C%96%E6%95%B0%E6%8D%AE%E6%BA%90"><span class="nav-text">一、初始化数据源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E5%88%9D%E5%A7%8B%E5%8C%96%E4%BA%8B%E4%BB%B6%E5%B9%BF%E6%92%AD%E8%80%85"><span class="nav-text">二、初始化事件广播者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E5%88%9D%E5%A7%8B%E5%8C%96%E7%89%B9%E6%AE%8Abean"><span class="nav-text">三、初始化特殊Bean</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B-%E6%B3%A8%E5%86%8C%E4%BA%8B%E4%BB%B6%E7%9B%91%E5%90%AC%E5%99%A8"><span class="nav-text">四、注册事件监听器</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94-%E5%AE%9E%E4%BE%8B%E5%8C%96%E5%B7%A5%E5%8E%82%E4%B8%AD%E7%9A%84bean"><span class="nav-text">五、实例化工厂中的Bean</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%AD-%E5%AE%8C%E6%88%90%E5%88%B7%E6%96%B0"><span class="nav-text">六、完成刷新</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%B8%85%E7%A9%BA%E4%B8%8A%E4%B8%8B%E6%96%87%E8%B5%84%E6%BA%90%E7%BC%93%E5%AD%98"><span class="nav-text">1、清空上下文资源缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%88%9D%E5%A7%8B%E5%8C%96%E4%B8%8A%E4%B8%8B%E6%96%87%E7%9A%84%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%A4%84%E7%90%86%E5%99%A8"><span class="nav-text">2、初始化上下文的生命周期处理器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F%E5%A4%84%E7%90%86"><span class="nav-text">3、生命周期处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%8F%91%E5%B8%83%E4%B8%8A%E4%B8%8B%E6%96%87%E5%88%B7%E6%96%B0%E5%AE%8C%E6%AF%95%E4%BA%8B%E4%BB%B6"><span class="nav-text">4、发布上下文刷新完毕事件</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Createsequence</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 引入目录截取js -->
+  <script type="text/javascript" src="/js/src/custom/custom.js"></script>
+</body>
+</html>

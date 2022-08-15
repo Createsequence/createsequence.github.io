@@ -287,6 +287,1250 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E8%BF%B7%E5%AE%AB%E5%9B%9E%E6%BA%AF%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E8%BF%B7%E5%AE%AB%E5%9B%9E%E6%BA%AF%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/" itemprop="url">数据结构与算法（七）：迷宫回溯和八皇后问题</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-26T00:00:00+08:00">
+                2020-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.9k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="一-迷宫回溯问题">一、迷宫回溯问题</h2>
+<h3 id="1问题">1.问题</h3>
+<p>一个7*8的数组模拟迷宫，障碍用1表示，通路使用0表示，给定起点（1,1）和终点（6,5），要求给出起点到终点的通路</p>
+<p><img src="http://img.xiajibagao.top/20200626224906.png"><img src="http://img.xiajibagao.top/20200626224701.png"></p>
+<h3 id="2解题思路">2.解题思路</h3>
+<ol type="1">
+<li>首先，我们需要给程序一个寻向的基本策略，我们先假定寻向顺序为“下-右-上-左”，也就是说从起点出发，先往下走，往下走不通就往右.....以此类推</li>
+<li>然后我们需要给走过的路一个标记，暂记为2</li>
+<li>而当从一个方向走到一个只能原路返回的死胡同时，就给这段路标记为3</li>
+<li>当抵达终点坐标（6,5）时程序结束</li>
+</ol>
+<h3 id="3代码实现">3.代码实现</h3>
+<h4 id="31生成地图">3.1生成地图</h4>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 创建一个二维数组,用于模拟8*7迷宫</span></span><br><span class="line"><span class="comment"> * 使用1表示不可通过的实心方块，0表示可通过砖块</span></span><br><span class="line"><span class="comment"> * （6,5）为默认终点，（1,1）为默认起点</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span>[][] getMap()&#123;</span><br><span class="line">    <span class="keyword">int</span>[][] map = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">8</span>][<span class="number">7</span>];</span><br><span class="line">    <span class="comment">//上下全置为1</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;i &lt;<span class="number">7</span> ;i++)&#123;</span><br><span class="line">        map[<span class="number">0</span>][i] = <span class="number">1</span>;</span><br><span class="line">        map[<span class="number">7</span>][i] = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//左右全置为1</span></span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; <span class="number">8</span>;i++)&#123;</span><br><span class="line">        map[i][<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">        map[i][<span class="number">6</span>] = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//设置挡板</span></span><br><span class="line">    map[<span class="number">3</span>][<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">    map[<span class="number">3</span>][<span class="number">2</span>] = <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//输出地图</span></span><br><span class="line">    System.out.println(<span class="string">&quot;地图的初始情况:&quot;</span>);</span><br><span class="line">    showMap(map);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> map;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 展示地图</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> map</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">showMap</span><span class="params">(<span class="keyword">int</span>[][] map)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">int</span> i = <span class="number">0</span>;i &lt; <span class="number">8</span>;i++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="keyword">int</span> j = <span class="number">0</span>;j &lt; <span class="number">7</span>;j++)&#123;</span><br><span class="line">            System.out.print(map[i][j] + <span class="string">&quot; &quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="32-寻路逻辑的实现">3.2 寻路逻辑的实现</h4>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E8%BF%B7%E5%AE%AB%E5%9B%9E%E6%BA%AF%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%E9%80%92%E5%BD%92/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%E9%80%92%E5%BD%92/" itemprop="url">数据结构与算法（六）：递归</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-26T00:00:00+08:00">
+                2020-06-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  738
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="一-什么是递归">一、什么是递归</h2>
+<p>所谓递归，简单点来说，就是一个函数直接或间接调用自身的一种方法，它通常把一个大型复杂的问题层层转化为一个与原问题相似的规模较小的问题来求解。</p>
+<p>引用知乎大佬的例子：</p>
+<blockquote>
+<p>我们可以把” 递归 “比喻成 “查字典 “，当你查一个词，发现这个词的解释中某个词仍然不懂，于是你开始查这第二个词。</p>
+<p>可惜，第二个词里仍然有不懂的词，于是查第三个词，这样查下去，直到有一个词的解释是你完全能看懂的，那么递归走到了尽头，然后你开始后退，逐个明白之前查过的每一个词，最终，你明白了最开始那个词的意思。</p>
+</blockquote>
+<p>我们把查字典理解成一个函数<code>search()&#123;&#125;</code>，而“明白了”就是停止条件。</p>
+<p>按这个思路，那这个流程就是这样的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">search</span><span class="params">()</span></span>&#123;</span><br><span class="line">    <span class="comment">//如果明白了就停止函数</span></span><br><span class="line">    <span class="keyword">if</span>(<span class="string">&quot;明白了&quot;</span>)&#123;</span><br><span class="line">       <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//没明白调用自己继续查</span></span><br><span class="line">    search();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们举个简单的例子：</p>
+<p>要计算阶乘<code>1*2*3*.....*(n-1)*n</code>，代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">mult</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="comment">//终止条件，当n=1时直接返回1</span></span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">1</span>)&#123;</span><br><span class="line">        <span class="keyword">return</span> n;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//计算n*(n-1).....</span></span><br><span class="line">    <span class="keyword">return</span> n * mult(n - <span class="number">1</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9A%E9%80%92%E5%BD%92/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/06/25/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%A0%88%E4%B8%8E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%E8%AE%A1%E7%AE%97%E5%99%A8%E5%8A%9F%E8%83%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/25/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%A0%88%E4%B8%8E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%E8%AE%A1%E7%AE%97%E5%99%A8%E5%8A%9F%E8%83%BD/" itemprop="url">数据结构与算法（五）：递归和栈实现简单计算器</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-25T00:00:00+08:00">
+                2020-06-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.6k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="一-计算器的计算思路分析">一、计算器的计算思路分析</h2>
+<p>我们以计算<code>3+8*2-6</code>这个算式为例：</p>
+<ol type="1">
+<li><p>将算式解析为数字和符号：<code>3，+，8，*，2，-，6</code></p></li>
+<li><p>准备一个用于存放数字的数字栈numStack，还有一个存放运算符号的符号栈symbolStack，下面分别简称栈n和栈s</p></li>
+<li><p>按顺序扫描解析后的数字和符号，</p>
+<p>如果是数字，就直接入数栈n，</p>
+<p>如果是符号，且如果<strong>符号栈s为空</strong>，就直接入栈，</p>
+<p>如果s不为空，就需要比较栈顶符号与当前符号的优先级，再分两种情况：</p>
+<ul>
+<li>如果<strong>栈顶符号优先级比当前符号大</strong>，就从栈n弹出两个数字，从栈s弹出一个符号，然后进行运算，最后得出的结果再入栈n</li>
+<li>如果<strong>栈顶符号优先级小于或等于当前符号</strong>，就将符号入栈s</li>
+</ul></li>
+</ol>
+<p><img src="http://img.xiajibagao.top/20200625203947.png"></p>
+<p>按照这个流程，扫描完后栈n会留下<code>3，16，6</code>这三个数，栈s会留下<code>+，-</code>这两个 符号，</p>
+<p>然后按顺序，栈n弹出两个数字，栈s弹出一个符号，然后运算得到结果后再入栈n，重复此步骤，最后栈s清空，栈n只剩一个数字，即为运算结果。</p>
+<h2 id="二-代码实现">二、代码实现</h2>
+<p>我们先来实现一个加减乘除的数计算器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：黄成兴</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-06-25 16:29</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：使用栈实现一个计算器</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StackCalculator</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//数字栈</span></span><br><span class="line">    <span class="keyword">public</span> Stack&lt;Integer&gt; numStack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//符号栈</span></span><br><span class="line">    <span class="keyword">public</span> Stack&lt;String&gt; symbolStack = <span class="keyword">new</span> Stack&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据计算公式运算并输出结果</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> expression 计算公式</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">calculate</span><span class="params">(String expression)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//用于多位数拼接</span></span><br><span class="line">        String numStr = <span class="string">&quot;&quot;</span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//遍历字符串里的每一个字符</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; expression.length() ; i++) &#123;</span><br><span class="line">            String ch = expression.substring(i, i + <span class="number">1</span>);</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//检验是否数字</span></span><br><span class="line">            <span class="keyword">if</span> (ch.matches(<span class="string">&quot;[0-9]&quot;</span>)) &#123;</span><br><span class="line">                <span class="comment">//如果该数字已经是最后一个字符就直接存入数字栈</span></span><br><span class="line">                <span class="keyword">if</span> (i == expression.length() - <span class="number">1</span>)&#123;</span><br><span class="line">                    numStack.push(Integer.valueOf(ch));</span><br><span class="line">                &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">//如果不是字符串最后一个字符，就拼接入字符串</span></span><br><span class="line">                    numStr += ch;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//如果是符号，就把之前拼接的多位数存入数字栈</span></span><br><span class="line">            numStack.push(Integer.valueOf(numStr));</span><br><span class="line">            numStr = <span class="string">&quot;&quot;</span>;</span><br><span class="line">            </span><br><span class="line">            <span class="comment">//如果是符号就比较符号优先级</span></span><br><span class="line">            <span class="keyword">if</span> (isFrist(ch))&#123;</span><br><span class="line">                <span class="comment">//如果当前符号与符号栈栈栈顶符号优先或者平级就入栈</span></span><br><span class="line">                symbolStack.push(ch);</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">//否则就从栈中取两数字和一个符号先计算</span></span><br><span class="line">                <span class="keyword">int</span> num = getCalculateResult();</span><br><span class="line">                <span class="comment">//再把计算结果入数栈</span></span><br><span class="line">                numStack.push(num);</span><br><span class="line">                <span class="comment">//再把当前符号入栈</span></span><br><span class="line">                symbolStack.push(ch);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//当符号栈为空时，说明计算完成，此时数字栈唯一数字即为结果</span></span><br><span class="line">        <span class="keyword">while</span> (!symbolStack.empty()) &#123;</span><br><span class="line">            <span class="keyword">int</span> result = getCalculateResult();</span><br><span class="line">            numStack.push(result);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;计算结束！结果为：&quot;</span> + numStack.pop());</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据数字和符号运算并返回结果</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> num1 后出栈的数字</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> num2 先出栈的数字</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> symbol 运算符号</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCalculateResult</span><span class="params">(<span class="keyword">int</span> num1, <span class="keyword">int</span> num2, String symbol)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> result = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">//根据符号进行运算</span></span><br><span class="line">        <span class="keyword">switch</span> (symbol)&#123;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&quot;+&quot;</span>:</span><br><span class="line">                result = num1 + num2;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&quot;-&quot;</span>:</span><br><span class="line">                result = num1 - num2;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&quot;*&quot;</span>:</span><br><span class="line">                result = num1 * num2;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">case</span> <span class="string">&quot;/&quot;</span>:</span><br><span class="line">                result = num1 / num2;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">default</span>:</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;只支持加减乘除运算！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        System.out.println(num1 + symbol + num2 + <span class="string">&quot;=&quot;</span> + result);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 直接从数栈取两数字，符号栈取一符号进行计算</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getCalculateResult</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> num1 = numStack.pop();</span><br><span class="line">        <span class="keyword">int</span> num2 = numStack.pop();</span><br><span class="line">        String symbol = symbolStack.pop();</span><br><span class="line">        <span class="keyword">int</span> result = getCalculateResult(num2, num1, symbol);</span><br><span class="line">        <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 比较符号和当前符号栈顶符号的优先级。</span></span><br><span class="line"><span class="comment">     * 如果当前符号优先级小于符号栈栈顶符号的优先级，就返回false，否则返回true</span></span><br><span class="line"><span class="comment">     * 如果当前符号栈为空，直接返回true</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> symbol</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isFrist</span><span class="params">(String symbol)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//判断当前符号栈是否为空</span></span><br><span class="line">        <span class="keyword">if</span> (symbolStack.empty()) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//取出并放回栈顶符号</span></span><br><span class="line">        String stackSymbol = symbolStack.pop();</span><br><span class="line">        symbolStack.push(stackSymbol);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//栈顶符号的优先级</span></span><br><span class="line">        <span class="keyword">int</span> stackSymbolGrade = getSymbolGrade(stackSymbol);</span><br><span class="line">        <span class="comment">//当前符号的优先级</span></span><br><span class="line">        <span class="keyword">int</span> symbolgrade = getSymbolGrade(symbol);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> symbolgrade &gt; stackSymbolGrade;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 根据符号返回符号的优先级</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> symbol</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> 加减返回0，乘除返回1</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getSymbolGrade</span><span class="params">(String symbol)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">int</span> grade;</span><br><span class="line">        <span class="keyword">if</span> (<span class="string">&quot;+&quot;</span>.equals(symbol) || <span class="string">&quot;-&quot;</span>.equals(symbol)) &#123;</span><br><span class="line">            grade = <span class="number">0</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (<span class="string">&quot;*&quot;</span>.equals(symbol) || <span class="string">&quot;/&quot;</span>.equals(symbol)) &#123;</span><br><span class="line">            grade = <span class="number">1</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;不支持的操作符类型：&quot;</span> + symbol);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> grade;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在输入运算公式调用<code>calculate()</code>函数即可得出结果，但是目前这个计算器仍然还有致命问题没有解决：</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/25/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9A%E6%A0%88%E4%B8%8E%E9%80%92%E5%BD%92%E5%AE%9E%E7%8E%B0%E8%AE%A1%E7%AE%97%E5%99%A8%E5%8A%9F%E8%83%BD/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/06/23/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E6%A0%88/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/23/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E6%A0%88/" itemprop="url">数据结构与算法（四）：栈</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-23T00:00:00+08:00">
+                2020-06-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  807
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="一-什么是栈">一、什么是栈</h2>
+<p>栈（stack）是一种<strong>先进后出</strong>的有序列表，其中的元素只能在<strong>线性表的同一端进出</strong>，</p>
+<p>允许元素插入和删除的一端被称为<strong>栈顶</strong>（top），固定的另一端被称为<strong>栈底</strong>（button）。</p>
+<p><img src="http://img.xiajibagao.top/20200623214705.png"></p>
+<h2 id="二-数组简单实现栈">二、数组简单实现栈</h2>
+<p>由于栈是只在一端进出，也就是说相比队列实际上只需要有一个栈顶指针top即可：</p>
+<ol type="1">
+<li>当栈空时top为-1</li>
+<li>入栈后top+1</li>
+<li>出栈后top-1</li>
+</ol>
+<p>根据思路我们可以用数组实现一个简单的栈：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：huang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-06-23 16:51</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：使用数组模拟栈</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Stack</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> maxSize;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> top = -<span class="number">1</span>;</span><br><span class="line">    <span class="keyword">private</span> Object[] arr;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Stack</span><span class="params">(<span class="keyword">int</span> maxSize)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.maxSize = maxSize;</span><br><span class="line">        <span class="keyword">this</span>.arr = <span class="keyword">new</span> Object[maxSize];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断栈满</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isFull</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> top == maxSize - <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断栈空</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> top == -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 入栈</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> item</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">push</span><span class="params">(Object item)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//判断栈是否已满</span></span><br><span class="line">        <span class="keyword">if</span> (isFull()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;栈已满&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//入栈</span></span><br><span class="line">        top = top + <span class="number">1</span>;</span><br><span class="line">        arr[top] = item;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 出栈</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">pop</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;栈为空！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        Object item = arr[top];</span><br><span class="line">        top--;</span><br><span class="line">        <span class="keyword">return</span> item;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 遍历栈</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">show</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;栈为空！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//遍历并打印栈中元素</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = top; i &gt;= <span class="number">0</span>; i--) &#123;</span><br><span class="line">            System.out.println(<span class="string">&quot;stack&quot;</span> + i + <span class="string">&quot;：&quot;</span> + arr[i]);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="三-链表简单模拟栈">三、链表简单模拟栈</h2>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/23/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E6%A0%88/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/06/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%8F%8C%E5%90%91%E8%BF%9E%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%8F%8C%E5%90%91%E8%BF%9E%E8%A1%A8/" itemprop="url">数据结构与算法（三）：双向链表</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-21T00:00:00+08:00">
+                2020-06-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.3k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="一-双向链表">一、双向链表</h2>
+<p>双向链表与单链表基本相似，但是最大的区别在于双向链表在节点中除了指向下一节点的next指针外，<strong>还有指向前一节点的prev指针</strong>，这使得双向链表在可以在任意节点<strong>从头尾两个方向进行遍历</strong>，是“双向”的。</p>
+<p>和单链表相比，双向链表在删除和查询等方面明显在操作上更具有灵活性，但是会消耗更多的内存，需要根据使用条件进行取舍。</p>
+<p>java中的LinkedHashMap的本质即是一个双向链表。</p>
+<p><img src="http://img.xiajibagao.top/20200621114143.png"></p>
+<h2 id="二-双向链表的简单实现">二、双向链表的简单实现</h2>
+<p>修改原来的Node类，在里面添加一个新成员变量<code>Node prev</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：huang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-06-20 10:19</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：节点类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//节点序号</span></span><br><span class="line">    <span class="keyword">int</span> num;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//数据</span></span><br><span class="line">    Object data;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//下一个节点</span></span><br><span class="line">    Node next;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//上一节点</span></span><br><span class="line">    Node prev;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(<span class="keyword">int</span> num, Object data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.num = num;</span><br><span class="line">        <span class="keyword">this</span>.data = data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Node&#123;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;num=&quot;</span> + num +</span><br><span class="line">            <span class="string">&quot;, data=&quot;</span> + data +</span><br><span class="line">            <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1添加">1.添加</h3>
+<p>添加与单向链表代码逻辑一样，但是新节点在添加时需要修改prev指针指向原来的尾节点。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/21/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%8F%8C%E5%90%91%E8%BF%9E%E8%A1%A8/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/06/20/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%8D%95%E9%93%BE%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/20/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%8D%95%E9%93%BE%E8%A1%A8/" itemprop="url">数据结构与算法（二）：单链表</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-20T00:00:00+08:00">
+                2020-06-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.3k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="一-什么是链表">一、什么是链表</h2>
+<p>链表是一种数据结构，跟数组不同，链表<strong>不需要连续的内存空间</strong>，而是<strong>通过指针将零散的内存块连接</strong>起来。</p>
+<p>因此，链表的查找需要通过节点按顺序遍历，而增加与删除通过只需要操作指针指向，这也造成了相比数组，链表的<strong>查找性能消耗大</strong>而<strong>增加和删除消耗小</strong>的特点。</p>
+<p>链表由节点组成，一般每个节点最少包含用于储存数据的data区和用于指向下一个节点的指针next，有的链表可能会有头结点或尾结点用于存储链表长度等信息。</p>
+<p><img src="http://img.xiajibagao.top/20200620142817.png"></p>
+<h2 id="二-链表的简单实现">二、链表的简单实现</h2>
+<p>先来实现一个简单的节点类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：huang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-06-20 10:19</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：节点类</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//节点序号</span></span><br><span class="line">    <span class="keyword">int</span> num;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//数据</span></span><br><span class="line">    Object data;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//下一个节点</span></span><br><span class="line">    Node next;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Node</span><span class="params">(<span class="keyword">int</span> num, Object data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.num = num;</span><br><span class="line">        <span class="keyword">this</span>.data = data;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getNum</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> num;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">getData</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> data;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setNum</span><span class="params">(<span class="keyword">int</span> num)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.num = num;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setData</span><span class="params">(Object data)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.data = data;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">toString</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Node&#123;&quot;</span> +</span><br><span class="line">            <span class="string">&quot;num=&quot;</span> + num +</span><br><span class="line">            <span class="string">&quot;, data=&quot;</span> + data +</span><br><span class="line">            <span class="string">&#x27;&#125;&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="1插入节点">1.插入节点</h3>
+<h4 id="11不按照排序的插入">1.1不按照排序的插入</h4>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/20/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%8D%95%E9%93%BE%E8%A1%A8/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/06/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%98%9F%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%98%9F%E5%88%97/" itemprop="url">数据结构与算法（一）：队列</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-14T00:00:00+08:00">
+                2020-06-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构与算法</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.4k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="一-什么是队列">一、什么是队列</h2>
+<p>队列是一种特殊的<strong>线性表</strong>。</p>
+<p>队列元素的进出遵循“<strong>先进先出</strong>”原则：即只允许在前端（front）也就是<strong>队头</strong>进行<strong>删除</strong>操作，而只能在后端（rear）也就是<strong>队尾</strong>进行<strong>插入</strong>操作。</p>
+<p><img src="http://img.xiajibagao.top/20200614170712.png"></p>
+<p>如图所示：</p>
+<ul>
+<li>队列的最大长度为MaxSize，最大下标为MaxSize-1</li>
+<li>入队时队头下标不变而队尾下标改变，出队时则相反</li>
+</ul>
+<h2 id="二-模拟队列">二、模拟队列</h2>
+<h3 id="1简单的使用数组模拟队列">1.简单的使用数组模拟队列：</h3>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：huang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-06-11 16:28</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：用数组模拟队列</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Queue</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//队列最大长度</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> maxSize;</span><br><span class="line">    <span class="comment">//存放数据的数组</span></span><br><span class="line">    <span class="keyword">private</span> Object[] arr;</span><br><span class="line">    <span class="comment">//头指针，指向队头的元素的前一个位置</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> front;</span><br><span class="line">    <span class="comment">//尾指针，指向队尾的元素所在位置</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> rear;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//构造器</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Queue</span><span class="params">(<span class="keyword">int</span> size)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.maxSize = size;</span><br><span class="line">        <span class="keyword">this</span>.arr = <span class="keyword">new</span> Object[maxSize];</span><br><span class="line">        <span class="keyword">this</span>.front = -<span class="number">1</span>;</span><br><span class="line">        <span class="keyword">this</span>.rear = -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断队列是否为空</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isEmpty</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//当头指针和尾指针相等时队列为空</span></span><br><span class="line">        <span class="keyword">return</span> rear == front;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断队列是否已满</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isFull</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="comment">//当尾指针等于maxSize-1时队列满</span></span><br><span class="line">        <span class="keyword">return</span> rear == maxSize - <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 入队</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> item 入队元素</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">addQueue</span><span class="params">(Object item)</span> </span>&#123;</span><br><span class="line">        <span class="comment">//判断队列是否已满</span></span><br><span class="line">        <span class="keyword">if</span> (isFull()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;队列已满！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//尾指针后移</span></span><br><span class="line">        rear++;</span><br><span class="line">        arr[rear] = item;</span><br><span class="line">        <span class="keyword">return</span> rear;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 出队</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Object <span class="title">quitQueue</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//判断队列是否为空</span></span><br><span class="line">        <span class="keyword">if</span> (isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(<span class="string">&quot;队列为空！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//头指针后移</span></span><br><span class="line">        front++;</span><br><span class="line">        <span class="keyword">return</span> arr[front];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2解决内存溢出">2.解决“内存溢出”</h3>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/06/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%98%9F%E5%88%97/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/06/04/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/Typora%E4%BD%BF%E7%94%A8%E4%B8%83%E7%89%9B%E4%BA%91%E5%9B%BE%E5%BA%8A/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -803,1230 +2047,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ACollectors%E6%94%B6%E9%9B%86%E5%99%A8%E7%B1%BB/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ACollectors%E6%94%B6%E9%9B%86%E5%99%A8%E7%B1%BB/" itemprop="url">JDK1.8新特性（二）：Collectors收集器类</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-12-01T00:00:00+08:00">
-                2019-12-01
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java/" itemprop="url" rel="index">
-                    <span itemprop="name">java</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.3k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>上文我们介绍了JDK8新添加的Stream流接口，借助Stream配合拉姆达表达式，我们可以很方便的处理流对象。</p>
-<p>针对流的聚合操作，Stream有一个对应的收集器类Collectors，通过Stream中的collect和collectingAndThen方法，我们可以借助收集器类聚合流中的数据，例如将元素累积到集合中，并根据各种标准对元素进行汇总，分类等操作。</p>
-<h2 id="二-举个例子">二. 举个例子？</h2>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//获取String集合</span></span><br><span class="line">List&lt;String&gt; strings = Arrays.asList(<span class="string">&quot;ab&quot;</span>, <span class="string">&quot;&quot;</span>, <span class="string">&quot;bc&quot;</span>, <span class="string">&quot;cd&quot;</span>, <span class="string">&quot;abcd&quot;</span>,<span class="string">&quot;&quot;</span>, <span class="string">&quot;jkl&quot;</span>);</span><br><span class="line"><span class="comment">//通过stream操作集合</span></span><br><span class="line">List&lt;String&gt; stringList = strings.stream()</span><br><span class="line">    <span class="comment">//为集合中的每一个元素拼接“？？？”</span></span><br><span class="line">    .map(s -&gt; s += <span class="string">&quot;???&quot;</span>)</span><br><span class="line">    <span class="comment">//返回集合</span></span><br><span class="line">    .collect(Collectors.toList());</span><br></pre></td></tr></table></figure>
-<p>如代码所示，我们可以很方便的通过Collectors类对被处理的流数据进行聚合操作，包括并不仅限与将处理过的流转换成集合</p>
-<h2 id="三-如何使用collectors">三. 如何使用Collectors？</h2>
-<h3 id="1-collectors类中提供的方法">1. Collectors类中提供的方法</h3>
-<p>总结一下，就是以下几类方法：</p>
-<p>1.1 转换成集合：toList()，toSet()，toMap()，toCollection()</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/12/01/java/JDK%E6%96%B0%E7%89%B9%E6%80%A7/JDK1.8%E6%96%B0%E7%89%B9%E6%80%A7%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ACollectors%E6%94%B6%E9%9B%86%E5%99%A8%E7%B1%BB/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/09/02/docker/Docker%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/09/02/docker/Docker%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/" itemprop="url">Docker基本操作</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-09-02T00:00:00+08:00">
-                2019-09-02
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/docker/" itemprop="url" rel="index">
-                    <span itemprop="name">docker</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3.4k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一-docker常用命令">一、Docker常用命令</h2>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#镜像名			版本标签			镜像id			 创建时间			镜像大小</span></span><br><span class="line"><span class="string">REPOSITORY</span>          <span class="string">TAG</span>                 <span class="string">IMAGE</span> <span class="string">ID</span>            <span class="string">CREATED</span>             <span class="string">SIZE</span></span><br><span class="line"><span class="string">hello-world</span>         <span class="string">latest</span>              <span class="string">fce289e99eb9</span>        <span class="number">6</span> <span class="string">months</span> <span class="string">ago</span>        <span class="number">1.</span><span class="string">84kB</span></span><br></pre></td></tr></table></figure>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">docker</span> <span class="string">version/info</span> <span class="comment">#查看版本/信息</span></span><br><span class="line"><span class="string">docker</span> <span class="string">--help</span> <span class="comment">#查看说明文档</span></span><br><span class="line"><span class="string">docker</span> <span class="string">logs</span> <span class="string">-f</span> <span class="string">-t</span> <span class="string">--tail</span> <span class="string">日志条数</span> <span class="string">容器ID</span> <span class="comment">#查看容器日志</span></span><br><span class="line"><span class="string">docker</span> <span class="string">inspect</span> <span class="comment">#获取容器/镜像的元数据</span></span><br></pre></td></tr></table></figure>
-<h2 id="二-镜像基本操作">二、镜像基本操作</h2>
-<h3 id="1-拉取">1. 拉取</h3>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">docker</span> <span class="string">search</span> [<span class="string">xxx</span>] <span class="comment">#查找名为xxx的镜像</span></span><br><span class="line"><span class="string">docker</span> <span class="string">pull</span> [<span class="string">xxx</span>]<span class="string">：版本号</span> <span class="comment"># 拉取xxx镜像，不加版本号则默认拉取最新版本</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-查看">2. 查看</h3>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">docker</span> <span class="string">images</span> <span class="string">-a/-qa</span> <span class="comment">#列出本地全部镜像/全部镜像的ID</span></span><br></pre></td></tr></table></figure>
-<p><img src="http://img.xiajibagao.top/docker查看镜像.PNG"></p>
-<h3 id="3-删除">3. 删除</h3>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/09/02/docker/Docker%E5%9F%BA%E6%9C%AC%E6%93%8D%E4%BD%9C/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/08/28/docker/Docker%E5%AE%89%E8%A3%85/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/28/docker/Docker%E5%AE%89%E8%A3%85/" itemprop="url">Docker安装</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-28T00:00:00+08:00">
-                2019-08-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/docker/" itemprop="url" rel="index">
-                    <span itemprop="name">docker</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  506
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一-安装docker">一. 安装docker</h2>
-<h3 id="1-删除已安装的docker">1. 删除已安装的docker</h3>
-<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">yum</span> <span class="string">remove docker \</span></span><br><span class="line">    <span class="meta">docker-client</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-client-latest</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-common</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-latest</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-latest-logrotate</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-logrotate</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-selinux</span> <span class="string">\</span></span><br><span class="line">    <span class="meta">docker-engine-selinux</span> <span class="string">\</span></span><br><span class="line">    <span class="attr">docker-engine</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-确定yum更新到最新版本">2. 确定yum更新到最新版本</h3>
-<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">sudo yum update -y</span></span><br></pre></td></tr></table></figure>
-<h3 id="3-安装需要的软件包">3. 安装需要的软件包</h3>
-<figure class="highlight gml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo yum install -<span class="symbol">y</span> yum-utils device-mapper-<span class="symbol">persistent</span>-data lvm2 -<span class="symbol">y</span></span><br></pre></td></tr></table></figure>
-<h3 id="4-设置yum源">4. 设置yum源</h3>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">sudo</span> <span class="string">yum-config-manager</span> <span class="string">--add-repo</span> <span class="string">https://download.docker.com/linux/centos/docker-ce.repo</span></span><br><span class="line"><span class="comment">#若出现错误则改为阿里云yum源</span></span><br><span class="line"><span class="string">yum-config-manager</span>  <span class="string">--add-repo</span>  <span class="string">http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo</span> </span><br></pre></td></tr></table></figure>
-<h3 id="5安装docker">5.安装docker</h3>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/08/28/docker/Docker%E5%AE%89%E8%A3%85/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85jdk/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85jdk/" itemprop="url">linux下安装jdk</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-24T00:00:00+08:00">
-                2019-07-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index">
-                    <span itemprop="name">linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  287
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="1上传并解压jdk">1.上传并解压jdk</h2>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#上传jdk至自己想要的文件夹，我的是/usr/local</span></span><br><span class="line"><span class="string">tar</span> <span class="string">-zxvf</span> <span class="string">jdk-8u221-linux-i586.tar.gz</span></span><br><span class="line"><span class="comment">#解压完后是名为jdk1.8.0_221的文件夹</span></span><br><span class="line"><span class="string">cd</span> <span class="string">/usr/local/jdk1.8.0_221/</span></span><br></pre></td></tr></table></figure>
-<p><img src="http://img.xiajibagao.top/jdk路径.PNG"></p>
-<h2 id="2配置环境变量">2.配置环境变量</h2>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#配置变量</span></span><br><span class="line"><span class="string">vi</span>  <span class="string">/etc/profile</span></span><br><span class="line"><span class="comment">#添加</span></span><br><span class="line"><span class="string">export</span> <span class="string">JAVA_HOME=/usr/local/jdk1.8.0_221</span></span><br><span class="line"><span class="string">export</span> <span class="string">CLASSPATH=.:$JAVA_HOME/jre/lib/rt.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar</span></span><br><span class="line"><span class="string">export</span> <span class="string">PATH=$PATH:$JAVA_HOME/bin</span></span><br></pre></td></tr></table></figure>
-<p><img src="http://img.xiajibagao.top/jdkexport.PNG"></p>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#让配置生效</span></span><br><span class="line"><span class="string">.</span> <span class="string">/etc/profile</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#验证安装成功</span></span><br><span class="line"><span class="string">java</span> <span class="string">-version</span></span><br></pre></td></tr></table></figure>
-<h2 id="3如果查看版本报错">3.如果查看版本报错</h2>
-<p>当使用 <code>java -version</code> 的时候可能会报如下错误：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/local/jdk1.8.0_144/bin/java: /lib/ld-linux.so.2: bad ELF interpreter: 没有那个文件或目录</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85jdk/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85mysql/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85mysql/" itemprop="url">linux下安装mysql</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-24T00:00:00+08:00">
-                2019-07-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index">
-                    <span itemprop="name">linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  470
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="1安装">1.安装</h2>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#获取安装用的Yum Repository</span></span><br><span class="line"><span class="string">wget</span> <span class="string">-i</span> <span class="string">-c</span> <span class="string">http://dev.mysql.com/get/mysql57-community-release-el7-10.noarch.rpm</span></span><br><span class="line"><span class="string">yum</span> <span class="string">-y</span> <span class="string">install</span> <span class="string">mysql57-community-release-el7-10.noarch.rpm</span></span><br><span class="line"><span class="comment">#安装MySQL服务</span></span><br><span class="line"><span class="string">yum</span> <span class="string">-y</span> <span class="string">install</span> <span class="string">mysql-community-server</span></span><br><span class="line"><span class="comment">#查看版本</span></span><br><span class="line"><span class="string">mysql</span> <span class="string">-v</span></span><br><span class="line"><span class="comment">#启动mysql</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">start</span> <span class="string">mysqld.service</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#找回初始密码并登录  jWTAeq-DF9tJ</span></span><br><span class="line"><span class="string">grep</span> <span class="string">&#x27;temporary password&#x27;</span> <span class="string">/var/log/mysqld.log</span></span><br><span class="line"><span class="string">mysql</span> <span class="string">-uroot</span> <span class="string">-p</span></span><br><span class="line"><span class="comment">#注意;找不到初始密码及其他情况参考下文&quot;修改密码&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#使用初始密码登录后需要先修改一次密码后才能操作</span></span><br><span class="line"><span class="string">ALTER</span> <span class="string">USER</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;localhost&#x27;</span> <span class="string">IDENTIFIED</span> <span class="string">BY</span> <span class="string">&#x27;新密码&#x27;</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#为避免Repository每次yum操作都会自动更新</span></span><br><span class="line"><span class="string">yum</span> <span class="string">-y</span> <span class="string">remove</span> <span class="string">mysql57-community-release-el7-10.noarch</span></span><br></pre></td></tr></table></figure>
-<h2 id="2修改密码">2.修改密码</h2>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#1.找回密码</span></span><br><span class="line"><span class="string">grep</span> <span class="string">&#x27;temporary password&#x27;</span> <span class="string">/var/log/mysqld.log</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#2.强制修改密码</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">stop</span> <span class="string">mysqld</span> <span class="comment">#停止服务</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">set-environment</span> <span class="string">MYSQLD_OPTS=&quot;--skip-grant-tables&quot;</span> <span class="comment">#跳过密码</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">start</span> <span class="string">mysqld</span> <span class="comment">#启动服务</span></span><br><span class="line"><span class="string">mysql</span> <span class="string">-u</span> <span class="string">root</span> <span class="comment">#登录</span></span><br><span class="line"><span class="string">UPDATE</span> <span class="string">mysql.user</span> <span class="string">SET</span> <span class="string">authentication_string</span> <span class="string">=</span> <span class="string">PASSWORD(&#x27;新密码&#x27;)</span> <span class="string">WHERE</span> <span class="string">User</span> <span class="string">=</span> <span class="string">&#x27;root&#x27;</span> <span class="string">AND</span> <span class="string">Host</span> <span class="string">=</span> <span class="string">&#x27;localhost&#x27;</span><span class="string">;</span> <span class="comment">#设置新密码</span></span><br><span class="line"><span class="string">FLUSH</span> <span class="string">PRIVILEGES;</span> <span class="comment">#刷新权限</span></span><br><span class="line"><span class="string">quit</span> <span class="comment">#退出</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#3.用操作系统账号修改密码</span></span><br><span class="line"><span class="string">mysql</span> <span class="string">-uroot</span> <span class="string">-p</span> <span class="comment">#使用centos账号密码登录</span></span><br><span class="line"><span class="string">UPDATE</span> <span class="string">mysql.user</span> <span class="string">SET</span> <span class="string">authentication_string</span> <span class="string">=</span> <span class="string">PASSWORD(&#x27;新密码&#x27;)</span> <span class="string">WHERE</span> <span class="string">User</span> <span class="string">=</span> <span class="string">&#x27;root&#x27;</span> <span class="string">AND</span> <span class="string">Host</span> <span class="string">=</span> <span class="string">&#x27;localhost&#x27;</span><span class="string">;</span> <span class="comment">#设置新密码</span></span><br><span class="line"><span class="string">FLUSH</span> <span class="string">PRIVILEGES;</span> <span class="comment">#刷新权限</span></span><br><span class="line"><span class="string">quit</span> <span class="comment">#退出</span></span><br></pre></td></tr></table></figure>
-<h2 id="3修改远程连接权限">3.修改远程连接权限</h2>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#选择mysql</span></span><br><span class="line"><span class="string">use</span> <span class="string">mysql;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#授权远程连接</span></span><br><span class="line"><span class="string">GRANT</span> <span class="string">ALL</span> <span class="string">PRIVILEGES</span> <span class="string">ON</span> <span class="string">*.*</span> <span class="string">TO</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;%&#x27;</span> <span class="string">IDENTIFIED</span> <span class="string">BY</span> <span class="string">&#x27;YYBrhr_2018&#x27;</span> <span class="string">WITH</span> <span class="string">GRANT</span> <span class="string">OPTION;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#注意：如果navicat远程连接报1521错误</span></span><br><span class="line"><span class="string">GRANT</span> <span class="string">ALL</span> <span class="string">ON</span> <span class="string">*.*</span> <span class="string">TO</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;%&#x27;;</span> <span class="comment">#远程连接授权</span></span><br><span class="line"><span class="string">ALTER</span> <span class="string">USER</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;%&#x27;</span> <span class="string">IDENTIFIED</span> <span class="string">BY</span> <span class="string">&#x27;password&#x27;</span> <span class="string">PASSWORD</span> <span class="string">EXPIRE</span> <span class="string">NEVER;</span> <span class="comment">#更改加密规则</span></span><br><span class="line"><span class="string">ALTER</span> <span class="string">USER</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;%&#x27;</span> <span class="string">IDENTIFIED</span> <span class="string">WITH</span> <span class="string">mysql_native_password</span> <span class="string">BY</span> <span class="string">&#x27;123456&#x27;</span><span class="string">;</span> <span class="comment">#更改密码</span></span><br><span class="line"><span class="string">FLUSH</span> <span class="string">PRIVILEGES;</span> <span class="comment">#刷新权限</span></span><br></pre></td></tr></table></figure>
-<p>注意，这一步需要小心，在自己的服务器或者内网的服务器就算了，如果是在外网的生产服务器上，务必先咨询同事。</p>
-
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85mysql/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85tomcat/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85tomcat/" itemprop="url">linux下安装tomcat</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-24T00:00:00+08:00">
-                2019-07-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/linux/" itemprop="url" rel="index">
-                    <span itemprop="name">linux</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  460
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="1-安装">1. 安装</h2>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#上传tomcat至自己想要的文件夹，我的是/usr/local</span></span><br><span class="line"><span class="string">tar</span> <span class="string">-zxvf</span> <span class="string">apache-tomcat-8.5.43.tar.gz</span></span><br><span class="line"><span class="comment">#解压完后是名为apache-tomcat-8.5.43的文件夹</span></span><br><span class="line"><span class="string">cd</span> <span class="string">/usr/local/apache-tomcat-8.5.43/</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#配置tomcat环境变量</span></span><br><span class="line"><span class="comment">#用vim打开tomcat的bin目录下的setclasspath.sh</span></span><br><span class="line"><span class="string">vim</span> <span class="string">/usr/local/apache-tomcat-8.5.43/bin/setclasspath.sh</span></span><br><span class="line"><span class="comment">#添加JAVA_HOME变量</span></span><br><span class="line"><span class="string">export</span> <span class="string">JAVA_HOME=/usr/local/jdk1.8.0_221</span></span><br></pre></td></tr></table></figure>
-<p><img src="http://img.xiajibagao.top/tomcatexport.PNG"></p>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#进入bin目录，启动或关闭tomcat</span></span><br><span class="line"><span class="string">cd</span> <span class="string">/usr/local/apache-tomcat-8.5.43/bin</span></span><br><span class="line"><span class="string">./startup.sh</span> <span class="comment">#启动</span></span><br><span class="line"><span class="string">./shutdown.sh</span> <span class="comment">#关闭</span></span><br></pre></td></tr></table></figure>
-<h2 id="2如果tomcat启动过慢">2.如果tomcat启动过慢</h2>
-<blockquote>
-<p>参考：https://www.liangzl.com/get-article-detail-2622.html</p>
-<p>参考：https://www.liangzl.com/get-article-detail-2622.html</p>
-</blockquote>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#如果tomcat启动过慢</span></span><br><span class="line"><span class="comment">#进入jre的bin中（根据需要换成自己的路径，下同）</span></span><br><span class="line"><span class="string">cd</span> <span class="string">/usr/local/jdk1.8.0_221/jre/lib/security/</span></span><br><span class="line"><span class="comment">#修改java.security</span></span><br><span class="line"><span class="string">vim</span> <span class="string">java.security</span> </span><br><span class="line"><span class="comment">#将securerandom.source=file:/dev/random 替换为securerandom.source=file:/dev/./urandom</span></span><br></pre></td></tr></table></figure>
-<p><img src="http://img.xiajibagao.top/java.security.PNG"></p>
-<h2 id="3如果要直接使用tomcat的自带管理工具">3.如果要直接使用tomcat的自带管理工具</h2>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#配置账号</span></span><br><span class="line"><span class="comment">#到conf目录 修改 tomcat-users.xml 配置文件(根据需要换成自己的路径，下同)</span></span><br><span class="line"><span class="string">cd</span> <span class="string">/usr/local/apache-tomcat-8.5.43/conf/</span></span><br><span class="line"><span class="string">vim</span> <span class="string">tomcat-users.xml</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#在文件加上如下内容 账号密码自己设置</span></span><br><span class="line"><span class="string">&lt;role</span> <span class="string">rolename=&quot;manager-gui&quot;/&gt;</span></span><br><span class="line"><span class="string">&lt;role</span> <span class="string">rolename=&quot;admin-gui&quot;/&gt;</span></span><br><span class="line"><span class="string">&lt;user</span> <span class="string">username=&quot;用户名&quot;</span> <span class="string">password=&quot;密码&quot;</span> <span class="string">roles=&quot;manager-gui,admin-gui&quot;/&gt;</span></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85tomcat/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2019/07/23/spring/%E4%BD%BF%E7%94%A8SpringCache%E5%81%9A%E7%AE%80%E5%8D%95%E7%BC%93%E5%AD%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/07/23/spring/%E4%BD%BF%E7%94%A8SpringCache%E5%81%9A%E7%AE%80%E5%8D%95%E7%BC%93%E5%AD%98/" itemprop="url">使用SpringCache做简单缓存</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-23T00:00:00+08:00">
-                2019-07-23
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/SpringBoot/" itemprop="url" rel="index">
-                    <span itemprop="name">SpringBoot</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.6k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>从 spring3 开始，spring 开始支持缓存组件，并提供了一系列非常方便的注解。</p>
-<p>其中，Cache 接口定义了基本的增删改查方法，Spring 提供了一些默认的实现，比如 RedisCache 等。 CacheManager 接口则用于接入并获取 Redis 这样的缓存组件。</p>
-<p>在 springboot 中，当我们启用缓存以后，需要如果要将接入 Redis 作为缓存，就需要配置 RedisCacheManager，其他缓存组件亦同。当没有自定义的缓存的时候，就会使用默认的 ConcurrentMapCacheManager，即将缓存存入本地的一个 Map 集合中。</p>
-<h2 id="一-配置">一、配置</h2>
-<h3 id="1添加依赖">1.添加依赖</h3>
-<p>在创建项目的时候直接在 springboot 启动器中配置，或在项目中添加 Maven 依赖：</p>
-<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">dependency</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">groupId</span>&gt;</span>org.springframework.boot<span class="tag">&lt;/<span class="name">groupId</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">artifactId</span>&gt;</span>spring-boot-starter-cache<span class="tag">&lt;/<span class="name">artifactId</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">dependency</span>&gt;</span></span><br></pre></td></tr></table></figure>
-<h3 id="2-启用注解">2. 启用注解</h3>
-<p>在启动类或者配置类里添加 <span class="citation" data-cites="EnableCaching">@EnableCaching</span> 注解开启缓存</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2019/07/23/spring/%E4%BD%BF%E7%94%A8SpringCache%E5%81%9A%E7%AE%80%E5%8D%95%E7%BC%93%E5%AD%98/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span>
+    <a class="extend prev" rel="prev" href="/page/8/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><span class="page-number current">9</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/10/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2076,7 +2101,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">97</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

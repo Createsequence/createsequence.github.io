@@ -287,6 +287,1244 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2021/06/14/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMapper%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%BB%91%E5%AE%9A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/06/14/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMapper%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%BB%91%E5%AE%9A/" itemprop="url">Mybatis源码学习（二）：Mapper接口的绑定</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-14T00:00:00+08:00">
+                2021-06-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mybatis/" itemprop="url" rel="index">
+                    <span itemprop="name">Mybatis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4.6k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>根据上一篇文章，我们了解了 Mybatis 的配置文件是如何被加载的。在完成这一步之后，Mybatis 还需要根据配置文件中指定的路径去加载 Mapper 接口与写有 sql 的相应映射文件，最终完成两者的绑定。</p>
+<p>在本篇文章，我们将结合源码阐述这个过程。</p>
+<p>这是关于 Mybatis 的第二篇文章，前文：</p>
+<blockquote>
+<p><a href="https://blog.xiajibagao.top/2021/06/05/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/">Mybatis源码学习（一）：配置文件的加载</a></p>
+</blockquote>
+<h2 id="一-加载接口">一、加载接口</h2>
+<p><img src="http://img.xiajibagao.top/image-20210609000011106.png" alt="image-20210609000011106"></p>
+<h3 id="1xmlconfigbuilder">1.XMLConfigBuilder</h3>
+<p>见名知意，这个类的作用在于<strong>解析映射文件</strong>，根据上文，我们会了解到他里面有各种 <code>标签名+Element</code>为名的解析方法，其中，针对 Mapper 映射文件解析方法就是<code>mapperElement()</code>。</p>
+<p>在开始之前，我们需要知道，在映射文件中有四种指定 Mybatis 接口的方式：</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/06/14/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMapper%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%BB%91%E5%AE%9A/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2021/06/05/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/06/05/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/" itemprop="url">Mybatis源码学习（一）：配置文件的加载</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-06-05T00:00:00+08:00">
+                2021-06-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Mybatis/" itemprop="url" rel="index">
+                    <span itemprop="name">Mybatis</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.5k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>我们知道，一个框架的运行，往往都从配置文件的加载开始，本篇文章作为 Mybatis 源码学习的第一篇文章，将结合源码，阐述 Mybatis 是如何加载 mybatis-config.xml 配置文件的。</p>
+<p>Mybatis 版本：3.5.8</p>
+<p>JDK 版本：1.8</p>
+<p>Mysql 版本：5.6.51</p>
+<h2 id="一-输入流的读取">一、输入流的读取</h2>
+<p>我们根据源码给的测试用例，可以知道 Mybatis 可以通过以下代码获取 Xml 配置文件并转为配置类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">String resource = <span class="string">&quot;org/apache/ibatis/builder/MinimalMapperConfig.xml&quot;</span>;</span><br><span class="line"><span class="keyword">try</span> (InputStream inputStream = Resources.getResourceAsStream(resource)) &#123;</span><br><span class="line">    XMLConfigBuilder builder = <span class="keyword">new</span> XMLConfigBuilder(inputStream);</span><br><span class="line">    Configuration config = builder.parse();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>拿到全局配置类 <code>Configuration</code> 以后就可以通过<code>SqlSessionFactoryBuilder().build()</code>方法去创建<code>SqlSessionFactory</code>了。当然，<code>SqlSessionFactoryBuilder().build()</code>有多个重载方法，但是无外乎都要经过转换为 <code>Configuration</code> 这一步。</p>
+<p>整个过程就分为三步：</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/06/05/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2021/02/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B/AQS%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/02/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B/AQS%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url">AQS源码分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-11T00:00:00+08:00">
+                2021-02-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4.3k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>当我们提到 juc 包下的锁，就不得不联系到 AbstractQueuedSynchronizer 这个类，这个类就是大名鼎鼎的 AQS，AQS 按字面意思翻译为抽象队列同步器，调用者可以通过继承该类快速的实现同步多线程下的同步容器。不管是我们熟悉的 ReadWriteLock 亦或是 ReentrantLock，或者 CountDownLatch 与 Semaphore，甚至是线程池类 ThreadPoolExecutor 都继承了 AQS。</p>
+<p>在本文，将深入源码，了解 AQS 的运行机制，了解通过 AQS 实现非公平锁，公平锁，可重入锁等的原理。</p>
+<h2 id="一-aqs-中的数据结构">一、AQS 中的数据结构</h2>
+<p>AQS 的底层数据结构其实是一条双向链表以及一个代表锁状态的变量 <code>state</code>。当加锁后，<code>state</code>会改变，而竞争锁的线程会被封装到节点中形成链表，并且尝试改变 <code>state</code>以获取锁。</p>
+<h3 id="1等待队列">1.等待队列</h3>
+<p>在 AQS 中有一个 Node 内部类，该类即为链表的节点类。当通过 AQS 竞争锁的时候，线程会被封装到一个对应的节点中，多个竞争不到锁的线程最终会连成一条链表，<strong>这条链表上节点代表的线程处于等待状态，因此我们称之为等待队列，也就是 CLH</strong>。</p>
+<p>节点类中封装了竞争锁的线程的等待状态：</p>
+<ul>
+<li>CANCELLED：1，表示<strong>当前结点已取消等待</strong>。当timeout或被中断（响应中断的情况下），会触发变更为此状态，进入该状态后的结点将不会再变化。</li>
+<li>SIGNAL：-1，表示<strong>后继结点在等待当前结点唤醒</strong>。后继结点入队时，会将前继结点的状态更新为SIGNAL。</li>
+<li>CONDITION：-2，表示<strong>结点等待在Condition上</strong>，当其他线程调用了Condition的signal()方法后，CONDITION状态的结点将<strong>从等待队列转移到同步队列中</strong>，等待获取同步锁。</li>
+<li>PROPAGATE：-3，<strong>共享模式下，前继结点不仅会唤醒其后继结点，同时也可能会唤醒后继的后继结点</strong>。</li>
+<li><strong>0</strong>：新节点入队时的默认状态。</li>
+</ul>
+<p>和线程池中的状态一样，<strong>Node 只有小于 0 的时候才处于正常的等待状态中，因此很多地方通过判断是否小于 0 来确定节点是否处于等待状态</strong>。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/02/11/%E5%A4%9A%E7%BA%BF%E7%A8%8B/AQS%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2021/02/09/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/02/09/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" itemprop="url">线程池源码分析</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-09T00:00:00+08:00">
+                2021-02-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5.1k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>在 java 中，线程池 ThreadPoolExecutor 是一个绕不过去的类，它是享元模式思想的体现，通过在容器中创建一定数量的线程加以重复利用，从而避免频繁创建线程带来的额外开销。一个设置合理的线程池可以提高任务响应的速度，并且避免线程数超过硬件能力带来的意外情况。</p>
+<p>在本文，将深入线程池源码，了解线程池的底层实现与运行机制。</p>
+<h2 id="一-构造方法">一、构造方法</h2>
+<p>ThreadPoolExecutor 类一共提供了四个构造方法，我们基于参数最完整构造方法了解一下线程池创建所需要的变量：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ThreadPoolExecutor</span><span class="params">(<span class="keyword">int</span> corePoolSize, // 核心线程数</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">int</span> maximumPoolSize, // 最大线程数</span></span></span><br><span class="line"><span class="function"><span class="params">                          <span class="keyword">long</span> keepAliveTime, // 非核心线程闲置存活时间</span></span></span><br><span class="line"><span class="function"><span class="params">                          TimeUnit unit, // 时间单位</span></span></span><br><span class="line"><span class="function"><span class="params">                          BlockingQueue&lt;Runnable&gt; workQueue, // 工作队列</span></span></span><br><span class="line"><span class="function"><span class="params">                          ThreadFactory threadFactory, // 创建线程使用的线程工厂</span></span></span><br><span class="line"><span class="function"><span class="params">                          RejectedExecutionHandler handler // 拒绝策略)</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>核心线程数：即长期存在的线程数，当线程池中运行线程未达到核心线程数时会优先创建新线程；</li>
+<li>最大线程数：当核心线程已满，工作队列已满，同时线程池中线程总数未超过最大线程数，会创建非核心线程；</li>
+<li>非核心线程闲置存活时间：当非核心线程闲置的时的最大存活时间；</li>
+<li>时间单位：非核心线程闲置存活时间的时间单位；</li>
+<li>任务队列：当核心线程满后，任务会优先加入工作队列，等等待核心线程消费；</li>
+<li>线程工厂：线程池创建新线程时使用的线程工厂；</li>
+<li>拒绝策略：当工作队列与线程池都满时，用于执行的策略；</li>
+</ul>
+<h2 id="二-线程池状态">二、线程池状态</h2>
+<h3 id="1线程池状态">1.线程池状态</h3>
+<p>线程池拥有一个 AtomicInteger 类型的成员变量 ctl ，通过位运算分别使用 ctl 的高位低位以便在一个值中存储线程数量以及线程池状态。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/02/09/%E5%A4%9A%E7%BA%BF%E7%A8%8B/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2021/02/06/%E5%A4%9A%E7%BA%BF%E7%A8%8B/synchronized%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E6%8E%A2%E7%A9%B6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/02/06/%E5%A4%9A%E7%BA%BF%E7%A8%8B/synchronized%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E6%8E%A2%E7%A9%B6/" itemprop="url">synchronized底层原理探究</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-02-06T00:00:00+08:00">
+                2021-02-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%A4%9A%E7%BA%BF%E7%A8%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">多线程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  4.1k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>说起多线程同步，一般的方案就是加锁，而在 java 中，提到加锁就想起 juc 包提供的 Lock 接口实现类与默认的关键字 synchronized 。我们常听到，juc 下的锁大多基于 AQS，而 AQS 的锁机制基于 CAS，相比起 CAS 使用的自旋锁，Synchronized 是一种重量级的锁实现。</p>
+<p>实际上，在 JDK6 之后，synchronized 逐渐引入了锁升级机制，它将会有一个从轻量级到重量级的逐步升级的过程。本文将简单的介绍 synchronized 的底层实现原理，并且介绍 synchronized 的锁升级机制。</p>
+<h2 id="一-synchronized-的底层实现">一、synchronized 的底层实现</h2>
+<p>synchronized 意为同步，它可以用于修饰静态方法，实例方法，或者一段代码块。</p>
+<p>它是一种可重入的对象锁。当修饰静态方法时，锁对象为类；当修饰实例方法时，锁对象为实例；当修饰代码块时，锁可以是任何非 null 的对象。</p>
+<p>由于其底层的实现机制，synchronized 的锁又称为监视器锁。</p>
+<h3 id="1同步代码块">1.同步代码块</h3>
+<p>当我们反编译一个含有被 synchronized <strong>修饰的代码块</strong>的文件时，我们可以看到类似如下指令：</p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20210210174821495.png" alt="image-20210210174821495"><figcaption aria-hidden="true">image-20210210174821495</figcaption>
+</figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/02/06/%E5%A4%9A%E7%BA%BF%E7%A8%8B/synchronized%E5%BA%95%E5%B1%82%E5%8E%9F%E7%90%86%E6%8E%A2%E7%A9%B6/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2021/01/14/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9ATCP%E4%B8%8EUDP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2021/01/14/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9ATCP%E4%B8%8EUDP/" itemprop="url">《趣谈网络协议》读书笔记（五）：TCP与UDP</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-01-14T00:00:00+08:00">
+                2021-01-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  6.1k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>此文为极客时间<a target="_blank" rel="noopener" href="https://time.geekbang.org/column/intro/85">趣谈网络协议</a>第二模块第10讲至第12讲的的学习笔记。</p>
+<p>主要内容包括传输层的两个重要协议 TCP 与 UDP 协议，以及 TCP 是如何建立稳定连接。</p>
+<h2 id="一-tcp与udp的区别">一、TCP与UDP的区别</h2>
+<h3 id="1定义">1.定义</h3>
+<p><strong>传输控制协议</strong>：（TCP，Transmission Control Protocol）是为了在不可靠的互联网络上提供可靠的端到端字节流而专门设计的一个传输协议</p>
+<p><strong>用户数据报协议</strong>：（UDP，User Datagram Protocol）是一种无连接的传输层协议，提供面向事务的简单不可靠信息传送服务。</p>
+<h3 id="2区别">2.区别</h3>
+<p>就其特性而言，TCP 是面向连接的，UDP 是面向无连接的，更直白的说，TCP 是有状态的，UDP 是无状态的。</p>
+<p>TCP 在连接之前，会进行三次握手以建立连接，这里的建立连接，是为了在客户端和服务端维护连接，而建立一定的数据结构来维护双方交互的状态，用这样的数据结构来保证所谓的面向连接的特性。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2021/01/14/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9ATCP%E4%B8%8EUDP/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/12/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%BD%91%E5%85%B3%E4%B8%8E%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/12/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%BD%91%E5%85%B3%E4%B8%8E%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE/" itemprop="url">《趣谈网络协议》读书笔记（四）：网关与路由协议</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-25T00:00:00+08:00">
+                2020-12-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index">
+                    <span itemprop="name">计算机网络</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.8k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="概述">概述</h2>
+<p>此文为极客时间<a target="_blank" rel="noopener" href="https://time.geekbang.org/column/intro/85">趣谈网络协议</a>第二模块“从第二层到第三层”中，第四节和第五节的学习笔记。</p>
+<p>主要内容包括网关，路由等，介绍了设备是如何在多个局域网间通过网关进行通信的。</p>
+<h2 id="一-网关">一、网关</h2>
+<p>在前文，我们了解到，局域网中的机器可以向另一局域网发出请求，在同一个局域网中的请求最后会抵达路由器或者交换机，最后再转发出去，而之所以请求都能到达一处，就在于他们所在的局域网中有一个统一的网关（Gateway）。</p>
+<h3 id="1数据是如何到网关的">1.数据是如何到网关的</h3>
+<p>首先我们需要了解数据包中 MAC 头与 IP 头的结构：</p>
+<p>我们知道，网络层总是一层套一层的，因此 MAC 包里包含 IP 包，MAC 头下会有 IP 头。</p>
+<p><strong>MAC 头的结构</strong></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201225140407048.png" alt="image-20201225140407048"><figcaption aria-hidden="true">image-20201225140407048</figcaption>
+</figure>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2020/12/25/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9A%E7%BD%91%E5%85%B3%E4%B8%8E%E8%B7%AF%E7%94%B1%E5%8D%8F%E8%AE%AE/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/12/24/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AICMP%E5%8D%8F%E8%AE%AE%E4%B8%8Eping%E5%91%BD%E4%BB%A4/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -805,1278 +2043,11 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9AHashSet/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9AHashSet/" itemprop="url">java集合源码分析（九）：HashSet与TreeSet.md</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-22T00:00:00+08:00">
-                2020-12-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">java集合容器</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  864
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>HashSet 是 Set 接口下一个不允许重复但允许 null、无序并且线程不安全的集合。它基于 HashMap 实现。</p>
-<p>从数据结构来说，他与 HashMap 相同，但是由于 HashSet 借助 HashMap 的 key 来存储数据，因而 HashMap 的 value 在 HashSet 中无意义。</p>
-<img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;">
-<p>这是关于 java 集合类源码的第九篇文章。往期文章：</p>
-<blockquote>
-<ol>
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/">java集合源码分析（四）：LinkedList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/">java集合源码分析（六）：HashMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/21/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ALinkedHashMap/">java集合源码分析（七）：LinkedHashMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/">java集合源码分析（八）：Set与AbstractSet</a></li>
-</ol>
-</blockquote>
-<h2 id="一-数据结构">一、数据结构</h2>
-<p>HashSet 基于 HashMap 实现，也就是说，HashSet 用于存储数据的容器实际上就是一个 HashMap 实例。（关于 HashMap 的数据结构，可以参考前文<a href="https://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/">java集合源码分析（六）：HashMap</a>中的第一部分。）</p>
-<p>HashSet 使用 HashMap 的 key 作为存储数据的位置，而 value 的位置使用一个默认的全局空对象填充。大部分方法通过直接包装调用 HashMap 的来实现，也就是说，我们可以把 HashSet 看成 HashMap 的一个大号包装器——或者说适配器类。</p>
-<h2 id="二-成员变量">二、成员变量</h2>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9AHashSet/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/" itemprop="url">java集合源码分析（八）：Set与AbstractSet</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-22T00:00:00+08:00">
-                2020-12-22
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">java集合容器</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.5k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>Set 接口是 Collection 接口下三大子接口之一。其下实现类都为元素不可重复的，不保证线程安全的集合。他有两个主要实现，即无序的 HashSet 与有序的 TreeSet。</p>
-<p>Set 相对 List 集合与 Queue 集合不同之处在于，他的实现类需要依赖与 Map 集合的实现类密切相关。这体现在以下两点：</p>
-<ul>
-<li>HashSet 实际依赖于 HashMap，他使用 HashMap 的 key 作为存储容器。TreeSet 同理，依赖于 TreeMap实现。</li>
-<li>Map 集合中的 keySet 与 EntrySet 视图集合往往以实现了 Set 接口的内部类出现在 Map 的实现类中。</li>
-</ul>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201222152520801.png" alt="image-20201222152520801"><figcaption aria-hidden="true">image-20201222152520801</figcaption>
-</figure>
-<p>这是关于 java 集合类源码的第八篇文章。往期文章：</p>
-<blockquote>
-<ol type="1">
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
-</li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/">java集合源码分析（四）：LinkedList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/">java集合源码分析（六）：HashMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/21/java/集合类源码分析/java集合源码分析（七）：LinkedHashMap/">java集合源码分析（七）：LinkedHashMap</a></li>
-</ol>
-</blockquote>
-<h2 id="一-set-接口的类关系">一、Set 接口的类关系</h2>
-<h3 id="1父接口">1.父接口</h3>
-<p>Set 接口继承了 Collection 接口，而 Collection 接口又继承了 Iterable 接口，这表明 Set 集合具有 Collection 的通性，是一维的元素集合，并且可以使用迭代器或者 <code>forEach()</code> 迭代。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/12/21/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/next5%E4%B8%BB%E9%A2%98%E8%87%AA%E5%AE%9A%E4%B9%89%E6%91%98%E8%A6%81/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/12/21/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/next5%E4%B8%BB%E9%A2%98%E8%87%AA%E5%AE%9A%E4%B9%89%E6%91%98%E8%A6%81/" itemprop="url">next5主题自定义摘要</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-21T00:00:00+08:00">
-                2020-12-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/" itemprop="url" rel="index">
-                    <span itemprop="name">杂七乱八</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  680
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>最近 next6 折腾了一段时间，最后还是回到了 next5，但是添加阅读全文按钮以后，默认的摘要生成不太方便，于是就把注意打到了 js 上。</p>
-<p>这里整理一下 next5 生成摘要的方法。</p>
-<h2 id="一-yaml">一、yaml</h2>
-<p>这个是 hexo 自带的，通过直接在 yaml 里面配置</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">next5主题自定义摘要</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2020-12-21</span></span><br><span class="line"><span class="attr">tags:</span> [<span class="string">杂七乱八</span>]</span><br><span class="line"><span class="attr">categories:</span> [<span class="string">杂七乱八</span>]</span><br><span class="line"><span class="attr">description:</span> <span class="string">这里是一段摘要</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
-<p>不过加完以后， next 会默认在文章详情页面的发布信息下也生成摘要，个人觉得不是很美观。</p>
-<h2 id="二-文章截断">二、文章截断</h2>
-<p>这个是 next 自带的，可以通过在文章中插入：</p>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="xml"><span class="comment">&lt;!-- more --&gt;</span></span></span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/12/21/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/next5%E4%B8%BB%E9%A2%98%E8%87%AA%E5%AE%9A%E4%B9%89%E6%91%98%E8%A6%81/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/12/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/12/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/" itemprop="url">计算机网络基本知识</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-21T00:00:00+08:00">
-                2020-12-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" itemprop="url" rel="index">
-                    <span itemprop="name">计算机网络</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.1k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>本文为阅读《趣谈网络协议》之前需要了解的一些基本概念与知识，包括 OSI 七层模型与 TCP/IP 四层模型，不同层级的作用，不同层级之间的主要协议等。</p>
-<h2 id="一-为什么需要网络协议">一、为什么需要网络协议</h2>
-<p>网络协议为计算机网络中进行数据交换而建立的规则、标准或约定的集合。</p>
-<p>例如，网络中一个微机用户和一个大型主机的操作员进行通信，由于这两个数据终端所用字符集不同，因此操作员所输入的命令彼此不认识。为了能进行通信，规定每个终端都要将各自字符集中的字符先变换为标准字符集的字符后，才进入网络传送，到达目的终端之后，再变换为该终端字符集的字符。</p>
-<h2 id="二-网络的分层模型">二、网络的分层模型</h2>
-<h3 id="1网络的分层模型">1.网络的分层模型</h3>
-<p>根据 OSI 提出的模型，计算机网络体系结构的通讯协议应当分为七层，而除了标准的 OSI七层模型以外，常见的网络层次划分还有 TCP/IP 四层协议以及 TCP/IP 五层协议，它们之间的关系如下：</p>
-<img src="http://img.xiajibagao.top/image-20201223110909686.png" alt="image-20201223110909686" style="zoom: 67%;">
-<h3 id="2tcpip模型与osi模型">2.TCP/IP模型与OSI模型</h3>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/12/21/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/12/21/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ALinkedHashMap/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/12/21/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ALinkedHashMap/" itemprop="url">java集合源码分析（七）：LinkedHashMap</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-21T00:00:00+08:00">
-                2020-12-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">java集合容器</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  3.1k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>LinkedHashMap 是 Map 接口下一个线程不安全的，允许 null 的，基于哈希表的实现。它是 HashMap 的子类， 由于引入了双向链表的数据结构，除了拥有 HashMap 的所有特征外，他还可以以双向链表的方式操作和访问，并且提供按插入顺序或访问顺序两种顺序访问方式。</p>
-<p>由于结构的特殊性，通过 LinkedHashMap，我们可以非常便捷的实现一个基于 LRU 算法的缓存容器。</p>
-<blockquote>
-<p>这是关于 java 集合类源码的第七篇文章。往期文章：</p>
-<ol type="1">
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
-</li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/">java集合源码分析（四）：LinkedList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/">java集合源码分析（六）：HashMap</a></li>
-</ol>
-</blockquote>
-<h2 id="一-linkedhashmap-的数据结构">一、LinkedHashMap 的数据结构</h2>
-<p>LinkedHashMap 是 HashMap 的子类，他的节点类 Entry 也继承了 HashMap 的节点类 Node 类。所以 LinkedHashMap 保留了 HashMap 的所有基本特征。</p>
-<p>但是，不同的是，LinkedHashMap 在节点类 Entry 中增加了 after 和 before 两个指针用于指向前驱和后继节点，并且提供了头节点和尾节点的指针，也就是说，他实际上也可以认为是一条双向链表。</p>
-<p>比如下图，依次按顺序插入三个节点：</p>
-<figure>
-<img src="http://img.xiajibagao.top/image-20201221133625968.png" alt="image-20201221133625968"><figcaption aria-hidden="true">image-20201221133625968</figcaption>
-</figure>
-<p>实际上，从链表的角度来看，也可以理解为这样：</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/12/21/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ALinkedHashMap/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/12/17/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3next5%E4%B8%BB%E9%A2%98%E7%9B%AE%E5%BD%95%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%AC%E7%9A%84%E9%97%AE%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/12/17/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3next5%E4%B8%BB%E9%A2%98%E7%9B%AE%E5%BD%95%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%AC%E7%9A%84%E9%97%AE%E9%A2%98/" itemprop="url">如何解决next5主题目录无法跳转的问题</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-17T00:00:00+08:00">
-                2020-12-17
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/" itemprop="url" rel="index">
-                    <span itemprop="name">杂七乱八</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  769
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>目前使用的 next 版本是 5.1.4 ，文章左侧的目录一直不能跳转也不能展开，按网上的办法一直没法解决，今天自己琢磨了一阵总算搞定了。</p>
-<p>由于发现遇到这个问题的人不少，特此总结一下。</p>
-<p>一般分为两种情况：渲染错误和超链接乱码。</p>
-<h2 id="一-渲染错误">一、渲染错误</h2>
-<h3 id="1问题描述">1.问题描述</h3>
-<p>最典型的特征就是目录上的超链接为 <code>undefined</code>，或者点击的时候报错： <code>Cannot read property 'replace' of null</code>。</p>
-<p>前一情况 GitHub 中已有相应的 Issues：<a target="_blank" rel="noopener" href="https://github.com/Haojen/hexo-theme-Anisina/issues/34">根据 markdown 生成的 TOC 锚点的内容是 undefined</a></p>
-<p>这个情况一般是 <code>markdown-it</code> 渲染出错，渲染时候把应该加在标题的锚点加到了标题内的 sapn 标签里，导致生成目录的时候获取不到对应的锚点。</p>
-<p>比如原本 <code>##一级标题</code> 应该是渲染成 <code>&lt;h2 id="一级标题"&gt;一级标题&lt;/h2&gt;</code>，然后生成目录的时候扫描所有 <code>h2</code> 标签获取 id 作为链接，但是实际上 marked-it 渲染出来的是这样的： <code>&lt;h2&gt;&lt;span id="一级标题"&gt;一级标题&lt;/span&gt;&lt;/h2&gt;</code></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/12/17/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3next5%E4%B8%BB%E9%A2%98%E7%9B%AE%E5%BD%95%E6%97%A0%E6%B3%95%E8%B7%B3%E8%BD%AC%E7%9A%84%E9%97%AE%E9%A2%98/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/" itemprop="url">java集合源码分析（六）：HashMap</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-16T00:00:00+08:00">
-                2020-12-16
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/java%E9%9B%86%E5%90%88%E5%AE%B9%E5%99%A8/" itemprop="url" rel="index">
-                    <span itemprop="name">java集合容器</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  11.3k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>HashMap 是 Map 接口下一个线程不安全的，基于哈希表的实现类。由于他解决哈希冲突的方式是分离链表法，也就是拉链法，因此他的数据结构是数组+链表，在 JDK8 以后，当哈希冲突严重时，HashMap 的链表会在一定条件下转为红黑树以优化查询性能，因此在 JDK8 以后，他的数据结构是数组+链表+红黑树。</p>
-<p>对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式，能否存放空值；作为使用了数组作为底层结构的集合，我们还需要关注其扩容的实现；同时，针对哈希表的特性，我们还需要关注它如何通过哈希算法取模快速定位下标。</p>
-<blockquote>
-<p>这是关于 java 集合类源码的第六篇文章。往期文章：</p>
-<ol>
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/">java集合源码分析（四）：LinkedList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
-</ol>
-</blockquote>
-<h2 id="一-hashmap-的数据结构">一、HashMap 的数据结构</h2>
-<img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;">
-<p><strong>在 JDK8 之前，HashMap 的数据结构是数组+链表。在 JDK8 以后是数组 + 链表 + 红黑树</strong>。</p>
-<p>在 HashMap 中，每一个 value 都被存储在一个 Node 或 TreeNode 实例中，容器中有一个 <code>Node[] table</code> 数组成员变量，数组中的每一格称为一个“桶”。当添加元素时，根据元素的 key 通过哈希值计算得到对应下标，将 Node 类的形式存入“桶”中。如果 table 容量不足时，就会发生扩容，同时对容器内部的元素进行重哈希。</p>
-<p>当发生哈希冲突，也就是不同元素计算得到了相同的下标时，会将节点接到“桶”的中的第一个元素后，后续操作亦同，最后就会形成链表。</p>
-<p>在 JDK8 以后，由于考虑到<strong>哈希冲突严重时，“桶”中的链表会影响查询效率，因此在一定条件下，链表元素多到一定程度，Node 就会转为 TreeNode，也就是把链表转为红黑树</strong>。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/9/">9</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/10/">10</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2126,7 +2097,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-count">97</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
