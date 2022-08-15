@@ -81,12 +81,12 @@
 
 
 
-<meta name="description" content="前言 在 spring 中，任何实现了 BeanFactory 接口的类都可以视为容器，它是 IOC 功能实现的核心，用于完成类实例从加载到销毁的整个生命周期的控制，这些被 spring 所管理的实例统称为 bean。 根据抽象层级的不同，容器又分为 BeanFactory 的直接实现，与基于 BeanFactory 的扩展实现 ApplicationContext，后者在前者的基础继承了 Res">
+<meta name="description" content="前言 在 spring 中，任何实现了 BeanFactory 接口的类都可以视为容器，它是 IOC 功能实现的核心，用于完成类实例从加载到销毁的整个生命周期的控制，这些被 spring 所管理的实例统称为 bean。 根据抽象层级的不同，容器又分为 BeanFactory 的直接实现，与基于 BeanFactory 的扩展实现 ApplicationContext，后者在前者的基础继承了 R">
 <meta property="og:type" content="article">
-<meta property="og:title" content="深入理解Spring容器初始化（一）：上下文的初始化">
+<meta property="og:title" content="深入理解Spring容器体系结构">
 <meta property="og:url" content="http://blog.xiajibagao.top/2022/04/02/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="前言 在 spring 中，任何实现了 BeanFactory 接口的类都可以视为容器，它是 IOC 功能实现的核心，用于完成类实例从加载到销毁的整个生命周期的控制，这些被 spring 所管理的实例统称为 bean。 根据抽象层级的不同，容器又分为 BeanFactory 的直接实现，与基于 BeanFactory 的扩展实现 ApplicationContext，后者在前者的基础继承了 Res">
+<meta property="og:description" content="前言 在 spring 中，任何实现了 BeanFactory 接口的类都可以视为容器，它是 IOC 功能实现的核心，用于完成类实例从加载到销毁的整个生命周期的控制，这些被 spring 所管理的实例统称为 bean。 根据抽象层级的不同，容器又分为 BeanFactory 的直接实现，与基于 BeanFactory 的扩展实现 ApplicationContext，后者在前者的基础继承了 R">
 <meta property="og:locale">
 <meta property="og:image" content="https://img.xiajibagao.top/image-20220620142154578.png">
 <meta property="og:image" content="https://img.xiajibagao.top/image-20220620151809732.png">
@@ -94,7 +94,7 @@
 <meta property="og:image" content="https://img.xiajibagao.top/image-20220620173854597.png">
 <meta property="og:image" content="https://img.xiajibagao.top/image-20220620142154578.png">
 <meta property="article:published_time" content="2022-04-01T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-08-15T14:17:55.149Z">
+<meta property="article:modified_time" content="2022-08-15T14:22:42.035Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="Spring">
 <meta property="article:tag" content="源码分析">
@@ -135,7 +135,7 @@
 
 
 
-  <title>深入理解Spring容器初始化（一）：上下文的初始化 | Createsequence's Blog</title>
+  <title>深入理解Spring容器体系结构 | Createsequence's Blog</title>
   
 
 
@@ -313,7 +313,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">深入理解Spring容器初始化（一）：上下文的初始化</h1>
+          <h1 class="post-title" itemprop="name headline">深入理解Spring容器体系结构</h1>
         
 
         <div class="post-meta">
@@ -407,7 +407,9 @@
         <h2 id="前言">前言</h2>
 <p>在 spring 中，任何实现了 <code>BeanFactory</code> 接口的类都可以视为容器，它是 <code>IOC</code> 功能实现的核心，用于完成类实例从加载到销毁的整个生命周期的控制，这些被 spring 所管理的实例统称为 bean。</p>
 <p>根据抽象层级的不同，容器又分为 <code>BeanFactory</code> 的直接实现，与基于 <code>BeanFactory</code> 的扩展实现 <code>ApplicationContext</code>，后者在前者的基础继承了 <code>ResourceLoader</code>和<code>EnvironmentCapable</code>接口，因而具备从某类运行环境的资源中直接加载 bean 的能力。</p>
-<p><img src="https://img.xiajibagao.top/image-20220620142154578.png" alt="image-20220620142154578"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220620142154578.png" alt="image-20220620142154578"><figcaption aria-hidden="true">image-20220620142154578</figcaption>
+</figure>
 <p><code>ApplicationContext</code> 最常用的两个实现 <code>ClassPathXmlApplicationContext</code> 和 <code>AnnotationConfigApplicationContext</code> ，前者用于从项目路径下根据 <code>xml</code> 文件加载 bean，而后者通过扫描类注解完成 bean 的加载。这两者 <code>ApplicationContext</code> 实际上就对应了我们所熟悉的两类配置方式，前者就是传统的 xml 配置，后者则是通过 <code>@Component</code> 与 <code>@Bean</code> 等注解对 bean 进行配置。</p>
 <p>本文将基于 spring 源码 <code>5.2.x</code> 分支，基于 <code>BeanFactory</code> 与 <code>ApplicationContext</code> 两大接口，介绍 spring 的两类容器的结构体系。</p>
 <h2 id="一-beanfactory-接口体系">一、BeanFactory 接口体系</h2>
@@ -418,7 +420,9 @@
 <li>第三层：<code>ConfigurableBeanFactory</code>，此外还有一个关联性较强<code>SingletonBeanRegistry</code>；</li>
 <li>第四层：<code>ConfigurableListableBeanFactory</code>；</li>
 </ul>
-<p><img src="https://img.xiajibagao.top/image-20220620151809732.png" alt="image-20220620151809732"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220620151809732.png" alt="image-20220620151809732"><figcaption aria-hidden="true">image-20220620151809732</figcaption>
+</figure>
 <h3 id="1-beanfactory">1、BeanFactory</h3>
 <p><code>BeanFactory</code> 是整个容器体系最顶层的接口，它的内容如下：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BeanFactory</span> </span>&#123;</span><br><span class="line">    String FACTORY_BEAN_PREFIX = <span class="string">&quot;&amp;&quot;</span>;</span><br><span class="line">    <span class="comment">// 获取bean相关的方法</span></span><br><span class="line">    <span class="function">Object <span class="title">getBean</span><span class="params">(String name)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    &lt;T&gt; <span class="function">T <span class="title">getBean</span><span class="params">(String name, <span class="meta">@Nullable</span> Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    <span class="function">Object <span class="title">getBean</span><span class="params">(String name, Object... args)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    &lt;T&gt; <span class="function">T <span class="title">getBean</span><span class="params">(Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    &lt;T&gt; <span class="function">T <span class="title">getBean</span><span class="params">(Class&lt;T&gt; requiredType, Object... args)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    &lt;T&gt; <span class="function">ObjectProvider&lt;T&gt; <span class="title">getBeanProvider</span><span class="params">(Class&lt;T&gt; requiredType)</span></span>;</span><br><span class="line">    &lt;T&gt; <span class="function">ObjectProvider&lt;T&gt; <span class="title">getBeanProvider</span><span class="params">(ResolvableType requiredType)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 容器 bean 属性的一些判断</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">containsBean</span><span class="params">(String name)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isSingleton</span><span class="params">(String name)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isPrototype</span><span class="params">(String name)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isTypeMatch</span><span class="params">(String name, ResolvableType typeToMatch)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isTypeMatch</span><span class="params">(String name, <span class="meta">@Nullable</span> Class&lt;?&gt; typeToMatch)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取 bean 在容器中的一些属性</span></span><br><span class="line">    Class&lt;?&gt; getType(String name) <span class="keyword">throws</span> NoSuchBeanDefinitionException;</span><br><span class="line">    String[] getAliases(String name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -442,7 +446,7 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AutowireCapableBeanFactory</span> <span class="keyword">extends</span> <span class="title">BeanFactory</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 自动装配方式</span></span><br><span class="line">	<span class="keyword">int</span> AUTOWIRE_NO = <span class="number">0</span>; <span class="comment">// 不自动装配</span></span><br><span class="line">	<span class="keyword">int</span> AUTOWIRE_BY_NAME = <span class="number">1</span>; <span class="comment">// 根据bean名称自动装配</span></span><br><span class="line">	<span class="keyword">int</span> AUTOWIRE_BY_TYPE = <span class="number">2</span>; <span class="comment">// 根据bean类型自动装配</span></span><br><span class="line">	<span class="keyword">int</span> AUTOWIRE_CONSTRUCTOR = <span class="number">3</span>; <span class="comment">// 根据bean的构造方法自动装配</span></span><br><span class="line">	<span class="keyword">int</span> AUTOWIRE_AUTODETECT = <span class="number">4</span>; <span class="comment">// 根据反射信息自动选择合适的方式自动装配，spring3 以后不再推荐该方式</span></span><br><span class="line">	String ORIGINAL_INSTANCE_SUFFIX = <span class="string">&quot;.ORIGINAL&quot;</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// bean的创建与装配相关的方法</span></span><br><span class="line">	&lt;T&gt; <span class="function">T <span class="title">createBean</span><span class="params">(Class&lt;T&gt; beanClass)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">autowireBean</span><span class="params">(Object existingBean)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">configureBean</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// bean 声明周期相关的方法</span></span><br><span class="line">	<span class="function">Object <span class="title">createBean</span><span class="params">(Class&lt;?&gt; beanClass, <span class="keyword">int</span> autowireMode, <span class="keyword">boolean</span> dependencyCheck)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">autowire</span><span class="params">(Class&lt;?&gt; beanClass, <span class="keyword">int</span> autowireMode, <span class="keyword">boolean</span> dependencyCheck)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">autowireBeanProperties</span><span class="params">(Object existingBean, <span class="keyword">int</span> autowireMode, <span class="keyword">boolean</span> dependencyCheck)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">applyBeanPropertyValues</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">initializeBean</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">applyBeanPostProcessorsBeforeInitialization</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">applyBeanPostProcessorsAfterInitialization</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">destroyBean</span><span class="params">(Object existingBean)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取 bean 依赖的相关方法</span></span><br><span class="line">	&lt;T&gt; <span class="function">NamedBeanHolder&lt;T&gt; <span class="title">resolveNamedBean</span><span class="params">(Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">resolveBeanByName</span><span class="params">(String name, DependencyDescriptor descriptor)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">resolveDependency</span><span class="params">(DependencyDescriptor descriptor, <span class="meta">@Nullable</span> String requestingBeanName)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">resolveDependency</span><span class="params">(DependencyDescriptor descriptor, <span class="meta">@Nullable</span> String requestingBeanName, <span class="meta">@Nullable</span> Set&lt;String&gt; autowiredBeanNames, <span class="meta">@Nullable</span> TypeConverter typeConverter)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>比较值得注意的是，通过 <code>AutowireCapableBeanFactory</code> 定义的 API 不难看出，只要能获得对应的实例，我们是可以手动的对非 spring 托管的 bean 进行依赖注入的。</p>
 <h3 id="3-分层配置工厂">3、分层配置工厂</h3>
-<p><code>BeanFactory</code> 的三级接口为 <code>ConfigurableBeanFactory</code>，它实现了 <code>HierarchicalBeanFactory</code> 和  <code>SingletonBeanRegistry</code>接口。</p>
+<p><code>BeanFactory</code> 的三级接口为 <code>ConfigurableBeanFactory</code>，它实现了 <code>HierarchicalBeanFactory</code> 和 <code>SingletonBeanRegistry</code>接口。</p>
 <p>从字面上理解，它是一个可配置的 <code>BeanFactory</code>，它不仅支持 <code>BeanFactory</code> 分层，还支持以单例的方式操作 bean。它是整个 <code>BeanFactory</code> 体系中最重要的一环，通过这个接口，spring 通过该接口规定了一个 <code>BeanFactory</code> 应该具备以及可以从中获取哪些可配置的组件与参数。</p>
 <p>这里我们先了解一下 <code>SingletonBeanRegistry</code> 接口，这个接口定义了容器根据名称注册或获取 bean 单例的能力：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SingletonBeanRegistry</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">registerSingleton</span><span class="params">(String beanName, Object singletonObject)</span></span>;</span><br><span class="line">    <span class="function">Object <span class="title">getSingleton</span><span class="params">(String beanName)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">containsSingleton</span><span class="params">(String beanName)</span></span>;</span><br><span class="line">    String[] getSingletonNames();</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getSingletonCount</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">Object <span class="title">getSingletonMutex</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -457,7 +461,9 @@
 <h3 id="4-批量分层配置工厂">4、批量分层配置工厂</h3>
 <p><code>ConfigurableListableBeanFactory</code> 是 <code>BeanFactory</code> 体系的第四级接口，也是最后一级接口。它继承了 <code>ConfigurableBeanFactory</code>、<code>ListableBeanFactory</code>与<code>AutowireCapableBeanFactory</code> 接口，因此它具备到目前为止 <code>BeanFactory</code> 前三级接口定义的全部能力。</p>
 <p>它表示了一个可以配置的，允许按单例或多例操作 bean，支持自动装配 bean，并且可以根据 bean 的名称、类型或者类上注解批量获取 bean 的超级 bean 工厂。</p>
-<p><img src="https://img.xiajibagao.top/image-20220620150717261.png" alt="image-20220620150717261"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220620150717261.png" alt="image-20220620150717261"><figcaption aria-hidden="true">image-20220620150717261</figcaption>
+</figure>
 <p>它在上述功能的基础上，又针对各接口提供的功能定义了一些新的补充方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ConfigurableListableBeanFactory</span> <span class="keyword">extends</span> <span class="title">ListableBeanFactory</span>, <span class="title">AutowireCapableBeanFactory</span>, <span class="title">ConfigurableBeanFactory</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 自动装配相关配置</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">ignoreDependencyType</span><span class="params">(Class&lt;?&gt; type)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">ignoreDependencyInterface</span><span class="params">(Class&lt;?&gt; ifc)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">registerResolvableDependency</span><span class="params">(Class&lt;?&gt; dependencyType, <span class="meta">@Nullable</span> Object autowiredValue)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isAutowireCandidate</span><span class="params">(String beanName, DependencyDescriptor descriptor)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取bean的定义信息</span></span><br><span class="line">    <span class="function">BeanDefinition <span class="title">getBeanDefinition</span><span class="params">(String beanName)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取已经定义的bean名称的迭代器</span></span><br><span class="line">    <span class="function">Iterator&lt;String&gt; <span class="title">getBeanNamesIterator</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">// 清除bean元信息缓存</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">clearMetadataCache</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 冻结配置，冻结后工厂的配置不允许进一步修改</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">freezeConfiguration</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isConfigurationFrozen</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 实例化所有未实例化的单例bean</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">preInstantiateSingletons</span><span class="params">()</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="二-applicationcontext-接口体系">二、ApplicationContext 接口体系</h2>
@@ -468,10 +474,14 @@
 <li>第二层：<code>WebApplicationContext</code> 和 <code>ConfigurableApplicationContext</code> ；</li>
 <li>第三层：<code>ConfigurableApplicationContext</code> ；</li>
 </ul>
-<p><img src="https://img.xiajibagao.top/image-20220620173854597.png" alt="image-20220620173854597"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220620173854597.png" alt="image-20220620173854597"><figcaption aria-hidden="true">image-20220620173854597</figcaption>
+</figure>
 <h3 id="1-applicationcontext">1、ApplicationContext</h3>
 <p><code>ApplicationContext</code> 接口是基于 <code>BeanFactory</code> 的进一步实现，它同时实现了 <code>EnvironmentCapable</code>，<code>ListableBeanFactory</code>，<code>HierarchicalBeanFactory</code>，<code>MessageSource</code>，<code>ApplicationEventPublisher</code> 以及 <code>ResourcePatternResolver</code> 接口。相较 <code>BeanFactory</code> ，它的功能要更加强大。</p>
-<p><img src="https://img.xiajibagao.top/image-20220620142154578.png" alt="image-20220620142154578"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220620142154578.png" alt="image-20220620142154578"><figcaption aria-hidden="true">image-20220620142154578</figcaption>
+</figure>
 <p><code>ApplicationContext</code> 继承的各个接口分别对应它提供各项功能：</p>
 <ul>
 <li><code>HierarchicalBeanFactory</code> 与 <code>ListableBeanFactory</code>：提供像 <code>BeanFactory</code> 一样操作 bean 的功能；</li>
@@ -500,24 +510,16 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ConfigurableWebApplicationContext</span> <span class="keyword">extends</span> <span class="title">WebApplicationContext</span>, <span class="title">ConfigurableApplicationContext</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	String APPLICATION_CONTEXT_ID_PREFIX = WebApplicationContext.class.getName() + </span><br><span class="line">	String SERVLET_CONFIG_BEAN_NAME = <span class="string">&quot;servletConfig&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 配置Servlet容器</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">setServletContext</span><span class="params">(<span class="meta">@Nullable</span> ServletContext servletContext)</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">setServletConfig</span><span class="params">(<span class="meta">@Nullable</span> ServletConfig servletConfig)</span></span>;</span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	<span class="function">ServletConfig <span class="title">getServletConfig</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置命名空间</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">setNamespace</span><span class="params">(<span class="meta">@Nullable</span> String namespace)</span></span>;</span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	<span class="function">String <span class="title">getNamespace</span><span class="params">()</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 设置配置文件的路径，比如WEB-INF</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">setConfigLocation</span><span class="params">(String configLocation)</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">setConfigLocations</span><span class="params">(String... configLocations)</span></span>;</span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	String[] getConfigLocations();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>一般 web 环境下实例化的上下文都为该接口的实例。</p>
 <h2 id="三-总结">三、总结</h2>
-<p>在 spring 中，容器分为两大类：<code>BeanFactory</code>  和 <code>ApplicationContext</code>。</p>
+<p>在 spring 中，容器分为两大类：<code>BeanFactory</code> 和 <code>ApplicationContext</code>。</p>
 <p><strong>BeanFactory</strong></p>
 <p>其中，<code>BeanFactory</code> 是纯粹的用于管理 bean 对象生命周期的容器，它的接口体系分为四层：</p>
-<ol>
-<li>
-<p><code>BeanFactory</code> 接口本身，是容器的最高层抽象；</p>
-</li>
-<li>
-<p><code>HierarchicalBeanFactory</code> ：分层工厂，表示一个存在层级关系的容器；</p>
+<ol type="1">
+<li><p><code>BeanFactory</code> 接口本身，是容器的最高层抽象；</p></li>
+<li><p><code>HierarchicalBeanFactory</code> ：分层工厂，表示一个存在层级关系的容器；</p>
 <p><code>ListableBeanFactory</code>：批量工厂，表示一个允许根据名称、类型或类注解等属性批量的操作 bean 的容器；</p>
-<p><code>AutowireCapableBeanFactory</code>：自动装配工厂，表示一个可以关联需要自动装配的 bean 的容器；</p>
-</li>
-<li>
-<p><code>ConfigurableBeanFactory</code>：分层配置工厂 ，是 <code>HierarchicalBeanFactory</code> 和 <code>SingletonBeanRegistry</code>  接口的组合，表示一个分层的、可以以单例模式操作 bean，并且允许调整配置的容器；</p>
-</li>
-<li>
-<p><code>ConfigurableListableBeanFactory</code>：可配置的批量工厂，是<code>ConfigurableBeanFactory</code> 与 <code>AutowireCapableBeanFactory</code> 接口的组合，具备 <code>BeanFactory</code> 体系中的全部能力。</p>
-</li>
+<p><code>AutowireCapableBeanFactory</code>：自动装配工厂，表示一个可以关联需要自动装配的 bean 的容器；</p></li>
+<li><p><code>ConfigurableBeanFactory</code>：分层配置工厂 ，是 <code>HierarchicalBeanFactory</code> 和 <code>SingletonBeanRegistry</code> 接口的组合，表示一个分层的、可以以单例模式操作 bean，并且允许调整配置的容器；</p></li>
+<li><p><code>ConfigurableListableBeanFactory</code>：可配置的批量工厂，是<code>ConfigurableBeanFactory</code> 与 <code>AutowireCapableBeanFactory</code> 接口的组合，具备 <code>BeanFactory</code> 体系中的全部能力。</p></li>
 </ol>
 <p><strong>ApplicationContext</strong></p>
 <p><code>ApplicationContext</code> 是基于 <code>BeanFactory</code> 的扩展，它实现了其他的接口，因此具有一些 <code>BeanFactory</code> 不具备的功能：</p>
@@ -527,18 +529,12 @@
 <li><code>MessageSource</code>：提供解析消息并支持国际化配置的功能；</li>
 </ul>
 <p>从层次来说，<code>ApplicationContext</code> 主要分为三层：</p>
-<ol>
-<li>
-<p><code>ApplicationContext</code> 接口本身，是基于 <code>BeanFactory</code> 接口的扩展，是整个应用上下文体系的最顶层接口；</p>
-</li>
-<li>
-<p><code>WebApplicationContext</code>：web 应用上下文，用于承载 <code>ServletContext</code>；</p>
-<p><code>ConfigurableApplicationContext</code>：用于非 web 环境下的可配置应用上下文；</p>
-</li>
-<li>
-<p><code>ConfigurableApplicationContext</code>：可配置的 web 应用上下文，同时继承了 <code>WebApplicationContext</code> 和 <code>ConfigurableApplicationContext</code> 接口，代表了一个可以配置的 web 上下文容器。</p>
-<p>在一般的 web 环境中启动的都是该上下文的实例。</p>
-</li>
+<ol type="1">
+<li><p><code>ApplicationContext</code> 接口本身，是基于 <code>BeanFactory</code> 接口的扩展，是整个应用上下文体系的最顶层接口；</p></li>
+<li><p><code>WebApplicationContext</code>：web 应用上下文，用于承载 <code>ServletContext</code>；</p>
+<p><code>ConfigurableApplicationContext</code>：用于非 web 环境下的可配置应用上下文；</p></li>
+<li><p><code>ConfigurableApplicationContext</code>：可配置的 web 应用上下文，同时继承了 <code>WebApplicationContext</code> 和 <code>ConfigurableApplicationContext</code> 接口，代表了一个可以配置的 web 上下文容器。</p>
+<p>在一般的 web 环境中启动的都是该上下文的实例。</p></li>
 </ol>
 
       

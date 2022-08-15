@@ -4975,6 +4975,7 @@
         <tag>java</tag>
         <tag>杂七乱八</tag>
         <tag>java集合容器</tag>
+        <tag>源码分析</tag>
       </tags>
   </entry>
   <entry>
@@ -5102,6 +5103,7 @@
       <tags>
         <tag>java</tag>
         <tag>java集合容器</tag>
+        <tag>源码分析</tag>
       </tags>
   </entry>
   <entry>
@@ -5237,6 +5239,7 @@
       <tags>
         <tag>java</tag>
         <tag>java集合容器</tag>
+        <tag>源码分析</tag>
       </tags>
   </entry>
   <entry>
@@ -5245,22 +5248,23 @@
     <content><![CDATA[<h2 id="概述">概述</h2>
 <p>HashSet 是 Set 接口下一个不允许重复但允许 null、无序并且线程不安全的集合。它基于 HashMap 实现。</p>
 <p>从数据结构来说，他与 HashMap 相同，但是由于 HashSet 借助 HashMap 的 key 来存储数据，因而 HashMap 的 value 在 HashSet 中无意义。</p>
-<img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;">
+<p><img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;"></p>
 <p>这是关于 java 集合类源码的第九篇文章。往期文章：</p>
 <blockquote>
-<ol>
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/">java集合源码分析（四）：LinkedList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/">java集合源码分析（六）：HashMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/21/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9ALinkedHashMap/">java集合源码分析（七）：LinkedHashMap</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/22/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9ASet%E4%B8%8EAbstracSet/">java集合源码分析（八）：Set与AbstractSet</a></li>
+<ol type="1">
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
+</li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/">java集合源码分析（四）：LinkedList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/">java集合源码分析（六）：HashMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/21/java/集合类源码分析/java集合源码分析（七）：LinkedHashMap/">java集合源码分析（七）：LinkedHashMap</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/22/java/集合类源码分析/java集合源码分析（八）：Set与AbstracSet/">java集合源码分析（八）：Set与AbstractSet</a></li>
 </ol>
 </blockquote>
 <h2 id="一-数据结构">一、数据结构</h2>
-<p>HashSet 基于 HashMap 实现，也就是说，HashSet 用于存储数据的容器实际上就是一个 HashMap 实例。（关于 HashMap 的数据结构，可以参考前文<a href="https://blog.xiajibagao.top/2020/12/16/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%85%AD%EF%BC%89%EF%BC%9AHashMap/">java集合源码分析（六）：HashMap</a>中的第一部分。）</p>
+<p>HashSet 基于 HashMap 实现，也就是说，HashSet 用于存储数据的容器实际上就是一个 HashMap 实例。（关于 HashMap 的数据结构，可以参考前文<a href="https://blog.xiajibagao.top/2020/12/16/java/集合类源码分析/java集合源码分析（六）：HashMap/">java集合源码分析（六）：HashMap</a>中的第一部分。）</p>
 <p>HashSet 使用 HashMap 的 key 作为存储数据的位置，而 value 的位置使用一个默认的全局空对象填充。大部分方法通过直接包装调用 HashMap 的来实现，也就是说，我们可以把 HashSet 看成 HashMap 的一个大号包装器——或者说适配器类。</p>
 <h2 id="二-成员变量">二、成员变量</h2>
 <p>由于直接基于 HashMap 实现，因而 HashSet 中只提供两个成员变量，一个 map 用于存放 HashMap 实例，一个 PRESENT 用于作为填充 value 的空对象。</p>
@@ -5284,6 +5288,7 @@
       <tags>
         <tag>java</tag>
         <tag>java集合容器</tag>
+        <tag>源码分析</tag>
       </tags>
   </entry>
   <entry>
@@ -5353,6 +5358,7 @@
       <tags>
         <tag>java</tag>
         <tag>java集合容器</tag>
+        <tag>源码分析</tag>
       </tags>
   </entry>
   <entry>
@@ -6595,6 +6601,7 @@
       <tags>
         <tag>java</tag>
         <tag>java集合容器</tag>
+        <tag>源码分析</tag>
       </tags>
   </entry>
   <entry>
@@ -6790,6 +6797,7 @@
       <tags>
         <tag>java</tag>
         <tag>java集合容器</tag>
+        <tag>源码分析</tag>
       </tags>
   </entry>
   <entry>
@@ -6940,6 +6948,7 @@
       <tags>
         <tag>java</tag>
         <tag>java集合容器</tag>
+        <tag>源码分析</tag>
       </tags>
   </entry>
   <entry>
@@ -8015,6 +8024,7 @@
       <tags>
         <tag>java</tag>
         <tag>java集合容器</tag>
+        <tag>源码分析</tag>
       </tags>
   </entry>
   <entry>
@@ -8025,16 +8035,17 @@
 <p>对于 HashMap ，作为集合容器，我们需要关注其数据的存储结构，迭代方式，能否存放空值；作为使用了数组作为底层结构的集合，我们还需要关注其扩容的实现；同时，针对哈希表的特性，我们还需要关注它如何通过哈希算法取模快速定位下标。</p>
 <blockquote>
 <p>这是关于 java 集合类源码的第六篇文章。往期文章：</p>
-<ol>
-<li><a href="https://blog.xiajibagao.top/2020/11/25/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9ACollection%E4%B8%8EAbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/11/27/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AList%E4%B8%8EAbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/02/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9AArrayList/">java集合源码分析（三）：ArrayList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/03/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E5%9B%9B%EF%BC%89%EF%BC%9ALinkedList/">java集合源码分析（四）：LinkedList</a></li>
-<li><a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
+<ol type="1">
+<li><a href="https://blog.xiajibagao.top/2020/11/25/java/集合类源码分析/java集合源码分析（一）：Collection与AbstractCollection/">java集合源码分析（一）：Collection 与 AbstractCollection</a><br>
+</li>
+<li><a href="https://blog.xiajibagao.top/2020/11/27/java/集合类源码分析/java集合源码分析（二）：List与AbstractList/">java集合源码分析（二）：List与AbstractList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/02/java/集合类源码分析/java集合源码分析（三）：ArrayList/">java集合源码分析（三）：ArrayList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/03/java/集合类源码分析/java集合源码分析（四）：LinkedList/">java集合源码分析（四）：LinkedList</a></li>
+<li><a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a></li>
 </ol>
 </blockquote>
 <h2 id="一-hashmap-的数据结构">一、HashMap 的数据结构</h2>
-<img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;">
+<p><img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom:67%;"></p>
 <p><strong>在 JDK8 之前，HashMap 的数据结构是数组+链表。在 JDK8 以后是数组 + 链表 + 红黑树</strong>。</p>
 <p>在 HashMap 中，每一个 value 都被存储在一个 Node 或 TreeNode 实例中，容器中有一个 <code>Node[] table</code> 数组成员变量，数组中的每一格称为一个“桶”。当添加元素时，根据元素的 key 通过哈希值计算得到对应下标，将 Node 类的形式存入“桶”中。如果 table 容量不足时，就会发生扩容，同时对容器内部的元素进行重哈希。</p>
 <p>当发生哈希冲突，也就是不同元素计算得到了相同的下标时，会将节点接到“桶”的中的第一个元素后，后续操作亦同，最后就会形成链表。</p>
@@ -8063,7 +8074,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">HashMap</span><span class="params">(Map&lt;? extends K, ? extends V&gt; m)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.loadFactor = DEFAULT_LOAD_FACTOR;</span><br><span class="line">    putMapEntries(m, <span class="keyword">false</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这里涉及到一个将合并集合的方法 <code>putMapEntries()</code>，<code>putAll()</code>方法也是基于这个方法实现的。由于添加还涉及到扩容以及其他方法，这里暂不介绍，等下面再详细的了解。</p>
 <h2 id="四-hashmap的内部类">四、HashMap的内部类</h2>
-<p>基于前文<a href="https://blog.xiajibagao.top/2020/12/07/java/%E9%9B%86%E5%90%88%E7%B1%BB%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/java%E9%9B%86%E5%90%88%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90%EF%BC%88%E4%BA%94%EF%BC%89%EF%BC%9AMap%E4%B8%8EAbstractMap/">java集合源码分析（五）：Map与AbstractMap</a>中第五部分 “AbstractMap 的视图”里对 AbstractMap 的分析，我们知道，HashMap 作为继承了 AbstractMap 的子类，因此它内部会拥有三个集合视图</p>
+<p>基于前文<a href="https://blog.xiajibagao.top/2020/12/07/java/集合类源码分析/java集合源码分析（五）：Map与AbstractMap/">java集合源码分析（五）：Map与AbstractMap</a>中第五部分 “AbstractMap 的视图”里对 AbstractMap 的分析，我们知道，HashMap 作为继承了 AbstractMap 的子类，因此它内部会拥有三个集合视图</p>
 <ul>
 <li>存放 key 的 Set 集合：<code>Set&lt;K&gt; keySet</code></li>
 <li>存放 value 的 Collection 集合：<code>Collection&lt;V&gt; valuse</code></li>
@@ -8076,7 +8087,7 @@
 <p><code>3种视图容器 + 1种迭代器抽象类 + 3种视图容器的迭代器 + 1种并行迭代器抽象类 + 3种视图容器对应的并行迭代器 + 1种Entry实现类 + 1种Entry的红黑树节点实现类</code></p>
 <p>总计 13 种内部类</p>
 <h3 id="1-node-treenode">1. Node / TreeNode</h3>
-<img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom: 50%;">
+<p><img src="http://img.xiajibagao.top/image-20201208205304527.png" alt="HashMap的数据结构" style="zoom: 50%;"></p>
 <p>Node 是 HashMap 中的节点类，在 JDK8 之前对应的是 Entry 类。他是 Map 接口中 Entry 的实现类。</p>
 <p>在 HashMap 中数组的每一个位置都是一个“桶”，而“桶”中存放的就是带有数据的节点对象 Node。当哈希冲突时，多个 Node 会在同一个“桶”中形成链表。</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">class</span> <span class="title">Node</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">implements</span> <span class="title">Map</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 节点的hashcode</span></span><br><span class="line">    <span class="keyword">final</span> <span class="keyword">int</span> hash;</span><br><span class="line">    <span class="comment">// key</span></span><br><span class="line">    <span class="keyword">final</span> K key;</span><br><span class="line">    <span class="comment">// value</span></span><br><span class="line">    V value;</span><br><span class="line">    <span class="comment">// 下一节点</span></span><br><span class="line">    Node&lt;K,V&gt; next;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -8084,13 +8095,13 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">TreeNode</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; <span class="keyword">extends</span> <span class="title">LinkedHashMap</span>.<span class="title">Entry</span>&lt;<span class="title">K</span>,<span class="title">V</span>&gt; </span>&#123;</span><br><span class="line">    <span class="comment">// 父节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; parent;</span><br><span class="line">    <span class="comment">// 左子节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; left;</span><br><span class="line">    <span class="comment">// 右子节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; right;</span><br><span class="line">    <span class="comment">// 前驱节点</span></span><br><span class="line">    TreeNode&lt;K,V&gt; prev;</span><br><span class="line">    <span class="comment">// 是否为红色节点</span></span><br><span class="line">    <span class="keyword">boolean</span> red;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>值得一提的是，TreeNode 继承了 LinkedHashMap.Entry 类，但是 LinkedHashMap.Entry 类又继承了 HashMap.Node，因此，实际上 TreeNode 也是 Node 类的子类，这是 Node 转变为 TreeNode 的结构基础。</p>
 <p>另外，TreeNode 尽管是树，但是他仍然通过 prev 维持了隐式的链表结构，理论上每一个节点都可以获取他上一次插入的节点，这仍然可以理解为单向链表。</p>
-<h3 id="2-keyset-keyiterator">2.  KeySet / KeyIterator</h3>
+<h3 id="2-keyset-keyiterator">2. KeySet / KeyIterator</h3>
 <p><code>Set&lt;K&gt; keySet</code> 是在 AbstractMap 中已经定义好了变量，它是一个存放 key 的集合，HashMap 的哈希算法保证了 key 的唯一性，这恰好也符合 Set 集合的特征。在 HashMap 中，<strong>为其提供了实现类 KeySet</strong> 。</p>
-<p>KeySet  继承了 AbstractSet 抽象类，并且直接使用 HashMap 中的方法去实现了抽象类中的大多数抽象方法。值得一提的是，他实现的 <code>iterator()</code><strong>返回的也是 HashMap 的一个内部类 KeyIterator</strong>。</p>
-<h3 id="3-values-valueiterator">3. Values  /  ValueIterator</h3>
+<p>KeySet 继承了 AbstractSet 抽象类，并且直接使用 HashMap 中的方法去实现了抽象类中的大多数抽象方法。值得一提的是，他实现的 <code>iterator()</code><strong>返回的也是 HashMap 的一个内部类 KeyIterator</strong>。</p>
+<h3 id="3-values-valueiterator">3. Values / ValueIterator</h3>
 <p>和 KeySet 类一样，<strong>Values 也是给 AbstractMap 中的 <code>Collection&lt;V&gt; values</code> 提供的实现类</strong>，他继承了 AbstractCollection 抽象类，并且使用 HashMap 的方法实现了大部分抽象方法。</p>
 <p>同样的，它的<code>iterator()</code>返回的也是 HashMap 的一个<strong>内部类 ValueIterator</strong>。</p>
-<h3 id="4-entryset-entryiterator">4. EntrySet  /  EntryIterator</h3>
+<h3 id="4-entryset-entryiterator">4. EntrySet / EntryIterator</h3>
 <p>A<strong>bstractMap 中有一个留给子类去实现的核心抽象方法 <code>entrySet()</code>，而 EntrySet 就是为了实现该方法而创建的类</strong>。它继承了 <code>AbstractSet&lt;Map.Entry&lt;K,V&gt;&gt;</code>，<strong>表示的是容器中的一对键值对对象</strong>。在注释中，作者将其称为视图。</p>
 <p>通过 EntrySet 类，我们就可以<strong>像 Collection 的 toArray 一样，将 Map 以 Set 集合视图的形式表现出来</strong>。</p>
 <p>同样的，作为一个 AbstractSet 的实现类，HashMap 也专门为其实现了一个<strong>内部迭代器类 EntryIterator</strong> 。EntrySet 的<code>iterator()</code>方法返回的就是该类。</p>
@@ -8111,7 +8122,9 @@
 <p>这是来自知乎大佬一个非常详细的回答：<a href="https://www.zhihu.com/question/20733617/answer/32513376">JDK 源码中 HashMap 的 hash 方法原理是什么？ - 知乎</a>；</p>
 <p>这里我简单的概括一下：</p>
 <p>该方法实际上是一个“扰动函数”，作用是对<code>Object.hashCode()</code>获取到的 hash 值进行<strong>高低位混淆</strong>。</p>
-<p><img src="http://img.xiajibagao.top/image-20201209140746276.png" alt="HashMap的哈希算法"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201209140746276.png" alt="HashMap的哈希算法"><figcaption aria-hidden="true">HashMap的哈希算法</figcaption>
+</figure>
 <p>我们可以看到，<strong>符号右移16位后，新二进制数的前16位都为0，后16位就是原始 hashcode 的高16位</strong>。</p>
 <p><strong>将原始 hashcode 与 位运算得到的二进制数再进行异或运算以后，我们就得到的 hash 前16全部都为1，后16位则同时混淆了高16位和低16位的特征，进一步增加了随机性。</strong></p>
 <p>现在我们得到了 key 的 hashcode，这是计算下标的基础。</p>
@@ -8121,7 +8134,9 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">final</span> V <span class="title">putVal</span><span class="params">(<span class="keyword">int</span> hash, K key, V value, <span class="keyword">boolean</span> onlyIfAbsent,</span></span></span><br><span class="line"><span class="function"><span class="params">               <span class="keyword">boolean</span> evict)</span> </span>&#123;</span><br><span class="line">    Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="keyword">int</span> n, i;</span><br><span class="line">    ... ...</span><br><span class="line">    <span class="comment">// n 即为当前数组长度</span></span><br><span class="line">    <span class="keyword">if</span> ((tab = table) == <span class="keyword">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">            n = (tab = resize()).length;</span><br><span class="line">    <span class="comment">// 根据 n 与 hash 计算插入下标</span></span><br><span class="line">    <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="keyword">null</span>)</span><br><span class="line">        tab[i] = newNode(hash, key, value, <span class="keyword">null</span>);</span><br><span class="line">    </span><br><span class="line">    ... ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>也就是说，当通过扰动函数<code>hash()</code>获取到了已经混淆高低位的 key 的 hashcode 以后， <strong>会将其与数组长度-1进行与运算</strong>：<code>(n - 1) &amp; hash</code>。</p>
 <p>以默认是容量16为例，它转换为二进制数是 10000，而 （16-1）转换为二进制数就是 1111，补零以后它与 <code>hash()</code> 计算得到的 hashcode 进行与运算过程如下：</p>
-<p><img src="http://img.xiajibagao.top/image-20201209142455463.png" alt="与运算取模"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201209142455463.png" alt="与运算取模"><figcaption aria-hidden="true">与运算取模</figcaption>
+</figure>
 <p>在这个过程，之前留下的两个问题就得到了解答：</p>
 <h4 id="为什么容量需要是2的幂">为什么容量需要是2的幂？</h4>
 <p>我们可以看到，按位的与运算只有 1&amp;1 = 1，<strong>由于数组长度转为二进制只有4位，所有高于4位的位数都为0，因此运算结果高于4位的位置也都会是0，这里巧妙的实现了取模的效果，数组长度起到了低位掩码的作用。这也整是为什么 HashMap 的容量要是2的幂的原因。</strong></p>
@@ -8130,7 +8145,7 @@
 <p>我们举个例子：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>key</th>
 <th>hashCode</th>
 <th>不混淆取后四位</th>
@@ -8138,19 +8153,19 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>808321199</td>
 <td>110000001011100000000010101111</td>
 <td>1111</td>
 <td>0001</td>
 </tr>
-<tr>
+<tr class="even">
 <td>7015199</td>
 <td>11010110000101100011111</td>
 <td>1111</td>
 <td>0100</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>9999</td>
 <td>10011100001111</td>
 <td>1111</td>
@@ -8206,7 +8221,7 @@
 <h4 id="扩容的大小">扩容的大小</h4>
 <p>扩容的时候，分为两种情况：已经扩容过，还未扩容过。</p>
 <p>我们仅针对获取新容量 <code>newCap</code> 与新扩容阈值 <code>newThr</code> 这段代码逻辑，画出大致流程图：</p>
-<img src="http://img.xiajibagao.top/未命名文件.jpg" alt="未命名文件" style="zoom:50%;">
+<p><img src="http://img.xiajibagao.top/未命名文件.jpg" alt="未命名文件" style="zoom:50%;"></p>
 <p>这里比较需要注意的是，<strong>当 oldCap 已经大于等于理论最大值的时候，会在设置 <code>newThr=Integer.MAX_VALUE</code>后直接返回，不会执行后序扩容过程</strong>。</p>
 <p>另外，当新扩容阈值被设置为 <code>Integer.MAX_VALUE</code>以后，<strong>由于该值已经是最大的整数值了，所以设置为该值以后 HashMap 就不会再触发扩容了</strong>。</p>
 <h3 id="3重哈希过程">3.重哈希过程</h3>
@@ -8219,7 +8234,7 @@
 <p>以初始容量 <code>oldCap = 16,newCap = 32</code> 为例，我们先看看他的换算过程：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th></th>
 <th>十进制 Cap</th>
 <th>二进制 Cap</th>
@@ -8228,14 +8243,14 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td><strong>oldCap</strong></td>
 <td>16</td>
 <td>10000</td>
 <td>1111</td>
 <td>15</td>
 </tr>
-<tr>
+<tr class="even">
 <td><strong>newCap</strong></td>
 <td>32</td>
 <td>100000</td>
@@ -8247,7 +8262,7 @@
 <p>以上述数据为基础，我们模拟下面三个 key 在扩容过程中的计算：</p>
 <table>
 <thead>
-<tr>
+<tr class="header">
 <th>key</th>
 <th>hash</th>
 <th>(oldCap-1) &amp; hash</th>
@@ -8256,21 +8271,21 @@
 </tr>
 </thead>
 <tbody>
-<tr>
+<tr class="odd">
 <td>808321199</td>
 <td>110000001011100000000010101111</td>
 <td>1111（15）</td>
 <td>0</td>
 <td>01111（15）</td>
 </tr>
-<tr>
+<tr class="even">
 <td>7015199</td>
 <td>11010110000101100011111</td>
 <td>1111（15）</td>
 <td>10000</td>
 <td>11111（31）</td>
 </tr>
-<tr>
+<tr class="odd">
 <td>9999</td>
 <td>10011100001111</td>
 <td>1111（15）</td>
@@ -8279,7 +8294,7 @@
 </tr>
 </tbody>
 </table>
-<p>不难看出，<strong>只有当 <code>oldCap &amp; hash &gt; 0 </code>的时候元素才需要移动</strong>，而由于容量必然是2的冥，每次扩容新容量都是旧容量的两倍，换成二进制，相同的 hash 值与运算算出来的坐标总是多1，因此相当于每次需要移动的距离都是旧容量。</p>
+<p>不难看出，<strong>只有当 <code>oldCap &amp; hash &gt; 0</code>的时候元素才需要移动</strong>，而由于容量必然是2的冥，每次扩容新容量都是旧容量的两倍，换成二进制，相同的 hash 值与运算算出来的坐标总是多1，因此相当于每次需要移动的距离都是旧容量。</p>
 <p><strong>也就是说，如果 <code>oldCap &amp; hash &gt; 0</code>，那么就有 <code>新坐标=原下标+oldCap</code></strong>，这个逻辑对应的代码就是 <code>newTab[j + oldCap] = hiHead;</code>这一行。</p>
 <p>这样做的好处显而易见，<strong>少移动一些元素可以减少扩容的性能消耗，同时同一桶中的元素也有可能在重哈希之后被移动，使得哈希冲突得以在扩容后减缓，元素散列更均匀。</strong></p>
 <h2 id="八-hashmap-获取元素">八、HashMap 获取元素</h2>
@@ -8322,7 +8337,9 @@
 <p>我们暂且只关注链化的判断条件，也就是在 <code>removeTreeNode()</code>中的这一段代码：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 根节点为null，根节点的左或右子节点为null，根节点左子节点的左子节点为null</span></span><br><span class="line"><span class="keyword">if</span> (root == <span class="keyword">null</span> || root.right == <span class="keyword">null</span> ||</span><br><span class="line">    (rl = root.left) == <span class="keyword">null</span> || rl.left == <span class="keyword">null</span>) &#123;</span><br><span class="line">    tab[index] = first.untreeify(map);  <span class="comment">// too small</span></span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>也就是说，如果可能存在的最小红黑树如下：</p>
-<p><img src="http://img.xiajibagao.top/image-20201217204231973.png" alt="删除中可能存在的最小红黑树"></p>
+<figure>
+<img src="http://img.xiajibagao.top/image-20201217204231973.png" alt="删除中可能存在的最小红黑树"><figcaption aria-hidden="true">删除中可能存在的最小红黑树</figcaption>
+</figure>
 <p>可以看到，此时树共有四个及节点，需要再删除一个节点才会导致链化，也就是说，在 remove 中，触发链化的最小树可能只有3个节点，而最大树需要考虑到变色和平衡，是十个（待考证）。</p>
 <p>也就是说，和网上所说的小于6就链化不同，<strong>在删除中，链化触发值是一个范围，在 [3,10] 之间</strong>。</p>
 <h3 id="3红黑树在扩容过程的链化">3.红黑树在扩容过程的链化</h3>
@@ -8391,6 +8408,7 @@
       <tags>
         <tag>java</tag>
         <tag>java集合容器</tag>
+        <tag>源码分析</tag>
       </tags>
   </entry>
   <entry>
@@ -10013,11 +10031,13 @@
       </tags>
   </entry>
   <entry>
-    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <title>深入理解Spring别名机制</title>
     <url>/2022/07/26/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%88%AB%E5%90%8D%E6%9C%BA%E5%88%B6/</url>
     <content><![CDATA[<h2 id="前言">前言</h2>
 <p>在 spring 容器中，允许通过名称或别名来获取 bean ，这个能力来自于顶层接口 <code>AliasRegistry</code>，分析类下属的关系图，可以看到，几乎所有主要容器都直接或间接的实现了 <code>AliasRegistry</code> 接口。</p>
-<p><img src="https://img.xiajibagao.top/image-20220621134756391.png" alt="image-20220621134756391"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220621134756391.png" alt="image-20220621134756391"><figcaption aria-hidden="true">image-20220621134756391</figcaption>
+</figure>
 <p><code>AliasRegistry</code> 的结构非常简单，主要的类就是 <code>AliasRegistry</code> 接口与他的实现类 <code>SimpleAliasRegistry</code>，后续的实现类基本都直接或间接的继承了 <code>SimpleAliasRegistry</code>。</p>
 <p>本文将基于 spring 源码 <code>5.2.x</code> 分支，围绕 <code>SimpleAliasRegistry</code> 解析 spring 的别名机制是如何实现的。</p>
 <h2 id="一-aliasregistry">一、AliasRegistry</h2>
@@ -10040,7 +10060,7 @@
 <p>在 <code>registerAlias</code> 方法中，调用了 <code>checkForAliasCircle</code> 以检查别名是否存在 <code>a -&gt; b -&gt; a</code> 这样的循环引用：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">checkForAliasCircle</span><span class="params">(String name, String alias)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (hasAlias(alias, name)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> IllegalStateException(<span class="string">&quot;Cannot register alias &#x27;&quot;</span> + alias +</span><br><span class="line">                                        <span class="string">&quot;&#x27; for name &#x27;&quot;</span> + name + <span class="string">&quot;&#x27;: Circular reference - &#x27;&quot;</span> +</span><br><span class="line">                                        name + <span class="string">&quot;&#x27; is a direct or indirect alias for &#x27;&quot;</span> + alias + <span class="string">&quot;&#x27; already&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">hasAlias</span><span class="params">(String name, String alias)</span> </span>&#123;</span><br><span class="line">    String registeredName = <span class="keyword">this</span>.aliasMap.get(alias);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 判断该别名对应的原名称是否就是要找的原名称</span></span><br><span class="line">    <span class="keyword">return</span> ObjectUtils.nullSafeEquals(registeredName, name) </span><br><span class="line">        <span class="comment">// 递归检查别名的别名对应的原名称是否为要找的原名称</span></span><br><span class="line">        || (registeredName != <span class="keyword">null</span> &amp;&amp; hasAlias(name, registeredName));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>因为在 <code>SimpleAliasRegistry</code> 中，一个名称作为另一个名称的别名后，该名称仍然允许有别的名称作为它的别名。</p>
-<p>举个例子，实际场景中，可能会出现 <code>a -&gt; b -&gt; c</code> 这种情况，对应在 <code>aliasMap</code> 中则存在 <code>b -&gt; a</code> 与 <code>c -&gt; b</code>  的引用关系。</p>
+<p>举个例子，实际场景中，可能会出现 <code>a -&gt; b -&gt; c</code> 这种情况，对应在 <code>aliasMap</code> 中则存在 <code>b -&gt; a</code> 与 <code>c -&gt; b</code> 的引用关系。</p>
 <p>此时，若想要确定 <code>c</code> 是否是 <code>a</code> 的别名，就需要在通过 <code>c</code> 取出 <code>b</code> 后，再向上递归根据 <code>b</code> 找到 <code>a</code>，把每一级的关系却判断一遍。</p>
 <p><strong>为什么要加锁</strong></p>
 <p>理解了循环引用的检查，也就不难理解加锁的必要性了。实际使用中，<code>SimpleAliasRegistry</code> 基本是作为单例使用，此时不可避免的可能会存在多线程调用 <code>registerAlias</code> 的可能性，即便 <code>aliasMap</code> 使用的 <code>ConcurrentHashMap</code> 本身是线程安全的，但是这不能阻止出现 <code>a -&gt; b</code> 和 <code>b -&gt; a</code> 两个操作的同时发生，此时 <code>a</code> 与 <code>b</code> 构成了循环引用，而每个线程中的 <code>checkForAliasCircle</code> 却未必能够正确的检测出问题。</p>
@@ -10177,12 +10197,14 @@
       </tags>
   </entry>
   <entry>
-    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <title>深入理解Spring容器体系结构</title>
     <url>/2022/04/02/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/</url>
     <content><![CDATA[<h2 id="前言">前言</h2>
 <p>在 spring 中，任何实现了 <code>BeanFactory</code> 接口的类都可以视为容器，它是 <code>IOC</code> 功能实现的核心，用于完成类实例从加载到销毁的整个生命周期的控制，这些被 spring 所管理的实例统称为 bean。</p>
 <p>根据抽象层级的不同，容器又分为 <code>BeanFactory</code> 的直接实现，与基于 <code>BeanFactory</code> 的扩展实现 <code>ApplicationContext</code>，后者在前者的基础继承了 <code>ResourceLoader</code>和<code>EnvironmentCapable</code>接口，因而具备从某类运行环境的资源中直接加载 bean 的能力。</p>
-<p><img src="https://img.xiajibagao.top/image-20220620142154578.png" alt="image-20220620142154578"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220620142154578.png" alt="image-20220620142154578"><figcaption aria-hidden="true">image-20220620142154578</figcaption>
+</figure>
 <p><code>ApplicationContext</code> 最常用的两个实现 <code>ClassPathXmlApplicationContext</code> 和 <code>AnnotationConfigApplicationContext</code> ，前者用于从项目路径下根据 <code>xml</code> 文件加载 bean，而后者通过扫描类注解完成 bean 的加载。这两者 <code>ApplicationContext</code> 实际上就对应了我们所熟悉的两类配置方式，前者就是传统的 xml 配置，后者则是通过 <code>@Component</code> 与 <code>@Bean</code> 等注解对 bean 进行配置。</p>
 <p>本文将基于 spring 源码 <code>5.2.x</code> 分支，基于 <code>BeanFactory</code> 与 <code>ApplicationContext</code> 两大接口，介绍 spring 的两类容器的结构体系。</p>
 <h2 id="一-beanfactory-接口体系">一、BeanFactory 接口体系</h2>
@@ -10193,7 +10215,9 @@
 <li>第三层：<code>ConfigurableBeanFactory</code>，此外还有一个关联性较强<code>SingletonBeanRegistry</code>；</li>
 <li>第四层：<code>ConfigurableListableBeanFactory</code>；</li>
 </ul>
-<p><img src="https://img.xiajibagao.top/image-20220620151809732.png" alt="image-20220620151809732"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220620151809732.png" alt="image-20220620151809732"><figcaption aria-hidden="true">image-20220620151809732</figcaption>
+</figure>
 <h3 id="1-beanfactory">1、BeanFactory</h3>
 <p><code>BeanFactory</code> 是整个容器体系最顶层的接口，它的内容如下：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">BeanFactory</span> </span>&#123;</span><br><span class="line">    String FACTORY_BEAN_PREFIX = <span class="string">&quot;&amp;&quot;</span>;</span><br><span class="line">    <span class="comment">// 获取bean相关的方法</span></span><br><span class="line">    <span class="function">Object <span class="title">getBean</span><span class="params">(String name)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    &lt;T&gt; <span class="function">T <span class="title">getBean</span><span class="params">(String name, <span class="meta">@Nullable</span> Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    <span class="function">Object <span class="title">getBean</span><span class="params">(String name, Object... args)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    &lt;T&gt; <span class="function">T <span class="title">getBean</span><span class="params">(Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    &lt;T&gt; <span class="function">T <span class="title">getBean</span><span class="params">(Class&lt;T&gt; requiredType, Object... args)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    &lt;T&gt; <span class="function">ObjectProvider&lt;T&gt; <span class="title">getBeanProvider</span><span class="params">(Class&lt;T&gt; requiredType)</span></span>;</span><br><span class="line">    &lt;T&gt; <span class="function">ObjectProvider&lt;T&gt; <span class="title">getBeanProvider</span><span class="params">(ResolvableType requiredType)</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 容器 bean 属性的一些判断</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">containsBean</span><span class="params">(String name)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isSingleton</span><span class="params">(String name)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isPrototype</span><span class="params">(String name)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isTypeMatch</span><span class="params">(String name, ResolvableType typeToMatch)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException</span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isTypeMatch</span><span class="params">(String name, <span class="meta">@Nullable</span> Class&lt;?&gt; typeToMatch)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取 bean 在容器中的一些属性</span></span><br><span class="line">    Class&lt;?&gt; getType(String name) <span class="keyword">throws</span> NoSuchBeanDefinitionException;</span><br><span class="line">    String[] getAliases(String name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -10217,7 +10241,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">AutowireCapableBeanFactory</span> <span class="keyword">extends</span> <span class="title">BeanFactory</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 自动装配方式</span></span><br><span class="line">	<span class="keyword">int</span> AUTOWIRE_NO = <span class="number">0</span>; <span class="comment">// 不自动装配</span></span><br><span class="line">	<span class="keyword">int</span> AUTOWIRE_BY_NAME = <span class="number">1</span>; <span class="comment">// 根据bean名称自动装配</span></span><br><span class="line">	<span class="keyword">int</span> AUTOWIRE_BY_TYPE = <span class="number">2</span>; <span class="comment">// 根据bean类型自动装配</span></span><br><span class="line">	<span class="keyword">int</span> AUTOWIRE_CONSTRUCTOR = <span class="number">3</span>; <span class="comment">// 根据bean的构造方法自动装配</span></span><br><span class="line">	<span class="keyword">int</span> AUTOWIRE_AUTODETECT = <span class="number">4</span>; <span class="comment">// 根据反射信息自动选择合适的方式自动装配，spring3 以后不再推荐该方式</span></span><br><span class="line">	String ORIGINAL_INSTANCE_SUFFIX = <span class="string">&quot;.ORIGINAL&quot;</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// bean的创建与装配相关的方法</span></span><br><span class="line">	&lt;T&gt; <span class="function">T <span class="title">createBean</span><span class="params">(Class&lt;T&gt; beanClass)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">autowireBean</span><span class="params">(Object existingBean)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">configureBean</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// bean 声明周期相关的方法</span></span><br><span class="line">	<span class="function">Object <span class="title">createBean</span><span class="params">(Class&lt;?&gt; beanClass, <span class="keyword">int</span> autowireMode, <span class="keyword">boolean</span> dependencyCheck)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">autowire</span><span class="params">(Class&lt;?&gt; beanClass, <span class="keyword">int</span> autowireMode, <span class="keyword">boolean</span> dependencyCheck)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">autowireBeanProperties</span><span class="params">(Object existingBean, <span class="keyword">int</span> autowireMode, <span class="keyword">boolean</span> dependencyCheck)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">applyBeanPropertyValues</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">initializeBean</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">applyBeanPostProcessorsBeforeInitialization</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">applyBeanPostProcessorsAfterInitialization</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">destroyBean</span><span class="params">(Object existingBean)</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取 bean 依赖的相关方法</span></span><br><span class="line">	&lt;T&gt; <span class="function">NamedBeanHolder&lt;T&gt; <span class="title">resolveNamedBean</span><span class="params">(Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">resolveBeanByName</span><span class="params">(String name, DependencyDescriptor descriptor)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">resolveDependency</span><span class="params">(DependencyDescriptor descriptor, <span class="meta">@Nullable</span> String requestingBeanName)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">	<span class="function">Object <span class="title">resolveDependency</span><span class="params">(DependencyDescriptor descriptor, <span class="meta">@Nullable</span> String requestingBeanName, <span class="meta">@Nullable</span> Set&lt;String&gt; autowiredBeanNames, <span class="meta">@Nullable</span> TypeConverter typeConverter)</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>比较值得注意的是，通过 <code>AutowireCapableBeanFactory</code> 定义的 API 不难看出，只要能获得对应的实例，我们是可以手动的对非 spring 托管的 bean 进行依赖注入的。</p>
 <h3 id="3-分层配置工厂">3、分层配置工厂</h3>
-<p><code>BeanFactory</code> 的三级接口为 <code>ConfigurableBeanFactory</code>，它实现了 <code>HierarchicalBeanFactory</code> 和  <code>SingletonBeanRegistry</code>接口。</p>
+<p><code>BeanFactory</code> 的三级接口为 <code>ConfigurableBeanFactory</code>，它实现了 <code>HierarchicalBeanFactory</code> 和 <code>SingletonBeanRegistry</code>接口。</p>
 <p>从字面上理解，它是一个可配置的 <code>BeanFactory</code>，它不仅支持 <code>BeanFactory</code> 分层，还支持以单例的方式操作 bean。它是整个 <code>BeanFactory</code> 体系中最重要的一环，通过这个接口，spring 通过该接口规定了一个 <code>BeanFactory</code> 应该具备以及可以从中获取哪些可配置的组件与参数。</p>
 <p>这里我们先了解一下 <code>SingletonBeanRegistry</code> 接口，这个接口定义了容器根据名称注册或获取 bean 单例的能力：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">SingletonBeanRegistry</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">registerSingleton</span><span class="params">(String beanName, Object singletonObject)</span></span>;</span><br><span class="line">    <span class="function">Object <span class="title">getSingleton</span><span class="params">(String beanName)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">containsSingleton</span><span class="params">(String beanName)</span></span>;</span><br><span class="line">    String[] getSingletonNames();</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">getSingletonCount</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function">Object <span class="title">getSingletonMutex</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -10232,7 +10256,9 @@
 <h3 id="4-批量分层配置工厂">4、批量分层配置工厂</h3>
 <p><code>ConfigurableListableBeanFactory</code> 是 <code>BeanFactory</code> 体系的第四级接口，也是最后一级接口。它继承了 <code>ConfigurableBeanFactory</code>、<code>ListableBeanFactory</code>与<code>AutowireCapableBeanFactory</code> 接口，因此它具备到目前为止 <code>BeanFactory</code> 前三级接口定义的全部能力。</p>
 <p>它表示了一个可以配置的，允许按单例或多例操作 bean，支持自动装配 bean，并且可以根据 bean 的名称、类型或者类上注解批量获取 bean 的超级 bean 工厂。</p>
-<p><img src="https://img.xiajibagao.top/image-20220620150717261.png" alt="image-20220620150717261"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220620150717261.png" alt="image-20220620150717261"><figcaption aria-hidden="true">image-20220620150717261</figcaption>
+</figure>
 <p>它在上述功能的基础上，又针对各接口提供的功能定义了一些新的补充方法：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ConfigurableListableBeanFactory</span> <span class="keyword">extends</span> <span class="title">ListableBeanFactory</span>, <span class="title">AutowireCapableBeanFactory</span>, <span class="title">ConfigurableBeanFactory</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 自动装配相关配置</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">ignoreDependencyType</span><span class="params">(Class&lt;?&gt; type)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">ignoreDependencyInterface</span><span class="params">(Class&lt;?&gt; ifc)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">registerResolvableDependency</span><span class="params">(Class&lt;?&gt; dependencyType, <span class="meta">@Nullable</span> Object autowiredValue)</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isAutowireCandidate</span><span class="params">(String beanName, DependencyDescriptor descriptor)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取bean的定义信息</span></span><br><span class="line">    <span class="function">BeanDefinition <span class="title">getBeanDefinition</span><span class="params">(String beanName)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取已经定义的bean名称的迭代器</span></span><br><span class="line">    <span class="function">Iterator&lt;String&gt; <span class="title">getBeanNamesIterator</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="comment">// 清除bean元信息缓存</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">clearMetadataCache</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 冻结配置，冻结后工厂的配置不允许进一步修改</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">freezeConfiguration</span><span class="params">()</span></span>;</span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">isConfigurationFrozen</span><span class="params">()</span></span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 实例化所有未实例化的单例bean</span></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">preInstantiateSingletons</span><span class="params">()</span> <span class="keyword">throws</span> BeansException</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="二-applicationcontext-接口体系">二、ApplicationContext 接口体系</h2>
@@ -10243,10 +10269,14 @@
 <li>第二层：<code>WebApplicationContext</code> 和 <code>ConfigurableApplicationContext</code> ；</li>
 <li>第三层：<code>ConfigurableApplicationContext</code> ；</li>
 </ul>
-<p><img src="https://img.xiajibagao.top/image-20220620173854597.png" alt="image-20220620173854597"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220620173854597.png" alt="image-20220620173854597"><figcaption aria-hidden="true">image-20220620173854597</figcaption>
+</figure>
 <h3 id="1-applicationcontext">1、ApplicationContext</h3>
 <p><code>ApplicationContext</code> 接口是基于 <code>BeanFactory</code> 的进一步实现，它同时实现了 <code>EnvironmentCapable</code>，<code>ListableBeanFactory</code>，<code>HierarchicalBeanFactory</code>，<code>MessageSource</code>，<code>ApplicationEventPublisher</code> 以及 <code>ResourcePatternResolver</code> 接口。相较 <code>BeanFactory</code> ，它的功能要更加强大。</p>
-<p><img src="https://img.xiajibagao.top/image-20220620142154578.png" alt="image-20220620142154578"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220620142154578.png" alt="image-20220620142154578"><figcaption aria-hidden="true">image-20220620142154578</figcaption>
+</figure>
 <p><code>ApplicationContext</code> 继承的各个接口分别对应它提供各项功能：</p>
 <ul>
 <li><code>HierarchicalBeanFactory</code> 与 <code>ListableBeanFactory</code>：提供像 <code>BeanFactory</code> 一样操作 bean 的功能；</li>
@@ -10275,24 +10305,16 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">ConfigurableWebApplicationContext</span> <span class="keyword">extends</span> <span class="title">WebApplicationContext</span>, <span class="title">ConfigurableApplicationContext</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	String APPLICATION_CONTEXT_ID_PREFIX = WebApplicationContext.class.getName() + </span><br><span class="line">	String SERVLET_CONFIG_BEAN_NAME = <span class="string">&quot;servletConfig&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 配置Servlet容器</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">setServletContext</span><span class="params">(<span class="meta">@Nullable</span> ServletContext servletContext)</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">setServletConfig</span><span class="params">(<span class="meta">@Nullable</span> ServletConfig servletConfig)</span></span>;</span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	<span class="function">ServletConfig <span class="title">getServletConfig</span><span class="params">()</span></span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置命名空间</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">setNamespace</span><span class="params">(<span class="meta">@Nullable</span> String namespace)</span></span>;</span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	<span class="function">String <span class="title">getNamespace</span><span class="params">()</span></span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 设置配置文件的路径，比如WEB-INF</span></span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">setConfigLocation</span><span class="params">(String configLocation)</span></span>;</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">setConfigLocations</span><span class="params">(String... configLocations)</span></span>;</span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	String[] getConfigLocations();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>一般 web 环境下实例化的上下文都为该接口的实例。</p>
 <h2 id="三-总结">三、总结</h2>
-<p>在 spring 中，容器分为两大类：<code>BeanFactory</code>  和 <code>ApplicationContext</code>。</p>
+<p>在 spring 中，容器分为两大类：<code>BeanFactory</code> 和 <code>ApplicationContext</code>。</p>
 <p><strong>BeanFactory</strong></p>
 <p>其中，<code>BeanFactory</code> 是纯粹的用于管理 bean 对象生命周期的容器，它的接口体系分为四层：</p>
-<ol>
-<li>
-<p><code>BeanFactory</code> 接口本身，是容器的最高层抽象；</p>
-</li>
-<li>
-<p><code>HierarchicalBeanFactory</code> ：分层工厂，表示一个存在层级关系的容器；</p>
+<ol type="1">
+<li><p><code>BeanFactory</code> 接口本身，是容器的最高层抽象；</p></li>
+<li><p><code>HierarchicalBeanFactory</code> ：分层工厂，表示一个存在层级关系的容器；</p>
 <p><code>ListableBeanFactory</code>：批量工厂，表示一个允许根据名称、类型或类注解等属性批量的操作 bean 的容器；</p>
-<p><code>AutowireCapableBeanFactory</code>：自动装配工厂，表示一个可以关联需要自动装配的 bean 的容器；</p>
-</li>
-<li>
-<p><code>ConfigurableBeanFactory</code>：分层配置工厂 ，是 <code>HierarchicalBeanFactory</code> 和 <code>SingletonBeanRegistry</code>  接口的组合，表示一个分层的、可以以单例模式操作 bean，并且允许调整配置的容器；</p>
-</li>
-<li>
-<p><code>ConfigurableListableBeanFactory</code>：可配置的批量工厂，是<code>ConfigurableBeanFactory</code> 与 <code>AutowireCapableBeanFactory</code> 接口的组合，具备 <code>BeanFactory</code> 体系中的全部能力。</p>
-</li>
+<p><code>AutowireCapableBeanFactory</code>：自动装配工厂，表示一个可以关联需要自动装配的 bean 的容器；</p></li>
+<li><p><code>ConfigurableBeanFactory</code>：分层配置工厂 ，是 <code>HierarchicalBeanFactory</code> 和 <code>SingletonBeanRegistry</code> 接口的组合，表示一个分层的、可以以单例模式操作 bean，并且允许调整配置的容器；</p></li>
+<li><p><code>ConfigurableListableBeanFactory</code>：可配置的批量工厂，是<code>ConfigurableBeanFactory</code> 与 <code>AutowireCapableBeanFactory</code> 接口的组合，具备 <code>BeanFactory</code> 体系中的全部能力。</p></li>
 </ol>
 <p><strong>ApplicationContext</strong></p>
 <p><code>ApplicationContext</code> 是基于 <code>BeanFactory</code> 的扩展，它实现了其他的接口，因此具有一些 <code>BeanFactory</code> 不具备的功能：</p>
@@ -10302,18 +10324,12 @@
 <li><code>MessageSource</code>：提供解析消息并支持国际化配置的功能；</li>
 </ul>
 <p>从层次来说，<code>ApplicationContext</code> 主要分为三层：</p>
-<ol>
-<li>
-<p><code>ApplicationContext</code> 接口本身，是基于 <code>BeanFactory</code> 接口的扩展，是整个应用上下文体系的最顶层接口；</p>
-</li>
-<li>
-<p><code>WebApplicationContext</code>：web 应用上下文，用于承载 <code>ServletContext</code>；</p>
-<p><code>ConfigurableApplicationContext</code>：用于非 web 环境下的可配置应用上下文；</p>
-</li>
-<li>
-<p><code>ConfigurableApplicationContext</code>：可配置的 web 应用上下文，同时继承了 <code>WebApplicationContext</code> 和 <code>ConfigurableApplicationContext</code> 接口，代表了一个可以配置的 web 上下文容器。</p>
-<p>在一般的 web 环境中启动的都是该上下文的实例。</p>
-</li>
+<ol type="1">
+<li><p><code>ApplicationContext</code> 接口本身，是基于 <code>BeanFactory</code> 接口的扩展，是整个应用上下文体系的最顶层接口；</p></li>
+<li><p><code>WebApplicationContext</code>：web 应用上下文，用于承载 <code>ServletContext</code>；</p>
+<p><code>ConfigurableApplicationContext</code>：用于非 web 环境下的可配置应用上下文；</p></li>
+<li><p><code>ConfigurableApplicationContext</code>：可配置的 web 应用上下文，同时继承了 <code>WebApplicationContext</code> 和 <code>ConfigurableApplicationContext</code> 接口，代表了一个可以配置的 web 上下文容器。</p>
+<p>在一般的 web 环境中启动的都是该上下文的实例。</p></li>
 </ol>
 ]]></content>
       <categories>
@@ -10325,7 +10341,7 @@
       </tags>
   </entry>
   <entry>
-    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <title>深入理解Spring容器初始化（三）：事件及其他配置的初始化</title>
     <url>/2022/07/05/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E4%BA%8B%E4%BB%B6%E5%8F%8A%E5%85%B6%E4%BB%96%E9%85%8D%E7%BD%AE%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</url>
     <content><![CDATA[<h2 id="前言">前言</h2>
 <p>我们知道，spring 的启动其实就是容器的启动，而一般情况下，容器指的其实就是上下文 <code>ApplicationContext</code>。</p>
@@ -10333,10 +10349,13 @@
 <p>也就是说，读懂了 <code>AbstractApplicationContext.refresh()</code> 方法，其实就读懂了容器的启动流程：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">refresh</span><span class="params">()</span> <span class="keyword">throws</span> BeansException, IllegalStateException </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>.startupShutdownMonitor) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ================= 一、上下文的初始化 =================</span></span><br><span class="line">        <span class="comment">// 准备上下文</span></span><br><span class="line">        prepareRefresh();</span><br><span class="line">        <span class="comment">// 通知子类刷新内部工厂</span></span><br><span class="line">        ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();</span><br><span class="line">        <span class="comment">// 准备bean工厂以便在当前上下文中使用</span></span><br><span class="line">        prepareBeanFactory(beanFactory);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// ================= 二、BeanFactory的初始化 =================</span></span><br><span class="line">            <span class="comment">// 对工厂进行默认后置处理</span></span><br><span class="line">            postProcessBeanFactory(beanFactory);</span><br><span class="line">            <span class="comment">// 使用后置处理器对工厂进行处理</span></span><br><span class="line">            invokeBeanFactoryPostProcessors(beanFactory);</span><br><span class="line">            <span class="comment">// 注册Bean后置处理器</span></span><br><span class="line">            registerBeanPostProcessors(beanFactory);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// ================= 三、事件，Bean及其他配置的初始化 =================</span></span><br><span class="line">            <span class="comment">// 初始化此上下文的消息源</span></span><br><span class="line">            initMessageSource();</span><br><span class="line">            <span class="comment">// 为此上下文初始化事件广播者</span></span><br><span class="line">            initApplicationEventMulticaster();</span><br><span class="line">            <span class="comment">// 初始化特定上下文子类中的其他特殊bean</span></span><br><span class="line">            onRefresh();</span><br><span class="line">            <span class="comment">// 检查侦听器bean并注册</span></span><br><span class="line">            registerListeners();</span><br><span class="line">            <span class="comment">// 实例化所有非懒加载的剩余单例</span></span><br><span class="line">            finishBeanFactoryInitialization(beanFactory);</span><br><span class="line">            <span class="comment">// 完成刷新</span></span><br><span class="line">            finishRefresh();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// ================= 异常处理 =================</span></span><br><span class="line">        <span class="keyword">catch</span> (BeansException ex) &#123;</span><br><span class="line">            <span class="keyword">if</span> (logger.isWarnEnabled()) &#123;</span><br><span class="line">                logger.warn(<span class="string">&quot;Exception encountered during context initialization - &quot;</span> +</span><br><span class="line">                            <span class="string">&quot;cancelling refresh attempt: &quot;</span> + ex);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 销毁已创建的单例</span></span><br><span class="line">            destroyBeans();</span><br><span class="line">            <span class="comment">// 重置上下文的激活状态</span></span><br><span class="line">            cancelRefresh(ex);</span><br><span class="line">            <span class="keyword">throw</span> ex;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">// 重置内部的一些元数据缓存</span></span><br><span class="line">            resetCommonCaches();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>从总体来看，该方法描述的初始化过程大概分为三步：</p>
-<ul>
-<li>[x] 上下文的初始化；</li>
-<li>[x] <code>BeanFactory</code> 初始化；</li>
-<li>[x] 事件，Bean及其他配置的初始化；</li>
+<ul class="task-list">
+<li><input type="checkbox" disabled checked>
+上下文的初始化；</li>
+<li><input type="checkbox" disabled checked>
+<code>BeanFactory</code> 初始化；</li>
+<li><input type="checkbox" disabled checked>
+事件，Bean及其他配置的初始化；</li>
 </ul>
 <p>笔者将基于 spring 源码 <code>5.2.x</code> 分支，分别通过五篇文章从源码分析 spring 容器的初始化过程。</p>
 <p>本文是其中的第三篇文章，将介绍上下文中事件，Bean及其他配置的初始化。</p>
@@ -10389,11 +10408,10 @@
 <ul>
 <li>如果是允许实例化的非懒加载普通 <code>Bean</code>，就直接初始化；</li>
 <li>如果是允许实例化的非懒加载 <code>FactoryBean</code>，则判断它是否是 <code>SmartFactoryBean</code> ：
-<ol>
+<ol type="1">
 <li>如果不是，则放弃直接初始化；</li>
 <li>如果是，则根据 <code>SmartFactoryBean.isEagerInit()</code> 判断是否要直接初始化；</li>
-</ol>
-</li>
+</ol></li>
 <li>初始化所有可初始化的 <code>Bean</code> 后，如果这些 <code>Bean</code> 实现了 <code>SmartInitializingSingleton</code> 接口，则调用该接口提供的回调函数；</li>
 </ul>
 <p>这里需要注意两点：</p>
@@ -10435,26 +10453,23 @@
 <p>本文内容比较零散，主要干三件事：</p>
 <ul>
 <li>初始化消息源相关组件：
-<ol>
+<ol type="1">
 <li><code>initMessageSource</code>：初始化上下文使用的消息源；</li>
 <li><code>onRefresh</code>：上下文刷新时的回调函数，但是一般只用于加载 <code>ThemeSource</code>；</li>
-</ol>
-</li>
+</ol></li>
 <li>初始化事件相关组件：
-<ol>
+<ol type="1">
 <li><code>initApplicationEventMulticaster</code>：初始化事件广播器；</li>
 <li><code>registerListeners</code>：注册容器中的事件监听器 <code>ApplicationListener</code>；</li>
-</ol>
-</li>
+</ol></li>
 <li>初始化 <code>BeanFactory</code> 中所有非抽象的非懒加载 <code>Bean</code>；</li>
 <li>完成刷新：
-<ol>
+<ol type="1">
 <li>清空上下文中的资源缓存；</li>
 <li>初始化并调用 <code>Bean</code> 生命周期处理器；</li>
 <li>发布上下文刷新时间；</li>
 <li>注册并初始化用于支持 JMX 的组件；</li>
-</ol>
-</li>
+</ol></li>
 </ul>
 ]]></content>
       <categories>
@@ -10466,7 +10481,7 @@
       </tags>
   </entry>
   <entry>
-    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <title>深入理解Spring容器初始化（二）：BeanFactory的初始化</title>
     <url>/2022/06/08/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9ABeanFactory%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</url>
     <content><![CDATA[<h2 id="前言">前言</h2>
 <p>我们知道，spring 的启动其实就是容器的启动，而一般情况下，容器指的其实就是上下文 <code>ApplicationContext</code>。</p>
@@ -10474,10 +10489,13 @@
 <p>也就是说，读懂了 <code>AbstractApplicationContext.refresh()</code> 方法，其实就读懂了容器的启动流程：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">refresh</span><span class="params">()</span> <span class="keyword">throws</span> BeansException, IllegalStateException </span>&#123;</span><br><span class="line">    <span class="keyword">synchronized</span> (<span class="keyword">this</span>.startupShutdownMonitor) &#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// ================= 一、上下文的初始化 =================</span></span><br><span class="line">        <span class="comment">// 准备上下文</span></span><br><span class="line">        prepareRefresh();</span><br><span class="line">        <span class="comment">// 通知子类刷新内部工厂</span></span><br><span class="line">        ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();</span><br><span class="line">        <span class="comment">// 准备bean工厂以便在当前上下文中使用</span></span><br><span class="line">        prepareBeanFactory(beanFactory);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// ================= 二、BeanFactory的初始化 =================</span></span><br><span class="line">            <span class="comment">// 对工厂进行默认后置处理</span></span><br><span class="line">            postProcessBeanFactory(beanFactory);</span><br><span class="line">            <span class="comment">// 使用后置处理器对工厂进行处理</span></span><br><span class="line">            invokeBeanFactoryPostProcessors(beanFactory);</span><br><span class="line">            <span class="comment">// 注册Bean后置处理器</span></span><br><span class="line">            registerBeanPostProcessors(beanFactory);</span><br><span class="line"></span><br><span class="line">            <span class="comment">// ================= 三、事件，Bean及其他配置的初始化 =================</span></span><br><span class="line">            <span class="comment">// 初始化此上下文的消息源</span></span><br><span class="line">            initMessageSource();</span><br><span class="line">            <span class="comment">// 为此上下文初始化事件广播者</span></span><br><span class="line">            initApplicationEventMulticaster();</span><br><span class="line">            <span class="comment">// 初始化特定上下文子类中的其他特殊bean</span></span><br><span class="line">            onRefresh();</span><br><span class="line">            <span class="comment">// 检查侦听器bean并注册</span></span><br><span class="line">            registerListeners();</span><br><span class="line">            <span class="comment">// 实例化所有非懒加载的剩余单例</span></span><br><span class="line">            finishBeanFactoryInitialization(beanFactory);</span><br><span class="line">            <span class="comment">// 完成刷新</span></span><br><span class="line">            finishRefresh();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        <span class="comment">// ================= 异常处理 =================</span></span><br><span class="line">        <span class="keyword">catch</span> (BeansException ex) &#123;</span><br><span class="line">            <span class="keyword">if</span> (logger.isWarnEnabled()) &#123;</span><br><span class="line">                logger.warn(<span class="string">&quot;Exception encountered during context initialization - &quot;</span> +</span><br><span class="line">                            <span class="string">&quot;cancelling refresh attempt: &quot;</span> + ex);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 销毁已创建的单例</span></span><br><span class="line">            destroyBeans();</span><br><span class="line">            <span class="comment">// 重置上下文的激活状态</span></span><br><span class="line">            cancelRefresh(ex);</span><br><span class="line">            <span class="keyword">throw</span> ex;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">// 重置内部的一些元数据缓存</span></span><br><span class="line">            resetCommonCaches();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>从总体来看，该方法描述的初始化过程大概分为三步：</p>
-<ul>
-<li>[x] 上下文的初始化；</li>
-<li>[x] <code>BeanFactory</code> 初始化；</li>
-<li>[ ] 事件，Bean及其他配置的初始化；</li>
+<ul class="task-list">
+<li><input type="checkbox" disabled checked>
+上下文的初始化；</li>
+<li><input type="checkbox" disabled checked>
+<code>BeanFactory</code> 初始化；</li>
+<li><input type="checkbox" disabled>
+事件，Bean及其他配置的初始化；</li>
 </ul>
 <p>笔者将基于 spring 源码 <code>5.2.x</code> 分支，分别通过五篇文章从源码分析 spring 容器的初始化过程。</p>
 <p>本文是其中的第二篇文章，将介绍 <code>BeanFactory</code> 初始化。</p>
@@ -10488,7 +10506,7 @@
 <li><a href="https://www.cnblogs.com/Createsequence/p/16585531.html">深入理解Spring容器初始化（三）：事件及其他配置的初始化</a>；</li>
 </ul>
 <h2 id="一-对工厂进行默认后置处理">一、对工厂进行默认后置处理</h2>
-<p><code>AbstractApplicationContext.postProcessBeanFactory()</code> 是 <code>BeanFactory</code> 的第一步，该过程用于在用户自定义的 <code>BeanFactoryPostProcessor</code>  前，对 <code>BeanFactory</code> 进行一些默认的配置。</p>
+<p><code>AbstractApplicationContext.postProcessBeanFactory()</code> 是 <code>BeanFactory</code> 的第一步，该过程用于在用户自定义的 <code>BeanFactoryPostProcessor</code> 前，对 <code>BeanFactory</code> 进行一些默认的配置。</p>
 <p>在 <code>AbstractApplicationContext</code> 中，这个方法是个空实现，需要子类实现它的具体逻辑，但是无外乎都是做以下三件事：</p>
 <ul>
 <li>向 <code>BeanFactory</code> 注册默认的 <code>Bean</code> 后置处理器；</li>
@@ -10536,19 +10554,17 @@
 <p>因此，综合上文，这一步总体流程其实是这样的：</p>
 <ul>
 <li>若 <code>BeanFactory</code> 实现了 <code>BeanDefinitionRegistry</code> 接口，则优先完成此步骤：
-<ol>
+<ol type="1">
 <li>先调用实现了 <code>PriorityOrdered</code> 接口的 <code>BeanDefinitionRegistryPostProcessor</code>；</li>
 <li>再调用实现了 <code>Ordered</code> 接口的 <code>BeanDefinitionRegistryPostProcessor</code>；</li>
 <li>最后调用没有实现上述两接口的 <code>BeanDefinitionRegistryPostProcessor</code>；</li>
-</ol>
-</li>
+</ol></li>
 <li>不管是否实现了 <code>BeanDefinitionRegistry</code>，都完成此步骤：
-<ol>
+<ol type="1">
 <li>先调用实现了 <code>PriorityOrdered</code> 接口的 <code>BeanFactoryPostProcessor</code>；</li>
 <li>再调用实现了 <code>Ordered</code> 接口的 <code>BeanFactoryPostProcessor</code>；</li>
 <li>最后调用没有实现上述两接口的 <code>BeanFactoryPostProcessor</code>；</li>
-</ol>
-</li>
+</ol></li>
 </ul>
 <h2 id="三-注册bean后置处理器">三、注册Bean后置处理器</h2>
 <p><code>AbstractApplicationContext.registerBeanPostProcessors()</code> 是 <code>BeanFactory</code> 加载的第三步。这一步与调用 <code>BeanFactory</code> 一样，都通过后置处理委托类 <code>PostProcessorRegistrationDelegate</code> 进行：</p>
@@ -10556,7 +10572,7 @@
 <p><code>registerBeanPostProcessors</code> 与 上文调用 <code>BeanFactory</code> 后置处理器逻辑基本一致：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">registerBeanPostProcessors</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    ConfigurableListableBeanFactory beanFactory, AbstractApplicationContext applicationContext)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    String[] postProcessorNames = beanFactory.getBeanNamesForType(BeanPostProcessor.class, <span class="keyword">true</span>, <span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Register BeanPostProcessorChecker that logs an info message when</span></span><br><span class="line">    <span class="comment">// a bean is created during BeanPostProcessor instantiation, i.e. when</span></span><br><span class="line">    <span class="comment">// a bean is not eligible for getting processed by all BeanPostProcessors.</span></span><br><span class="line">    <span class="keyword">int</span> beanProcessorTargetCount = beanFactory.getBeanPostProcessorCount() + <span class="number">1</span> + postProcessorNames.length;</span><br><span class="line">    beanFactory.addBeanPostProcessor(<span class="keyword">new</span> BeanPostProcessorChecker(beanFactory, beanProcessorTargetCount));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 依然将后置处理器分为三类：</span></span><br><span class="line">    <span class="comment">// 1.实现了PriorityOrdered接口的处理器;</span></span><br><span class="line">    <span class="comment">// 2.实现了Ordered接口的处理器;</span></span><br><span class="line">    <span class="comment">// 3.没有实现PriorityOrdered或Ordered接口的处理器;</span></span><br><span class="line">    List&lt;BeanPostProcessor&gt; priorityOrderedPostProcessors = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    List&lt;BeanPostProcessor&gt; internalPostProcessors = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    List&lt;String&gt; orderedPostProcessorNames = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    List&lt;String&gt; nonOrderedPostProcessorNames = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    <span class="keyword">for</span> (String ppName : postProcessorNames) &#123;</span><br><span class="line">        <span class="keyword">if</span> (beanFactory.isTypeMatch(ppName, PriorityOrdered.class)) &#123;</span><br><span class="line">            BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);</span><br><span class="line">            priorityOrderedPostProcessors.add(pp);</span><br><span class="line">            <span class="comment">// 这里是用于框架内部使用的后置处理器</span></span><br><span class="line">            <span class="keyword">if</span> (pp <span class="keyword">instanceof</span> MergedBeanDefinitionPostProcessor) &#123;</span><br><span class="line">                internalPostProcessors.add(pp);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (beanFactory.isTypeMatch(ppName, Ordered.class)) &#123;</span><br><span class="line">            orderedPostProcessorNames.add(ppName);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            nonOrderedPostProcessorNames.add(ppName);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注册实现了PriorityOrdered接口的后置处理器</span></span><br><span class="line">    sortPostProcessors(priorityOrderedPostProcessors, beanFactory);</span><br><span class="line">    registerBeanPostProcessors(beanFactory, priorityOrderedPostProcessors);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注册实现了Ordered接口的后置处理器</span></span><br><span class="line">    List&lt;BeanPostProcessor&gt; orderedPostProcessors = <span class="keyword">new</span> ArrayList&lt;&gt;(orderedPostProcessorNames.size());</span><br><span class="line">    <span class="keyword">for</span> (String ppName : orderedPostProcessorNames) &#123;</span><br><span class="line">        BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);</span><br><span class="line">        orderedPostProcessors.add(pp);</span><br><span class="line">        <span class="keyword">if</span> (pp <span class="keyword">instanceof</span> MergedBeanDefinitionPostProcessor) &#123;</span><br><span class="line">            internalPostProcessors.add(pp);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    sortPostProcessors(orderedPostProcessors, beanFactory);</span><br><span class="line">    registerBeanPostProcessors(beanFactory, orderedPostProcessors);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注册没有实现PriorityOrdered或Ordered接口的后置处理器</span></span><br><span class="line">    List&lt;BeanPostProcessor&gt; nonOrderedPostProcessors = <span class="keyword">new</span> ArrayList&lt;&gt;(nonOrderedPostProcessorNames.size());</span><br><span class="line">    <span class="keyword">for</span> (String ppName : nonOrderedPostProcessorNames) &#123;</span><br><span class="line">        BeanPostProcessor pp = beanFactory.getBean(ppName, BeanPostProcessor.class);</span><br><span class="line">        nonOrderedPostProcessors.add(pp);</span><br><span class="line">        <span class="keyword">if</span> (pp <span class="keyword">instanceof</span> MergedBeanDefinitionPostProcessor) &#123;</span><br><span class="line">            internalPostProcessors.add(pp);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    registerBeanPostProcessors(beanFactory, nonOrderedPostProcessors);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注解框架内部使用的后置处理器</span></span><br><span class="line">    sortPostProcessors(internalPostProcessors, beanFactory);</span><br><span class="line">    registerBeanPostProcessors(beanFactory, internalPostProcessors);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 重新注册ApplicationListenerDetector，保证该处理器总是位于处理器链的最后一位，从而总是在最后被执行</span></span><br><span class="line">    <span class="comment">// 该后置处理器用于支持spring的事件机制</span></span><br><span class="line">    beanFactory.addBeanPostProcessor(<span class="keyword">new</span> ApplicationListenerDetector(applicationContext));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>上述这些代码的逻辑也很明确：</p>
-<ol>
+<ol type="1">
 <li>先注册实现了 <code>PriorityOrdered</code> 接口的 <code>BeanPostProcessor</code>；</li>
 <li>再注册实现了 <code>Ordered</code> 接口的 <code>BeanPostProcessor</code>；</li>
 <li>接着注册没有实现上述两接口的 <code>BeanPostProcessor</code>；</li>
@@ -10565,16 +10581,10 @@
 </ol>
 <h2 id="总结">总结</h2>
 <p>当上下文刷新完毕，并且准备好了新的 <code>BeanFactory</code> 后，需要对 <code>BeanFactory</code> 进行三步操作以完成 <code>BeanFactory</code> 本身的初始化：</p>
-<ol>
-<li>
-<p><code>postProcessBeanFactory</code>：对 bean 工厂进行预处理，包括注册一些默认的 <code>Bean</code> 后置处理器，设置默认的 <code>Bean</code> 作用域，以及注册默认 <code>Bean</code> 等；</p>
-</li>
-<li>
-<p><code>invokeBeanFactoryPostProcessors</code>：使用注册到上下文中的 <code>BeanFactoryPostProcessor</code> 与 <code>BeanDefinitionRegistryPostProcessor</code> 对 <code>BeanFactory</code> 进行后置处理；</p>
-</li>
-<li>
-<p><code>registerBeanPostProcessors</code>：注册 bean 的后处理器，包括用户自定义的、spring 内部使用的，以及用于支持事件机制的 <code>ApplicationListenerDetector</code>；</p>
-</li>
+<ol type="1">
+<li><p><code>postProcessBeanFactory</code>：对 bean 工厂进行预处理，包括注册一些默认的 <code>Bean</code> 后置处理器，设置默认的 <code>Bean</code> 作用域，以及注册默认 <code>Bean</code> 等；</p></li>
+<li><p><code>invokeBeanFactoryPostProcessors</code>：使用注册到上下文中的 <code>BeanFactoryPostProcessor</code> 与 <code>BeanDefinitionRegistryPostProcessor</code> 对 <code>BeanFactory</code> 进行后置处理；</p></li>
+<li><p><code>registerBeanPostProcessors</code>：注册 bean 的后处理器，包括用户自定义的、spring 内部使用的，以及用于支持事件机制的 <code>ApplicationListenerDetector</code>；</p></li>
 </ol>
 ]]></content>
       <categories>
@@ -10586,7 +10596,7 @@
       </tags>
   </entry>
   <entry>
-    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <title>深入理解Spring注解机制（三）：合并注解的合成</title>
     <url>/2022/08/14/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%90%88%E5%B9%B6%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%90%88%E6%88%90/</url>
     <content><![CDATA[<h2 id="前言">前言</h2>
 <p>众所周知，<code>spring</code> 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 <code>springboot</code> 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 <code>@Service</code>：</p>
@@ -10652,24 +10662,21 @@
 <p>这一步有点复杂，主要是根据不同的情况，通过 <code>AnnotationTypeMapping</code> 中的几个属性映射数组，包括 <code>aliasMappings</code>、<code>conventionMappings</code>，<code>annotationValueMappings</code> 与 <code>annotationValueSource</code> 来确定最终用于取值的 <code>AnnotationTypeMapping</code> 对象与调用的方法在 <code>AttributeMethods</code> 中的下标：</p>
 <ul>
 <li>如果要合并属性值，则：
-<ol>
+<ol type="1">
 <li>若该属性被 <code>root</code> 中的同名属性覆盖，即 <code>aliasMappings</code> 数组对应下标不为 <code>-1</code>，则记录该 <code>root</code> 属性下标；</li>
 <li>若该属性不被 <code>root</code> 中同名属性覆盖，则确定是否被子注解中的同名属性覆盖，即 <code>conventionMappings</code> 数组对应下标不为 <code>-1</code>，则记录该覆盖属性下标；</li>
-</ol>
-</li>
+</ol></li>
 <li>若允许别名，则在上述基础上，继续进行处理：
-<ol>
+<ol type="1">
 <li>若当前注解已经是根注解，则从 <code>resolvedRootMirrors</code> 上，获得该属性在同一注解下关联的别名属性中，唯一确定的有效属性的下标；</li>
 <li>若当前注解不是根注解，则从 <code>resolvedRootMirrors</code> 上，获得该属性在同一注解下关联的别名属性中，唯一确定的有效属性的下标；</li>
-</ol>
-</li>
+</ol></li>
 <li>若当前注解是根注解，则使用从根注解对象 <code>rootAttributes</code> 上根据属性下标获取对应方法，然后通过反射调用获取属性值；</li>
 <li>若当前注解不是根注解，则：
-<ol>
+<ol type="1">
 <li>若不支持属性覆盖以及别名，则直接和获取该注解属性下标对应方法，并通过反射调用获取属性值；</li>
 <li>若支持属性覆盖以及别名，则通过属性下标从 <code>annotationValueSource</code> 找到对应的注解对象，再通过 <code>annotationValueMappings</code> 找到要在该注解中调用的属性下标，然后在通过属性下标找到对应的属性方法后，通过反射调用获取属性值；</li>
-</ol>
-</li>
+</ol></li>
 </ul>
 <p>至此，获取属性值的方法流程也走完了。</p>
 <h2 id="总结">总结</h2>
@@ -10693,7 +10700,7 @@
       </tags>
   </entry>
   <entry>
-    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <title>深入理解Spring注解机制（一）：注解的搜索与处理机制</title>
     <url>/2022/08/06/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%B3%A8%E8%A7%A3%E7%9A%84%E6%90%9C%E7%B4%A2%E4%B8%8E%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/</url>
     <content><![CDATA[<h2 id="前言">前言</h2>
 <p>众所周知，<code>spring</code> 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 <code>springboot</code> 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 <code>@Service</code>：</p>
@@ -10716,14 +10723,14 @@
 </ul>
 <p>大部分情况下，<code>get</code> 开头的方法与 <code>AnnotatedElement</code> 本身直接提供的方法效果一致，比较特殊的 <code>find</code> 开头的方法，此类方法会从<code>AnnotatedElement</code> 的层级结构中寻找存在的注解，关于“<strong>层级结构</strong>”，Spring 给出了一套定义：</p>
 <ul>
-<li>当 <code>AnnotatedElement</code> 是 <code>Class</code> 时：层级结构指类本身，以及类和它的父类，父接口，以及父类的父类，父类的父接口…整个继承树中的所有 <code>Class</code> 文件；</li>
-<li>当 <code>AnnotatedElement</code> 是 <code>Method</code> 是：层级结构指方法本身，以及声明该方法的类它的父类，父接口，以及父类的父类，父类的父接口…整个继承树中所有 <code>Class</code> 文件中，那些与搜索的 <code>Method</code> 具有完全相同签名的方法；</li>
+<li>当 <code>AnnotatedElement</code> 是 <code>Class</code> 时：层级结构指类本身，以及类和它的父类，父接口，以及父类的父类，父类的父接口......整个继承树中的所有 <code>Class</code> 文件；</li>
+<li>当 <code>AnnotatedElement</code> 是 <code>Method</code> 是：层级结构指方法本身，以及声明该方法的类它的父类，父接口，以及父类的父类，父类的父接口......整个继承树中所有 <code>Class</code> 文件中，那些与搜索的 <code>Method</code> 具有完全相同签名的方法；</li>
 <li>当 <code>AnnotatedElement</code> 不是上述两者中的一种时，它没有层级结构，搜索将仅限于 <code>AnnotatedElement</code> 这个对象本身；</li>
 </ul>
 <p>举个例子，假设我们现在有如下结构：</p>
-<img src="https://img.xiajibagao.top/image-20220812140322452.png" alt="image-20220812140322452" style="zoom:50%;">
+<p><img src="https://img.xiajibagao.top/image-20220812140322452.png" alt="image-20220812140322452" style="zoom:50%;"></p>
 <p>则对 <code>Foo.class</code> 使用 <code>get</code> 开头的方法，或者 <code>AnnotatedElement</code> 本身提供的方法，都只能获得 <code>Annotation1</code>，而使用 <code>find</code> 方法除了可以获得 <code>Foo</code> 本身的注解，还可以获得 <code>FooSuper</code> 和 <code>FooInterface</code> 上的注解。</p>
-<p>同理，假如我们扫描的是 <code>Foo.class</code> 中一个名为 <code>foo</code>，没有参数且没有返回值的方法，则 <code>find</code> 除了扫描 <code>Foo.foo()</code>  外，还会扫描器 <code>FooSuper</code> 和 <code>FooInterface</code> 中没有参数且没有返回值的方法上的注解。</p>
+<p>同理，假如我们扫描的是 <code>Foo.class</code> 中一个名为 <code>foo</code>，没有参数且没有返回值的方法，则 <code>find</code> 除了扫描 <code>Foo.foo()</code> 外，还会扫描器 <code>FooSuper</code> 和 <code>FooInterface</code> 中没有参数且没有返回值的方法上的注解。</p>
 <h2 id="二-合并注解">二、合并注解</h2>
 <p>当我们点进 <code>AnnotationUtil</code> 中的任意一个方法，比如 <code>findAnnotation</code> ：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;A extends Annotation&gt; <span class="function">A <span class="title">findAnnotation</span><span class="params">(Method method, <span class="meta">@Nullable</span> Class&lt;A&gt; annotationType)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (annotationType == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果不需要对层级结构进行搜索也能找到注解</span></span><br><span class="line">    <span class="keyword">if</span> (AnnotationFilter.PLAIN.matches(annotationType) ||</span><br><span class="line">        AnnotationsScanner.hasPlainJavaAnnotationsOnly(method)) &#123;</span><br><span class="line">        <span class="keyword">return</span> method.getDeclaredAnnotation(annotationType);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 注解无法直接获取，需要对层级结构进行搜索</span></span><br><span class="line">    <span class="keyword">return</span> MergedAnnotations.from(method, SearchStrategy.TYPE_HIERARCHY, RepeatableContainers.none())</span><br><span class="line">        .get(annotationType).withNonMergedAttributes()</span><br><span class="line">        .synthesize(MergedAnnotation::isPresent).orElse(<span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -10731,12 +10738,11 @@
 <ul>
 <li>先对 <code>AnnotatedElement</code> 本身进行查找，并且使用注解过滤器 <code>AnnotationFilter</code> 进行处理；</li>
 <li>找不到再通过一个叫 <code>MergedAnnotations</code> 的东西对 <code>AnnotatedElement</code> 进行查找，这玩意需要指定三个东西：
-<ol>
+<ol type="1">
 <li>查找的 <code>AnnotatedElement</code>；</li>
 <li>搜索策略 <code>SearchStrategy</code>；</li>
 <li>可重复注解容器 <code>RepeatableContainers</code>；</li>
-</ol>
-</li>
+</ol></li>
 </ul>
 <p>可见，真正的搜索过程发生在合并注解 <code>MergedAnnotations</code>。</p>
 <h3 id="1-注解过滤器">1、注解过滤器</h3>
@@ -10773,22 +10779,12 @@
 <h3 id="1-搜索策略">1、搜索策略</h3>
 <p>其中，<code>SearchStrategy</code> 提供了五种搜索范围：</p>
 <ul>
-<li>
-<p><code>DIRECT</code>：只查找元素上直接声明的注解，不包括通过<code>@Inherited</code>继承的注解；</p>
-</li>
-<li>
-<p><code>INHERITED_ANNOTATIONS</code>：只查找元素直接声明或通过<code>@Inherited</code>继承的注解；</p>
-</li>
-<li>
-<p><code>SUPERCLASS</code>：查找元素直接声明或所有父类的注解；</p>
-</li>
-<li>
-<p><code>TYPE_HIERARCHY</code>：查找元素、所有父类以及实现的父接口的全部注解；</p>
-</li>
-<li>
-<p><code>TYPE_HIERARCHY_AND_ENCLOSING_CLASSES</code>：查找查找元素、所有父类以及实现的父接口、封闭类以及其子类的全部注解。</p>
-<p>封闭类是 JDK17 的新特性，可参考 <a href="https://blog.csdn.net/j3T9Z7H/article/details/124600691?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-124600691-blog-115782223.pc_relevant_downloadblacklistv1&amp;spm=1001.2101.3001.4242.1&amp;utm_relevant_index=2">详解 Java 17中的新特性：“密封类”</a>，本章将不过多涉及该内容；</p>
-</li>
+<li><p><code>DIRECT</code>：只查找元素上直接声明的注解，不包括通过<code>@Inherited</code>继承的注解；</p></li>
+<li><p><code>INHERITED_ANNOTATIONS</code>：只查找元素直接声明或通过<code>@Inherited</code>继承的注解；</p></li>
+<li><p><code>SUPERCLASS</code>：查找元素直接声明或所有父类的注解；</p></li>
+<li><p><code>TYPE_HIERARCHY</code>：查找元素、所有父类以及实现的父接口的全部注解；</p></li>
+<li><p><code>TYPE_HIERARCHY_AND_ENCLOSING_CLASSES</code>：查找查找元素、所有父类以及实现的父接口、封闭类以及其子类的全部注解。</p>
+<p>封闭类是 JDK17 的新特性，可参考 <a href="https://blog.csdn.net/j3T9Z7H/article/details/124600691?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-124600691-blog-115782223.pc_relevant_downloadblacklistv1&amp;spm=1001.2101.3001.4242.1&amp;utm_relevant_index=2">详解 Java 17中的新特性：“密封类”</a>，本章将不过多涉及该内容；</p></li>
 </ul>
 <h3 id="2-注解扫描器">2、注解扫描器</h3>
 <p><code>AnnotationScanner</code> 扫描扫描行为的直接发起者，它只提供了唯一允许外部调用的静态方法 <code>scan</code> ：</p>
@@ -10808,52 +10804,39 @@
 <p>当扫描到元素后，<code>AnnotationScanner</code> 会获得该元素上的注解，将其与元素一起作为入参传入 <code>doWithAnnotations</code>，若 <code>doWithAnnotations</code> 返回了一个非空元素，则 <code>AnnotationScanner</code> 将继续扫描元素的层级结构，然后直到<code>doWithAnnotations</code> 返回 null 为止或者全部层级结构都被扫描为止。</p>
 <p>注解处理器是实现各种查找和收集等操作最核心的部分，这里我们先简单了解一下，知道它是个配合 <code>AnnotationScanner</code> 使用的回调接口即可。</p>
 <h3 id="4-聚合索引">4、聚合索引</h3>
-<p>在 <code>AnnotationsProcessor</code> 中， <code>doWithAggregate</code>  和 <code>doWithAnnotations</code> 都会传入一个名为 <code>aggregateIndex</code> 的参数，该参数用于扫描过程中扫描的层级数，通过该参数，我们可以区分注解之间被扫描到的先后顺序。</p>
+<p>在 <code>AnnotationsProcessor</code> 中， <code>doWithAggregate</code> 和 <code>doWithAnnotations</code> 都会传入一个名为 <code>aggregateIndex</code> 的参数，该参数用于扫描过程中扫描的层级数，通过该参数，我们可以区分注解之间被扫描到的先后顺序。</p>
 <p>比如说，我们现在还是有一个如下结构：</p>
-<p><img src="https://img.xiajibagao.top/image-20220812173010265.png" alt="image-20220812173010265"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220812173010265.png" alt="image-20220812173010265"><figcaption aria-hidden="true">image-20220812173010265</figcaption>
+</figure>
 <p><code>AnnotationScanner</code> 在扫描时，以 0 为起始值，每进入一个层级就递增，现在我们对 <code>Foo.class</code> 进行扫描，则有：</p>
 <ul>
-<li>
-<p>aggregateIndex= 0，扫描 <code>Foo.class</code>，获得 <code>Annotation1</code>；</p>
-</li>
-<li>
-<p>aggregateIndex= 1，扫描 <code>FooInterface.class</code>，获得 <code>Annotation2</code>；</p>
-</li>
-<li>
-<p>aggregateIndex= 2，扫描 <code>FooSuper.class</code>，获得 <code>Annotation3</code>；</p>
-</li>
-<li>
-<p>aggregateIndex= 4：</p>
+<li><p>aggregateIndex= 0，扫描 <code>Foo.class</code>，获得 <code>Annotation1</code>；</p></li>
+<li><p>aggregateIndex= 1，扫描 <code>FooInterface.class</code>，获得 <code>Annotation2</code>；</p></li>
+<li><p>aggregateIndex= 2，扫描 <code>FooSuper.class</code>，获得 <code>Annotation3</code>；</p></li>
+<li><p>aggregateIndex= 4：</p>
 <p>先扫描 <code>FooSuperInterface.class</code>，获得 <code>Annotation4</code>，</p>
-<p>再扫描 <code>FooSuperSuper.class</code>，获得 <code>Annotation5</code>；</p>
-</li>
+<p>再扫描 <code>FooSuperSuper.class</code>，获得 <code>Annotation5</code>；</p></li>
 </ul>
 <p>从理论上来说，聚合索引越小，则该注解最优先被扫描到。因此<strong>聚合索引一般用于在出现重复注解的时候用来区分优先级</strong>，比如层级结构中出现了多个类型相同的注解，而用户仅需要获得其中一个，此时就可以通过比较聚合索引，返回其中最小或者最大的那个注解。后续我们还会看到一个叫 <code>AnnotationSelector</code> 的玩意，它就是用来做这个事情的。</p>
 <h2 id="三-注解的处理">三、注解的处理</h2>
 <p>注解处理器 <code>AnnotationsProcessor</code> 的实现类是完成注解操作最核心的部分，前面提到 <code>AnnotationScanner</code> 负责提供注解扫描的功能，但是扫描到注解以后要怎么处理？是否继续扫描后续注解？这些都取决于使用的 <code>AnnotationsProcessor</code> 规定要怎么做。</p>
 <p>在 <code>TypeMappedAnnotations</code> 中，以内部类的形式提供了多数 <code>AnnotationsProcessor</code> 的实现，它们提供类三类功能：</p>
 <ul>
-<li>
-<p><code>TypeMappedAnnotations.IsPresent</code>：判断注解是否直接或间接（即不存在可重复注解，但是存在可重复注解的容器注解这种情况）存在。</p>
-<p>关于注解的“直接”或“间接”存在，可以参照 <code>AnnotatedElement</code> 类上注释的定义；</p>
-</li>
-<li>
-<p><code>TypeMappedAnnotations.MergedAnnotationFinder</code>：用于找到一个唯一的指定类型的注解；</p>
-</li>
-<li>
-<p><code>TypeMappedAnnotations.AggregatesCollector</code>：用于收集全部扫描到的注解；</p>
-</li>
+<li><p><code>TypeMappedAnnotations.IsPresent</code>：判断注解是否直接或间接（即不存在可重复注解，但是存在可重复注解的容器注解这种情况）存在。</p>
+<p>关于注解的“直接”或“间接”存在，可以参照 <code>AnnotatedElement</code> 类上注释的定义；</p></li>
+<li><p><code>TypeMappedAnnotations.MergedAnnotationFinder</code>：用于找到一个唯一的指定类型的注解；</p></li>
+<li><p><code>TypeMappedAnnotations.AggregatesCollector</code>：用于收集全部扫描到的注解；</p></li>
 </ul>
 <h3 id="1-判断注解是否存在">1、判断注解是否存在</h3>
 <p>该处理器对应 <code>TypeMappedAnnotations.IsPresent</code>，它用于确定一个注解是否在 <code>AnnotationScanner</code> 支持扫描的范围内存在。</p>
 <p>需要注意的是，<code>IsPresent</code> 中支持基于两种“存在”的定义进行查询：</p>
 <ul>
 <li><strong>directly</strong>：注解在 <code>AnnotatedElement</code> 上直接存在，包括两种情况
-<ol>
+<ol type="1">
 <li>注解 X 在 A 上直接存在；</li>
 <li>注解 X 是可重复注解，它存在可重复容器注解 Y，现在在类 A 上存在 Y 但是不存在 X，则说 X 在 A 上直接存在；</li>
-</ol>
-</li>
+</ol></li>
 <li><strong>Indirectly</strong>：注解 X 在<code>AnnotatedElement</code> 上不直接存在，但是在能够扫描到的注解的元注解中存在；</li>
 </ul>
 <p><strong>注解处理器</strong></p>
@@ -10934,7 +10917,7 @@
       </tags>
   </entry>
   <entry>
-    <title>深入理解Spring容器初始化（一）：上下文的初始化</title>
+    <title>深入理解Spring注解机制（二）：元注解解析与属性映射</title>
     <url>/2022/08/10/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%85%83%E6%B3%A8%E8%A7%A3%E8%A7%A3%E6%9E%90%E4%B8%8E%E5%B1%9E%E6%80%A7%E6%98%A0%E5%B0%84/</url>
     <content><![CDATA[<h2 id="前言">前言</h2>
 <p>众所周知，<code>spring</code> 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 <code>springboot</code> 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 <code>@Service</code>：</p>
@@ -10965,13 +10948,15 @@
 <li>从 <code>MergedAnnotations</code> 通过 <code>get</code> 方法获取符合条件的合并注解 <code>MergedAnnotation</code>，该过程将从<code>AnnotatedElement</code> 关联的全部注解中选出所需的注解类型，然后解析其各种映射关系，并变为一个合并注解；</li>
 <li>然后将该合并注解通过 <code>synthesize</code> 方法合成为一个符合条件的普通注解，该过程将基于处理后的合并注解，使用 JDK 动态代理生成一个指定注解类型的代理对象；</li>
 </ul>
-<p>这里我们重点关注  <code>findMergedAnnotation</code> 方法，以及调用 <code>MergedAnnotations.get</code> 方法后，合并注解聚合是如何在获得层级结构中的注解后，对其元注解和相关属性的解析的。</p>
+<p>这里我们重点关注 <code>findMergedAnnotation</code> 方法，以及调用 <code>MergedAnnotations.get</code> 方法后，合并注解聚合是如何在获得层级结构中的注解后，对其元注解和相关属性的解析的。</p>
 <h3 id="2-typemappedannotations">2、TypeMappedAnnotations</h3>
 <p><code>AnnotatedElementUtils.findAnnotations</code> 获取了一个 <code>MergedAnnotations</code> 对象，该方法经过一系列的跳转，最终会得到一个 <code>TypeMappedAnnotations</code> 实现类实例：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> MergedAnnotations <span class="title">from</span><span class="params">(AnnotatedElement element, SearchStrategy searchStrategy,</span></span></span><br><span class="line"><span class="function"><span class="params">                              RepeatableContainers repeatableContainers, AnnotationFilter annotationFilter)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 该元素若符合下述任一情况，则直接返回空注解：</span></span><br><span class="line">    <span class="comment">// a.被处理的元素属于java包、被java包中的对象声明，或者就是Ordered.class</span></span><br><span class="line">    <span class="comment">// b.只查找元素直接声明的注解，但是元素本身没有声明任何注解</span></span><br><span class="line">    <span class="comment">// c.查找元素的层级结构，但是元素本身没有任何层级结构</span></span><br><span class="line">    <span class="comment">// d.元素是桥接方法</span></span><br><span class="line">    <span class="keyword">if</span> (AnnotationsScanner.isKnownEmpty(element, searchStrategy)) &#123;</span><br><span class="line">        <span class="keyword">return</span> NONE;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 5、返回一个具体的实现类实例</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> TypeMappedAnnotations(element, searchStrategy, repeatableContainers, annotationFilter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在前文我们知道，<code>TypeMappedAnnotations</code> 是 <code>MergedAnnotations</code> 接口的默认实现，他表示由 <code>AnnotationScanner</code> 从同一个 <code>AnnotatedElement</code> 上扫描出来的注解们转为的一批合并注解 <code>MergedAnnotation</code>。</p>
 <p>举个例子，假如现有 <code>AnnotatedElement</code> 对象 <code>Foo.class</code>，他上面有一些注解，则理论上转为 <code>MergedAnnotations</code> 的过程如下：</p>
-<p><img src="https://img.xiajibagao.top/image-20220813133938406.png" alt="image-20220813133938406"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220813133938406.png" alt="image-20220813133938406"><figcaption aria-hidden="true">image-20220813133938406</figcaption>
+</figure>
 <p>不过当 <code>TypeMappedAnnotations</code> 创建以后，内部的 <code>MergedAnnotation</code> 并没有真正的被创建，而是需要等到调用 <code>TypeMappedAnnotations</code> 才会完成注解的搜索、解析与合并过程，因此在这个阶段，一个 <code>TypeMappedAnnotations</code> 只能表示一组来直接或间接自于同一个 <code>AnnotatedElement</code> 的注解之间的映射关系。</p>
 <h2 id="二-元注解的解析">二、元注解的解析</h2>
 <p><code>TypeMappedAnnotations</code> 创建后需要等到调用时才会初始化，当调用 <code>MergedAnnotations.get</code> 方法时，会创建一个 <code>MergedAnnotationFinder</code> 用于获取符合条件的 <code>MergedAnnotation</code>：</p>
@@ -10996,14 +10981,18 @@
 <p>在 <code>AnnotationTypeMappings</code> 创建时需要重点关注 <code>AnnotationTypeMappings.addAllMappings</code> 方法，该方法实际上就是元注解解析的主体，用于根据广度优先，把一个注解类上的全部元注解都转为 <code>AnnotationTypeMapping</code> 并加入 <code>AnnotationTypeMappings</code> 中：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">addAllMappings</span><span class="params">(Class&lt;? extends Annotation&gt; annotationType)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 广度优先遍历注解和元注解</span></span><br><span class="line">    Deque&lt;AnnotationTypeMapping&gt; queue = <span class="keyword">new</span> ArrayDeque&lt;&gt;();</span><br><span class="line">    addIfPossible(queue, <span class="keyword">null</span>, annotationType, <span class="keyword">null</span>); <span class="comment">// 1.1 添加待解析的元注解</span></span><br><span class="line">    <span class="keyword">while</span> (!queue.isEmpty()) &#123;</span><br><span class="line">        AnnotationTypeMapping mapping = queue.removeFirst();</span><br><span class="line">        <span class="keyword">this</span>.mappings.add(mapping);</span><br><span class="line">        <span class="comment">// 继续解析下一层</span></span><br><span class="line">        addMetaAnnotationsToQueue(queue, mapping);  <span class="comment">// 1.2 解析的元注解</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1.1 添加待解析的元注解</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">addIfPossible</span><span class="params">(Deque&lt;AnnotationTypeMapping&gt; queue, <span class="meta">@Nullable</span> AnnotationTypeMapping source,</span></span></span><br><span class="line"><span class="function"><span class="params">                           Class&lt;? extends Annotation&gt; annotationType, <span class="meta">@Nullable</span> Annotation ann)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">try</span> &#123;</span><br><span class="line">        <span class="comment">// 将数据源、元注解类型和元注解实例封装为一个AnnotationTypeMapping，作为下一次处理的数据源</span></span><br><span class="line">        queue.addLast(<span class="keyword">new</span> AnnotationTypeMapping(source, annotationType, ann));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">catch</span> (Exception ex) &#123;</span><br><span class="line">        AnnotationUtils.rethrowAnnotationConfigurationException(ex);</span><br><span class="line">        <span class="keyword">if</span> (failureLogger.isEnabled()) &#123;</span><br><span class="line">            failureLogger.log(<span class="string">&quot;Failed to introspect meta-annotation &quot;</span> + annotationType.getName(),</span><br><span class="line">                              (source != <span class="keyword">null</span> ? source.getAnnotationType() : <span class="keyword">null</span>), ex);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1.2 解析的元注解</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">addMetaAnnotationsToQueue</span><span class="params">(Deque&lt;AnnotationTypeMapping&gt; queue, AnnotationTypeMapping source)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取当前注解上直接声明的元注解</span></span><br><span class="line">    Annotation[] metaAnnotations = AnnotationsScanner.getDeclaredAnnotations(source.getAnnotationType(), <span class="keyword">false</span>);</span><br><span class="line">    <span class="keyword">for</span> (Annotation metaAnnotation : metaAnnotations) &#123;</span><br><span class="line">        <span class="comment">// 若已经解析过了则跳过，避免“循环引用”</span></span><br><span class="line">        <span class="keyword">if</span> (!isMappable(source, metaAnnotation)) &#123;</span><br><span class="line">            <span class="keyword">continue</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// a.若当前正在解析的注解是容器注解，则将内部的可重复注解取出解析</span></span><br><span class="line">        Annotation[] repeatedAnnotations = <span class="keyword">this</span>.repeatableContainers.findRepeatedAnnotations(metaAnnotation);</span><br><span class="line">        <span class="keyword">if</span> (repeatedAnnotations != <span class="keyword">null</span>) &#123;</span><br><span class="line">            <span class="keyword">for</span> (Annotation repeatedAnnotation : repeatedAnnotations) &#123;</span><br><span class="line">                <span class="comment">// 1.2.1 判断是否已经完成映射</span></span><br><span class="line">                <span class="keyword">if</span> (!isMappable(source, repeatedAnnotation)) &#123;</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                &#125;</span><br><span class="line">                addIfPossible(queue, source, repeatedAnnotation);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// b.若当前正在解析的注解不是容器注解，则将直接解析</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            addIfPossible(queue, source, metaAnnotation);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 1.2.1 判断是否已经完成映射</span></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isMappable</span><span class="params">(AnnotationTypeMapping source, <span class="meta">@Nullable</span> Annotation metaAnnotation)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (metaAnnotation != <span class="keyword">null</span> &amp;&amp; !<span class="keyword">this</span>.filter.matches(metaAnnotation) &amp;&amp;</span><br><span class="line">            !AnnotationFilter.PLAIN.matches(source.getAnnotationType()) &amp;&amp;</span><br><span class="line">            !isAlreadyMapped(source, metaAnnotation));</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">boolean</span> <span class="title">isAlreadyMapped</span><span class="params">(AnnotationTypeMapping source, Annotation metaAnnotation)</span> </span>&#123;</span><br><span class="line">    Class&lt;? extends Annotation&gt; annotationType = metaAnnotation.annotationType();</span><br><span class="line">    <span class="comment">// 递归映射表，确定这个注解类型是否在映射表的树结构中存在</span></span><br><span class="line">    <span class="comment">// 这个做法相当于在循环引用中去重</span></span><br><span class="line">    AnnotationTypeMapping mapping = source;</span><br><span class="line">    <span class="keyword">while</span> (mapping != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mapping.getAnnotationType() == annotationType) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        mapping = mapping.getSource();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>解析后的 <code>AnnotationTypeMappings</code> 大概可以参考下图：</p>
-<p><img src="https://img.xiajibagao.top/image-20220813133630338.png" alt="image-20220813133630338"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220813133630338.png" alt="image-20220813133630338"><figcaption aria-hidden="true">image-20220813133630338</figcaption>
+</figure>
 <p>不过这个图仍然不够准确，因为 <code>AnnotationTypeMapping</code> 之间还会维持一个彼此间的引用关系，从而保证 <code>AnnotationTypeMapping</code> 彼此之间也能够区分父子关系。</p>
 <h3 id="3-解析元注解">3、解析元注解</h3>
 <p><code>AnnotationTypeMapping</code> 直译叫做注解类型映射，之所以叫映射，是因为一个类型映射对象总是跟一个元注解一一对应，它持有原始注解的引用，此外还会记录注解属性以及其源注解的一些信息。</p>
 <p>实际上，<code>@AliasFor</code> 以及其他注解属性的映射也在这里完成，不过本节先重点关注其本身的属性：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">AnnotationTypeMapping(<span class="meta">@Nullable</span> AnnotationTypeMapping source,</span><br><span class="line">                      Class&lt;? extends Annotation&gt; annotationType, <span class="meta">@Nullable</span> Annotation annotation) &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">this</span>.source = source; <span class="comment">// 声明当前元注解的源注解映射对象</span></span><br><span class="line">    <span class="keyword">this</span>.root = (source != <span class="keyword">null</span> ? source.getRoot() : <span class="keyword">this</span>); <span class="comment">// 当前元注解所在树根节点对应的元注解映射对象</span></span><br><span class="line">    <span class="keyword">this</span>.distance = (source == <span class="keyword">null</span> ? <span class="number">0</span> : source.getDistance() + <span class="number">1</span>); <span class="comment">// 与树根节点对应的元注解映射对象的距离</span></span><br><span class="line">    <span class="keyword">this</span>.annotationType = annotationType; <span class="comment">// 当前元注解的类型</span></span><br><span class="line">    <span class="keyword">this</span>.metaTypes = merge( <span class="comment">// 记录全部子元注解类型</span></span><br><span class="line">        source != <span class="keyword">null</span> ? source.getMetaTypes() : <span class="keyword">null</span>,</span><br><span class="line">        annotationType);</span><br><span class="line">    <span class="keyword">this</span>.annotation = annotation; <span class="comment">// 记录对原始元注解的引用</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 一些属性解析和处理......</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> &lt;T&gt; <span class="function">List&lt;T&gt; <span class="title">merge</span><span class="params">(<span class="meta">@Nullable</span> List&lt;T&gt; existing, T element)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (existing == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> Collections.singletonList(element);</span><br><span class="line">    &#125;</span><br><span class="line">    List&lt;T&gt; merged = <span class="keyword">new</span> ArrayList&lt;&gt;(existing.size() + <span class="number">1</span>);</span><br><span class="line">    merged.addAll(existing);</span><br><span class="line">    merged.add(element);</span><br><span class="line">    <span class="keyword">return</span> Collections.unmodifiableList(merged);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>因此，通过构造函数不难看出，<code>AnnotationTypeMapping</code> 之间其实会形成一个类似单向链表的结构，我们根据此调整上一节末尾给出的图例：</p>
-<p><img src="https://img.xiajibagao.top/image-20220813142108900.png" alt="image-20220813142108900"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220813142108900.png" alt="image-20220813142108900"><figcaption aria-hidden="true">image-20220813142108900</figcaption>
+</figure>
 <p>至此，通过 <code>AnnotationTypeMappings</code> 可以直接管理所有的 <code>AnnotationTypeMapping</code>，而通过独立的 <code>AnnotationTypeMapping</code>，又可以追溯元注解之间的父子关系。</p>
 <h2 id="三-属性解析">三、属性解析</h2>
 <p>通过上文，我们分析完元注解的解析问题，通过 <code>AnnotationTypeMappings</code> 或 <code>AnnotationTypeMapping</code> 都可以完成的元注解树结构的访问，不过仍然还没说清楚Spring 支持的 <code>@AliasFor</code> 以及基于元注解的各种属性映射机制是怎么实现的。</p>
@@ -11011,7 +11000,7 @@
 <p>继续看 <code>AnnotationTypeMapping</code> 的构造函数中属性解析解析部分：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line">AnnotationTypeMapping(<span class="meta">@Nullable</span> AnnotationTypeMapping source,</span><br><span class="line">                      Class&lt;? extends Annotation&gt; annotationType, <span class="meta">@Nullable</span> Annotation annotation) &#123;</span><br><span class="line">	<span class="comment">// ================ 元注解解析相关的属性 ================</span></span><br><span class="line">    <span class="keyword">this</span>.source = source;</span><br><span class="line">    <span class="keyword">this</span>.root = (source != <span class="keyword">null</span> ? source.getRoot() : <span class="keyword">this</span>);</span><br><span class="line">    <span class="keyword">this</span>.distance = (source == <span class="keyword">null</span> ? <span class="number">0</span> : source.getDistance() + <span class="number">1</span>);</span><br><span class="line">    <span class="keyword">this</span>.metaTypes = merge(</span><br><span class="line">        source != <span class="keyword">null</span> ? source.getMetaTypes() : <span class="keyword">null</span>,</span><br><span class="line">        annotationType);</span><br><span class="line">    <span class="keyword">this</span>.annotationType = annotationType;</span><br><span class="line">    <span class="keyword">this</span>.annotation = annotation;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ================ 属性解析 ================</span></span><br><span class="line">    <span class="comment">// 将当前元注解的属性解析为AttributeMethods</span></span><br><span class="line">    <span class="keyword">this</span>.attributes = AttributeMethods.forAnnotationType(annotationType);</span><br><span class="line">    <span class="comment">// 属性别名与相关的值缓存</span></span><br><span class="line">    <span class="keyword">this</span>.mirrorSets = <span class="keyword">new</span> MirrorSets();</span><br><span class="line">    <span class="keyword">this</span>.aliasMappings = filledIntArray(<span class="keyword">this</span>.attributes.size());</span><br><span class="line">    <span class="keyword">this</span>.conventionMappings = filledIntArray(<span class="keyword">this</span>.attributes.size());</span><br><span class="line">    <span class="keyword">this</span>.annotationValueMappings = filledIntArray(<span class="keyword">this</span>.attributes.size());</span><br><span class="line">    <span class="keyword">this</span>.annotationValueSource = <span class="keyword">new</span> AnnotationTypeMapping[<span class="keyword">this</span>.attributes.size()];</span><br><span class="line">    <span class="keyword">this</span>.aliasedBy = resolveAliasedForTargets();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 初始化别名属性，为所有存在别名的属性建立MirrorSet</span></span><br><span class="line">    processAliases();</span><br><span class="line">    <span class="comment">// 为当前注解内互为并名的属性建立属性映射</span></span><br><span class="line">    addConventionMappings();</span><br><span class="line">    <span class="comment">// 为跨注解互为别名的属性建立属性映射</span></span><br><span class="line">    addConventionAnnotationValues();</span><br><span class="line">    <span class="keyword">this</span>.synthesizable = computeSynthesizableFlag();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>关于属性解析部分，大概分为五部分内容：</p>
-<ol>
+<ol type="1">
 <li>解析注解属性；解析注解的属性，将其转为 <code>AttributeMethods</code> 对象；</li>
 <li>解析<code>@AliasFor</code>注解：基于 <code>AttributeMethods</code> 对象，解析注解带有 <code>@AliasFor</code> 注解的属性；</li>
 <li>映射互为别名的属性：为该注解内通过 <code>@AliasFor</code> 形成互为别名关系的属性设置对应的 <code>MirrorSet</code>；</li>
@@ -11022,7 +11011,9 @@
 <p>属性解析的第一步，在 <code>AnnotationTypeMapping</code> 中，注解的属性会被解析为 <code>AttributeMethods</code> 对象：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> AttributeMethods <span class="title">forAnnotationType</span><span class="params">(<span class="meta">@Nullable</span> Class&lt;? extends Annotation&gt; annotationType)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (annotationType == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> NONE;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> cache.computeIfAbsent(annotationType, AttributeMethods::compute);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> AttributeMethods <span class="title">compute</span><span class="params">(Class&lt;? extends Annotation&gt; annotationType)</span> </span>&#123;</span><br><span class="line">    Method[] methods = annotationType.getDeclaredMethods();</span><br><span class="line">    <span class="keyword">int</span> size = methods.length;</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; methods.length; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!isAttributeMethod(methods[i])) &#123;</span><br><span class="line">            methods[i] = <span class="keyword">null</span>;</span><br><span class="line">            size--;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (size == <span class="number">0</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> NONE;</span><br><span class="line">    &#125;</span><br><span class="line">    Arrays.sort(methods, methodComparator);</span><br><span class="line">    Method[] attributeMethods = Arrays.copyOf(methods, size);</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> AttributeMethods(annotationType, attributeMethods);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">boolean</span> <span class="title">isAttributeMethod</span><span class="params">(Method method)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> (method.getParameterCount() == <span class="number">0</span> &amp;&amp; method.getReturnType() != <span class="keyword">void</span>.class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这个类本质上就是通过 <code>Class.getDeclaredMethods</code> 获取到的注解属性的 <code>Method</code> 数组，在 <code>AnnotationTypeMapping</code> 中，所有的属性都通过它在 <code>AttributeMethods</code> 中的数组下标访问和调用。</p>
-<p><img src="https://img.xiajibagao.top/image-20220813145531624.png" alt="image-20220813145531624"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220813145531624.png" alt="image-20220813145531624"><figcaption aria-hidden="true">image-20220813145531624</figcaption>
+</figure>
 <p>在构造函数中，我们也能看到提前声明了好几个数组：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">this</span>.aliasMappings = filledIntArray(<span class="keyword">this</span>.attributes.size());</span><br><span class="line"><span class="keyword">this</span>.conventionMappings = filledIntArray(<span class="keyword">this</span>.attributes.size());</span><br><span class="line"><span class="keyword">this</span>.annotationValueMappings = filledIntArray(<span class="keyword">this</span>.attributes.size());</span><br><span class="line"><span class="keyword">this</span>.annotationValueSource = <span class="keyword">new</span> AnnotationTypeMapping[<span class="keyword">this</span>.attributes.size()];</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">int</span>[] filledIntArray(<span class="keyword">int</span> size) &#123;</span><br><span class="line">    <span class="keyword">int</span>[] array = <span class="keyword">new</span> <span class="keyword">int</span>[size];</span><br><span class="line">    Arrays.fill(array, -<span class="number">1</span>);</span><br><span class="line">    <span class="keyword">return</span> array;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>这些数组都与属性映射有关，任何一个属性的相关映射信息，都可以通过其在 <code>AttributeMethods</code> 中对应的数组下标，从这些关联的数组对应位置获得。</p>
@@ -11032,9 +11023,9 @@
 <p><code>resolveAliasTarget</code> 最终将获得<code>@AliasFor</code>注解所指定的别名方法，具体如下：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> Method <span class="title">resolveAliasTarget</span><span class="params">(Method attribute, AliasFor aliasFor, <span class="keyword">boolean</span> checkAliasPair)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (StringUtils.hasText(aliasFor.value()) &amp;&amp; StringUtils.hasText(aliasFor.attribute())) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> AnnotationConfigurationException(String.format(</span><br><span class="line">            <span class="string">&quot;In @AliasFor declared on %s, attribute &#x27;attribute&#x27; and its alias &#x27;value&#x27; &quot;</span> +</span><br><span class="line">            <span class="string">&quot;are present with values of &#x27;%s&#x27; and &#x27;%s&#x27;, but only one is permitted.&quot;</span>,</span><br><span class="line">            AttributeMethods.describe(attribute), aliasFor.attribute(),</span><br><span class="line">            aliasFor.value()));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 1、若Annotation指定的是Annotation，则认为目标就是当前注解类</span></span><br><span class="line">    Class&lt;? extends Annotation&gt; targetAnnotation = aliasFor.annotation();</span><br><span class="line">    <span class="keyword">if</span> (targetAnnotation == Annotation.class) &#123;</span><br><span class="line">        targetAnnotation = <span class="keyword">this</span>.annotationType;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 2、获取aliasFrom#attribute，若为空则再获取aliasFrom#value</span></span><br><span class="line">    String targetAttributeName = aliasFor.attribute();</span><br><span class="line">    <span class="keyword">if</span> (!StringUtils.hasLength(targetAttributeName)) &#123;</span><br><span class="line">        targetAttributeName = aliasFor.value();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!StringUtils.hasLength(targetAttributeName)) &#123;</span><br><span class="line">        targetAttributeName = attribute.getName();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 3、从指定类中获得别名指定指定的注解属性对应的方法</span></span><br><span class="line">    Method target = AttributeMethods.forAnnotationType(targetAnnotation).get(targetAttributeName);</span><br><span class="line">    <span class="keyword">if</span> (target == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// a.校验是否能找到别名方法</span></span><br><span class="line">        <span class="keyword">if</span> (targetAnnotation == <span class="keyword">this</span>.annotationType) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> AnnotationConfigurationException(String.format(</span><br><span class="line">                <span class="string">&quot;@AliasFor declaration on %s declares an alias for &#x27;%s&#x27; which is not present.&quot;</span>,</span><br><span class="line">                AttributeMethods.describe(attribute), targetAttributeName));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> AnnotationConfigurationException(String.format(</span><br><span class="line">            <span class="string">&quot;%s is declared as an @AliasFor nonexistent %s.&quot;</span>,</span><br><span class="line">            StringUtils.capitalize(AttributeMethods.describe(attribute)),</span><br><span class="line">            AttributeMethods.describe(targetAnnotation, targetAttributeName)));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// b.校验别名与原属性对应的方法是否不为一个方法</span></span><br><span class="line">    <span class="keyword">if</span> (target.equals(attribute)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> AnnotationConfigurationException(String.format(</span><br><span class="line">            <span class="string">&quot;@AliasFor declaration on %s points to itself. &quot;</span> +</span><br><span class="line">            <span class="string">&quot;Specify &#x27;annotation&#x27; to point to a same-named attribute on a meta-annotation.&quot;</span>,</span><br><span class="line">            AttributeMethods.describe(attribute)));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// c.校验别名与原属性对应的方法返回值是否一致</span></span><br><span class="line">    <span class="keyword">if</span> (!isCompatibleReturnType(attribute.getReturnType(), target.getReturnType())) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> AnnotationConfigurationException(String.format(</span><br><span class="line">            <span class="string">&quot;Misconfigured aliases: %s and %s must declare the same return type.&quot;</span>,</span><br><span class="line">            AttributeMethods.describe(attribute),</span><br><span class="line">            AttributeMethods.describe(target)));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// d.若有必要，则再校验声明别名方法的注解是@AliasFor指定的注解类型</span></span><br><span class="line">    <span class="keyword">if</span> (isAliasPair(target) &amp;&amp; checkAliasPair) &#123;</span><br><span class="line">        AliasFor targetAliasFor = target.getAnnotation(AliasFor.class);</span><br><span class="line">        <span class="keyword">if</span> (targetAliasFor != <span class="keyword">null</span>) &#123;</span><br><span class="line">            Method mirror = resolveAliasTarget(target, targetAliasFor, <span class="keyword">false</span>);</span><br><span class="line">            <span class="keyword">if</span> (!mirror.equals(attribute)) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> AnnotationConfigurationException(String.format(</span><br><span class="line">                    <span class="string">&quot;%s must be declared as an @AliasFor %s, not %s.&quot;</span>,</span><br><span class="line">                    StringUtils.capitalize(AttributeMethods.describe(target)),</span><br><span class="line">                    AttributeMethods.describe(attribute), AttributeMethods.describe(mirror)));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> target;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>在这一步，他做了以下逻辑处理：</p>
-<ol>
+<ol type="1">
 <li>确定别名属性所在的注解类：若 <code>@AliasFor.annotation</code> 属性保持默认值 <code>Annotation.class</code>，则认为别名属性所在的注解就是当前解析的注解；</li>
-<li>确定别名属性对应的方法名：优先获取 <code>@aliasFrom.attribute</code> 同名属性，若 <code>@AliasFrom.attribute</code> 为空则获取 <code>@AliasFrom.value</code>  指定的属性名；</li>
+<li>确定别名属性对应的方法名：优先获取 <code>@aliasFrom.attribute</code> 同名属性，若 <code>@AliasFrom.attribute</code> 为空则获取 <code>@AliasFrom.value</code> 指定的属性名；</li>
 <li>从指定的注解类获取方法名对应的属性；</li>
 <li>校验该别名方法对应方法是否不是当前注解属性的方法；</li>
 <li>校验别名方法返回值类型与当前注解属性的方法返回值类型是否一致；</li>
@@ -11059,7 +11050,9 @@
 <p>收集注解这一步，将以当前注解的某个属性为根属性，根据链表结构向子注解递归，从子注解中获取全部与该属性相关的注解：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">collectAliases</span><span class="params">(List&lt;Method&gt; aliases)</span> </span>&#123;</span><br><span class="line">    AnnotationTypeMapping mapping = <span class="keyword">this</span>;</span><br><span class="line">    <span class="keyword">while</span> (mapping != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">int</span> size = aliases.size();</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; size; j++) &#123;</span><br><span class="line">            List&lt;Method&gt; additional = mapping.aliasedBy.get(aliases.get(j)); <span class="comment">// 获取以该属性作为别名的子类属性</span></span><br><span class="line">            <span class="keyword">if</span> (additional != <span class="keyword">null</span>) &#123;</span><br><span class="line">                aliases.addAll(additional);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        mapping = mapping.source; <span class="comment">// 继续向声明当前元注解的子注解递归</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>举个例子，假如我们现在有如下结构：</p>
-<p><img src="https://img.xiajibagao.top/image-20220813154058053.png" alt="image-20220813154058053"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220813154058053.png" alt="image-20220813154058053"><figcaption aria-hidden="true">image-20220813154058053</figcaption>
+</figure>
 <p>现在在 <code>Annotation1</code> 的 <code>AnnotationTypeMapping</code> 中，对它的 <code>name</code> 属性进行收集的时候，则最终将一路收集得到：</p>
 <figure class="highlight text"><table><tr><td class="code"><pre><span class="line">[name, value, value2, value3]</span><br></pre></td></tr></table></figure>
 <p>可见该方法会将全部关联注解对象中，在同一条别名链上的注解属性全部找出来。</p>
@@ -11075,13 +11068,17 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">int</span>[] resolvedMirrors = mapping.mirrorSets.resolve(<span class="keyword">null</span>, mapping.annotation, ReflectionUtils::invokeMethod)</span><br></pre></td></tr></table></figure>
 <p>我们会在后续分析，这里我们举个例子说明一下上述过程：</p>
 <p>一切开始前，我们从 <code>Annotation1</code> 向 <code>Annotation3</code> 遍历，此时我们处理 <code>Annotation1</code> 的属性 <code>value1</code> ：</p>
-<p><img src="https://img.xiajibagao.top/image-20220813163208346.png" alt="image-20220813163208346"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220813163208346.png" alt="image-20220813163208346"><figcaption aria-hidden="true">image-20220813163208346</figcaption>
+</figure>
 <p>当调用 <code>processAliases</code> 后：</p>
 <ul>
 <li>由于别名链上非根属性在根注解 <code>Annotation3</code> 中都不存在，别名不动，此时三个注解的 <code>aliasMappings</code> 都不变；</li>
 <li>别名链上的三个属性 <code>value1</code>、<code>value2</code> 和 <code>value3</code> 经过 <code>MirrorSet</code> 处理后，发现 <code>value3</code> 是优先级最高的，因而把它们的 <code>annotationValueSource</code>、<code>annotationValueMappings</code> 都分别更新为 <code>Annotation3</code> 和 <code>Annotation3.value3</code> 的下标；</li>
 </ul>
-<p><img src="https://img.xiajibagao.top/image-20220813163633311.png" alt="image-20220813163633311"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220813163633311.png" alt="image-20220813163633311"><figcaption aria-hidden="true">image-20220813163633311</figcaption>
+</figure>
 <p>这样处理后，当调用 <code>Annotation1.value1</code> 方法时：</p>
 <ul>
 <li>先从 <code>AnnotationAttributes</code> 中获得 <code>value1</code> 的下标 <code>0</code>；</li>
@@ -11104,7 +11101,9 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MirrorSet</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> size;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> <span class="keyword">int</span>[] indexes = <span class="keyword">new</span> <span class="keyword">int</span>[attributes.size()];</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">update</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.size = <span class="number">0</span>;</span><br><span class="line">        Arrays.fill(<span class="keyword">this</span>.indexes, -<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; MirrorSets.<span class="keyword">this</span>.assigned.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (MirrorSets.<span class="keyword">this</span>.assigned[i] == <span class="keyword">this</span>) &#123;</span><br><span class="line">                <span class="keyword">this</span>.indexes[<span class="keyword">this</span>.size] = i;</span><br><span class="line">                <span class="keyword">this</span>.size++;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>简单的来说，就是遍历 <code>MirrorSets.assigned</code> 数组，看看哪些属性是共享当前 <code>MirrorSet</code> 实例的，然后把注解属性的下标给记录到 <code>indexes</code> 中。</p>
 <p>举个例子，我们现在有一个注解，他的两个属性构成了互为别名的关系，现在对其中一个进行处理，则有如下情况：</p>
-<p><img src="https://img.xiajibagao.top/image-20220617104800021.png" alt="image-20220617104800021"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220617104800021.png" alt="image-20220617104800021"><figcaption aria-hidden="true">image-20220617104800021</figcaption>
+</figure>
 <ul>
 <li><code>value</code> 和 <code>alias</code> 属性在 <code>AnnotationAttributes</code> 中对应的下标分别是 <code>0</code> 和 <code>1</code>；</li>
 <li>处理时，由于 <code>value</code> 和 <code>alias</code> 处于同一条别名链，因此 <code>MirrorSets.updateFrom</code> 调用时会同时传入这两者；</li>
@@ -11124,14 +11123,16 @@
 </ul>
 <p>然后返回这个最终属性的下标。</p>
 <p>我们举个例子，假如现在有 A，B，C，D，E 五个属性，其中 A 和 B、C 和 D 互为别名，则经过 <code>MirrorSets#resolve</code> 方法最终得到的 <code>resolvedMirrors</code> 如下图：</p>
-<img src="https://img.xiajibagao.top/image-20220618155125929.png" alt="image-20220618155125929" style="zoom:67%;">
+<p><img src="https://img.xiajibagao.top/image-20220618155125929.png" alt="image-20220618155125929" style="zoom:67%;"></p>
 <p>把<code>resolvedMirrors</code>翻译一下，就是 A 和 B 取值时都取 A 的值，C 和 D 取值时都取 C 的值，而 E 取值照样取 E 的值。</p>
 <h3 id="4-多级别名">4、多级别名</h3>
 <p>看到这里，我们对别名机制大概有个轮廓了，任何关联的注解中，只要通过 <code>@AliasFor</code> 能直接或者间接联系上，那它们就能构成别名。</p>
 <p>因此，哪怕存在这样的结构：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@interface</span> Annotation1 &#123;</span><br><span class="line">    <span class="function">String <span class="title">alias1</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line">    <span class="meta">@AliasFor(attribute = &quot;alias1&quot;)</span></span><br><span class="line">    <span class="function">String <span class="title">alias2</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@Annotation1</span></span><br><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@interface</span> Annotation2 &#123;</span><br><span class="line">    <span class="meta">@AliasFor(annotation = Annotation1.class, attribute = &quot;alias1&quot;)</span></span><br><span class="line">    <span class="function">String <span class="title">value1</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line">    <span class="meta">@AliasFor(annotation = Annotation1.class, attribute = &quot;alias2&quot;)</span></span><br><span class="line">    <span class="function">String <span class="title">value2</span><span class="params">()</span> <span class="keyword">default</span> &quot;&quot;</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>当使用 <code>@Annotation2</code> 时，只要对 <code>value1</code> 或者 <code>value2</code> 进行赋值，最终都能从两个注解的各两个属性中拿到一样的值：</p>
-<p><img src="https://img.xiajibagao.top/image-20220813174709782.png" alt="image-20220813174709782"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220813174709782.png" alt="image-20220813174709782"><figcaption aria-hidden="true">image-20220813174709782</figcaption>
+</figure>
 <h2 id="五-映射属性覆盖">五、映射属性覆盖</h2>
 <p>现在，通过 <code>annotationValueMappings</code>，<code>annotationValueSource</code>以及 <code>AttributeMethods</code>这三个成员变量，任何一个使用<code>@AliasFor</code> 注解配置了别名的属性都可以找到真正对应的值。</p>
 <p>不过在 Spring 中，还支持一种默认的属性覆盖机制，即当父子注解都存在一个名称与类型皆相同的属性时，子注解的属性值将会覆盖父注解的属性值。</p>
@@ -11154,7 +11155,7 @@
 <p>回滚整个流程，我们了解了 Spring 中元注解的解析过程，与注解的属性覆盖与别名机制的实现。</p>
 <p>当我们通过 <code>MergedAnnotations</code> 去从 <code>AnnotatedElement</code> 获取注解的时候，会有专门的 <code>AnnotationProcessor</code> ——比如 <code>MergedAnnotationFinder</code>——去把指定类型的注解上的全部元注解解析为 <code>AnnotationTypeMapping</code>，然后 <code>AnnotationTypeMapping</code> 在把一个一个的元注解对象转为 <code>AnnotationTypeMapping</code>，让他们形成类似链表的结构，从而维持父子注解间层次关系。</p>
 <p>而当 <code>AnnotationTypeMapping</code> 在创建时，会递归解析 <code>AnnotationTypeMapping</code> 链表结构上的全部节点，然后解析他们的属性，让通过 <code>@AliasFor</code> 构成别名关系的属性在各个注解中以 <code>MirrorSet</code> 的形式存在，从实现别名机制。</p>
-<p>并且，在完成别名映射后，<code>AnnotationTypeMapping</code> 还会再次递归解析<code>AnnotationTypeMapping</code> 链表结构上的全部节点的属性，让子注解中与父注解具有相同名称、类型的非 <code>&quot;value&quot;</code> 属性覆盖父注解中的属性。</p>
+<p>并且，在完成别名映射后，<code>AnnotationTypeMapping</code> 还会再次递归解析<code>AnnotationTypeMapping</code> 链表结构上的全部节点的属性，让子注解中与父注解具有相同名称、类型的非 <code>"value"</code> 属性覆盖父注解中的属性。</p>
 ]]></content>
       <categories>
         <category>Spring</category>

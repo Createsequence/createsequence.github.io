@@ -81,17 +81,17 @@
 
 
 
-<meta name="description" content="前言 众所周知，spring 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 springboot 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 @Service： 12345678@Target(&amp;#123;ElementType.TYPE&amp;#125;)@Retention(RetentionPolicy">
+<meta name="description" content="前言 众所周知，spring 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 springboot 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 @Service： 12345678@Target(&amp;#123;ElementType.TYPE&amp;#125;)@Retention(RetentionPoli">
 <meta property="og:type" content="article">
-<meta property="og:title" content="深入理解Spring容器初始化（一）：上下文的初始化">
+<meta property="og:title" content="深入理解Spring注解机制（一）：注解的搜索与处理机制">
 <meta property="og:url" content="http://blog.xiajibagao.top/2022/08/06/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E6%B3%A8%E8%A7%A3%E7%9A%84%E6%90%9C%E7%B4%A2%E4%B8%8E%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="前言 众所周知，spring 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 springboot 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 @Service： 12345678@Target(&amp;#123;ElementType.TYPE&amp;#125;)@Retention(RetentionPolicy">
+<meta property="og:description" content="前言 众所周知，spring 从 2.5 版本以后开始支持使用注解代替繁琐的 xml 配置，到了 springboot 更是全面拥抱了注解式配置。平时在使用的时候，点开一些常见的等注解，会发现往往在一个注解上总会出现一些其他的注解，比如 @Service： 12345678@Target(&amp;#123;ElementType.TYPE&amp;#125;)@Retention(RetentionPoli">
 <meta property="og:locale">
 <meta property="og:image" content="https://img.xiajibagao.top/image-20220812140322452.png">
 <meta property="og:image" content="https://img.xiajibagao.top/image-20220812173010265.png">
 <meta property="article:published_time" content="2022-08-05T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-08-15T14:17:49.068Z">
+<meta property="article:modified_time" content="2022-08-15T14:22:59.883Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="Spring">
 <meta property="article:tag" content="源码分析">
@@ -132,7 +132,7 @@
 
 
 
-  <title>深入理解Spring容器初始化（一）：上下文的初始化 | Createsequence's Blog</title>
+  <title>深入理解Spring注解机制（一）：注解的搜索与处理机制 | Createsequence's Blog</title>
   
 
 
@@ -310,7 +310,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">深入理解Spring容器初始化（一）：上下文的初始化</h1>
+          <h1 class="post-title" itemprop="name headline">深入理解Spring注解机制（一）：注解的搜索与处理机制</h1>
         
 
         <div class="post-meta">
@@ -422,14 +422,14 @@
 </ul>
 <p>大部分情况下，<code>get</code> 开头的方法与 <code>AnnotatedElement</code> 本身直接提供的方法效果一致，比较特殊的 <code>find</code> 开头的方法，此类方法会从<code>AnnotatedElement</code> 的层级结构中寻找存在的注解，关于“<strong>层级结构</strong>”，Spring 给出了一套定义：</p>
 <ul>
-<li>当 <code>AnnotatedElement</code> 是 <code>Class</code> 时：层级结构指类本身，以及类和它的父类，父接口，以及父类的父类，父类的父接口…整个继承树中的所有 <code>Class</code> 文件；</li>
-<li>当 <code>AnnotatedElement</code> 是 <code>Method</code> 是：层级结构指方法本身，以及声明该方法的类它的父类，父接口，以及父类的父类，父类的父接口…整个继承树中所有 <code>Class</code> 文件中，那些与搜索的 <code>Method</code> 具有完全相同签名的方法；</li>
+<li>当 <code>AnnotatedElement</code> 是 <code>Class</code> 时：层级结构指类本身，以及类和它的父类，父接口，以及父类的父类，父类的父接口......整个继承树中的所有 <code>Class</code> 文件；</li>
+<li>当 <code>AnnotatedElement</code> 是 <code>Method</code> 是：层级结构指方法本身，以及声明该方法的类它的父类，父接口，以及父类的父类，父类的父接口......整个继承树中所有 <code>Class</code> 文件中，那些与搜索的 <code>Method</code> 具有完全相同签名的方法；</li>
 <li>当 <code>AnnotatedElement</code> 不是上述两者中的一种时，它没有层级结构，搜索将仅限于 <code>AnnotatedElement</code> 这个对象本身；</li>
 </ul>
 <p>举个例子，假设我们现在有如下结构：</p>
-<img src="https://img.xiajibagao.top/image-20220812140322452.png" alt="image-20220812140322452" style="zoom:50%;">
+<p><img src="https://img.xiajibagao.top/image-20220812140322452.png" alt="image-20220812140322452" style="zoom:50%;"></p>
 <p>则对 <code>Foo.class</code> 使用 <code>get</code> 开头的方法，或者 <code>AnnotatedElement</code> 本身提供的方法，都只能获得 <code>Annotation1</code>，而使用 <code>find</code> 方法除了可以获得 <code>Foo</code> 本身的注解，还可以获得 <code>FooSuper</code> 和 <code>FooInterface</code> 上的注解。</p>
-<p>同理，假如我们扫描的是 <code>Foo.class</code> 中一个名为 <code>foo</code>，没有参数且没有返回值的方法，则 <code>find</code> 除了扫描 <code>Foo.foo()</code>  外，还会扫描器 <code>FooSuper</code> 和 <code>FooInterface</code> 中没有参数且没有返回值的方法上的注解。</p>
+<p>同理，假如我们扫描的是 <code>Foo.class</code> 中一个名为 <code>foo</code>，没有参数且没有返回值的方法，则 <code>find</code> 除了扫描 <code>Foo.foo()</code> 外，还会扫描器 <code>FooSuper</code> 和 <code>FooInterface</code> 中没有参数且没有返回值的方法上的注解。</p>
 <h2 id="二-合并注解">二、合并注解</h2>
 <p>当我们点进 <code>AnnotationUtil</code> 中的任意一个方法，比如 <code>findAnnotation</code> ：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> &lt;A extends Annotation&gt; <span class="function">A <span class="title">findAnnotation</span><span class="params">(Method method, <span class="meta">@Nullable</span> Class&lt;A&gt; annotationType)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (annotationType == <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 如果不需要对层级结构进行搜索也能找到注解</span></span><br><span class="line">    <span class="keyword">if</span> (AnnotationFilter.PLAIN.matches(annotationType) ||</span><br><span class="line">        AnnotationsScanner.hasPlainJavaAnnotationsOnly(method)) &#123;</span><br><span class="line">        <span class="keyword">return</span> method.getDeclaredAnnotation(annotationType);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 注解无法直接获取，需要对层级结构进行搜索</span></span><br><span class="line">    <span class="keyword">return</span> MergedAnnotations.from(method, SearchStrategy.TYPE_HIERARCHY, RepeatableContainers.none())</span><br><span class="line">        .get(annotationType).withNonMergedAttributes()</span><br><span class="line">        .synthesize(MergedAnnotation::isPresent).orElse(<span class="keyword">null</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
@@ -437,12 +437,11 @@
 <ul>
 <li>先对 <code>AnnotatedElement</code> 本身进行查找，并且使用注解过滤器 <code>AnnotationFilter</code> 进行处理；</li>
 <li>找不到再通过一个叫 <code>MergedAnnotations</code> 的东西对 <code>AnnotatedElement</code> 进行查找，这玩意需要指定三个东西：
-<ol>
+<ol type="1">
 <li>查找的 <code>AnnotatedElement</code>；</li>
 <li>搜索策略 <code>SearchStrategy</code>；</li>
 <li>可重复注解容器 <code>RepeatableContainers</code>；</li>
-</ol>
-</li>
+</ol></li>
 </ul>
 <p>可见，真正的搜索过程发生在合并注解 <code>MergedAnnotations</code>。</p>
 <h3 id="1-注解过滤器">1、注解过滤器</h3>
@@ -479,22 +478,12 @@
 <h3 id="1-搜索策略">1、搜索策略</h3>
 <p>其中，<code>SearchStrategy</code> 提供了五种搜索范围：</p>
 <ul>
-<li>
-<p><code>DIRECT</code>：只查找元素上直接声明的注解，不包括通过<code>@Inherited</code>继承的注解；</p>
-</li>
-<li>
-<p><code>INHERITED_ANNOTATIONS</code>：只查找元素直接声明或通过<code>@Inherited</code>继承的注解；</p>
-</li>
-<li>
-<p><code>SUPERCLASS</code>：查找元素直接声明或所有父类的注解；</p>
-</li>
-<li>
-<p><code>TYPE_HIERARCHY</code>：查找元素、所有父类以及实现的父接口的全部注解；</p>
-</li>
-<li>
-<p><code>TYPE_HIERARCHY_AND_ENCLOSING_CLASSES</code>：查找查找元素、所有父类以及实现的父接口、封闭类以及其子类的全部注解。</p>
-<p>封闭类是 JDK17 的新特性，可参考 <a target="_blank" rel="noopener" href="https://blog.csdn.net/j3T9Z7H/article/details/124600691?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-124600691-blog-115782223.pc_relevant_downloadblacklistv1&amp;spm=1001.2101.3001.4242.1&amp;utm_relevant_index=2">详解 Java 17中的新特性：“密封类”</a>，本章将不过多涉及该内容；</p>
-</li>
+<li><p><code>DIRECT</code>：只查找元素上直接声明的注解，不包括通过<code>@Inherited</code>继承的注解；</p></li>
+<li><p><code>INHERITED_ANNOTATIONS</code>：只查找元素直接声明或通过<code>@Inherited</code>继承的注解；</p></li>
+<li><p><code>SUPERCLASS</code>：查找元素直接声明或所有父类的注解；</p></li>
+<li><p><code>TYPE_HIERARCHY</code>：查找元素、所有父类以及实现的父接口的全部注解；</p></li>
+<li><p><code>TYPE_HIERARCHY_AND_ENCLOSING_CLASSES</code>：查找查找元素、所有父类以及实现的父接口、封闭类以及其子类的全部注解。</p>
+<p>封闭类是 JDK17 的新特性，可参考 <a target="_blank" rel="noopener" href="https://blog.csdn.net/j3T9Z7H/article/details/124600691?utm_medium=distribute.pc_relevant.none-task-blog-2~default~baidujs_baidulandingword~default-0-124600691-blog-115782223.pc_relevant_downloadblacklistv1&amp;spm=1001.2101.3001.4242.1&amp;utm_relevant_index=2">详解 Java 17中的新特性：“密封类”</a>，本章将不过多涉及该内容；</p></li>
 </ul>
 <h3 id="2-注解扫描器">2、注解扫描器</h3>
 <p><code>AnnotationScanner</code> 扫描扫描行为的直接发起者，它只提供了唯一允许外部调用的静态方法 <code>scan</code> ：</p>
@@ -514,52 +503,39 @@
 <p>当扫描到元素后，<code>AnnotationScanner</code> 会获得该元素上的注解，将其与元素一起作为入参传入 <code>doWithAnnotations</code>，若 <code>doWithAnnotations</code> 返回了一个非空元素，则 <code>AnnotationScanner</code> 将继续扫描元素的层级结构，然后直到<code>doWithAnnotations</code> 返回 null 为止或者全部层级结构都被扫描为止。</p>
 <p>注解处理器是实现各种查找和收集等操作最核心的部分，这里我们先简单了解一下，知道它是个配合 <code>AnnotationScanner</code> 使用的回调接口即可。</p>
 <h3 id="4-聚合索引">4、聚合索引</h3>
-<p>在 <code>AnnotationsProcessor</code> 中， <code>doWithAggregate</code>  和 <code>doWithAnnotations</code> 都会传入一个名为 <code>aggregateIndex</code> 的参数，该参数用于扫描过程中扫描的层级数，通过该参数，我们可以区分注解之间被扫描到的先后顺序。</p>
+<p>在 <code>AnnotationsProcessor</code> 中， <code>doWithAggregate</code> 和 <code>doWithAnnotations</code> 都会传入一个名为 <code>aggregateIndex</code> 的参数，该参数用于扫描过程中扫描的层级数，通过该参数，我们可以区分注解之间被扫描到的先后顺序。</p>
 <p>比如说，我们现在还是有一个如下结构：</p>
-<p><img src="https://img.xiajibagao.top/image-20220812173010265.png" alt="image-20220812173010265"></p>
+<figure>
+<img src="https://img.xiajibagao.top/image-20220812173010265.png" alt="image-20220812173010265"><figcaption aria-hidden="true">image-20220812173010265</figcaption>
+</figure>
 <p><code>AnnotationScanner</code> 在扫描时，以 0 为起始值，每进入一个层级就递增，现在我们对 <code>Foo.class</code> 进行扫描，则有：</p>
 <ul>
-<li>
-<p>aggregateIndex= 0，扫描 <code>Foo.class</code>，获得 <code>Annotation1</code>；</p>
-</li>
-<li>
-<p>aggregateIndex= 1，扫描 <code>FooInterface.class</code>，获得 <code>Annotation2</code>；</p>
-</li>
-<li>
-<p>aggregateIndex= 2，扫描 <code>FooSuper.class</code>，获得 <code>Annotation3</code>；</p>
-</li>
-<li>
-<p>aggregateIndex= 4：</p>
+<li><p>aggregateIndex= 0，扫描 <code>Foo.class</code>，获得 <code>Annotation1</code>；</p></li>
+<li><p>aggregateIndex= 1，扫描 <code>FooInterface.class</code>，获得 <code>Annotation2</code>；</p></li>
+<li><p>aggregateIndex= 2，扫描 <code>FooSuper.class</code>，获得 <code>Annotation3</code>；</p></li>
+<li><p>aggregateIndex= 4：</p>
 <p>先扫描 <code>FooSuperInterface.class</code>，获得 <code>Annotation4</code>，</p>
-<p>再扫描 <code>FooSuperSuper.class</code>，获得 <code>Annotation5</code>；</p>
-</li>
+<p>再扫描 <code>FooSuperSuper.class</code>，获得 <code>Annotation5</code>；</p></li>
 </ul>
 <p>从理论上来说，聚合索引越小，则该注解最优先被扫描到。因此<strong>聚合索引一般用于在出现重复注解的时候用来区分优先级</strong>，比如层级结构中出现了多个类型相同的注解，而用户仅需要获得其中一个，此时就可以通过比较聚合索引，返回其中最小或者最大的那个注解。后续我们还会看到一个叫 <code>AnnotationSelector</code> 的玩意，它就是用来做这个事情的。</p>
 <h2 id="三-注解的处理">三、注解的处理</h2>
 <p>注解处理器 <code>AnnotationsProcessor</code> 的实现类是完成注解操作最核心的部分，前面提到 <code>AnnotationScanner</code> 负责提供注解扫描的功能，但是扫描到注解以后要怎么处理？是否继续扫描后续注解？这些都取决于使用的 <code>AnnotationsProcessor</code> 规定要怎么做。</p>
 <p>在 <code>TypeMappedAnnotations</code> 中，以内部类的形式提供了多数 <code>AnnotationsProcessor</code> 的实现，它们提供类三类功能：</p>
 <ul>
-<li>
-<p><code>TypeMappedAnnotations.IsPresent</code>：判断注解是否直接或间接（即不存在可重复注解，但是存在可重复注解的容器注解这种情况）存在。</p>
-<p>关于注解的“直接”或“间接”存在，可以参照 <code>AnnotatedElement</code> 类上注释的定义；</p>
-</li>
-<li>
-<p><code>TypeMappedAnnotations.MergedAnnotationFinder</code>：用于找到一个唯一的指定类型的注解；</p>
-</li>
-<li>
-<p><code>TypeMappedAnnotations.AggregatesCollector</code>：用于收集全部扫描到的注解；</p>
-</li>
+<li><p><code>TypeMappedAnnotations.IsPresent</code>：判断注解是否直接或间接（即不存在可重复注解，但是存在可重复注解的容器注解这种情况）存在。</p>
+<p>关于注解的“直接”或“间接”存在，可以参照 <code>AnnotatedElement</code> 类上注释的定义；</p></li>
+<li><p><code>TypeMappedAnnotations.MergedAnnotationFinder</code>：用于找到一个唯一的指定类型的注解；</p></li>
+<li><p><code>TypeMappedAnnotations.AggregatesCollector</code>：用于收集全部扫描到的注解；</p></li>
 </ul>
 <h3 id="1-判断注解是否存在">1、判断注解是否存在</h3>
 <p>该处理器对应 <code>TypeMappedAnnotations.IsPresent</code>，它用于确定一个注解是否在 <code>AnnotationScanner</code> 支持扫描的范围内存在。</p>
 <p>需要注意的是，<code>IsPresent</code> 中支持基于两种“存在”的定义进行查询：</p>
 <ul>
 <li><strong>directly</strong>：注解在 <code>AnnotatedElement</code> 上直接存在，包括两种情况
-<ol>
+<ol type="1">
 <li>注解 X 在 A 上直接存在；</li>
 <li>注解 X 是可重复注解，它存在可重复容器注解 Y，现在在类 A 上存在 Y 但是不存在 X，则说 X 在 A 上直接存在；</li>
-</ol>
-</li>
+</ol></li>
 <li><strong>Indirectly</strong>：注解 X 在<code>AnnotatedElement</code> 上不直接存在，但是在能够扫描到的注解的元注解中存在；</li>
 </ul>
 <p><strong>注解处理器</strong></p>
@@ -662,8 +638,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2022/07/26/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%88%AB%E5%90%8D%E6%9C%BA%E5%88%B6/" rel="next" title="深入理解Spring容器初始化（一）：上下文的初始化">
-                <i class="fa fa-chevron-left"></i> 深入理解Spring容器初始化（一）：上下文的初始化
+              <a href="/2022/07/26/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%88%AB%E5%90%8D%E6%9C%BA%E5%88%B6/" rel="next" title="深入理解Spring别名机制">
+                <i class="fa fa-chevron-left"></i> 深入理解Spring别名机制
               </a>
             
           </div>
@@ -672,8 +648,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2022/08/10/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%85%83%E6%B3%A8%E8%A7%A3%E8%A7%A3%E6%9E%90%E4%B8%8E%E5%B1%9E%E6%80%A7%E6%98%A0%E5%B0%84/" rel="prev" title="深入理解Spring容器初始化（一）：上下文的初始化">
-                深入理解Spring容器初始化（一）：上下文的初始化 <i class="fa fa-chevron-right"></i>
+              <a href="/2022/08/10/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%85%83%E6%B3%A8%E8%A7%A3%E8%A7%A3%E6%9E%90%E4%B8%8E%E5%B1%9E%E6%80%A7%E6%98%A0%E5%B0%84/" rel="prev" title="深入理解Spring注解机制（二）：元注解解析与属性映射">
+                深入理解Spring注解机制（二）：元注解解析与属性映射 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
