@@ -1,4 +1,4 @@
-$(function(){
+$(document).ready(function(){
     console.log("welcome to createsequence's blog :)");
     processing();
 })
