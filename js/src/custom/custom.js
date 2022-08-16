@@ -1,5 +1,5 @@
 $(function(){
-    console.log("executing custom JS !");
+    console.log("welcome to createsequence's blog :)");
     processing();
 })
 
@@ -15,6 +15,9 @@ function processing() {
     }
 }
 
+/**
+ * 文章列表
+ */
 function articleList() {
 
     /**
@@ -53,7 +56,9 @@ function articleList() {
     }
 }
 
-
+/**
+ * 文章详情
+ */
 function article() {
     
     /**
