@@ -97,13 +97,21 @@ function article() {
         })
     }
 
+    function changeDisplay() {
+        $('.post-toc .nav .nav-child').each(function(index, ele) {
+            $(ele).removeAttr('display');
+        })
+    }
+
     function init() {
+        changeDisplay();
         addCustomDiv();
         addTitleLink();
         delDefaultImgTitle();
     }
 
     return {
+        changeDisplay,
         init, 
         addCustomDiv, 
         addTitleLink, 
