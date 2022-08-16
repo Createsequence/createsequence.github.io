@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/%E5%8D%9A%E5%AE%A2.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/%E5%8D%9A%E5%AE%A2.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/%E5%8D%9A%E5%AE%A2.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Spring,SpringBoot," />
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Createsequence's Blog" type="application/atom+xml" />
+
+
+
+
+
+
+<meta name="description" content="前言 Spring 从 3.x 开始支持事件机制。在 Spring 的事件机制中，我们可以令一个事件类继承 ApplicationEvent 类，然后将实现了 ApplicationListener 的 Bean 注册到 spring 容器，最后向 ApplicationEventPublisher 推送事件对象即可令所有订阅者收到事件。在 4.2 以后，甚至不需要实现 ApplicationL">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Spring事件机制（一）：广播器与监听器的初始化">
+<meta property="og:url" content="http://blog.xiajibagao.top/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B9%BF%E6%92%AD%E5%99%A8%E4%B8%8E%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="前言 Spring 从 3.x 开始支持事件机制。在 Spring 的事件机制中，我们可以令一个事件类继承 ApplicationEvent 类，然后将实现了 ApplicationListener 的 Bean 注册到 spring 容器，最后向 ApplicationEventPublisher 推送事件对象即可令所有订阅者收到事件。在 4.2 以后，甚至不需要实现 ApplicationL">
+<meta property="og:locale">
+<meta property="article:published_time" content="2022-08-15T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-08-16T14:30:14.611Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="SpringBoot">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":true,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://blog.xiajibagao.top/2022/08/16/spring/深入理解Spring事件机制（一）：广播器与监听器的初始化/"/>
+
+
+
+
+
+  <title>深入理解Spring事件机制（一）：广播器与监听器的初始化 | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 5.2.0"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Createsequence's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">一个努力前进的程序猿</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B9%BF%E6%92%AD%E5%99%A8%E4%B8%8E%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">深入理解Spring事件机制（一）：广播器与监听器的初始化</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-16T00:00:00+08:00">
+                2022-08-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SpringBoot/" itemprop="url" rel="index">
+                    <span itemprop="name">SpringBoot</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.8k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="前言">前言</h2>
+<p>Spring 从 <code>3.x</code> 开始支持事件机制。在 Spring 的事件机制中，我们可以令一个事件类继承 <code>ApplicationEvent</code> 类，然后将实现了 <code>ApplicationListener</code> 的 <code>Bean</code> 注册到 spring 容器，最后向 <code>ApplicationEventPublisher</code> 推送事件对象即可令所有订阅者收到事件。在 <code>4.2</code> 以后，甚至不需要实现 <code>ApplicationListener</code> 接口，仅需在 <code>Bean</code> 中方法标记 <code>@EventListener</code> 注解即可。</p>
+<p>笔者将基于 Spring 源码的 <code>5.2.x</code> 分支，分析该功能是如何实现的。</p>
+<p>本文是其中的第一篇文章，将分析广播器与监听的是如何被初始化，并完成注解流程的。</p>
+<p>在开始前，推荐先阅读前文了解 Spring 容器的初始化过程与 <code>BeanFactory</code> 中 <code>Bean</code> 的创建，如果可能，还可以了解一点 Spring 的注解机制，这将更有利于流程与一些代码的理解。</p>
+<p>相关文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16591407.html">深入理解Spring事件机制（一）：广播器与监听器的初始化</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16591418.html">深入理解Spring事件机制（二）：事件的推送</a></li>
+</ul>
+<h2 id="一-广播器的创建">一、广播器的创建</h2>
+<p>在前文，我们知道容器的初始化是通过 <code>AbstractApplicationContext.refresh()</code> 方法完成的，事件机制的相关组件同样也离不开容器，因此事件系统的初始化也通过该方法完成。</p>
+<p><code>AbstractApplicationContext.initApplicationEventMulticaster()</code> 是第一步，它的作用很简单：</p>
+<p>如果当前 <code>BeanFactory</code> 有名为 <code>“applicationEventMulticaster”</code> 的 <code>ApplicationEventMulticaster</code>，就把它设置为当前上下文的事件广播器，否则就创建并在 <code>BeanFactory</code> 中注册一个<code>SimpleApplicationEventMulticaster</code> 实例作为当前上下文的事件广播器。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initApplicationEventMulticaster</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConfigurableListableBeanFactory beanFactory = getBeanFactory();</span><br><span class="line">    <span class="comment">// 是否存在“applicationEventMulticaster”这个Bean</span></span><br><span class="line">    <span class="keyword">if</span> (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) &#123;</span><br><span class="line">        <span class="comment">// 如果存在就把它设置为当前上下文的事件广播器</span></span><br><span class="line">        <span class="keyword">this</span>.applicationEventMulticaster =</span><br><span class="line">            beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);</span><br><span class="line">        <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">            logger.trace(<span class="string">&quot;Using ApplicationEventMulticaster [&quot;</span> + <span class="keyword">this</span>.applicationEventMulticaster + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 没有就创建一个SimpleApplicationEventMulticaster作为当前上下文的事件广播器</span></span><br><span class="line">        <span class="keyword">this</span>.applicationEventMulticaster = <span class="keyword">new</span> SimpleApplicationEventMulticaster(beanFactory);</span><br><span class="line">        beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, <span class="keyword">this</span>.applicationEventMulticaster);</span><br><span class="line">        <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">            logger.trace(<span class="string">&quot;No &#x27;&quot;</span> + APPLICATION_EVENT_MULTICASTER_BEAN_NAME + <span class="string">&quot;&#x27; bean, using &quot;</span> +</span><br><span class="line">                         <span class="string">&quot;[&quot;</span> + <span class="keyword">this</span>.applicationEventMulticaster.getClass().getSimpleName() + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="二-编程式监听器的注册">二、编程式监听器的注册</h2>
+<p>在 <code>4.2</code> 及以前版本，监听器需要显式的实现 <code>ApplicationListener</code> 接口，我们管这种监听器叫做编程式监听器。</p>
+<p>编程式监听器在 <code>AbstractApplicationContext.registerListeners()</code> 这个方法的调用过程中被注册到注册广播器中，这一块代码逻辑也很简单：</p>
+<ul>
+<li>向事件广播器注册已经被注册的 <code>BeanFactroy</code> 中，且实现了 <code>ApplicationListener</code> 接口的监听器；</li>
+<li>向事件广播器注册还没有被实例化的监听器的 <code>BeanName</code>；</li>
+<li>发布一些早期事件；</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">registerListeners</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 向事件广播器注册已经被注册的上下文中的监听器</span></span><br><span class="line">    <span class="keyword">for</span> (ApplicationListener&lt;?&gt; listener : getApplicationListeners()) &#123;</span><br><span class="line">        getApplicationEventMulticaster().addApplicationListener(listener);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 向事件广播器注册指定的监听器，不过这里只注册BeanName，</span></span><br><span class="line">    <span class="comment">// 因为有些监听器Bean是由FactoryBean生产的，而在这里FactoryBean实际上还没被生成出来</span></span><br><span class="line">    String[] listenerBeanNames = getBeanNamesForType(ApplicationListener.class, <span class="keyword">true</span>, <span class="keyword">false</span>);</span><br><span class="line">    <span class="keyword">for</span> (String listenerBeanName : listenerBeanNames) &#123;</span><br><span class="line">        getApplicationEventMulticaster().addApplicationListenerBean(listenerBeanName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发布一些早期事件</span></span><br><span class="line">    Set&lt;ApplicationEvent&gt; earlyEventsToProcess = <span class="keyword">this</span>.earlyApplicationEvents;</span><br><span class="line">    <span class="keyword">this</span>.earlyApplicationEvents = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (!CollectionUtils.isEmpty(earlyEventsToProcess)) &#123;</span><br><span class="line">        <span class="keyword">for</span> (ApplicationEvent earlyEvent : earlyEventsToProcess) &#123;</span><br><span class="line">            getApplicationEventMulticaster().multicastEvent(earlyEvent);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>我们需要注意的是，在这一步，虽然向广播器注册了监听器，但是实际上这只是一种关系，<strong>真正的监听器实例不一定有被创建出来</strong>。</p>
+<p>不过在如果上下文中存在“早期事件”，则会触发广播，此时调用 <code>ApplicationEventMulticaster.multicastEvent()</code> 将会提前触发广播器中那些监听器的初始化，否则按正常情况这些将等到上下文主动初始化 <code>BeanFactory</code> 中全部非懒加载 <code>Bean</code> 的时候才会一并初始化。</p>
+<h2 id="三-注解式监听器的注册">三、注解式监听器的注册</h2>
+<p>在 <code>4.2</code> 版本以后，我们可以通过在成员方法上添加 <code>@EventListener</code> 或者 <code>@TransactionalEventListener</code> 注解的方法声明一个监听器，我们管这种监听器叫做注解式监听器。</p>
+<p>实际上，由于注解式监听器的类上没有注解或接口作为标识，因此无法直接从 <code>BeanFactory</code> 中查找，所以它的注册显然不能与编程式监听器一样，在 <code>AbstractApplicationContext.registerListeners()</code> 通过从 <code>BeanFactory</code> 中直接找到然后注册。</p>
+<p>和 <code>3.0</code> 以后支持的一些注解式配置的原理一样，<code>@EventListener</code> 是通过 <code>EventListenerMethodProcessor</code> 这个特殊的后置处理器完成注册的。</p>
+<p><code>EventListenerMethodProcessor</code> 实现的接口如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">EventListenerMethodProcessor</span></span></span><br><span class="line"><span class="class">    <span class="keyword">implements</span> <span class="title">SmartInitializingSingleton</span>, <span class="title">ApplicationContextAware</span>, <span class="title">BeanFactoryPostProcessor</span> </span>&#123;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中， <code>SmartInitializingSingleton</code> 和 <code>BeanFactoryPostProcessor</code> 接口非常直观的告诉了我们它被调用的时机：</p>
+<ul>
+<li><code>BeanFactoryPostProcessor</code>：在上下文初始化的时候，通过 <code>AbstractApplicationContext.invokeBeanFactoryPostProcessors</code> 这个方法跟其他 <code>BeanFactory</code> 的后置处理器被一起集中调用；</li>
+<li><code>SmartInitializingSingleton</code>：在这个 <code>Bean</code> 完成初始化的时候；</li>
+</ul>
+<p>接下来我们通过处理器分析注解式监听器的注册流程。</p>
+<h3 id="1-监听器方法处理器的注册">1、监听器方法处理器的注册</h3>
+<p>根据前文，我们知道容器在初始化过程中，通过 <code>AbstarctApplicationContext.obtainFreshBeanFactory</code> 创建新 <code>BeanFactory</code> 的时候，最终会一路绕到 <code>AbstractRefreshableApplicationContext.loadBeanDefinitions</code> 这个方法上，通过这个方法上下文会为自己的 <code>BeanFactory</code> 提前加载好 <code>BeanDefinition</code>。</p>
+<p>而这个抽象方法在不同的上下文会有不同的实现，但是基本都要通过不同的 <code>BeanDefinitionReader</code> 去完成这个过程。</p>
+<p>支持注解式配置的上下文会用 <code>AnnotatedBeanDefinitionReader</code> 去读取配置的时候，会通过 <code>AnnotationConfigBeanDefinitionParser</code> 将配置信息解析为具体的 <code>BeanDefinition</code> 。而 Spring 就在这一步将默认配置的一些 <code>Bean</code> 的 <code>BeanDefinition</code> 给加上了。</p>
+<p>实际上，不止 <code>EventListenerMethodProcessor</code> ，几乎所有针对 Spring 注解的后置处理器都是通过这种方式注册到 <code>BeanFactory</code> 的。</p>
+<p>具体代码参见 <code>AnnotationConfigUtils.registerAnnotationConfigProcessors</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> Set&lt;BeanDefinitionHolder&gt; <span class="title">registerAnnotationConfigProcessors</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    BeanDefinitionRegistry registry, <span class="meta">@Nullable</span> Object source)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 其他的一些注解处理器，比如 @Configuration，@Autowrite 之类的注解处理器... ...</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 注册 EventListenerMethodProcessor</span></span><br><span class="line">    <span class="keyword">if</span> (!registry.containsBeanDefinition(EVENT_LISTENER_FACTORY_BEAN_NAME)) &#123;</span><br><span class="line">        RootBeanDefinition def = <span class="keyword">new</span> RootBeanDefinition(DefaultEventListenerFactory.class);</span><br><span class="line">        def.setSource(source);</span><br><span class="line">        beanDefs.add(registerPostProcessor(registry, def, EVENT_LISTENER_FACTORY_BEAN_NAME));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 注册名为“org.springframework.context.event.internalEventListenerFactory” EventListenerFactory</span></span><br><span class="line">    <span class="keyword">if</span> (!registry.containsBeanDefinition(EVENT_LISTENER_FACTORY_BEAN_NAME)) &#123;</span><br><span class="line">			RootBeanDefinition def = <span class="keyword">new</span> RootBeanDefinition(DefaultEventListenerFactory.class);</span><br><span class="line">			def.setSource(source);</span><br><span class="line">			beanDefs.add(registerPostProcessor(registry, def, EVENT_LISTENER_FACTORY_BEAN_NAME));</span><br><span class="line">		&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> beanDefs;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-获取监听器工厂">2、获取监听器工厂</h3>
+<p>当 <code>EventListenerMethodProcessor</code> 被作为一个 <code>BeanFactoryPostProcessor</code> 被调用时，它会从 <code>BeanFactory</code> 中收集所有实现了 <code>EventListenerFactory</code> 接口的 <code>Bean</code>，然后记录在成员变量 <code>eventListenerFactories</code> 中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanFactory</span><span class="params">(ConfigurableListableBeanFactory beanFactory)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.beanFactory = beanFactory;</span><br><span class="line">    Map&lt;String, EventListenerFactory&gt; beans = beanFactory.getBeansOfType(EventListenerFactory.class, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">    List&lt;EventListenerFactory&gt; factories = <span class="keyword">new</span> ArrayList&lt;&gt;(beans.values());</span><br><span class="line">    AnnotationAwareOrderComparator.sort(factories);</span><br><span class="line">    <span class="keyword">this</span>.eventListenerFactories = factories;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而监听器工厂这个类作用也显而易见，他用于把被注解的方法适配为监听器对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">EventListenerFactory</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 是否支持处理该方法</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">supportsMethod</span><span class="params">(Method method)</span></span>;</span><br><span class="line">    <span class="comment">// 将bean中带有@EventListener注解的方法转为ApplicationListener</span></span><br><span class="line">    ApplicationListener&lt;?&gt; createApplicationListener(String beanName, Class&lt;?&gt; type, Method method);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>值得一提的是，由于注册 <code>EventListenerMethodProcessor</code> 的时候也会默认支持一个名为 ：<code>"org.springframework.context.event.internalEventListenerFactory"</code> 的 <code>DefaultEventListenerFactory</code>，这保证至少有一个保底的监听器工厂。</p>
+<p><code>EventListenerFactory</code> 提供两个默认的实现：</p>
+<ul>
+<li><p><code>DefaultEventListenerFactory</code>：默认的实现，支持处理所有被 <code>@EventListener</code> 注解的方法，</p>
+<p>会将方法适配成类型为 <code>ApplicationListenerMethodAdapter</code> 的监听器；</p></li>
+<li><p><code>TransactionalEventListenerFactory</code>：支持 Spring 事务机制的监听器的工厂， 用于处理被 <code>@TransactionalEventListener</code> 注解的方法，</p>
+<p>会将方法适配成类型为 <code>ApplicationListenerMethodTransactionalAdapter</code> 的监听器；</p></li>
+</ul>
+<h3 id="3-将方法适配为监听器">3、将方法适配为监听器</h3>
+<p>当 <code>EventListenerMethodProcessor</code> 作为一个 <code>SmartInitializingSingleton</code> 被调用的时候：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">afterSingletonsInstantiated</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConfigurableListableBeanFactory beanFactory = <span class="keyword">this</span>.beanFactory;</span><br><span class="line">    Assert.state(<span class="keyword">this</span>.beanFactory != <span class="keyword">null</span>, <span class="string">&quot;No ConfigurableListableBeanFactory set&quot;</span>);</span><br><span class="line">    <span class="comment">// 获取工厂中的全部 Bean</span></span><br><span class="line">    String[] beanNames = beanFactory.getBeanNamesForType(Object.class);</span><br><span class="line">    <span class="keyword">for</span> (String beanName : beanNames) &#123;</span><br><span class="line">        <span class="keyword">if</span> (!ScopedProxyUtils.isScopedTarget(beanName)) &#123;</span><br><span class="line">            Class&lt;?&gt; type = <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 如果是代理对象，则获取原始对象的类型</span></span><br><span class="line">                type = AutoProxyUtils.determineTargetClass(beanFactory, beanName);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">                <span class="comment">// An unresolvable bean type, probably from a lazy bean - let&#x27;s ignore it.</span></span><br><span class="line">                <span class="keyword">if</span> (logger.isDebugEnabled()) &#123;</span><br><span class="line">                    logger.debug(<span class="string">&quot;Could not resolve target class for bean with name &#x27;&quot;</span> + beanName + <span class="string">&quot;&#x27;&quot;</span>, ex);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (type != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="comment">// 实现了ScopedObject接口</span></span><br><span class="line">                <span class="keyword">if</span> (ScopedObject.class.isAssignableFrom(type)) &#123;</span><br><span class="line">                    <span class="keyword">try</span> &#123;</span><br><span class="line">                        <span class="comment">// 获取原始的Bean对象</span></span><br><span class="line">                        Class&lt;?&gt; targetClass = AutoProxyUtils.determineTargetClass(</span><br><span class="line">                            beanFactory, ScopedProxyUtils.getTargetBeanName(beanName));</span><br><span class="line">                        <span class="keyword">if</span> (targetClass != <span class="keyword">null</span>) &#123;</span><br><span class="line">                            type = targetClass;</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">                        <span class="comment">// An invalid scoped proxy arrangement - let&#x27;s ignore it.</span></span><br><span class="line">                        <span class="keyword">if</span> (logger.isDebugEnabled()) &#123;</span><br><span class="line">                            logger.debug(<span class="string">&quot;Could not resolve target bean for scoped proxy &#x27;&quot;</span> + beanName + <span class="string">&quot;&#x27;&quot;</span>, ex);</span><br><span class="line">                        &#125;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">try</span> &#123;</span><br><span class="line">                    <span class="comment">// 处理 Bean</span></span><br><span class="line">                    processBean(beanName, type);</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> BeanInitializationException(<span class="string">&quot;Failed to process @EventListener &quot;</span> +</span><br><span class="line">                                                          <span class="string">&quot;annotation on bean with name &#x27;&quot;</span> + beanName + <span class="string">&quot;&#x27;&quot;</span>, ex);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>抛开对代理对象的一些检验和处理，我们直接看看 <code>processBean</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">processBean</span><span class="params">(<span class="keyword">final</span> String beanName, <span class="keyword">final</span> Class&lt;?&gt; targetType)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="keyword">this</span>.nonAnnotatedClasses.contains(targetType) &amp;&amp;</span><br><span class="line">        <span class="comment">// targetType类名不以“java.”开头，且不为Ordered接口</span></span><br><span class="line">        AnnotationUtils.isCandidateClass(targetType, EventListener.class) &amp;&amp;</span><br><span class="line">        <span class="comment">// 是未被@Component注解的Spring内部类</span></span><br><span class="line">        !isSpringContainerClass(targetType)) &#123;</span><br><span class="line"></span><br><span class="line">        Map&lt;Method, EventListener&gt; annotatedMethods = <span class="keyword">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 查找直接或间接带有@EventListener注解的方法</span></span><br><span class="line">            annotatedMethods = MethodIntrospector.selectMethods(targetType,</span><br><span class="line">                                                                (MethodIntrospector.MetadataLookup&lt;EventListener&gt;) method -&gt;</span><br><span class="line">                                                                AnnotatedElementUtils.findMergedAnnotation(method, EventListener.class));</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span> (Throwable ex) &#123;</span><br><span class="line">            <span class="comment">// An unresolvable type in a method signature, probably from a lazy bean - let&#x27;s ignore it.</span></span><br><span class="line">            <span class="keyword">if</span> (logger.isDebugEnabled()) &#123;</span><br><span class="line">                logger.debug(<span class="string">&quot;Could not resolve methods for bean with name &#x27;&quot;</span> + beanName + <span class="string">&quot;&#x27;&quot;</span>, ex);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果该类没有直接或间接带有@EventListener注解的方法，则记录并在下次查询时跳过</span></span><br><span class="line">        <span class="keyword">if</span> (CollectionUtils.isEmpty(annotatedMethods)) &#123;</span><br><span class="line">            <span class="keyword">this</span>.nonAnnotatedClasses.add(targetType);</span><br><span class="line">            <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">                logger.trace(<span class="string">&quot;No @EventListener annotations found on bean class: &quot;</span> + targetType.getName());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// Non-empty set of methods</span></span><br><span class="line">            ConfigurableApplicationContext context = <span class="keyword">this</span>.applicationContext;</span><br><span class="line">            Assert.state(context != <span class="keyword">null</span>, <span class="string">&quot;No ApplicationContext set&quot;</span>);</span><br><span class="line">            List&lt;EventListenerFactory&gt; factories = <span class="keyword">this</span>.eventListenerFactories;</span><br><span class="line">            Assert.state(factories != <span class="keyword">null</span>, <span class="string">&quot;EventListenerFactory List not initialized&quot;</span>);</span><br><span class="line">            <span class="comment">// 遍历注解方法，并遍历监听器工厂</span></span><br><span class="line">            <span class="keyword">for</span> (Method method : annotatedMethods.keySet()) &#123;</span><br><span class="line">                <span class="keyword">for</span> (EventListenerFactory factory : factories) &#123;</span><br><span class="line">                    <span class="comment">// 若工厂支持处理</span></span><br><span class="line">                    <span class="keyword">if</span> (factory.supportsMethod(method)) &#123;</span><br><span class="line">                        <span class="comment">// 将方法包装为ApplicationListener</span></span><br><span class="line">                        Method methodToUse = AopUtils.selectInvocableMethod(method, context.getType(beanName));</span><br><span class="line">                        ApplicationListener&lt;?&gt; applicationListener =</span><br><span class="line">                            factory.createApplicationListener(beanName, targetType, methodToUse);</span><br><span class="line">                        <span class="comment">// 如果监听器类型为ApplicationListenerMethodAdapter，则需要传入专门的SpEL表达式解析器EventExpressionEvaluator用于支持@EventListener.condition属性</span></span><br><span class="line">                        <span class="keyword">if</span> (applicationListener <span class="keyword">instanceof</span> ApplicationListenerMethodAdapter) &#123;</span><br><span class="line">                            ((ApplicationListenerMethodAdapter) applicationListener).init(context, <span class="keyword">this</span>.evaluator);</span><br><span class="line">                        &#125;</span><br><span class="line">                        <span class="comment">// 将监听器加入中的</span></span><br><span class="line">                        context.addApplicationListener(applicationListener);</span><br><span class="line">                        <span class="keyword">break</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (logger.isDebugEnabled()) &#123;</span><br><span class="line">                logger.debug(annotatedMethods.size() + <span class="string">&quot; @EventListener methods processed on bean &#x27;&quot;</span> +</span><br><span class="line">                             beanName + <span class="string">&quot;&#x27;: &quot;</span> + annotatedMethods);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addApplicationListener</span><span class="params">(ApplicationListener&lt;?&gt; listener)</span> </span>&#123;</span><br><span class="line">    Assert.notNull(listener, <span class="string">&quot;ApplicationListener must not be null&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.applicationEventMulticaster != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="keyword">this</span>.applicationEventMulticaster.addApplicationListener(listener);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.applicationListeners.add(listener);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Spring 在这一步主要趁着 <code>EventListenerMethodProcessor</code> 在 <code>BeanFactory</code> 中初始化的时候干了两件事：</p>
+<ul>
+<li>检查 <code>BeanFactory</code> 中的所有的 <code>Bean</code>，筛选出其中有成员方法直接或间接带有 <code>@EventListener</code> 注解的 <code>Bean</code>；</li>
+<li>将此类 <code>Bean</code> 的方法通过 <code>EventListenerFactory</code> 封装为 <code>ApplicationListener</code> 对象；</li>
+<li>然后将这些转换后得到的 <code>ApplicationListener</code> 注册到上下文中的广播器中；</li>
+</ul>
+<p>此外，这里有一个比较有意思的细节，就是由于 <code>@EventListener</code> 注解是支持在 <code>condition</code> 中通过 <code>SpEL</code> 表达式进行一些判断的，因此在这一步，针对默认的监听适配器实现 <code>ApplicationListenerMethodAdapter</code> ，提供了一个 <code>init</code> 方法用于把 <code>SpEL</code> 表达式解析器塞进去：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (applicationListener <span class="keyword">instanceof</span> ApplicationListenerMethodAdapter) &#123;</span><br><span class="line">    ((ApplicationListenerMethodAdapter) applicationListener).init(context, <span class="keyword">this</span>.evaluator);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>换而言之，如果我们希望让 <code>@EventListener.condition</code> 支持更多功能，就可以在这个地方动点手脚，比如向 <code>SpEL</code> 表达式上下文注册更多变量。</p>
+<h3 id="4-监听器的注册">4、监听器的注册</h3>
+<p>上一节中提到，在 <code>EventListenerMethodProcessor.processBean</code> 将方法转换为 <code>ApplicationListener</code> 后会将其注入广播器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addApplicationListener</span><span class="params">(ApplicationListener&lt;?&gt; listener)</span> </span>&#123;</span><br><span class="line">    Assert.notNull(listener, <span class="string">&quot;ApplicationListener must not be null&quot;</span>);</span><br><span class="line">    <span class="keyword">if</span> (<span class="keyword">this</span>.applicationEventMulticaster != <span class="keyword">null</span>) &#123;</span><br><span class="line">        <span class="comment">// 注册到上下文中的广播器中</span></span><br><span class="line">        <span class="keyword">this</span>.applicationEventMulticaster.addApplicationListener(listener);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">this</span>.applicationListeners.add(listener);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>而 <code>AbstractApplicationContext</code> 会将该方法代理到内部持有的广播器实例的 <code>ApplicationEventMulticaster.addApplicationListener</code> 方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">addApplicationListener</span><span class="params">(ApplicationListener&lt;?&gt; listener)</span> </span>&#123;</span><br><span class="line">   <span class="keyword">synchronized</span> (<span class="keyword">this</span>.defaultRetriever) &#123;</span><br><span class="line">      <span class="comment">// Explicitly remove target for a proxy, if registered already,</span></span><br><span class="line">      <span class="comment">// in order to avoid double invocations of the same listener.</span></span><br><span class="line">      Object singletonTarget = AopProxyUtils.getSingletonTarget(listener);</span><br><span class="line">      <span class="keyword">if</span> (singletonTarget <span class="keyword">instanceof</span> ApplicationListener) &#123;</span><br><span class="line">         <span class="keyword">this</span>.defaultRetriever.applicationListeners.remove(singletonTarget);</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">this</span>.defaultRetriever.applicationListeners.add(listener);</span><br><span class="line">      <span class="keyword">this</span>.retrieverCache.clear();</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>该方法最终将监听器添加到广播器持有的 <code>DefaultListenerRetriever</code> 对象实例中，跟已经注册到其中的编程式监听器一起，以待后续使用。</p>
+<h2 id="四-监听器工厂">四、监听器工厂</h2>
+<p>通过上文，我们知道注解式监听器依赖监听器工厂 <code>EventListenerFactory</code> 将 <code>Bean</code> 中的注解方法转为 <code>ApplicationListener</code> 实例。</p>
+<p>实际上，我们知道 spring 除了支持 <code>@EventListener</code> 注解外，还提供了 <code>@TransactionalEventListener</code> 注解，用于注册支持事务的注解式监听器，因此 <code>EventListenerFactory</code> 实际上也提供了两类工厂分别用于支持这两种实现：</p>
+<ul>
+<li><p><code>DefaultEventListenerFactory</code>：默认的实现，支持处理所有被 <code>@EventListener</code> 注解的方法，</p>
+<p>会将方法适配成类型为 <code>ApplicationListenerMethodAdapter</code> 的监听器；</p></li>
+<li><p><code>TransactionalEventListenerFactory</code>：支持 Spring 事务机制的监听器的工厂， 用于处理被 <code>@TransactionalEventListener</code> 注解的方法，</p>
+<p>会将方法适配成类型为 <code>ApplicationListenerMethodTransactionalAdapter</code> 的监听器；</p></li>
+</ul>
+<h3 id="1-通用监听器工厂">1、通用监听器工厂</h3>
+<p>通用监听器工厂的代码及其简单，它的特点如下：</p>
+<ul>
+<li>支持处理任何方法：<code>supportsMethod</code> 方法固定返回 <code>true</code>；</li>
+<li>总是最晚被执行：<code>getOrder</code> 默认返回 <code>Ordered.LOWEST_PRECEDENCE</code>；</li>
+<li>总是将注解方法适配为 <code>ApplicationListenerMethodAdapter</code> 类型的监听器；</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DefaultEventListenerFactory</span> <span class="keyword">implements</span> <span class="title">EventListenerFactory</span>, <span class="title">Ordered</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> order = LOWEST_PRECEDENCE;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setOrder</span><span class="params">(<span class="keyword">int</span> order)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.order = order;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.order;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">supportsMethod</span><span class="params">(Method method)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> ApplicationListener&lt;?&gt; createApplicationListener(String beanName, Class&lt;?&gt; type, Method method) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ApplicationListenerMethodAdapter(beanName, type, method);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-事务监听器工厂">2、事务监听器工厂</h3>
+<p>事件监听器工厂代码也并不复杂，相比 <code>DefaultEventListenerFactory</code>，它的特点如下：</p>
+<ul>
+<li>默认比 <code>DefaultEventListenerFactory</code> 更先被调用：<code>getOrder</code> 默认返回 50，比 <code>DefaultEventListenerFactory</code> 返回的 <code>Ordered.LOWEST_PRECEDENCE</code> 值更小；</li>
+<li>仅支持处理直接或间接被 <code>@TransactionalEventListener</code> 注解的方法；</li>
+<li>总是将注解方法适配为 <code>ApplicationListenerMethodTransactionalAdapter</code> 类型的监听器；</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">TransactionalEventListenerFactory</span> <span class="keyword">implements</span> <span class="title">EventListenerFactory</span>, <span class="title">Ordered</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> order = <span class="number">50</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setOrder</span><span class="params">(<span class="keyword">int</span> order)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.order = order;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getOrder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.order;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">supportsMethod</span><span class="params">(Method method)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> AnnotatedElementUtils.hasAnnotation(method, TransactionalEventListener.class);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> ApplicationListener&lt;?&gt; createApplicationListener(String beanName, Class&lt;?&gt; type, Method method) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> ApplicationListenerMethodTransactionalAdapter(beanName, type, method);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结">总结</h2>
+<p>当 Spring 容器启动，上下文调用 <code>AbstractApplicationContext.refresh</code> 方法对其进行初始化时，Spring 事件机制的两个核心组件：广播器、监听器也在该过程完成初始化。</p>
+<ul>
+<li><p>在 <code>AbstractApplicationContext.initApplicationEventMulticaster</code> 这一步，Spring 为上下文创建并挂载了广播器 <code>ApplicationEventMulticaster</code> 的实例；</p></li>
+<li><p>在 <code>AbstractApplicationContext.registerListeners</code> 这一步，Spring 将容器中所有实现了 <code>ApplicationListener</code> 接口的 <code>Bean</code> 注册到广播器中；</p></li>
+<li><p>而在 <code>AbstractApplicationContext.finishBeanFactoryInitialization</code> 这一步，Spring 会初始化容器中所有非懒加载的 <code>Bean</code>，此时会一并实例化 <code>EventListenerMethodProcessor</code> 这个 <code>Bean</code> 后置处理器：</p>
+<ol type="1">
+<li><p>这个 <code>Bean</code> 由上下文在准备 <code>BeanFactory</code> 时，调用 <code>loadBeanDefinitions</code> 方法时注册到容器；</p></li>
+<li><p>由于 <code>EventListenerMethodProcessor</code> 本身实现了 <code>SmartInitializingSingleton</code> 接口，因此实例化后会触发其回调函数，此时 <code>EventListenerMethodProcessor</code> 会把容器中所有的 <code>Bean</code> 都拿出来解析；</p></li>
+<li><p>若 <code>Bean</code> 中存在直接或间接被 <code>@EventListener</code> 注解的方法，则会将其取出，并通过 <code>EventListenerFactory</code> 将其适配为对应的 <code>ApplicationListener</code> 实例，然后再将适配完的监听器注册到容器中；</p></li>
+<li><p>由于 Spring 除了 <code>@EventListener</code> 注解还提供了支持事务的<code>@TransactionalEventListener</code> 注解，因此提供了两类监听器工厂：</p>
+<p><code>DefaultEventListenerFactory</code>：默认的实现，支持处理所有被 <code>@EventListener</code> 注解的方法；</p>
+<p><code>TransactionalEventListenerFactory</code>：支持 Spring 事务机制的监听器的工厂， 用于处理被 <code>@TransactionalEventListener</code> 注解的方法；</p></li>
+</ol></li>
+</ul>
+<p>至此，当 <code>AbstractApplicationContext.refresh</code> 执行完毕，即上下文初始化完成后，广播器与所有编程式或注解式监听器皆初始化完毕，并且完成了注册。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Spring/" rel="tag"># Spring</a>
+          
+            <a href="/tags/SpringBoot/" rel="tag"># SpringBoot</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E4%BA%8B%E4%BB%B6%E7%9A%84%E4%BC%A0%E6%92%AD/" rel="next" title="深入理解Spring事件机制（二）：事件的传播">
+                <i class="fa fa-chevron-left"></i> 深入理解Spring事件机制（二）：事件的传播
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="/images/Createsequence.jpg"
+                alt="" />
+            
+              <p class="site-author-name" itemprop="name"></p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/%7C%7Carchive">
+              
+                  <span class="site-state-item-count">99</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E5%B9%BF%E6%92%AD%E5%99%A8%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-text">一、广播器的创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E7%BC%96%E7%A8%8B%E5%BC%8F%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">二、编程式监听器的注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E6%B3%A8%E8%A7%A3%E5%BC%8F%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">三、注解式监听器的注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%9B%91%E5%90%AC%E5%99%A8%E6%96%B9%E6%B3%95%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">1、监听器方法处理器的注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%8E%B7%E5%8F%96%E7%9B%91%E5%90%AC%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="nav-text">2、获取监听器工厂</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%B0%86%E6%96%B9%E6%B3%95%E9%80%82%E9%85%8D%E4%B8%BA%E7%9B%91%E5%90%AC%E5%99%A8"><span class="nav-text">3、将方法适配为监听器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">4、监听器的注册</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B-%E7%9B%91%E5%90%AC%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="nav-text">四、监听器工厂</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%80%9A%E7%94%A8%E7%9B%91%E5%90%AC%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="nav-text">1、通用监听器工厂</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BA%8B%E5%8A%A1%E7%9B%91%E5%90%AC%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="nav-text">2、事务监听器工厂</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Createsequence</span>
+
+  
+</div>
+
+
+
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+          <span id="scrollpercent"><span>0</span>%</span>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+
+  <!-- 引入目录截取js -->
+  <script type="text/javascript" src="/js/src/custom/custom.js"></script>
+</body>
+</html>

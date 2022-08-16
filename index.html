@@ -287,6 +287,360 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B9%BF%E6%92%AD%E5%99%A8%E4%B8%8E%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B9%BF%E6%92%AD%E5%99%A8%E4%B8%8E%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/" itemprop="url">深入理解Spring事件机制（一）：广播器与监听器的初始化</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-16T00:00:00+08:00">
+                2022-08-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SpringBoot/" itemprop="url" rel="index">
+                    <span itemprop="name">SpringBoot</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.8k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="前言">前言</h2>
+<p>Spring 从 <code>3.x</code> 开始支持事件机制。在 Spring 的事件机制中，我们可以令一个事件类继承 <code>ApplicationEvent</code> 类，然后将实现了 <code>ApplicationListener</code> 的 <code>Bean</code> 注册到 spring 容器，最后向 <code>ApplicationEventPublisher</code> 推送事件对象即可令所有订阅者收到事件。在 <code>4.2</code> 以后，甚至不需要实现 <code>ApplicationListener</code> 接口，仅需在 <code>Bean</code> 中方法标记 <code>@EventListener</code> 注解即可。</p>
+<p>笔者将基于 Spring 源码的 <code>5.2.x</code> 分支，分析该功能是如何实现的。</p>
+<p>本文是其中的第一篇文章，将分析广播器与监听的是如何被初始化，并完成注解流程的。</p>
+<p>在开始前，推荐先阅读前文了解 Spring 容器的初始化过程与 <code>BeanFactory</code> 中 <code>Bean</code> 的创建，如果可能，还可以了解一点 Spring 的注解机制，这将更有利于流程与一些代码的理解。</p>
+<p>相关文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16591407.html">深入理解Spring事件机制（一）：广播器与监听器的初始化</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16591418.html">深入理解Spring事件机制（二）：事件的推送</a></li>
+</ul>
+<h2 id="一-广播器的创建">一、广播器的创建</h2>
+<p>在前文，我们知道容器的初始化是通过 <code>AbstractApplicationContext.refresh()</code> 方法完成的，事件机制的相关组件同样也离不开容器，因此事件系统的初始化也通过该方法完成。</p>
+<p><code>AbstractApplicationContext.initApplicationEventMulticaster()</code> 是第一步，它的作用很简单：</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B9%BF%E6%92%AD%E5%99%A8%E4%B8%8E%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E4%BA%8B%E4%BB%B6%E7%9A%84%E4%BC%A0%E6%92%AD/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E4%BA%8B%E4%BB%B6%E7%9A%84%E4%BC%A0%E6%92%AD/" itemprop="url">深入理解Spring事件机制（二）：事件的传播</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-08-16T00:00:00+08:00">
+                2022-08-16
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/SpringBoot/" itemprop="url" rel="index">
+                    <span itemprop="name">SpringBoot</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  5.7k
+                </span>
+              
+
+              
+
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="前言">前言</h2>
+<p>Spring 从 <code>3.x</code> 开始支持事件机制。在 Spring 的事件机制中，我们可以令一个事件类继承 <code>ApplicationEvent</code> 类，然后将实现了 <code>ApplicationListener</code> 的 <code>Bean</code> 注册到 spring 容器，最后向 <code>ApplicationEventPublisher</code> 推送事件对象即可令所有订阅者收到事件。在 <code>4.2</code> 以后，甚至不需要实现 <code>ApplicationListener</code> 接口，仅需在 <code>Bean</code> 中方法标记 <code>@EventListener</code> 注解即可。</p>
+<p>笔者将基于 Spring 源码的 <code>5.2.x</code> 分支，分析该功能是如何实现的。</p>
+<p>本文是其中的第二篇文章，将分析事件是如何通过广播器推送，并被监听器接收并处理的。</p>
+<p>在开始前，推荐先阅读前文了解一点 Spring 的注解机制或者事务机制，这将更有利于流程与一些代码的理解。</p>
+<p>相关文章：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16591407.html">深入理解Spring事件机制（一）：广播器与监听器的初始化</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.cnblogs.com/Createsequence/p/16591418.html">深入理解Spring事件机制（二）：事件的推送</a></li>
+</ul>
+<h2 id="一-事件的推送">一、事件的推送</h2>
+<h3 id="1-将事件推送到上下文">1、将事件推送到上下文</h3>
+<p>当我们借助 Spring 发送一个事件对象的时候，一般都通过 <code>ApplicationEventPublisher</code> 完成，在默认情况下，通过容器获得的 <code>ApplicationEventPublisher</code> 单例实际上就是 <code>ApplicationContext</code> 本身。</p>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E4%BA%8B%E4%BB%B6%E7%9A%84%E4%BC%A0%E6%92%AD/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2022/08/14/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E6%B3%A8%E8%A7%A3%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E5%90%88%E5%B9%B6%E6%B3%A8%E8%A7%A3%E7%9A%84%E5%90%88%E6%88%90/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1707,359 +2061,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2022/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2022/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/" itemprop="url">发布自己的jar包到Maven官方仓库</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-02-18T00:00:00+08:00">
-                2022-02-18
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/" itemprop="url" rel="index">
-                    <span itemprop="name">杂七乱八</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2.3k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="一-申请groupid">一、申请GroupId</h2>
-<p>我们知道，一个maven坐标由<code>groupId</code>，<code>artifactId</code>和<code>version</code>组成，后两者可以在pom中调整，而可以用在中央仓库的 <code>groupId</code>需要申请。由于 Maven 中央仓库由 sonatype 公司进行运营，所以我们首先需要<a target="_blank" rel="noopener" href="https://issues.sonatype.org/secure/Signup!default.jspa">注册一个sonatype账号</a>，通过该账号去申请一个 <code>groupId</code>。</p>
-<h3 id="1-注册">1、注册</h3>
-<p>注册没什么好说的，按顺序填就行，需要注意用户名最好不要用中文。</p>
-<p><img src="https://img.xiajibagao.top/image-20220215144939190.png" alt="image-20220215144939190" style="zoom: 50%;"></p>
-<h3 id="2-申请">2、申请</h3>
-<p>这里的操作跟GitHub很像，新增相当于提出一个issues：</p>
-<figure>
-<img src="https://img.xiajibagao.top/image-20220215150018531.png" alt="image-20220215150018531"><figcaption aria-hidden="true">image-20220215150018531</figcaption>
-</figure>
-<p>然后填写信息：</p>
-<p><img src="https://img.xiajibagao.top/image-20220215150401093.png" alt="image-20220215150401093" style="zoom: 67%;"></p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2022/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://blog.xiajibagao.top/2021/07/11/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%E4%B8%ADsql%E7%9A%84%E8%A7%A3%E6%9E%90/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="">
-      <meta itemprop="description" content="">
-      <meta itemprop="image" content="/images/Createsequence.jpg">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Createsequence's Blog">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2021/07/11/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%E4%B8%ADsql%E7%9A%84%E8%A7%A3%E6%9E%90/" itemprop="url">Mybatis源码学习（三）：映射文件中sql的解析</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-07-11T00:00:00+08:00">
-                2021-07-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category" >
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Mybatis/" itemprop="url" rel="index">
-                    <span itemprop="name">Mybatis</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  4.2k
-                </span>
-              
-
-              
-
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <h2 id="概述">概述</h2>
-<p>根据上一篇文章，我们了解了 Mybatis 如何在加载配置文件后，根据指定配置方式寻找接口并且完成映射文件信息与接口的绑定的。在本篇文章，我们将延续上文，结合源码阐述映射文件中方法声明里的 sql 被解析为 java 对象的过程。</p>
-<p>这是关于 Mybatis 的第三篇文章，前文：</p>
-<blockquote>
-<p><a href="https://blog.xiajibagao.top/2021/06/05/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/">Mybatis源码学习（一）：配置文件的加载</a></p>
-<p><a href="https://blog.xiajibagao.top/2021/06/14/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMapper%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%BB%91%E5%AE%9A/">Mybatis源码学习（二）：Mapper接口的绑定</a></p>
-</blockquote>
-<h2 id="一-sql解析">一、sql解析</h2>
-<p><img src="http://img.xiajibagao.top/image-20210711012449848.png" alt="image-20210711012449848"></p>
-<h3 id="1xmlmapperbuilder">1.XMLMapperBuilder</h3>
-<p>Sql 解析与 <code>MappedStatement</code>的生成都在 <code>XMLMapperBuilder</code> 进行。根据上文可知，在 <code>XMLMapperBuilder</code> 的 <code>parsePendingStatements()</code>方法如下：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">parsePendingStatements</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 获取所有映射文件中的方法声明</span></span><br><span class="line">    Collection&lt;XMLStatementBuilder&gt; incompleteStatements = configuration.getIncompleteStatements();</span><br><span class="line">    <span class="keyword">synchronized</span> (incompleteStatements) &#123;</span><br><span class="line">        Iterator&lt;XMLStatementBuilder&gt; iter = incompleteStatements.iterator();</span><br><span class="line">        <span class="keyword">while</span> (iter.hasNext()) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 遍历并转换为Statement对象</span></span><br><span class="line">                iter.next().parseStatementNode();</span><br><span class="line">                iter.remove();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IncompleteElementException e) &#123;</span><br><span class="line">                <span class="comment">// Statement is still missing a resource...</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其中，<code>Configuration</code>类中的<code>IncompleteStatements</code>是在<code>XMLMapperBuilder.parse()</code>时添加进去的，我们可以理解他是一个刚从配置文件中根据<code>&lt;select&gt;&lt;delete&gt;&lt;update&gt;&lt;insert&gt;</code>标签名拿到的 XML 节点，还没有做任何解析。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2021/07/11/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%E4%B8%ADsql%E7%9A%84%E8%A7%A3%E6%9E%90/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2114,7 +2115,7 @@
               
                 <a href="/archives/%7C%7Carchive">
               
-                  <span class="site-state-item-count">97</span>
+                  <span class="site-state-item-count">99</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>

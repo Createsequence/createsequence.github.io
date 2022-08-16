@@ -6,7 +6,7 @@
   <link href="http://blog.xiajibagao.top/atom.xml" rel="self"/>
   
   <link href="http://blog.xiajibagao.top/"/>
-  <updated>2022-08-15T14:22:54.291Z</updated>
+  <updated>2022-08-16T14:30:14.611Z</updated>
   <id>http://blog.xiajibagao.top/</id>
   
   <author>
@@ -15,6 +15,72 @@
   </author>
   
   <generator uri="https://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>深入理解Spring事件机制（一）：广播器与监听器的初始化</title>
+    <link href="http://blog.xiajibagao.top/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B9%BF%E6%92%AD%E5%99%A8%E4%B8%8E%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/"/>
+    <id>http://blog.xiajibagao.top/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B9%BF%E6%92%AD%E5%99%A8%E4%B8%8E%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/</id>
+    <published>2022-08-15T16:00:00.000Z</published>
+    <updated>2022-08-16T14:30:14.611Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+&lt;p&gt;Spring 从 &lt;code&gt;3.x&lt;/code&gt; 开始支持事件机制。在 Spring 的事件机制中，我们可以令一个事件类继承 &lt;code&gt;ApplicationEvent&lt;/code&gt; 类，然后将实现了 &lt;code&gt;ApplicationListener&lt;/code&gt; 的 &lt;code&gt;Bean&lt;/code&gt; 注册到 spring 容器，最后向 &lt;code&gt;ApplicationEventPublisher&lt;/code&gt; 推送事件对象即可令所有订阅者收到事件。在 &lt;code&gt;4.2&lt;/code&gt; 以后，甚至不需要实现 &lt;code&gt;ApplicationListener&lt;/code&gt; 接口，仅需在 &lt;code&gt;Bean&lt;/code&gt; 中方法标记 &lt;code&gt;@EventListener&lt;/code&gt; 注解即可。&lt;/p&gt;
+&lt;p&gt;笔者将基于 Spring 源码的 &lt;code&gt;5.2.x&lt;/code&gt; 分支，分析该功能是如何实现的。&lt;/p&gt;
+&lt;p&gt;本文是其中的第一篇文章，将分析广播器与监听的是如何被初始化，并完成注解流程的。&lt;/p&gt;
+&lt;p&gt;在开始前，推荐先阅读前文了解 Spring 容器的初始化过程与 &lt;code&gt;BeanFactory&lt;/code&gt; 中 &lt;code&gt;Bean&lt;/code&gt; 的创建，如果可能，还可以了解一点 Spring 的注解机制，这将更有利于流程与一些代码的理解。&lt;/p&gt;
+&lt;p&gt;相关文章：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16591407.html&quot;&gt;深入理解Spring事件机制（一）：广播器与监听器的初始化&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16591418.html&quot;&gt;深入理解Spring事件机制（二）：事件的推送&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;一-广播器的创建&quot;&gt;一、广播器的创建&lt;/h2&gt;
+&lt;p&gt;在前文，我们知道容器的初始化是通过 &lt;code&gt;AbstractApplicationContext.refresh()&lt;/code&gt; 方法完成的，事件机制的相关组件同样也离不开容器，因此事件系统的初始化也通过该方法完成。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;AbstractApplicationContext.initApplicationEventMulticaster()&lt;/code&gt; 是第一步，它的作用很简单：&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="SpringBoot" scheme="http://blog.xiajibagao.top/categories/SpringBoot/"/>
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/tags/Spring/"/>
+    
+    <category term="SpringBoot" scheme="http://blog.xiajibagao.top/tags/SpringBoot/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>深入理解Spring事件机制（二）：事件的传播</title>
+    <link href="http://blog.xiajibagao.top/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E4%BA%8B%E4%BB%B6%E7%9A%84%E4%BC%A0%E6%92%AD/"/>
+    <id>http://blog.xiajibagao.top/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E4%BA%8B%E4%BB%B6%E7%9A%84%E4%BC%A0%E6%92%AD/</id>
+    <published>2022-08-15T16:00:00.000Z</published>
+    <updated>2022-08-16T14:30:07.273Z</updated>
+    
+    
+    <summary type="html">&lt;h2 id=&quot;前言&quot;&gt;前言&lt;/h2&gt;
+&lt;p&gt;Spring 从 &lt;code&gt;3.x&lt;/code&gt; 开始支持事件机制。在 Spring 的事件机制中，我们可以令一个事件类继承 &lt;code&gt;ApplicationEvent&lt;/code&gt; 类，然后将实现了 &lt;code&gt;ApplicationListener&lt;/code&gt; 的 &lt;code&gt;Bean&lt;/code&gt; 注册到 spring 容器，最后向 &lt;code&gt;ApplicationEventPublisher&lt;/code&gt; 推送事件对象即可令所有订阅者收到事件。在 &lt;code&gt;4.2&lt;/code&gt; 以后，甚至不需要实现 &lt;code&gt;ApplicationListener&lt;/code&gt; 接口，仅需在 &lt;code&gt;Bean&lt;/code&gt; 中方法标记 &lt;code&gt;@EventListener&lt;/code&gt; 注解即可。&lt;/p&gt;
+&lt;p&gt;笔者将基于 Spring 源码的 &lt;code&gt;5.2.x&lt;/code&gt; 分支，分析该功能是如何实现的。&lt;/p&gt;
+&lt;p&gt;本文是其中的第二篇文章，将分析事件是如何通过广播器推送，并被监听器接收并处理的。&lt;/p&gt;
+&lt;p&gt;在开始前，推荐先阅读前文了解一点 Spring 的注解机制或者事务机制，这将更有利于流程与一些代码的理解。&lt;/p&gt;
+&lt;p&gt;相关文章：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16591407.html&quot;&gt;深入理解Spring事件机制（一）：广播器与监听器的初始化&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://www.cnblogs.com/Createsequence/p/16591418.html&quot;&gt;深入理解Spring事件机制（二）：事件的推送&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;一-事件的推送&quot;&gt;一、事件的推送&lt;/h2&gt;
+&lt;h3 id=&quot;1-将事件推送到上下文&quot;&gt;1、将事件推送到上下文&lt;/h3&gt;
+&lt;p&gt;当我们借助 Spring 发送一个事件对象的时候，一般都通过 &lt;code&gt;ApplicationEventPublisher&lt;/code&gt; 完成，在默认情况下，通过容器获得的 &lt;code&gt;ApplicationEventPublisher&lt;/code&gt; 单例实际上就是 &lt;code&gt;ApplicationContext&lt;/code&gt; 本身。&lt;/p&gt;</summary>
+    
+    
+    
+    <category term="SpringBoot" scheme="http://blog.xiajibagao.top/categories/SpringBoot/"/>
+    
+    
+    <category term="Spring" scheme="http://blog.xiajibagao.top/tags/Spring/"/>
+    
+    <category term="SpringBoot" scheme="http://blog.xiajibagao.top/tags/SpringBoot/"/>
+    
+  </entry>
   
   <entry>
     <title>深入理解Spring注解机制（三）：合并注解的合成</title>
@@ -592,71 +658,6 @@
 &lt;p&gt;ICMP 报文有两种类型，一种是查询报文，比如 ping 命令；另一种是差错报文。&lt;/p&gt;
 &lt;h3 id=&quot;1查询报文&quot;&gt;1.查询报文&lt;/h3&gt;
 &lt;p&gt;ping 命令是查询报文一种，是一种主动请求，并且获得主动应答的 ICMP 协议，它在后面加了自己的格式。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="计算机网络" scheme="http://blog.xiajibagao.top/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
-    
-    
-    <category term="计算机网络" scheme="http://blog.xiajibagao.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>《趣谈网络协议》读书笔记（二）：局域网与交换机</title>
-    <link href="http://blog.xiajibagao.top/2020/12/23/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8E%E4%BA%A4%E6%8D%A2%E6%9C%BA/"/>
-    <id>http://blog.xiajibagao.top/2020/12/23/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%B1%80%E5%9F%9F%E7%BD%91%E4%B8%8E%E4%BA%A4%E6%8D%A2%E6%9C%BA/</id>
-    <published>2020-12-22T16:00:00.000Z</published>
-    <updated>2021-02-09T05:36:41.879Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;此文为极客时间&lt;a href=&quot;https://time.geekbang.org/column/intro/85&quot;&gt;趣谈网络协议&lt;/a&gt;第二模块“从第二层到第三层”中，第一和第二节的学习笔记。&lt;/p&gt;
-&lt;p&gt;主要内容包括局域网 LAN 的建立，以及局域网间如何通过交换机建立拓补结构。&lt;/p&gt;
-&lt;h2 id=&quot;一-如何建立一个局域网&quot;&gt;一、如何建立一个局域网&lt;/h2&gt;
-&lt;p&gt;局域网 LAN 的全称为 Local Area Network，它其实就是一个小型的计算机网络系统，当我们搭建一个局域网，我们需要考虑这四个问题：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;设备间要怎么互相发送数据？&lt;/li&gt;
-&lt;li&gt;多个设备同时发送数据，那么发送顺序怎么安排？&lt;/li&gt;
-&lt;li&gt;如果数据发生过程中出现错误怎么办？&lt;/li&gt;
-&lt;li&gt;设备怎么知道数据是发送给自己的？&lt;/li&gt;
-&lt;/ul&gt;
-&lt;h3 id=&quot;1物理层连接网线&quot;&gt;1.物理层连接网线&lt;/h3&gt;
-&lt;p&gt;目前的网线一般有八根线组成，其中1,2起接收数据的作用，而3,6起发送数据的作用，我们将网线一端的1与3换位子，2与6换位子，然后将水晶头两端连接到电脑上，理论上两台电脑就具备了互相通信的物理基础（现在的电脑都具备自动适配的功能，理论上不换水晶头也不会有什么影响）。&lt;/p&gt;
-&lt;p&gt;当然，有了&lt;strong&gt;物理基础，我们还需要配置 IP 地址，子网掩码和默认网关，当配置好以后，两台电脑就会组成一个最小的局域网，即 LAN&lt;/strong&gt;。&lt;/p&gt;
-&lt;p&gt;如果是多台设备，就需要一个交换机（相当于大学里头用的集线器）。多台设备连接到一个交换机上，当一个电脑发出数据的时候，Hub 会获取数据包并且广播给其他电脑。&lt;/p&gt;</summary>
-    
-    
-    
-    <category term="计算机网络" scheme="http://blog.xiajibagao.top/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
-    
-    
-    <category term="计算机网络" scheme="http://blog.xiajibagao.top/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>《趣谈网络协议》读书笔记（一）：网络分层，IP与MAC</title>
-    <link href="http://blog.xiajibagao.top/2020/12/22/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%EF%BC%8CIP%E4%B8%8EMAC/"/>
-    <id>http://blog.xiajibagao.top/2020/12/22/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/%E3%80%8A%E8%B6%A3%E8%B0%88%E7%BD%91%E7%BB%9C%E5%8D%8F%E8%AE%AE%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E7%BD%91%E7%BB%9C%E5%88%86%E5%B1%82%EF%BC%8CIP%E4%B8%8EMAC/</id>
-    <published>2020-12-21T16:00:00.000Z</published>
-    <updated>2021-02-22T02:16:48.279Z</updated>
-    
-    
-    <summary type="html">&lt;h2 id=&quot;概述&quot;&gt;概述&lt;/h2&gt;
-&lt;p&gt;此文为极客时间&lt;a href=&quot;https://time.geekbang.org/column/intro/85&quot;&gt;趣谈网络协议&lt;/a&gt;第一模块“通信协议综述”的学习笔记。&lt;/p&gt;
-&lt;p&gt;主要内容包括数据包在如何在层间传输， IP 地址与 MAC 地址的介绍，IP 地址的设置与分配。&lt;/p&gt;
-&lt;h2 id=&quot;一-网络分层&quot;&gt;一、网络分层&lt;/h2&gt;
-&lt;h3 id=&quot;1数据包如何在层间流转&quot;&gt;1.数据包如何在层间流转&lt;/h3&gt;
-&lt;p&gt;分层是一个复杂程序的必然趋势，因而复杂的网络协议就会有分层的要求。&lt;/p&gt;
-&lt;p&gt;以下图为例，下图描述了我们输入网址并回车后，整个大体的请求流程：&lt;/p&gt;
-&lt;img src=&quot;http://img.xiajibagao.top/5c00f6e610f533d17fb4ad7decacc776.jpg&quot; alt=&quot;img&quot; style=&quot;zoom: 25%;&quot;&gt;
-&lt;p&gt;我们知道，按 TCP/IP 的四层模型，HTTP 协议属于应用层。假设用伪代码代表不同层级间对数据包的处理流程，当我们从应用层发起请求时：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;从应用层进入传输层。经过 &lt;code&gt;send_tcp()&lt;/code&gt;的处理，会加上 TCP 头，里面有端口；&lt;/li&gt;
-&lt;li&gt;从传输层进入网络层，经过 &lt;code&gt;send_layer3()&lt;/code&gt;的处理，加上 IP 头；&lt;/li&gt;
-&lt;li&gt;从网络层进入数据链路层，经过 &lt;code&gt;send_layer()&lt;/code&gt;的处理，加上目标 MAC 或网关 MAC。&lt;/li&gt;
-&lt;/ul&gt;</summary>
     
     
     
