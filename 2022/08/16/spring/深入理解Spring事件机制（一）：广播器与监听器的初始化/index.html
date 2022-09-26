@@ -81,15 +81,15 @@
 
 
 
-<meta name="description" content="前言 Spring 从 3.x 开始支持事件机制。在 Spring 的事件机制中，我们可以令一个事件类继承 ApplicationEvent 类，然后将实现了 ApplicationListener 的 Bean 注册到 spring 容器，最后向 ApplicationEventPublisher 推送事件对象即可令所有订阅者收到事件。在 4.2 以后，甚至不需要实现 ApplicationL">
+<meta name="description" content="前言 Spring 从 3.x 开始支持事件机制。在 Spring 的事件机制中，我们可以令一个事件类继承 ApplicationEvent 类，然后将实现了 ApplicationListener 的 Bean 注册到 spring 容器，最后向 ApplicationEventPublisher 推送事件对象即可令所有订阅者收到事件。在 4.2 以后，甚至不需要实现 ApplicationLi">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入理解Spring事件机制（一）：广播器与监听器的初始化">
 <meta property="og:url" content="http://blog.xiajibagao.top/2022/08/16/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E5%B9%BF%E6%92%AD%E5%99%A8%E4%B8%8E%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/index.html">
 <meta property="og:site_name" content="Createsequence&#39;s Blog">
-<meta property="og:description" content="前言 Spring 从 3.x 开始支持事件机制。在 Spring 的事件机制中，我们可以令一个事件类继承 ApplicationEvent 类，然后将实现了 ApplicationListener 的 Bean 注册到 spring 容器，最后向 ApplicationEventPublisher 推送事件对象即可令所有订阅者收到事件。在 4.2 以后，甚至不需要实现 ApplicationL">
+<meta property="og:description" content="前言 Spring 从 3.x 开始支持事件机制。在 Spring 的事件机制中，我们可以令一个事件类继承 ApplicationEvent 类，然后将实现了 ApplicationListener 的 Bean 注册到 spring 容器，最后向 ApplicationEventPublisher 推送事件对象即可令所有订阅者收到事件。在 4.2 以后，甚至不需要实现 ApplicationLi">
 <meta property="og:locale">
 <meta property="article:published_time" content="2022-08-15T16:00:00.000Z">
-<meta property="article:modified_time" content="2022-08-16T15:11:51.447Z">
+<meta property="article:modified_time" content="2022-09-26T02:51:40.129Z">
 <meta property="article:author" content="Createsequence">
 <meta property="article:tag" content="Spring">
 <meta property="article:tag" content="SpringBoot">
@@ -374,7 +374,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3.8k
+                  4.1k
                 </span>
               
 
@@ -416,7 +416,13 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">initApplicationEventMulticaster</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    ConfigurableListableBeanFactory beanFactory = getBeanFactory();</span><br><span class="line">    <span class="comment">// 是否存在“applicationEventMulticaster”这个Bean</span></span><br><span class="line">    <span class="keyword">if</span> (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) &#123;</span><br><span class="line">        <span class="comment">// 如果存在就把它设置为当前上下文的事件广播器</span></span><br><span class="line">        <span class="keyword">this</span>.applicationEventMulticaster =</span><br><span class="line">            beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);</span><br><span class="line">        <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">            logger.trace(<span class="string">&quot;Using ApplicationEventMulticaster [&quot;</span> + <span class="keyword">this</span>.applicationEventMulticaster + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 没有就创建一个SimpleApplicationEventMulticaster作为当前上下文的事件广播器</span></span><br><span class="line">        <span class="keyword">this</span>.applicationEventMulticaster = <span class="keyword">new</span> SimpleApplicationEventMulticaster(beanFactory);</span><br><span class="line">        beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, <span class="keyword">this</span>.applicationEventMulticaster);</span><br><span class="line">        <span class="keyword">if</span> (logger.isTraceEnabled()) &#123;</span><br><span class="line">            logger.trace(<span class="string">&quot;No &#x27;&quot;</span> + APPLICATION_EVENT_MULTICASTER_BEAN_NAME + <span class="string">&quot;&#x27; bean, using &quot;</span> +</span><br><span class="line">                         <span class="string">&quot;[&quot;</span> + <span class="keyword">this</span>.applicationEventMulticaster.getClass().getSimpleName() + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <h2 id="二-编程式监听器的注册">二、编程式监听器的注册</h2>
 <p>在 <code>4.2</code> 及以前版本，监听器需要显式的实现 <code>ApplicationListener</code> 接口，我们管这种监听器叫做编程式监听器。</p>
-<p>编程式监听器在 <code>AbstractApplicationContext.registerListeners()</code> 这个方法的调用过程中被注册到注册广播器中，这一块代码逻辑也很简单：</p>
+<p>针对编程式监听器，有两种注册途径：</p>
+<ul>
+<li>在上下文初始化过程中通过 <code>AbstractApplicationContext.registerListeners()</code> 方法完成注册；</li>
+<li>在 Bean 初始化后，通过 <code>ApplicationListenerDetector</code> 这个后处理器的 <code>postProcessAfterInitialization</code> 方法将其注册；</li>
+</ul>
+<h3 id="1-由上下文直接注册">1、由上下文直接注册</h3>
+<p>编程式监听器在 <code>AbstractApplicationContext.registerListeners()</code>  这个方法的调用过程中被注册到注册广播器中，这一块代码逻辑也很简单：</p>
 <ul>
 <li>向事件广播器注册已经被注册的 <code>BeanFactroy</code> 中，且实现了 <code>ApplicationListener</code> 接口的监听器；</li>
 <li>向事件广播器注册还没有被实例化的监听器的 <code>BeanName</code>；</li>
@@ -425,6 +431,14 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title">registerListeners</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 向事件广播器注册已经被注册的上下文中的监听器</span></span><br><span class="line">    <span class="keyword">for</span> (ApplicationListener&lt;?&gt; listener : getApplicationListeners()) &#123;</span><br><span class="line">        getApplicationEventMulticaster().addApplicationListener(listener);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 向事件广播器注册指定的监听器，不过这里只注册BeanName，</span></span><br><span class="line">    <span class="comment">// 因为有些监听器Bean是由FactoryBean生产的，而在这里FactoryBean实际上还没被生成出来</span></span><br><span class="line">    String[] listenerBeanNames = getBeanNamesForType(ApplicationListener.class, <span class="keyword">true</span>, <span class="keyword">false</span>);</span><br><span class="line">    <span class="keyword">for</span> (String listenerBeanName : listenerBeanNames) &#123;</span><br><span class="line">        getApplicationEventMulticaster().addApplicationListenerBean(listenerBeanName);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 发布一些早期事件</span></span><br><span class="line">    Set&lt;ApplicationEvent&gt; earlyEventsToProcess = <span class="keyword">this</span>.earlyApplicationEvents;</span><br><span class="line">    <span class="keyword">this</span>.earlyApplicationEvents = <span class="keyword">null</span>;</span><br><span class="line">    <span class="keyword">if</span> (!CollectionUtils.isEmpty(earlyEventsToProcess)) &#123;</span><br><span class="line">        <span class="keyword">for</span> (ApplicationEvent earlyEvent : earlyEventsToProcess) &#123;</span><br><span class="line">            getApplicationEventMulticaster().multicastEvent(earlyEvent);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>我们需要注意的是，在这一步，虽然向广播器注册了监听器，但是实际上这只是一种关系，<strong>真正的监听器实例不一定有被创建出来</strong>。</p>
 <p>不过在如果上下文中存在“早期事件”，则会触发广播，此时调用 <code>ApplicationEventMulticaster.multicastEvent()</code> 将会提前触发广播器中那些监听器的初始化，否则按正常情况这些将等到上下文主动初始化 <code>BeanFactory</code> 中全部非懒加载 <code>Bean</code> 的时候才会一并初始化。</p>
+<h3 id="2-通过后处理器注册">2、通过后处理器注册</h3>
+<p>在 <code>AbstractApplicationContext.refresh</code> 方法中，在 <code>prepareBeanFactory</code> 这一步初始化 <code>BeanFactory</code> 时，会默认向工厂注册一个名为 <code>ApplicationListenerDetector</code> Bean 后处理器。</p>
+<p>该处理器同时实现了 <code>MergedBeanDefinitionPostProcessor</code> 和 <code>DestructionAwareBeanPostProcessor</code> 和 <code>BeanPostProcessor</code> 三大处理器接口，这分别对应了它处理监听器的三个步骤：</p>
+<ul>
+<li><code>MergedBeanDefinitionPostProcessor</code>：当 Bean 实例化前，对 <code>BeanDefinition</code> 进行进行后处理时，它会记录这些实现了 <code>ApplicationEventListener</code> 接口的 Bean 的名称；</li>
+<li><code>BeanPostProcessor</code>：当 Bean 初始化后，它会根据记录的 BeanName 从容器中找到对应的 <code>Bean</code> 实例，然后将其注册到上下文的广播器中；</li>
+<li><code>DestructionAwareBeanPostProcessor</code>：当 Bean 被销毁时，它会根据记录的 BeanName 将对应的 Bean 从广播器中移除；</li>
+</ul>
 <h2 id="三-注解式监听器的注册">三、注解式监听器的注册</h2>
 <p>在 <code>4.2</code> 版本以后，我们可以通过在成员方法上添加 <code>@EventListener</code> 或者 <code>@TransactionalEventListener</code> 注解的方法声明一个监听器，我们管这种监听器叫做注解式监听器。</p>
 <p>实际上，由于注解式监听器的类上没有注解或接口作为标识，因此无法直接从 <code>BeanFactory</code> 中查找，所以它的注册显然不能与编程式监听器一样，在 <code>AbstractApplicationContext.registerListeners()</code> 通过从 <code>BeanFactory</code> 中直接找到然后注册。</p>
@@ -449,13 +463,17 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">postProcessBeanFactory</span><span class="params">(ConfigurableListableBeanFactory beanFactory)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">this</span>.beanFactory = beanFactory;</span><br><span class="line">    Map&lt;String, EventListenerFactory&gt; beans = beanFactory.getBeansOfType(EventListenerFactory.class, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line">    List&lt;EventListenerFactory&gt; factories = <span class="keyword">new</span> ArrayList&lt;&gt;(beans.values());</span><br><span class="line">    AnnotationAwareOrderComparator.sort(factories);</span><br><span class="line">    <span class="keyword">this</span>.eventListenerFactories = factories;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 <p>而监听器工厂这个类作用也显而易见，他用于把被注解的方法适配为监听器对象：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">EventListenerFactory</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 是否支持处理该方法</span></span><br><span class="line">    <span class="function"><span class="keyword">boolean</span> <span class="title">supportsMethod</span><span class="params">(Method method)</span></span>;</span><br><span class="line">    <span class="comment">// 将bean中带有@EventListener注解的方法转为ApplicationListener</span></span><br><span class="line">    ApplicationListener&lt;?&gt; createApplicationListener(String beanName, Class&lt;?&gt; type, Method method);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>值得一提的是，由于注册 <code>EventListenerMethodProcessor</code> 的时候也会默认支持一个名为 ：<code>"org.springframework.context.event.internalEventListenerFactory"</code> 的 <code>DefaultEventListenerFactory</code>，这保证至少有一个保底的监听器工厂。</p>
+<p>值得一提的是，由于注册 <code>EventListenerMethodProcessor</code> 的时候也会默认支持一个名为 ：<code>&quot;org.springframework.context.event.internalEventListenerFactory&quot;</code> 的 <code>DefaultEventListenerFactory</code>，这保证至少有一个保底的监听器工厂。</p>
 <p><code>EventListenerFactory</code> 提供两个默认的实现：</p>
 <ul>
-<li><p><code>DefaultEventListenerFactory</code>：默认的实现，支持处理所有被 <code>@EventListener</code> 注解的方法，</p>
-<p>会将方法适配成类型为 <code>ApplicationListenerMethodAdapter</code> 的监听器；</p></li>
-<li><p><code>TransactionalEventListenerFactory</code>：支持 Spring 事务机制的监听器的工厂， 用于处理被 <code>@TransactionalEventListener</code> 注解的方法，</p>
-<p>会将方法适配成类型为 <code>ApplicationListenerMethodTransactionalAdapter</code> 的监听器；</p></li>
+<li>
+<p><code>DefaultEventListenerFactory</code>：默认的实现，支持处理所有被 <code>@EventListener</code> 注解的方法，</p>
+<p>会将方法适配成类型为 <code>ApplicationListenerMethodAdapter</code> 的监听器；</p>
+</li>
+<li>
+<p><code>TransactionalEventListenerFactory</code>：支持 Spring 事务机制的监听器的工厂， 用于处理被 <code>@TransactionalEventListener</code> 注解的方法，</p>
+<p>会将方法适配成类型为 <code>ApplicationListenerMethodTransactionalAdapter</code> 的监听器；</p>
+</li>
 </ul>
 <h3 id="3-将方法适配为监听器">3、将方法适配为监听器</h3>
 <p>当 <code>EventListenerMethodProcessor</code> 作为一个 <code>SmartInitializingSingleton</code> 被调用的时候：</p>
@@ -481,10 +499,14 @@
 <p>通过上文，我们知道注解式监听器依赖监听器工厂 <code>EventListenerFactory</code> 将 <code>Bean</code> 中的注解方法转为 <code>ApplicationListener</code> 实例。</p>
 <p>实际上，我们知道 spring 除了支持 <code>@EventListener</code> 注解外，还提供了 <code>@TransactionalEventListener</code> 注解，用于注册支持事务的注解式监听器，因此 <code>EventListenerFactory</code> 实际上也提供了两类工厂分别用于支持这两种实现：</p>
 <ul>
-<li><p><code>DefaultEventListenerFactory</code>：默认的实现，支持处理所有被 <code>@EventListener</code> 注解的方法，</p>
-<p>会将方法适配成类型为 <code>ApplicationListenerMethodAdapter</code> 的监听器；</p></li>
-<li><p><code>TransactionalEventListenerFactory</code>：支持 Spring 事务机制的监听器的工厂， 用于处理被 <code>@TransactionalEventListener</code> 注解的方法，</p>
-<p>会将方法适配成类型为 <code>ApplicationListenerMethodTransactionalAdapter</code> 的监听器；</p></li>
+<li>
+<p><code>DefaultEventListenerFactory</code>：默认的实现，支持处理所有被 <code>@EventListener</code> 注解的方法，</p>
+<p>会将方法适配成类型为 <code>ApplicationListenerMethodAdapter</code> 的监听器；</p>
+</li>
+<li>
+<p><code>TransactionalEventListenerFactory</code>：支持 Spring 事务机制的监听器的工厂， 用于处理被 <code>@TransactionalEventListener</code> 注解的方法，</p>
+<p>会将方法适配成类型为 <code>ApplicationListenerMethodTransactionalAdapter</code> 的监听器；</p>
+</li>
 </ul>
 <h3 id="1-通用监听器工厂">1、通用监听器工厂</h3>
 <p>通用监听器工厂的代码及其简单，它的特点如下：</p>
@@ -505,17 +527,31 @@
 <h2 id="总结">总结</h2>
 <p>当 Spring 容器启动，上下文调用 <code>AbstractApplicationContext.refresh</code> 方法对其进行初始化时，Spring 事件机制的两个核心组件：广播器、监听器也在该过程完成初始化。</p>
 <ul>
-<li><p>在 <code>AbstractApplicationContext.initApplicationEventMulticaster</code> 这一步，Spring 为上下文创建并挂载了广播器 <code>ApplicationEventMulticaster</code> 的实例；</p></li>
-<li><p>在 <code>AbstractApplicationContext.registerListeners</code> 这一步，Spring 将容器中所有实现了 <code>ApplicationListener</code> 接口的 <code>Bean</code> 注册到广播器中；</p></li>
-<li><p>而在 <code>AbstractApplicationContext.finishBeanFactoryInitialization</code> 这一步，Spring 会初始化容器中所有非懒加载的 <code>Bean</code>，此时会一并实例化 <code>EventListenerMethodProcessor</code> 这个 <code>Bean</code> 后置处理器：</p>
-<ol type="1">
-<li><p>这个 <code>Bean</code> 由上下文在准备 <code>BeanFactory</code> 时，调用 <code>loadBeanDefinitions</code> 方法时注册到容器；</p></li>
-<li><p>由于 <code>EventListenerMethodProcessor</code> 本身实现了 <code>SmartInitializingSingleton</code> 接口，因此实例化后会触发其回调函数，此时 <code>EventListenerMethodProcessor</code> 会把容器中所有的 <code>Bean</code> 都拿出来解析；</p></li>
-<li><p>若 <code>Bean</code> 中存在直接或间接被 <code>@EventListener</code> 注解的方法，则会将其取出，并通过 <code>EventListenerFactory</code> 将其适配为对应的 <code>ApplicationListener</code> 实例，然后再将适配完的监听器注册到容器中；</p></li>
-<li><p>由于 Spring 除了 <code>@EventListener</code> 注解还提供了支持事务的<code>@TransactionalEventListener</code> 注解，因此提供了两类监听器工厂：</p>
+<li>
+<p>在 <code>AbstractApplicationContext.initApplicationEventMulticaster</code> 这一步，Spring 为上下文创建并挂载了广播器 <code>ApplicationEventMulticaster</code> 的实例；</p>
+</li>
+<li>
+<p>在 <code>AbstractApplicationContext.registerListeners</code> 这一步，Spring 将容器中所有实现了 <code>ApplicationListener</code> 接口的 <code>Bean</code> 注册到广播器中；</p>
+</li>
+<li>
+<p>而在 <code>AbstractApplicationContext.finishBeanFactoryInitialization</code> 这一步，Spring 会初始化容器中所有非懒加载的 <code>Bean</code>，此时会一并实例化 <code>EventListenerMethodProcessor</code> 这个 <code>Bean</code> 后置处理器：</p>
+<ol>
+<li>
+<p>这个 <code>Bean</code> 由上下文在准备 <code>BeanFactory</code> 时，调用 <code>loadBeanDefinitions</code> 方法时注册到容器；</p>
+</li>
+<li>
+<p>由于 <code>EventListenerMethodProcessor</code> 本身实现了 <code>SmartInitializingSingleton</code> 接口，因此实例化后会触发其回调函数，此时 <code>EventListenerMethodProcessor</code> 会把容器中所有的 <code>Bean</code> 都拿出来解析；</p>
+</li>
+<li>
+<p>若 <code>Bean</code> 中存在直接或间接被 <code>@EventListener</code> 注解的方法，则会将其取出，并通过 <code>EventListenerFactory</code> 将其适配为对应的 <code>ApplicationListener</code> 实例，然后再将适配完的监听器注册到容器中；</p>
+</li>
+<li>
+<p>由于 Spring 除了 <code>@EventListener</code> 注解还提供了支持事务的<code>@TransactionalEventListener</code> 注解，因此提供了两类监听器工厂：</p>
 <p><code>DefaultEventListenerFactory</code>：默认的实现，支持处理所有被 <code>@EventListener</code> 注解的方法；</p>
-<p><code>TransactionalEventListenerFactory</code>：支持 Spring 事务机制的监听器的工厂， 用于处理被 <code>@TransactionalEventListener</code> 注解的方法；</p></li>
-</ol></li>
+<p><code>TransactionalEventListenerFactory</code>：支持 Spring 事务机制的监听器的工厂， 用于处理被 <code>@TransactionalEventListener</code> 注解的方法；</p>
+</li>
+</ol>
+</li>
 </ul>
 <p>至此，当 <code>AbstractApplicationContext.refresh</code> 执行完毕，即上下文初始化完成后，广播器与所有编程式或注解式监听器皆初始化完毕，并且完成了注册。</p>
 
@@ -704,7 +740,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E5%B9%BF%E6%92%AD%E5%99%A8%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-text">一、广播器的创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E7%BC%96%E7%A8%8B%E5%BC%8F%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">二、编程式监听器的注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E6%B3%A8%E8%A7%A3%E5%BC%8F%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">三、注解式监听器的注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%9B%91%E5%90%AC%E5%99%A8%E6%96%B9%E6%B3%95%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">1、监听器方法处理器的注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%8E%B7%E5%8F%96%E7%9B%91%E5%90%AC%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="nav-text">2、获取监听器工厂</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%B0%86%E6%96%B9%E6%B3%95%E9%80%82%E9%85%8D%E4%B8%BA%E7%9B%91%E5%90%AC%E5%99%A8"><span class="nav-text">3、将方法适配为监听器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">4、监听器的注册</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B-%E7%9B%91%E5%90%AC%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="nav-text">四、监听器工厂</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%80%9A%E7%94%A8%E7%9B%91%E5%90%AC%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="nav-text">1、通用监听器工厂</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BA%8B%E5%8A%A1%E7%9B%91%E5%90%AC%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="nav-text">2、事务监听器工厂</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80-%E5%B9%BF%E6%92%AD%E5%99%A8%E7%9A%84%E5%88%9B%E5%BB%BA"><span class="nav-text">一、广播器的创建</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C-%E7%BC%96%E7%A8%8B%E5%BC%8F%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">二、编程式监听器的注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%94%B1%E4%B8%8A%E4%B8%8B%E6%96%87%E7%9B%B4%E6%8E%A5%E6%B3%A8%E5%86%8C"><span class="nav-text">1、由上下文直接注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%80%9A%E8%BF%87%E5%90%8E%E5%A4%84%E7%90%86%E5%99%A8%E6%B3%A8%E5%86%8C"><span class="nav-text">2、通过后处理器注册</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89-%E6%B3%A8%E8%A7%A3%E5%BC%8F%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">三、注解式监听器的注册</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%9B%91%E5%90%AC%E5%99%A8%E6%96%B9%E6%B3%95%E5%A4%84%E7%90%86%E5%99%A8%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">1、监听器方法处理器的注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%8E%B7%E5%8F%96%E7%9B%91%E5%90%AC%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="nav-text">2、获取监听器工厂</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%B0%86%E6%96%B9%E6%B3%95%E9%80%82%E9%85%8D%E4%B8%BA%E7%9B%91%E5%90%AC%E5%99%A8"><span class="nav-text">3、将方法适配为监听器</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E7%9B%91%E5%90%AC%E5%99%A8%E7%9A%84%E6%B3%A8%E5%86%8C"><span class="nav-text">4、监听器的注册</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B-%E7%9B%91%E5%90%AC%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="nav-text">四、监听器工厂</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E9%80%9A%E7%94%A8%E7%9B%91%E5%90%AC%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="nav-text">1、通用监听器工厂</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BA%8B%E5%8A%A1%E7%9B%91%E5%90%AC%E5%99%A8%E5%B7%A5%E5%8E%82"><span class="nav-text">2、事务监听器工厂</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
