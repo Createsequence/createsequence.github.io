@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"createsequence.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.18.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="什么是查找？查找是在大量的信息中寻找一个特定的信息元素，在计算机应用中，查找是常用的基本运算，例如编译程序中符号表的查找。 定义：根据给定的某个值，在查找表中确定一个其关键字等于给定值的数据元素（或记录）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构与算法（九）：查找">
+<meta property="og:url" content="https://createsequence.github.io/2020/07/01/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E6%9F%A5%E6%89%BE/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="什么是查找？查找是在大量的信息中寻找一个特定的信息元素，在计算机应用中，查找是常用的基本运算，例如编译程序中符号表的查找。 定义：根据给定的某个值，在查找表中确定一个其关键字等于给定值的数据元素（或记录）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.xiajibagao.top/20200701214402.png">
+<meta property="og:image" content="http://img.xiajibagao.top/20200701214406.png">
+<meta property="article:published_time" content="2020-06-30T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-10-27T02:02:52.000Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="数据结构与算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.xiajibagao.top/20200701214402.png">
+
+
+<link rel="canonical" href="https://createsequence.github.io/2020/07/01/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E6%9F%A5%E6%89%BE/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://createsequence.github.io/2020/07/01/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E6%9F%A5%E6%89%BE/","path":"2020/07/01/数据结构/数据结构与算法（九）：查找/","title":"数据结构与算法（九）：查找"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>数据结构与算法（九）：查找 | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+  <!-- 引入目录截取js -->
+  <script type="text/javascript" src="/js/custom.js"></script>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Createsequence's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E6%9F%A5%E6%89%BE%EF%BC%9F"><span class="nav-text">什么是查找？</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E7%BA%BF%E6%80%A7%E6%9F%A5%E6%89%BE"><span class="nav-text">一、线性查找</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E4%BA%8C%E5%88%86%E6%9F%A5%E6%89%BE"><span class="nav-text">二、二分查找</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%80%9D%E8%B7%AF%E5%88%86%E6%9E%90"><span class="nav-text">1.思路分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-text">2.代码实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%8F%92%E5%80%BC%E6%9F%A5%E6%89%BE"><span class="nav-text">三、插值查找</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E6%96%90%E6%B3%A2%E9%82%A3%E5%A5%91%E6%9F%A5%E6%89%BE"><span class="nav-text">四、斐波那契查找</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%80%9D%E8%B7%AF%E5%88%86%E6%9E%90-1"><span class="nav-text">1.思路分析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0-1"><span class="nav-text">2.代码实现</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Createsequence"
+      src="/images/Createsequence.jpg">
+  <p class="site-author-name" itemprop="name">Createsequence</p>
+  <div class="site-description" itemprop="description">一个努力前进的程序猿</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Createsequence" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Createsequence" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://createsequence.github.io/2020/07/01/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E6%9F%A5%E6%89%BE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+      <meta itemprop="name" content="Createsequence">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+      <meta itemprop="description" content="一个努力前进的程序猿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="数据结构与算法（九）：查找 | Createsequence's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构与算法（九）：查找
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-07-01 00:00:00" itemprop="dateCreated datePublished" datetime="2020-07-01T00:00:00+08:00">2020-07-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2020-10-27 10:02:52" itemprop="dateModified" datetime="2020-10-27T10:02:52+08:00">2020-10-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>7 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="什么是查找？"><a href="#什么是查找？" class="headerlink" title="什么是查找？"></a>什么是查找？</h2><p>查找是在大量的信息中寻找一个特定的信息元素，在计算机应用中，查找是常用的基本运算，例如编译程序中符号表的查找。</p>
+<p>定义：根据给定的某个值，在查找表中确定一个其关键字等于给定值的数据元素（或记录）。</p>
+<p>分类：</p>
+<ol>
+<li><p>静态查找和动态查找</p>
+<ul>
+<li>静态查找：不对表的数据元素和结构进行任何改变。</li>
+<li>动态查找：在查找过程同时插入查找表中不存在的数据元素，或者从查找表中删除已经存在的某个数据元素。</li>
+</ul>
+</li>
+<li><p>无序查找和有序查找。</p>
+<ul>
+<li>无序查找：被查找数列有序无序均可</li>
+<li>有序查找：被查找数列必须为有序数列。</li>
+</ul>
+</li>
+</ol>
+<h2 id="一、线性查找"><a href="#一、线性查找" class="headerlink" title="一、线性查找"></a>一、线性查找</h2><p>遍历数组并且依次对比值，相等时返回下标</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 在给定数组中线性查找指定元素</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> arr</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> target</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">search</span><span class="params">(<span class="type">int</span>[] arr,<span class="type">int</span> target)</span> &#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; arr.length; i++) &#123;</span><br><span class="line">        <span class="keyword">if</span> (arr[i] == target) &#123;</span><br><span class="line">            <span class="keyword">return</span> i;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="二、二分查找"><a href="#二、二分查找" class="headerlink" title="二、二分查找"></a>二、二分查找</h2><h3 id="1-思路分析"><a href="#1-思路分析" class="headerlink" title="1.思路分析"></a>1.思路分析</h3><ul>
+<li>要查找数target，首先要在给定的有序数组中找到中间位置的数，定义为arr[mid]</li>
+<li>比较target与arr[mid]大小：<ol>
+<li>target &lt; arr[mid]：说明target元素的下标小于mid，向右查找</li>
+<li>target &gt; arr[mid]：说明target元素的下标大于mid，向左查找</li>
+<li>target &#x3D; arr[mid]：即找到了</li>
+</ol>
+</li>
+<li>递归重复以上步骤直到找到或者找不到元素为止</li>
+</ul>
+<h3 id="2-代码实现"><a href="#2-代码实现" class="headerlink" title="2.代码实现"></a>2.代码实现</h3><p>查找不含有重复数字的情况：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 二分查找不重复目标</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> arr 查找的数字</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> left 左指针</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> right 右指针</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> target 查找目标</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">search</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> left, <span class="type">int</span> right, <span class="type">int</span> target)</span> &#123;</span><br><span class="line">    <span class="comment">//由于每次遍历右指针总是右移，左指针总是右移</span></span><br><span class="line">    <span class="comment">//所以当如果查找的是一个不存在的数时，即右指针小于左指针</span></span><br><span class="line">    <span class="keyword">if</span> (right &lt; left) &#123;</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取中位数</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> (right + left) / <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//如果目标比中位数小，向左递归</span></span><br><span class="line">    <span class="keyword">if</span> (arr[mid] &gt; target) &#123;</span><br><span class="line">        <span class="keyword">return</span> search(arr, left, mid - <span class="number">1</span>, target);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[mid] &lt; target) &#123;</span><br><span class="line">        <span class="comment">//如果目标表中位数打，向右递归</span></span><br><span class="line">        <span class="keyword">return</span> search(arr, mid + <span class="number">1</span>, right, target);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//中位数即为目标</span></span><br><span class="line">        <span class="keyword">return</span> mid;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>查找含有重复数字的情况：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 二分查找重复目标</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> arr 查找的数字</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> left 左指针</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> right 右指针</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> target 查找目标</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Integer&gt; <span class="title function_">search</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> left, <span class="type">int</span> right, <span class="type">int</span> target)</span> &#123;</span><br><span class="line">    ArrayList&lt;Integer&gt; targets = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//由于每次遍历右指针总是右移，左指针总是右移</span></span><br><span class="line">    <span class="comment">//所以当如果查找的是一个不存在的数时，即右指针小于左指针</span></span><br><span class="line">    <span class="keyword">if</span> (right &lt; left) &#123;</span><br><span class="line">        <span class="keyword">return</span> targets;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取中位数</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> (right + left) / <span class="number">2</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//如果目标比中位数小，向左递归</span></span><br><span class="line">    <span class="keyword">if</span> (arr[mid] &gt; target) &#123;</span><br><span class="line">        <span class="keyword">return</span> search(arr, left, mid - <span class="number">1</span>, target);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (arr[mid] &lt; target) &#123;</span><br><span class="line">        <span class="comment">//如果目标表中位数打，向右递归</span></span><br><span class="line">        <span class="keyword">return</span> search(arr, mid + <span class="number">1</span>, right, target);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//如果找到了</span></span><br><span class="line">        <span class="comment">//向左查找相同的数</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">tempIndex</span> <span class="operator">=</span> mid - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>)&#123;</span><br><span class="line">            <span class="comment">//到第一个数就不再继续找</span></span><br><span class="line">            <span class="keyword">if</span>(tempIndex &lt; <span class="number">0</span> || arr[tempIndex] != target)&#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            targets.add(tempIndex);</span><br><span class="line">            tempIndex--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//放入中间值</span></span><br><span class="line">        targets.add(mid);</span><br><span class="line">        <span class="comment">//向右查找相同的数</span></span><br><span class="line">        tempIndex = mid + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            <span class="comment">//到最后一个数就不再继续找</span></span><br><span class="line">            <span class="keyword">if</span>(tempIndex &gt; arr.length - <span class="number">1</span> || arr[tempIndex] != target)&#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            targets.add(tempIndex);</span><br><span class="line">            tempIndex++;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> targets;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="三、插值查找"><a href="#三、插值查找" class="headerlink" title="三、插值查找"></a>三、插值查找</h2><p>插值查找与二分查找基本一致，但是不一样的是不再像二分那样总是将数组均匀分为两份，而是通过公式将分割的中间点自适应定在目标元素附近。</p>
+<p><img src="http://img.xiajibagao.top/20200701214402.png"></p>
+<p>即将原先的mid计算方式换成这个：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//将原先的1/2换为(key-a[low])/(a[high]-a[low])</span></span><br><span class="line">mid=low+(high-low)*(key-a[low])/(a[high]-a[low])</span><br></pre></td></tr></table></figure>
+
+<p>由于mid的计算方式改为由查找数动态计算，所以为了防止取arr[mid]时下标越界，我们需要新的边界条件：</p>
+<ul>
+<li>目标target不能小于有序数组最小数，即arr[0]</li>
+<li>目标target不能大于于有序数组最大数，即arr[arr.length]</li>
+</ul>
+<p>所以代码实现如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 插值查找</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> arr 查找的数字</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> left 左指针</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> right 右指针</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> target 查找目标</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> List&lt;Integer&gt; <span class="title function_">search</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> left, <span class="type">int</span> right, <span class="type">int</span> target)</span> &#123;</span><br><span class="line">    ArrayList&lt;Integer&gt; targets = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//查询大小目标必须在数组范围内，防止arr[mid]时下标越界</span></span><br><span class="line">    <span class="keyword">if</span> (right &lt; left || target &gt; arr[arr.length - <span class="number">1</span>] || target &lt; arr[<span class="number">0</span>]) &#123;</span><br><span class="line">        <span class="keyword">return</span> targets;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取中位数</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> left + (right - left) * (target - arr[left]) / (arr[right] - arr[left]);</span><br><span class="line">    <span class="type">int</span> <span class="variable">midVal</span> <span class="operator">=</span> arr[mid];</span><br><span class="line"></span><br><span class="line">    <span class="comment">//如果目标比中位数小，向左递归</span></span><br><span class="line">    <span class="keyword">if</span> (midVal &gt; target) &#123;</span><br><span class="line">        <span class="keyword">return</span> search(arr, left, mid - <span class="number">1</span>, target);</span><br><span class="line">    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (midVal &lt; target) &#123;</span><br><span class="line">        <span class="comment">//如果目标表中位数打，向右递归</span></span><br><span class="line">        <span class="keyword">return</span> search(arr, mid + <span class="number">1</span>, right, target);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">//如果找到了</span></span><br><span class="line">        <span class="comment">//向左查找相同的数</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">tempIndex</span> <span class="operator">=</span> mid - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>)&#123;</span><br><span class="line">            <span class="comment">//到第一个数就不再继续找</span></span><br><span class="line">            <span class="keyword">if</span>(tempIndex &lt; <span class="number">0</span> || arr[tempIndex] != target)&#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            targets.add(tempIndex);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//放入中间值</span></span><br><span class="line">        targets.add(mid);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//向右查找相同的数</span></span><br><span class="line">        tempIndex = mid + <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            <span class="comment">//到最后一个数就不再继续找</span></span><br><span class="line">            <span class="keyword">if</span>(tempIndex &gt; arr.length - <span class="number">1</span> || arr[tempIndex] != target)&#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            targets.add(tempIndex);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> targets;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="四、斐波那契查找"><a href="#四、斐波那契查找" class="headerlink" title="四、斐波那契查找"></a>四、斐波那契查找</h2><p>斐波那契查找跟差值查找一样从中位数mid上下文章，但是又有不同之处，要想理解斐波那契查找的思路，需要先了解一下斐波那契数列：</p>
+<p>举个例子， {1, 1, 2, 3, 5, 8, 13, 21, 34, 55 } 就是一个斐波那契数列，他有两个特点：</p>
+<ul>
+<li>F[k] &#x3D; F[k-1] + F[k-2]</li>
+<li>相邻数之比无限接近黄金分割值0.618</li>
+</ul>
+<h3 id="1-思路分析-1"><a href="#1-思路分析-1" class="headerlink" title="1.思路分析"></a>1.思路分析</h3><ul>
+<li><p>由于F[k] &#x3D; F[k-1] + F[k-2]，我们能推出（F[k]-1）&#x3D;（F[k-1]-1）+（F[k-2]-1）+1，也就是说：</p>
+<p>若数组的长度F[k]-1，则每一数组可以被分成<strong>长度为F[k-1]-1和F[k-2]-1的两段，两段的平分点mid即有mid&#x3D;low+F[k-1]-1</strong></p>
+<p><img src="http://img.xiajibagao.top/20200701214406.png"></p>
+</li>
+<li><p>但数组长度n不一定刚好等于F[k]-1，所以需要将原来的顺序表长度n增加至F[k]-1。新增的位置（从n+1到F[k]-1位置），都赋为n位置的值即可</p>
+<p>举个例子：延长{1,8, 10, 89, 1000, 1234}，得到{1,8, 10, 89, 1000, 1234, 1234, 1234}，</p>
+</li>
+</ul>
+<h3 id="2-代码实现-1"><a href="#2-代码实现-1" class="headerlink" title="2.代码实现"></a>2.代码实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 斐波那契数组长度</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">static</span> <span class="type">int</span> <span class="variable">MAXSIZE</span> <span class="operator">=</span> <span class="number">20</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 获得一个斐波那契数列，用于提供数组分割点位置</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span>[] getFibonacci() &#123;</span><br><span class="line">    <span class="type">int</span>[] f = <span class="keyword">new</span> <span class="title class_">int</span>[MAXSIZE];</span><br><span class="line">    f[<span class="number">0</span>] = <span class="number">1</span>;</span><br><span class="line">    f[<span class="number">1</span>] = <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">2</span>; i &lt; MAXSIZE; i++) &#123;</span><br><span class="line">        f[i] = f[i - <span class="number">1</span>] + f[i - <span class="number">2</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> f;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 斐波那契查找</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> arr</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> target</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">search</span><span class="params">(<span class="type">int</span>[] arr, <span class="type">int</span> target)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//数组第一位和最后一位下标</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">left</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="type">int</span> <span class="variable">right</span> <span class="operator">=</span> arr.length - <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//斐波那契数列下标</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">k</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">    <span class="comment">//生成的斐波那契数列</span></span><br><span class="line">    <span class="type">int</span>[] f = getFibonacci();</span><br><span class="line"></span><br><span class="line">    <span class="comment">//中间值</span></span><br><span class="line">    <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//获取离arr.length-1最近的分割点下标</span></span><br><span class="line">    <span class="keyword">while</span> (right &gt; f[k] - <span class="number">1</span>) &#123;</span><br><span class="line">        k++;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//将数组长度延长到f[k]</span></span><br><span class="line">    <span class="type">int</span>[] temp = Arrays.copyOf(arr, f[k]);</span><br><span class="line">    <span class="comment">//将延长的那部分用原数组的最后一位填充</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> right + <span class="number">1</span>; i &lt; f[k]; i++) &#123;</span><br><span class="line">        temp[i] = arr[right];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//查找目标数字</span></span><br><span class="line">    <span class="keyword">while</span> (left &lt;= right) &#123;</span><br><span class="line">        <span class="comment">//获取分割数组的中间点下标</span></span><br><span class="line">        mid = left + f[k - <span class="number">1</span>] - <span class="number">1</span>;</span><br><span class="line">        <span class="comment">//如果元素在分割点的左边</span></span><br><span class="line">        <span class="keyword">if</span> (target &lt; temp[mid]) &#123;</span><br><span class="line">            <span class="comment">//向分割点左边查找</span></span><br><span class="line">            right = mid - <span class="number">1</span>;</span><br><span class="line">            <span class="comment">//中间点右移到前一个分割点</span></span><br><span class="line">            k--;</span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (target &gt; temp[mid]) &#123;</span><br><span class="line">            <span class="comment">//向分割点右边查找</span></span><br><span class="line">            left = mid + <span class="number">1</span>;</span><br><span class="line">            k-=<span class="number">2</span>;</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//找到要查找的数字</span></span><br><span class="line">            <span class="comment">//判断要返回的下标</span></span><br><span class="line">            <span class="keyword">if</span> (mid &lt; right) &#123;</span><br><span class="line">                <span class="keyword">return</span> mid;</span><br><span class="line">            &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">return</span> right;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" rel="tag"># 数据结构与算法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/06/30/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9A%E6%8E%92%E5%BA%8F/" rel="prev" title="数据结构与算法（八）：排序">
+                  <i class="fa fa-angle-left"></i> 数据结构与算法（八）：排序
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/07/04/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E5%8D%81%EF%BC%89%EF%BC%9A%E5%93%88%E5%B8%8C%E8%A1%A8/" rel="next" title="数据结构与算法（十）：哈希表">
+                  数据结构与算法（十）：哈希表 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Createsequence</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">261k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">15:47</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"createsequence.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.18.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="概述衡量一个算法的好坏，最简单的标准就是他的时间复杂度。  算法的时间复杂度（Time complexity）是一个函数，它定性描述该算法的运行时间。这是一个代表算法输入值的字符串的长度的函数。 时间复杂度常用大O符号表述，不包括这个函数的低阶项和首项系数。使用这种方式时，时间复杂度可被称为是渐近的，亦即考察输入值大小趋近无穷时的情况。 例如，如果一个算法对于任何大小为 n （必须比 n0 大）的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="算法时间复杂度">
+<meta property="og:url" content="https://createsequence.github.io/2020/06/27/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E7%AE%97%E6%B3%95%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="概述衡量一个算法的好坏，最简单的标准就是他的时间复杂度。  算法的时间复杂度（Time complexity）是一个函数，它定性描述该算法的运行时间。这是一个代表算法输入值的字符串的长度的函数。 时间复杂度常用大O符号表述，不包括这个函数的低阶项和首项系数。使用这种方式时，时间复杂度可被称为是渐近的，亦即考察输入值大小趋近无穷时的情况。 例如，如果一个算法对于任何大小为 n （必须比 n0 大）的">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.xiajibagao.top/20200627133030.png">
+<meta property="og:image" content="http://img.xiajibagao.top/20200627133038.png">
+<meta property="og:image" content="http://img.xiajibagao.top/20200627133027.png">
+<meta property="article:published_time" content="2020-06-26T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-10-27T01:09:05.000Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="杂七乱八">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.xiajibagao.top/20200627133030.png">
+
+
+<link rel="canonical" href="https://createsequence.github.io/2020/06/27/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E7%AE%97%E6%B3%95%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://createsequence.github.io/2020/06/27/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E7%AE%97%E6%B3%95%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6/","path":"2020/06/27/杂七乱八/算法时间复杂度/","title":"算法时间复杂度"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>算法时间复杂度 | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+  <!-- 引入目录截取js -->
+  <script type="text/javascript" src="/js/custom.js"></script>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Createsequence's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E6%97%B6%E9%97%B4%E9%A2%91%E5%BA%A6"><span class="nav-text">一、时间频度</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%BF%BD%E7%95%A5%E5%B8%B8%E6%95%B0%E9%A1%B9"><span class="nav-text">1.忽略常数项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E5%BF%BD%E7%95%A5%E4%BD%8E%E6%AC%A1%E9%A1%B9"><span class="nav-text">2.忽略低次项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%BF%BD%E7%95%A5%E7%B3%BB%E6%95%B0"><span class="nav-text">3.忽略系数</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-text">二、时间复杂度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%B8%B8%E8%A7%81%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-text">三、常见时间复杂度</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E3%80%81%E5%A4%8D%E6%9D%82%E5%BA%A6%E7%9A%84%E5%9B%9B%E4%B8%AA%E6%A6%82%E5%BF%B5"><span class="nav-text">四、复杂度的四个概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%94%E3%80%81%E6%80%BB%E7%BB%93"><span class="nav-text">五、总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Createsequence"
+      src="/images/Createsequence.jpg">
+  <p class="site-author-name" itemprop="name">Createsequence</p>
+  <div class="site-description" itemprop="description">一个努力前进的程序猿</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Createsequence" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Createsequence" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://createsequence.github.io/2020/06/27/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E7%AE%97%E6%B3%95%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+      <meta itemprop="name" content="Createsequence">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+      <meta itemprop="description" content="一个努力前进的程序猿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="算法时间复杂度 | Createsequence's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          算法时间复杂度
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-06-27 00:00:00" itemprop="dateCreated datePublished" datetime="2020-06-27T00:00:00+08:00">2020-06-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2020-10-27 09:09:05" itemprop="dateModified" datetime="2020-10-27T09:09:05+08:00">2020-10-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/" itemprop="url" rel="index"><span itemprop="name">杂七乱八</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>6 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>衡量一个算法的好坏，最简单的标准就是他的时间复杂度。</p>
+<blockquote>
+<p>算法的<strong>时间复杂度</strong>（Time complexity）是一个函数，它定性描述该算法的运行时间。这是一个代表算法输入值的字符串的长度的函数。</p>
+<p>时间复杂度常用大O符号表述，不包括这个函数的低阶项和首项系数。使用这种方式时，时间复杂度可被称为是渐近的，亦即考察输入值大小趋近无穷时的情况。</p>
+<p>例如，如果一个算法对于任何大小为 <em>n</em> （必须比 <em>n0</em> 大）的输入，它至多需要 5<em>n</em>3 + 3<em>n</em> 的时间运行完毕，那么它的渐近时间复杂度是 O(<em>n</em>3).</p>
+</blockquote>
+<h2 id="一、时间频度"><a href="#一、时间频度" class="headerlink" title="一、时间频度"></a>一、时间频度</h2><p>要理解时间复杂度，需要先理解时间频度，而时间频度简单的说，就是<strong>算法中语句的执行次数</strong>。</p>
+<p>举个例子：</p>
+<p>要计算1+2+…+100，现在有两种算法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">fun1</span><span class="params">(<span class="type">int</span> n)</span>&#123;</span><br><span class="line">    <span class="type">int</span> total;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt;= n; i++)&#123;</span><br><span class="line">        total+=i;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> total;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">fun2</span><span class="params">(<span class="type">int</span> n)</span>&#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">total</span> <span class="operator">=</span> (<span class="number">1</span> + n)*n/<span class="number">2</span>;</span><br><span class="line">    <span class="keyword">return</span> total;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以看见，对于<code>fun1()</code>这个方法，不管n多大，永远需要执行n+1次，也就是说他的时间频度是T(n)&#x3D;n+1,</p>
+<p>而对与<code>fun2()</code>来说，不管n多大都只需要执行1次，所以他的时间频度T(n)&#x3D;1。</p>
+<p><strong>当n趋向无穷大时，有三个忽略</strong>：</p>
+<h3 id="1-忽略常数项"><a href="#1-忽略常数项" class="headerlink" title="1.忽略常数项"></a>1.忽略常数项</h3><p>比如T(n)&#x3D;2n+1，当n趋向无穷大时，可以忽略常数项1；</p>
+<p>参见下图：</p>
+<ul>
+<li>2n+20 和 2n 随着n 变大，执行曲线无限接近, 20可以忽略 </li>
+<li>3n+10 和 3n 随着n 变大，执行曲线无限接近, 10可以忽略</li>
+</ul>
+<p><img src="http://img.xiajibagao.top/20200627133030.png"></p>
+<h3 id="2-忽略低次项"><a href="#2-忽略低次项" class="headerlink" title="2.忽略低次项"></a>2.忽略低次项</h3><p>比如T(n)&#x3D;2n+3n^8，当n趋向无穷大时，可以忽略低次项及其系数2n；</p>
+<p>参见下图：</p>
+<ul>
+<li>2n^2+3n+10 和 2n^2 随着n 变大, 执行曲线无限接近, 可以忽略 3n+10 	</li>
+<li>n^2+5n+20 和 n^2 随着n 变大,执行曲线无限接近, 可以忽略 5n+20</li>
+</ul>
+<p><img src="http://img.xiajibagao.top/20200627133038.png"></p>
+<h3 id="3-忽略系数"><a href="#3-忽略系数" class="headerlink" title="3.忽略系数"></a>3.忽略系数</h3><p>比如T(n)&#x3D;2n^8，当n趋向无穷大时，可以忽略系数2。</p>
+<p>参见下图：</p>
+<ul>
+<li>随着n值变大，5n^2+7n 和 3n^2 + 2n ，执行曲线重合, 说明  这种情况下, 5和3可以忽略。 </li>
+<li>而n^3+5n 和 6n^3+4n  ，执行曲线分离，说明多少次方式关键</li>
+</ul>
+<p><img src="http://img.xiajibagao.top/20200627133027.png"></p>
+<h2 id="二、时间复杂度"><a href="#二、时间复杂度" class="headerlink" title="二、时间复杂度"></a>二、时间复杂度</h2><p>我们现在理解了时间频度的T(n)的含义，假设当有一个辅助函数f(n)，使得<strong>当n趋近无穷大时</strong>，T(n)&#x2F;f(n)的极限值为不等于0的常数，就叫f(n)为T(n)的同量级函数，记作T(n)&#x3D;O(f(n))，</p>
+<p>称O(f(n))为算法的<strong>时间渐进复杂度</strong>，也就是<strong>时间复杂度</strong>。</p>
+<p>又根据时间频度T(n)的“三个忽略”原则，我们可以知道时间复杂度是这样得到的：</p>
+<ol>
+<li>忽略所有常数</li>
+<li>只保留函数中的最高阶项</li>
+<li>去掉最高阶项的系数</li>
+</ol>
+<p>举个例子：</p>
+<p>某算法T(n)&#x3D;2n^3+4n-5，按步骤走：</p>
+<ol>
+<li>T(n)&#x3D;2n^3+4n</li>
+<li>T(n)&#x3D;2n^3</li>
+<li>T(n)&#x3D;n^3</li>
+</ol>
+<p>即可得该算法时间复杂度为O(n^3)</p>
+<h2 id="三、常见时间复杂度"><a href="#三、常见时间复杂度" class="headerlink" title="三、常见时间复杂度"></a>三、常见时间复杂度</h2><p>这里按复杂度从低到高列举常见的时间复杂度：</p>
+<ol>
+<li><p>常数阶O(1)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 无论代码执行了多少行，只要是没有循环等复杂结构，那这个代码的时间复杂度就都是O(1) 。</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">fun</span><span class="params">(<span class="type">int</span> n)</span>&#123;</span><br><span class="line">    n+=<span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>对数阶O(log2n)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 根据公式有 n = 2^x，也就是 x = log2n，x即为循环代码执行次数，所以时间复杂度为O(log2n)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">fun</span><span class="params">(<span class="type">int</span> n)</span>&#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">while</span>(i &lt; n)&#123;</span><br><span class="line">        i = i *<span class="number">2</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>线性阶O(n)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 一般来说，只要代码里只有一个循环结构，即输入规模和执行次数呈线性相关，那这个代码的时间复杂度就都是O(n) 。</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">fun</span><span class="params">(<span class="type">int</span> n)</span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++)&#123;</span><br><span class="line">        n+=i;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>线性对数阶O(nlogn)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 可以简单理解为对数阶的程序被放入了循环结构中，也就是n*O(logn)，下面的代码的复杂度就是O(nlog2n)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">fun</span><span class="params">(<span class="type">int</span> n)</span>&#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++)&#123;</span><br><span class="line">        <span class="keyword">while</span>(i &lt; n)&#123;</span><br><span class="line">            j = j *<span class="number">2</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>平方阶O(n²)，立方阶O(n^3)，K次方阶O(n^k)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 平方阶可以简单理解为线性阶中嵌套一个线性阶，也就是O(logn)*O(logn)，下面的代码复杂度就是O(n^2)</span></span><br><span class="line"><span class="comment">// 立方阶同理，就是三个线性阶的嵌套，K次方阶同理</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">fun</span><span class="params">(<span class="type">int</span> n)</span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; n; i++)&#123;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; n; i++)&#123;</span><br><span class="line">			i=i+j;</span><br><span class="line">        &#125; </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="四、复杂度的四个概念"><a href="#四、复杂度的四个概念" class="headerlink" title="四、复杂度的四个概念"></a>四、复杂度的四个概念</h2><ol>
+<li>最坏情况时间复杂度：代码在最理想情况下执行的时间复杂度。</li>
+<li>最好情况时间复杂度：代码在最坏情况下执行的时间复杂度。</li>
+<li>平均时间复杂度：用代码在所有情况下执行的次数的加权平均值表示</li>
+<li>均摊时间复杂度：在代码执行的所有复杂度情况中绝大部分是低级别的复杂度，个别情况是高级别复杂度且发生具有时序关系时，可以将个别高级别复杂度均摊到低级别复杂度上。基本上均摊结果就等于低级别复杂度。</li>
+</ol>
+<p>举个例子：</p>
+<p>长度为n的数组查找一个给定元素k</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">fun</span><span class="params">(<span class="type">int</span>[] arr,<span class="type">int</span> k)</span>&#123;</span><br><span class="line">    <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; arr.length; i++)&#123;</span><br><span class="line">        <span class="keyword">if</span>(arr[i] == k)&#123;</span><br><span class="line">            <span class="comment">//找到了</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上面这个方法，最好的情况下元素k就在数组第一位，复杂度为O(1)，但是最坏的情况下，元素k在数组最后一位，复杂度为O(n)。</p>
+<p>同一段代码在不同情况下时间复杂度会出现量级差异，为了更全面，更准确的描述代码的时间复杂度，我们引入这4个概念，当然，在大多数时候我们是不用特意区分这四种情况的。</p>
+<h2 id="五、总结"><a href="#五、总结" class="headerlink" title="五、总结"></a>五、总结</h2><p>总结一下如何快速判断程序的时间复杂度：</p>
+<ul>
+<li>只关注循环最多的那部分代码</li>
+<li>总复杂度等于量级最大的那段代码的复杂度</li>
+<li>嵌套代码的复杂度等于嵌套内外代码复杂度的乘积</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/" rel="tag"># 杂七乱八</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/06/26/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%83%EF%BC%89%EF%BC%9A%E8%BF%B7%E5%AE%AB%E5%9B%9E%E6%BA%AF%E5%92%8C%E5%85%AB%E7%9A%87%E5%90%8E%E9%97%AE%E9%A2%98/" rel="prev" title="数据结构与算法（七）：迷宫回溯和八皇后问题">
+                  <i class="fa fa-angle-left"></i> 数据结构与算法（七）：迷宫回溯和八皇后问题
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/06/27/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E8%BF%9B%E7%A8%8B%E7%BA%BF%E7%A8%8B%EF%BC%8C%E5%B9%B6%E8%A1%8C%E5%B9%B6%E5%8F%91%EF%BC%8C%E5%90%8C%E6%AD%A5%E5%BC%82%E6%AD%A5%EF%BC%8C%E9%98%BB%E5%A1%9E%E8%B4%B9%E9%98%BB%E5%A1%9E/" rel="next" title="进程线程，并行并发，同步异步，阻塞费阻塞">
+                  进程线程，并行并发，同步异步，阻塞费阻塞 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Createsequence</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">261k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">15:47</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

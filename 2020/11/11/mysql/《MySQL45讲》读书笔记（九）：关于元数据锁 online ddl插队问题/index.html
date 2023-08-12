@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"createsequence.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.18.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结  一、读写锁堵塞前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="《MySQL45讲》读书笔记(九)：关于元数据锁 online ddl插队问题">
+<meta property="og:url" content="https://createsequence.github.io/2020/11/11/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E5%85%B3%E4%BA%8E%E5%85%83%E6%95%B0%E6%8D%AE%E9%94%81%20online%20ddl%E6%8F%92%E9%98%9F%E9%97%AE%E9%A2%98/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结  一、读写锁堵塞前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20201111201636187.png">
+<meta property="article:published_time" content="2020-11-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-12-24T12:01:04.000Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.xiajibagao.top/image-20201111201636187.png">
+
+
+<link rel="canonical" href="https://createsequence.github.io/2020/11/11/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E5%85%B3%E4%BA%8E%E5%85%83%E6%95%B0%E6%8D%AE%E9%94%81%20online%20ddl%E6%8F%92%E9%98%9F%E9%97%AE%E9%A2%98/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://createsequence.github.io/2020/11/11/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E5%85%B3%E4%BA%8E%E5%85%83%E6%95%B0%E6%8D%AE%E9%94%81%20online%20ddl%E6%8F%92%E9%98%9F%E9%97%AE%E9%A2%98/","path":"2020/11/11/mysql/《MySQL45讲》读书笔记（九）：关于元数据锁 online ddl插队问题/","title":"《MySQL45讲》读书笔记(九)：关于元数据锁 online ddl插队问题"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>《MySQL45讲》读书笔记(九)：关于元数据锁 online ddl插队问题 | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+  <!-- 引入目录截取js -->
+  <script type="text/javascript" src="/js/custom.js"></script>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Createsequence's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E8%AF%BB%E5%86%99%E9%94%81%E5%A0%B5%E5%A1%9E"><span class="nav-text">一、读写锁堵塞</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E9%94%81%E9%99%8D%E7%BA%A7"><span class="nav-text">二、锁降级</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Createsequence"
+      src="/images/Createsequence.jpg">
+  <p class="site-author-name" itemprop="name">Createsequence</p>
+  <div class="site-description" itemprop="description">一个努力前进的程序猿</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Createsequence" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Createsequence" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://createsequence.github.io/2020/11/11/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E4%B9%9D%EF%BC%89%EF%BC%9A%E5%85%B3%E4%BA%8E%E5%85%83%E6%95%B0%E6%8D%AE%E9%94%81%20online%20ddl%E6%8F%92%E9%98%9F%E9%97%AE%E9%A2%98/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+      <meta itemprop="name" content="Createsequence">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+      <meta itemprop="description" content="一个努力前进的程序猿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="《MySQL45讲》读书笔记(九)：关于元数据锁 online ddl插队问题 | Createsequence's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          《MySQL45讲》读书笔记(九)：关于元数据锁 online ddl插队问题
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-11-11 00:00:00" itemprop="dateCreated datePublished" datetime="2020-11-11T00:00:00+08:00">2020-11-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2020-12-24 20:01:04" itemprop="dateModified" datetime="2020-12-24T20:01:04+08:00">2020-12-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/mysql/" itemprop="url" rel="index"><span itemprop="name">mysql</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>624</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><blockquote>
+<p>此文为极客时间：MySQL实战45讲的元数据锁相关部分问题的思考总结</p>
+</blockquote>
+<h2 id="一、读写锁堵塞"><a href="#一、读写锁堵塞" class="headerlink" title="一、读写锁堵塞"></a>一、读写锁堵塞</h2><p>前面在锁这块介绍了元数据锁（MDL 锁）。元数据锁是一种读写锁，他的读读不互斥，读写和写写是互斥的。因此我们参考下面的时序图：</p>
+<p><img src="http://img.xiajibagao.top/image-20201111201636187.png" alt="image-20201111201636187"></p>
+<p>现在等待队列中有四个 session 要获取锁：</p>
+<ul>
+<li>由于 sessionA 和 sessionB 都是读操作，读读不互斥，因此两个 session 都持有读锁；</li>
+<li>sessionA 和 sessionB 还未释放，此时 sessionC 要获取写锁，由于读写互斥，此时 sessionC 发生堵塞；</li>
+<li>由于写锁的获取优先级高于读锁，sessionC 的写锁没获取到，后面其他 session 的读锁也无法获取到。此时 sessionD 堵塞；</li>
+</ul>
+<p>上面是一个很典型的读写锁堵塞的场景。但是实际测试的时候，会出现 sessionC 和 sessionD 都堵塞了，但是将 sessionA 和 sessionB 提交以后，sessionC 仍然保持堵塞状态，必须等 sessionD 也提交以后，才会继续执行。也就说，sessionD 好像发生了一个插队的现象。</p>
+<h2 id="二、锁降级"><a href="#二、锁降级" class="headerlink" title="二、锁降级"></a>二、锁降级</h2><p>我们知道 mysql 有一个 online ddl，即 执行 ddl 的时候不会直接锁表导致无法执行其他查询的操作。其实这涉及到一个锁降级的概念。即原本流程是：</p>
+<ul>
+<li>拿写锁</li>
+<li>做 DDL</li>
+<li>释放锁</li>
+</ul>
+<p>其他查询语句必须等到 DDL完整的做完这三步以后才能拿到锁，引入锁降级以后，流程变成：</p>
+<ul>
+<li>先只拿读锁；</li>
+<li>自己先申请内存执行 DDL，先把一些处理做好；</li>
+<li>去拿写锁；</li>
+<li>真正完成 DDL，替换表结构</li>
+<li>释放锁</li>
+</ul>
+<p>原本一开始就拿写锁，现在换成了先拿读锁，保证在这期间没有其他 DDL 先执行去修改表，然后自己先把一些读写的过程完成，最后再去拿写锁，把表结构替换上去。相当于原本大家排队买票，轮到了一个人，但是他电话来了，由于他堵着窗口，大家都得等他接完电话才能继续买票。后面大家跟他商量了一些，他接电话的时候先出去，让后面的先继续买票，等他打完电话在回来直接插到最前面。但是这样做的好处在于，避免了修改数据的过程长时间的占用写锁，导致其他 DML 被堵塞。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/mysql/" rel="tag"># mysql</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/11/09/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%85%AB%EF%BC%89%EF%BC%9A%E9%97%B4%E9%9A%99%E9%94%81%E7%9A%84%E5%8A%A0%E9%94%81%E6%9D%A1%E4%BB%B6/" rel="prev" title="《MySQL45讲》读书笔记(八)：间隙锁的加锁条件">
+                  <i class="fa fa-angle-left"></i> 《MySQL45讲》读书笔记(八)：间隙锁的加锁条件
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/11/12/mysql/%E3%80%8AMySQL45%E8%AE%B2%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%EF%BC%88%E5%8D%81%EF%BC%89%EF%BC%9Acount/" rel="next" title="《MySQL45讲》读书笔记(十)：count">
+                  《MySQL45讲》读书笔记(十)：count <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Createsequence</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">261k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">15:47</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

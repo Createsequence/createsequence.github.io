@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"createsequence.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.18.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="前言在 spring 中，任何实现了 BeanFactory 接口的类都可以视为容器，它是 IOC 功能实现的核心，用于完成类实例从加载到销毁的整个生命周期的控制，这些被 spring 所管理的实例统称为 bean。 根据抽象层级的不同，容器又分为 BeanFactory 的直接实现，与基于 BeanFactory 的扩展实现 ApplicationContext，后者在前者的基础继承了 Reso">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入理解Spring容器体系结构">
+<meta property="og:url" content="https://createsequence.github.io/2022/04/02/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="前言在 spring 中，任何实现了 BeanFactory 接口的类都可以视为容器，它是 IOC 功能实现的核心，用于完成类实例从加载到销毁的整个生命周期的控制，这些被 spring 所管理的实例统称为 bean。 根据抽象层级的不同，容器又分为 BeanFactory 的直接实现，与基于 BeanFactory 的扩展实现 ApplicationContext，后者在前者的基础继承了 Reso">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://img.xiajibagao.top/image-20220620142154578.png">
+<meta property="og:image" content="https://img.xiajibagao.top/image-20220620151809732.png">
+<meta property="og:image" content="https://img.xiajibagao.top/image-20220620150717261.png">
+<meta property="og:image" content="https://img.xiajibagao.top/image-20220620173854597.png">
+<meta property="og:image" content="https://img.xiajibagao.top/image-20220620142154578.png">
+<meta property="article:published_time" content="2022-04-01T16:00:00.000Z">
+<meta property="article:modified_time" content="2022-08-15T14:22:42.000Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="Spring">
+<meta property="article:tag" content="源码分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://img.xiajibagao.top/image-20220620142154578.png">
+
+
+<link rel="canonical" href="https://createsequence.github.io/2022/04/02/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://createsequence.github.io/2022/04/02/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/","path":"2022/04/02/spring/深入理解Spring容器体系结构/","title":"深入理解Spring容器体系结构"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>深入理解Spring容器体系结构 | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+  <!-- 引入目录截取js -->
+  <script type="text/javascript" src="/js/custom.js"></script>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Createsequence's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81BeanFactory-%E6%8E%A5%E5%8F%A3%E4%BD%93%E7%B3%BB"><span class="nav-text">一、BeanFactory 接口体系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81BeanFactory"><span class="nav-text">1、BeanFactory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E5%88%86%E5%B1%82%E5%B7%A5%E5%8E%82%EF%BC%8C%E6%89%B9%E9%87%8F%E5%B7%A5%E5%8E%82%EF%BC%8C%E8%87%AA%E5%8A%A8%E8%A3%85%E9%85%8D%E5%B7%A5%E5%8E%82"><span class="nav-text">2、分层工厂，批量工厂，自动装配工厂</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%88%86%E5%B1%82%E9%85%8D%E7%BD%AE%E5%B7%A5%E5%8E%82"><span class="nav-text">3、分层配置工厂</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4%E3%80%81%E6%89%B9%E9%87%8F%E5%88%86%E5%B1%82%E9%85%8D%E7%BD%AE%E5%B7%A5%E5%8E%82"><span class="nav-text">4、批量分层配置工厂</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81ApplicationContext-%E6%8E%A5%E5%8F%A3%E4%BD%93%E7%B3%BB"><span class="nav-text">二、ApplicationContext 接口体系</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81ApplicationContext"><span class="nav-text">1、ApplicationContext</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81web-%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87%E4%B8%8E%E5%8F%AF%E9%85%8D%E7%BD%AE%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-text">2、web 应用上下文与可配置上下文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3%E3%80%81%E5%8F%AF%E9%85%8D%E7%BD%AE%E7%9A%84web%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87"><span class="nav-text">3、可配置的web应用上下文</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E6%80%BB%E7%BB%93"><span class="nav-text">三、总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Createsequence"
+      src="/images/Createsequence.jpg">
+  <p class="site-author-name" itemprop="name">Createsequence</p>
+  <div class="site-description" itemprop="description">一个努力前进的程序猿</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Createsequence" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Createsequence" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://createsequence.github.io/2022/04/02/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E4%BD%93%E7%B3%BB%E7%BB%93%E6%9E%84/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+      <meta itemprop="name" content="Createsequence">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+      <meta itemprop="description" content="一个努力前进的程序猿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="深入理解Spring容器体系结构 | Createsequence's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          深入理解Spring容器体系结构
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-04-02 00:00:00" itemprop="dateCreated datePublished" datetime="2022-04-02T00:00:00+08:00">2022-04-02</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-08-15 22:22:42" itemprop="dateModified" datetime="2022-08-15T22:22:42+08:00">2022-08-15</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Spring/" itemprop="url" rel="index"><span itemprop="name">Spring</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.6k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>13 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在 spring 中，任何实现了 <code>BeanFactory</code> 接口的类都可以视为容器，它是 <code>IOC</code> 功能实现的核心，用于完成类实例从加载到销毁的整个生命周期的控制，这些被 spring 所管理的实例统称为 bean。</p>
+<p>根据抽象层级的不同，容器又分为 <code>BeanFactory</code> 的直接实现，与基于 <code>BeanFactory</code> 的扩展实现 <code>ApplicationContext</code>，后者在前者的基础继承了 <code>ResourceLoader</code>和<code>EnvironmentCapable</code>接口，因而具备从某类运行环境的资源中直接加载 bean 的能力。</p>
+<p><img src="https://img.xiajibagao.top/image-20220620142154578.png" alt="image-20220620142154578"></p>
+<p><code>ApplicationContext</code> 最常用的两个实现 <code>ClassPathXmlApplicationContext</code> 和 <code>AnnotationConfigApplicationContext</code> ，前者用于从项目路径下根据 <code>xml</code> 文件加载 bean，而后者通过扫描类注解完成 bean 的加载。这两者 <code>ApplicationContext</code> 实际上就对应了我们所熟悉的两类配置方式，前者就是传统的 xml 配置，后者则是通过 <code>@Component</code> 与 <code>@Bean</code> 等注解对 bean 进行配置。</p>
+<p>本文将基于 spring 源码 <code>5.2.x</code> 分支，基于 <code>BeanFactory</code> 与 <code>ApplicationContext</code> 两大接口，介绍 spring 的两类容器的结构体系。</p>
+<h2 id="一、BeanFactory-接口体系"><a href="#一、BeanFactory-接口体系" class="headerlink" title="一、BeanFactory 接口体系"></a>一、BeanFactory 接口体系</h2><p>总览 <code>BeanFactory</code> 体系，按照接口的抽象层次，大体可以分层四层：</p>
+<ul>
+<li>第一层：<code>BeanFactory</code>；</li>
+<li>第二层：<code>HierarchicalBeanFactory</code>，<code>ListableBeanFactory</code>，<code>AutowireCapableBeanFactory</code>；</li>
+<li>第三层：<code>ConfigurableBeanFactory</code>，此外还有一个关联性较强<code>SingletonBeanRegistry</code>；</li>
+<li>第四层：<code>ConfigurableListableBeanFactory</code>；</li>
+</ul>
+<p><img src="https://img.xiajibagao.top/image-20220620151809732.png" alt="image-20220620151809732"></p>
+<h3 id="1、BeanFactory"><a href="#1、BeanFactory" class="headerlink" title="1、BeanFactory"></a>1、BeanFactory</h3><p><code>BeanFactory</code> 是整个容器体系最顶层的接口，它的内容如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">BeanFactory</span> &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">FACTORY_BEAN_PREFIX</span> <span class="operator">=</span> <span class="string">&quot;&amp;&quot;</span>;</span><br><span class="line">    <span class="comment">// 获取bean相关的方法</span></span><br><span class="line">    Object <span class="title function_">getBean</span><span class="params">(String name)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">    &lt;T&gt; T <span class="title function_">getBean</span><span class="params">(String name, <span class="meta">@Nullable</span> Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">    Object <span class="title function_">getBean</span><span class="params">(String name, Object... args)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">    &lt;T&gt; T <span class="title function_">getBean</span><span class="params">(Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">    &lt;T&gt; T <span class="title function_">getBean</span><span class="params">(Class&lt;T&gt; requiredType, Object... args)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">    &lt;T&gt; ObjectProvider&lt;T&gt; <span class="title function_">getBeanProvider</span><span class="params">(Class&lt;T&gt; requiredType)</span>;</span><br><span class="line">    &lt;T&gt; ObjectProvider&lt;T&gt; <span class="title function_">getBeanProvider</span><span class="params">(ResolvableType requiredType)</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 容器 bean 属性的一些判断</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">containsBean</span><span class="params">(String name)</span>;</span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isSingleton</span><span class="params">(String name)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException;</span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isPrototype</span><span class="params">(String name)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException;</span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isTypeMatch</span><span class="params">(String name, ResolvableType typeToMatch)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException;</span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isTypeMatch</span><span class="params">(String name, <span class="meta">@Nullable</span> Class&lt;?&gt; typeToMatch)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取 bean 在容器中的一些属性</span></span><br><span class="line">    Class&lt;?&gt; getType(String name) <span class="keyword">throws</span> NoSuchBeanDefinitionException;</span><br><span class="line">    String[] getAliases(String name);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>我们可以直接从 <code>BeanFactory</code> 提供的方法看出，<code>BeanFactory</code> 定义了容器的一些基本能力：</p>
+<ul>
+<li>容器可以根据名称、类型、构造函数这三个要素，单独或两两组合的的获得一个 bean；</li>
+<li>容器获取的 bean 可以是单例多种多例的；</li>
+<li>容器中的 bean 可以拥有多个名称；</li>
+</ul>
+<h3 id="2、分层工厂，批量工厂，自动装配工厂"><a href="#2、分层工厂，批量工厂，自动装配工厂" class="headerlink" title="2、分层工厂，批量工厂，自动装配工厂"></a>2、分层工厂，批量工厂，自动装配工厂</h3><p><code>BeanFactory</code> 存在两个子接口 <code>HierarchicalBeanFactory</code> 和 <code>ListableBeanFactory</code>，它们进一步的扩展了容器的能力。</p>
+<p><strong>分层工厂 HierarchicalBeanFactory</strong></p>
+<p><code>HierarchicalBeanFactory</code> 接口用于表示一个多集嵌套的 <code>BeanFactory</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">HierarchicalBeanFactory</span> <span class="keyword">extends</span> <span class="title class_">BeanFactory</span> &#123;</span><br><span class="line">    <span class="comment">// 获取父工厂</span></span><br><span class="line">    BeanFactory <span class="title function_">getParentBeanFactory</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 当前工厂是否存在与名称对应的 bean</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">containsLocalBean</span><span class="params">(String name)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>批量工厂 ListableBeanFactory</strong></p>
+<p><code>ListableBeanFactory</code> 接口定义了容器根据类型、名称或类上的注解批量的获取 bean 或 bean 名称的能力：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ListableBeanFactory</span> <span class="keyword">extends</span> <span class="title class_">BeanFactory</span> &#123;</span><br><span class="line">    <span class="comment">// 容器中是否存在 bean</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">containsBeanDefinition</span><span class="params">(String beanName)</span>;</span><br><span class="line">    <span class="comment">// 容器中定义了多少 bean</span></span><br><span class="line">    <span class="type">int</span> <span class="title function_">getBeanDefinitionCount</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 获取容器中所有定义了的 bean 名称</span></span><br><span class="line">    String[] getBeanDefinitionNames();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 根据类型批量获取 bean</span></span><br><span class="line">    String[] getBeanNamesForType(ResolvableType type);</span><br><span class="line">    String[] getBeanNamesForType(ResolvableType type, <span class="type">boolean</span> includeNonSingletons, <span class="type">boolean</span> allowEagerInit);</span><br><span class="line">    String[] getBeanNamesForType(<span class="meta">@Nullable</span> Class&lt;?&gt; type);</span><br><span class="line">    String[] getBeanNamesForType(<span class="meta">@Nullable</span> Class&lt;?&gt; type, <span class="type">boolean</span> includeNonSingletons, <span class="type">boolean</span> allowEagerInit);</span><br><span class="line">    &lt;T&gt; Map&lt;String, T&gt; <span class="title function_">getBeansOfType</span><span class="params">(<span class="meta">@Nullable</span> Class&lt;T&gt; type)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">    &lt;T&gt; Map&lt;String, T&gt; <span class="title function_">getBeansOfType</span><span class="params">(<span class="meta">@Nullable</span> Class&lt;T&gt; type, <span class="type">boolean</span> includeNonSingletons, <span class="type">boolean</span> allowEagerInit)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 根据类上的注解获取 bean</span></span><br><span class="line">    String[] getBeanNamesForAnnotation(Class&lt;? <span class="keyword">extends</span> <span class="title class_">Annotation</span>&gt; annotationType);</span><br><span class="line">    Map&lt;String, Object&gt; <span class="title function_">getBeansWithAnnotation</span><span class="params">(Class&lt;? extends Annotation&gt; annotationType)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">    &lt;A <span class="keyword">extends</span> <span class="title class_">Annotation</span>&gt; A <span class="title function_">findAnnotationOnBean</span><span class="params">(String beanName, Class&lt;A&gt; annotationType)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>根据注释，当一个类同时实现了 <code>HierarchicalBeanFactory</code> 和 <code>ListableBeanFactory</code> 接口时，<code>ListableBeanFactory</code> 中的方法是不会考虑到父工厂的，也就是说，spring 中的 <code>ListableBeanFactory</code> 接口表示的能力只针对当前实现它的类。</p>
+<p><strong>自动装配工厂 AutowireCapableBeanFactory</strong></p>
+<p><code>AutowireCapableBeanFactory</code> 如同他的名称一样，用于为容器关联的 bean 提供自动装配功能：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">AutowireCapableBeanFactory</span> <span class="keyword">extends</span> <span class="title class_">BeanFactory</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 自动装配方式</span></span><br><span class="line">	<span class="type">int</span> <span class="variable">AUTOWIRE_NO</span> <span class="operator">=</span> <span class="number">0</span>; <span class="comment">// 不自动装配</span></span><br><span class="line">	<span class="type">int</span> <span class="variable">AUTOWIRE_BY_NAME</span> <span class="operator">=</span> <span class="number">1</span>; <span class="comment">// 根据bean名称自动装配</span></span><br><span class="line">	<span class="type">int</span> <span class="variable">AUTOWIRE_BY_TYPE</span> <span class="operator">=</span> <span class="number">2</span>; <span class="comment">// 根据bean类型自动装配</span></span><br><span class="line">	<span class="type">int</span> <span class="variable">AUTOWIRE_CONSTRUCTOR</span> <span class="operator">=</span> <span class="number">3</span>; <span class="comment">// 根据bean的构造方法自动装配</span></span><br><span class="line">	<span class="type">int</span> <span class="variable">AUTOWIRE_AUTODETECT</span> <span class="operator">=</span> <span class="number">4</span>; <span class="comment">// 根据反射信息自动选择合适的方式自动装配，spring3 以后不再推荐该方式</span></span><br><span class="line">	<span class="type">String</span> <span class="variable">ORIGINAL_INSTANCE_SUFFIX</span> <span class="operator">=</span> <span class="string">&quot;.ORIGINAL&quot;</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// bean的创建与装配相关的方法</span></span><br><span class="line">	&lt;T&gt; T <span class="title function_">createBean</span><span class="params">(Class&lt;T&gt; beanClass)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">autowireBean</span><span class="params">(Object existingBean)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">	Object <span class="title function_">configureBean</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// bean 声明周期相关的方法</span></span><br><span class="line">	Object <span class="title function_">createBean</span><span class="params">(Class&lt;?&gt; beanClass, <span class="type">int</span> autowireMode, <span class="type">boolean</span> dependencyCheck)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">	Object <span class="title function_">autowire</span><span class="params">(Class&lt;?&gt; beanClass, <span class="type">int</span> autowireMode, <span class="type">boolean</span> dependencyCheck)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">autowireBeanProperties</span><span class="params">(Object existingBean, <span class="type">int</span> autowireMode, <span class="type">boolean</span> dependencyCheck)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">applyBeanPropertyValues</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">	Object <span class="title function_">initializeBean</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">	Object <span class="title function_">applyBeanPostProcessorsBeforeInitialization</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">	Object <span class="title function_">applyBeanPostProcessorsAfterInitialization</span><span class="params">(Object existingBean, String beanName)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">destroyBean</span><span class="params">(Object existingBean)</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取 bean 依赖的相关方法</span></span><br><span class="line">	&lt;T&gt; NamedBeanHolder&lt;T&gt; <span class="title function_">resolveNamedBean</span><span class="params">(Class&lt;T&gt; requiredType)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">	Object <span class="title function_">resolveBeanByName</span><span class="params">(String name, DependencyDescriptor descriptor)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">	Object <span class="title function_">resolveDependency</span><span class="params">(DependencyDescriptor descriptor, <span class="meta">@Nullable</span> String requestingBeanName)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">	Object <span class="title function_">resolveDependency</span><span class="params">(DependencyDescriptor descriptor, <span class="meta">@Nullable</span> String requestingBeanName, <span class="meta">@Nullable</span> Set&lt;String&gt; autowiredBeanNames, <span class="meta">@Nullable</span> TypeConverter typeConverter)</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>比较值得注意的是，通过 <code>AutowireCapableBeanFactory</code> 定义的 API 不难看出，只要能获得对应的实例，我们是可以手动的对非 spring 托管的 bean 进行依赖注入的。</p>
+<h3 id="3、分层配置工厂"><a href="#3、分层配置工厂" class="headerlink" title="3、分层配置工厂"></a>3、分层配置工厂</h3><p><code>BeanFactory</code> 的三级接口为 <code>ConfigurableBeanFactory</code>，它实现了 <code>HierarchicalBeanFactory</code> 和  <code>SingletonBeanRegistry</code>接口。</p>
+<p>从字面上理解，它是一个可配置的 <code>BeanFactory</code>，它不仅支持 <code>BeanFactory</code> 分层，还支持以单例的方式操作 bean。它是整个 <code>BeanFactory</code> 体系中最重要的一环，通过这个接口，spring 通过该接口规定了一个 <code>BeanFactory</code> 应该具备以及可以从中获取哪些可配置的组件与参数。</p>
+<p>这里我们先了解一下 <code>SingletonBeanRegistry</code> 接口，这个接口定义了容器根据名称注册或获取 bean 单例的能力：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">SingletonBeanRegistry</span> &#123;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">registerSingleton</span><span class="params">(String beanName, Object singletonObject)</span>;</span><br><span class="line">    Object <span class="title function_">getSingleton</span><span class="params">(String beanName)</span>;</span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">containsSingleton</span><span class="params">(String beanName)</span>;</span><br><span class="line">    String[] getSingletonNames();</span><br><span class="line">    <span class="type">int</span> <span class="title function_">getSingletonCount</span><span class="params">()</span>;</span><br><span class="line">    Object <span class="title function_">getSingletonMutex</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后回到 <code>ConfigurableBeanFactory</code> ，它在 <code>HierarchicalBeanFactory</code> 的基础上补充了大量的方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ConfigurableBeanFactory</span> <span class="keyword">extends</span> <span class="title class_">HierarchicalBeanFactory</span>, SingletonBeanRegistry &#123;</span><br><span class="line">	<span class="type">String</span> <span class="variable">SCOPE_SINGLETON</span> <span class="operator">=</span> <span class="string">&quot;singleton&quot;</span>; <span class="comment">// 单例</span></span><br><span class="line">	<span class="type">String</span> <span class="variable">SCOPE_PROTOTYPE</span> <span class="operator">=</span> <span class="string">&quot;prototype&quot;</span>; <span class="comment">// 多例</span></span><br><span class="line"></span><br><span class="line">	<span class="comment">// 配置父工厂</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setParentBeanFactory</span><span class="params">(BeanFactory parentBeanFactory)</span> <span class="keyword">throws</span> IllegalStateException;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 配置类加载器</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setBeanClassLoader</span><span class="params">(<span class="meta">@Nullable</span> ClassLoader beanClassLoader)</span>;</span><br><span class="line">	ClassLoader <span class="title function_">getBeanClassLoader</span><span class="params">()</span>;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setTempClassLoader</span><span class="params">(<span class="meta">@Nullable</span> ClassLoader tempClassLoader)</span>;</span><br><span class="line">	ClassLoader <span class="title function_">getTempClassLoader</span><span class="params">()</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 配置bean元信息缓存</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setCacheBeanMetadata</span><span class="params">(<span class="type">boolean</span> cacheBeanMetadata)</span>;</span><br><span class="line">	<span class="type">boolean</span> <span class="title function_">isCacheBeanMetadata</span><span class="params">()</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 配置bean配置的表达式解析器，用于提供@Value值注册等功能</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setBeanExpressionResolver</span><span class="params">(<span class="meta">@Nullable</span> BeanExpressionResolver resolver)</span>;</span><br><span class="line">	BeanExpressionResolver <span class="title function_">getBeanExpressionResolver</span><span class="params">()</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 配置类型转换器</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setConversionService</span><span class="params">(<span class="meta">@Nullable</span> ConversionService conversionService)</span>;</span><br><span class="line">	ConversionService <span class="title function_">getConversionService</span><span class="params">()</span>;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setTypeConverter</span><span class="params">(TypeConverter typeConverter)</span>;</span><br><span class="line">	TypeConverter <span class="title function_">getTypeConverter</span><span class="params">()</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 配置属性注册表</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">addPropertyEditorRegistrar</span><span class="params">(PropertyEditorRegistrar registrar)</span>;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">registerCustomEditor</span><span class="params">(Class&lt;?&gt; requiredType, Class&lt;? extends PropertyEditor&gt; propertyEditorClass)</span>;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">copyRegisteredEditorsTo</span><span class="params">(PropertyEditorRegistry registry)</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 配置字符串解析器，用于提供解析xml中的bean属性的表达式等功能</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">addEmbeddedValueResolver</span><span class="params">(StringValueResolver valueResolver)</span>;</span><br><span class="line">	<span class="type">boolean</span> <span class="title function_">hasEmbeddedValueResolver</span><span class="params">()</span>;</span><br><span class="line">	String <span class="title function_">resolveEmbeddedValue</span><span class="params">(String value)</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 配置bean的后置处理器BeanPostProcessor</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">addBeanPostProcessor</span><span class="params">(BeanPostProcessor beanPostProcessor)</span>;</span><br><span class="line">	<span class="type">int</span> <span class="title function_">getBeanPostProcessorCount</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 配置bean的作用域，接口中已经默认提供了单例或多例的scopeName</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">registerScope</span><span class="params">(String scopeName, Scope scope)</span>;</span><br><span class="line">	String[] getRegisteredScopeNames();</span><br><span class="line">	Scope <span class="title function_">getRegisteredScope</span><span class="params">(String scopeName)</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 配置访问控制</span></span><br><span class="line">	AccessControlContext <span class="title function_">getAccessControlContext</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 从其他的工厂复制配置</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">copyConfigurationFrom</span><span class="params">(ConfigurableBeanFactory otherFactory)</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 给指定的bean注册别名</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">registerAlias</span><span class="params">(String beanName, String alias)</span> <span class="keyword">throws</span> BeanDefinitionStoreException;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">resolveAliases</span><span class="params">(StringValueResolver valueResolver)</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 合并bean的定义信息</span></span><br><span class="line">	BeanDefinition <span class="title function_">getMergedBeanDefinition</span><span class="params">(String beanName)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 是否是工厂bean</span></span><br><span class="line">	<span class="type">boolean</span> <span class="title function_">isFactoryBean</span><span class="params">(String name)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 设置bean的创建状态，管理bean的依赖与被依赖关系，用于处理循环依赖等问题</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setCurrentlyInCreation</span><span class="params">(String beanName, <span class="type">boolean</span> inCreation)</span>;</span><br><span class="line">	<span class="type">boolean</span> <span class="title function_">isCurrentlyInCreation</span><span class="params">(String beanName)</span>;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">registerDependentBean</span><span class="params">(String beanName, String dependentBeanName)</span>;</span><br><span class="line">	String[] getDependentBeans(String beanName);</span><br><span class="line">	String[] getDependenciesForBean(String beanName);</span><br><span class="line"></span><br><span class="line">	<span class="comment">// bean的销毁相关方法</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">destroyBean</span><span class="params">(String beanName, Object beanInstance)</span>;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">destroyScopedBean</span><span class="params">(String beanName)</span>;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">destroySingletons</span><span class="params">()</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个接口定义了非常多的 API，按照用途来说，这些 API 大概分为三类：</p>
+<ul>
+<li>bean 的管理方法：包括 bean 依赖状态与生命周期的获取，bean 的销毁，bean 作用域域、定义信息与别名的操作；</li>
+<li>bean 创建过程中使用组件的配置：包括字符串解析器，类加载器，类型转换器，属性注册表，bean 的后置处理器等组件的配置；</li>
+<li>工厂本身状态的一些操作：包括父工程配置，工厂间依赖的拷贝，以及访问控制等。</li>
+</ul>
+<h3 id="4、批量分层配置工厂"><a href="#4、批量分层配置工厂" class="headerlink" title="4、批量分层配置工厂"></a>4、批量分层配置工厂</h3><p> <code>ConfigurableListableBeanFactory</code> 是 <code>BeanFactory</code> 体系的第四级接口，也是最后一级接口。它继承了 <code>ConfigurableBeanFactory</code>、<code>ListableBeanFactory</code>与<code>AutowireCapableBeanFactory</code> 接口，因此它具备到目前为止 <code>BeanFactory</code> 前三级接口定义的全部能力。</p>
+<p>它表示了一个可以配置的，允许按单例或多例操作 bean，支持自动装配 bean，并且可以根据 bean 的名称、类型或者类上注解批量获取 bean 的超级 bean 工厂。</p>
+<p><img src="https://img.xiajibagao.top/image-20220620150717261.png" alt="image-20220620150717261"></p>
+<p>它在上述功能的基础上，又针对各接口提供的功能定义了一些新的补充方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ConfigurableListableBeanFactory</span> <span class="keyword">extends</span> <span class="title class_">ListableBeanFactory</span>, AutowireCapableBeanFactory, ConfigurableBeanFactory &#123;</span><br><span class="line">    <span class="comment">// 自动装配相关配置</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">ignoreDependencyType</span><span class="params">(Class&lt;?&gt; type)</span>;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">ignoreDependencyInterface</span><span class="params">(Class&lt;?&gt; ifc)</span>;</span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">registerResolvableDependency</span><span class="params">(Class&lt;?&gt; dependencyType, <span class="meta">@Nullable</span> Object autowiredValue)</span>;</span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isAutowireCandidate</span><span class="params">(String beanName, DependencyDescriptor descriptor)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取bean的定义信息</span></span><br><span class="line">    BeanDefinition <span class="title function_">getBeanDefinition</span><span class="params">(String beanName)</span> <span class="keyword">throws</span> NoSuchBeanDefinitionException;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取已经定义的bean名称的迭代器</span></span><br><span class="line">    Iterator&lt;String&gt; <span class="title function_">getBeanNamesIterator</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 清除bean元信息缓存</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">clearMetadataCache</span><span class="params">()</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 冻结配置，冻结后工厂的配置不允许进一步修改</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">freezeConfiguration</span><span class="params">()</span>;</span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isConfigurationFrozen</span><span class="params">()</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 实例化所有未实例化的单例bean</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">preInstantiateSingletons</span><span class="params">()</span> <span class="keyword">throws</span> BeansException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="二、ApplicationContext-接口体系"><a href="#二、ApplicationContext-接口体系" class="headerlink" title="二、ApplicationContext 接口体系"></a>二、ApplicationContext 接口体系</h2><p>严格来说，<code>ApplicationContext</code> 是 <code>BeanFactory</code> 的子类，或者说，<code>BeanFactory</code> 是其组成的一部分。但是由于其附加了很多 <code>BeanFactory</code> 所不具备的功能，因此一般将其与 <code>BeanFactory</code> 体系分开看待。</p>
+<p><code>ApplicationContext</code> 有 web 环境上下文与非 web 环境上下文的两个实现体系，单纯按接口层次分为三层：</p>
+<ul>
+<li>第一层：<code>ApplicationContext</code> ；</li>
+<li>第二层：<code>WebApplicationContext</code> 和 <code>ConfigurableApplicationContext</code> ；</li>
+<li>第三层：<code>ConfigurableApplicationContext</code> ；</li>
+</ul>
+<p><img src="https://img.xiajibagao.top/image-20220620173854597.png" alt="image-20220620173854597"></p>
+<h3 id="1、ApplicationContext"><a href="#1、ApplicationContext" class="headerlink" title="1、ApplicationContext"></a>1、ApplicationContext</h3><p><code>ApplicationContext</code> 接口是基于 <code>BeanFactory</code> 的进一步实现，它同时实现了 <code>EnvironmentCapable</code>，<code>ListableBeanFactory</code>，<code>HierarchicalBeanFactory</code>，<code>MessageSource</code>，<code>ApplicationEventPublisher</code> 以及 <code>ResourcePatternResolver</code> 接口。相较 <code>BeanFactory</code> ，它的功能要更加强大。</p>
+<p><img src="https://img.xiajibagao.top/image-20220620142154578.png" alt="image-20220620142154578"></p>
+<p><code>ApplicationContext</code> 继承的各个接口分别对应它提供各项功能：</p>
+<ul>
+<li><code>HierarchicalBeanFactory</code> 与 <code>ListableBeanFactory</code>：提供像 <code>BeanFactory</code> 一样操作 bean 的功能；</li>
+<li><code>ApplicationEventPublisher</code>：提供向监听器发布事件的能力；</li>
+<li><code>ResourcePatternResolver</code> 与 <code>EnvironmentCapable</code>：提供选择性的某个特定环境的文件资源中加载配置的能力；</li>
+<li><code>MessageSource</code>：提供解析消息并支持国际化配置的能力；</li>
+</ul>
+<p>结合它提供的功能和它的名称，我们可以大概了解，与 <code>BeanFactory</code> 专门用于操作 bean 不同，<code>ApplicationContext</code> 用于提供 spring 程序在某个特定环境运行时所具备的全部信息的“上下文”对象，它之于 <code>BeanFactory</code> ，就像带各种功能的超级保温杯之于普通的水杯。</p>
+<p>它定义的方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ApplicationContext</span> <span class="keyword">extends</span> <span class="title class_">EnvironmentCapable</span>, ListableBeanFactory, HierarchicalBeanFactory, MessageSource, ApplicationEventPublisher, ResourcePatternResolver &#123;</span><br><span class="line">    <span class="comment">// 获取上下文id</span></span><br><span class="line">    String <span class="title function_">getId</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 获取对应应用程序名称</span></span><br><span class="line">    String <span class="title function_">getApplicationName</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 获取上下文的展示名称</span></span><br><span class="line">    String <span class="title function_">getDisplayName</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 获取容器被启动的时间</span></span><br><span class="line">    <span class="type">long</span> <span class="title function_">getStartupDate</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 获取父级上下文</span></span><br><span class="line">    ApplicationContext <span class="title function_">getParent</span><span class="params">()</span>;</span><br><span class="line">    <span class="comment">// 获取自动装配bean工厂</span></span><br><span class="line">    AutowireCapableBeanFactory <span class="title function_">getAutowireCapableBeanFactory</span><span class="params">()</span> <span class="keyword">throws</span> IllegalStateException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里可以看到，虽然 <code>ApplicationContext</code> 没继承 <code>AutowireCapableBeanFactory</code> 接口，但是他依然可以通过方法获取到对应的装配工厂。</p>
+<h3 id="2、web-应用上下文与可配置上下文"><a href="#2、web-应用上下文与可配置上下文" class="headerlink" title="2、web 应用上下文与可配置上下文"></a>2、web 应用上下文与可配置上下文</h3><p><strong>WebApplicationContext</strong></p>
+<p><code>WebApplicationContext</code> 是 web 环境的上下文，该上下文几乎没有可配置项，主要用于配置 <code>Servlet</code> 上下文：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">WebApplicationContext</span> <span class="keyword">extends</span> <span class="title class_">ApplicationContext</span> &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE</span> <span class="operator">=</span> WebApplicationContext.class.getName() + <span class="string">&quot;.ROOT&quot;</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 作用域</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">SCOPE_REQUEST</span> <span class="operator">=</span> <span class="string">&quot;request&quot;</span>;</span><br><span class="line">    <span class="type">String</span> <span class="variable">SCOPE_SESSION</span> <span class="operator">=</span> <span class="string">&quot;session&quot;</span>;</span><br><span class="line">    <span class="type">String</span> <span class="variable">SCOPE_APPLICATION</span> <span class="operator">=</span> <span class="string">&quot;application&quot;</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 固定的bean名称</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">SERVLET_CONTEXT_BEAN_NAME</span> <span class="operator">=</span> <span class="string">&quot;servletContext&quot;</span>;</span><br><span class="line">    <span class="type">String</span> <span class="variable">CONTEXT_PARAMETERS_BEAN_NAME</span> <span class="operator">=</span> <span class="string">&quot;contextParameters&quot;</span>;</span><br><span class="line">    <span class="type">String</span> <span class="variable">CONTEXT_ATTRIBUTES_BEAN_NAME</span> <span class="operator">=</span> <span class="string">&quot;contextAttributes&quot;</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取ServletContext</span></span><br><span class="line">    ServletContext <span class="title function_">getServletContext</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>ConfigurableApplicationContext</strong></p>
+<p><code>ConfigurableApplicationContext</code> 表示一个可以配置的上下文容器，与 <code>WebApplicationContext</code> 不同，它提供了一些参数和属性的配置方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ConfigurableApplicationContext</span> <span class="keyword">extends</span> <span class="title class_">ApplicationContext</span>, Lifecycle, Closeable &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="type">String</span> <span class="variable">CONFIG_LOCATION_DELIMITERS</span> <span class="operator">=</span> <span class="string">&quot;,; \t\n&quot;</span>;</span><br><span class="line">    <span class="type">String</span> <span class="variable">CONVERSION_SERVICE_BEAN_NAME</span> <span class="operator">=</span> <span class="string">&quot;conversionService&quot;</span>;</span><br><span class="line">    <span class="type">String</span> <span class="variable">LOAD_TIME_WEAVER_BEAN_NAME</span> <span class="operator">=</span> <span class="string">&quot;loadTimeWeaver&quot;</span>;</span><br><span class="line">    <span class="type">String</span> <span class="variable">ENVIRONMENT_BEAN_NAME</span> <span class="operator">=</span> <span class="string">&quot;environment&quot;</span>;</span><br><span class="line">    <span class="type">String</span> <span class="variable">SYSTEM_PROPERTIES_BEAN_NAME</span> <span class="operator">=</span> <span class="string">&quot;systemProperties&quot;</span>;</span><br><span class="line">    <span class="type">String</span> <span class="variable">SYSTEM_ENVIRONMENT_BEAN_NAME</span> <span class="operator">=</span> <span class="string">&quot;systemEnvironment&quot;</span>;</span><br><span class="line">    <span class="type">String</span> <span class="variable">SHUTDOWN_HOOK_THREAD_NAME</span> <span class="operator">=</span> <span class="string">&quot;SpringContextShutdownHook&quot;</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 配置上下文的id</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">setId</span><span class="params">(String id)</span>;</span><br><span class="line">    <span class="comment">// 配置上下文父容器</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">setParent</span><span class="params">(<span class="meta">@Nullable</span> ApplicationContext parent)</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 配置上下文允许环境</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">setEnvironment</span><span class="params">(ConfigurableEnvironment environment)</span>;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    ConfigurableEnvironment <span class="title function_">getEnvironment</span><span class="params">()</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取bean后置处理器</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">addBeanFactoryPostProcessor</span><span class="params">(BeanFactoryPostProcessor postProcessor)</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 添加一个应用监听器，用于监听ApplicationEventPublisher发布的事件</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">addApplicationListener</span><span class="params">(ApplicationListener&lt;?&gt; listener)</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 配置类加载器</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">setClassLoader</span><span class="params">(ClassLoader classLoader)</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 配置资源协议处理器</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">addProtocolResolver</span><span class="params">(ProtocolResolver resolver)</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 刷新配置</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">refresh</span><span class="params">()</span> <span class="keyword">throws</span> BeansException, IllegalStateException;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 关闭此上下文容器时的回调函数</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">registerShutdownHook</span><span class="params">()</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 关闭上下文容器，并释放资源</span></span><br><span class="line">    <span class="keyword">void</span> <span class="title function_">close</span><span class="params">()</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 当前容器是否已经调用过refresh()，并且尚未关闭</span></span><br><span class="line">    <span class="type">boolean</span> <span class="title function_">isActive</span><span class="params">()</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 获取bean工厂</span></span><br><span class="line">    ConfigurableListableBeanFactory <span class="title function_">getBeanFactory</span><span class="params">()</span> <span class="keyword">throws</span> IllegalStateException;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它有一个通用可配置上下文的实现类：<code>GenericApplicationContext</code>，在非 web 环境中，该实现类的两个子类是最经常用到的：</p>
+<ul>
+<li><code>GenericXmlApplicationContext</code>：基于 xml 配置文件配置的上下文；</li>
+<li><code>AnnotationConfigApplicationContext</code>：基于注解配置的上下文；</li>
+</ul>
+<h3 id="3、可配置的web应用上下文"><a href="#3、可配置的web应用上下文" class="headerlink" title="3、可配置的web应用上下文"></a>3、可配置的web应用上下文</h3><p><code>ConfigurableApplicationContext</code> 接口同时继承了 <code>WebApplicationContext</code> 和 <code>ConfigurableApplicationContext</code>，代表了一个可以配置的 web 上下文容器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">ConfigurableWebApplicationContext</span> <span class="keyword">extends</span> <span class="title class_">WebApplicationContext</span>, ConfigurableApplicationContext &#123;</span><br><span class="line"></span><br><span class="line">	<span class="type">String</span> <span class="variable">APPLICATION_CONTEXT_ID_PREFIX</span> <span class="operator">=</span> WebApplicationContext.class.getName() + </span><br><span class="line">	<span class="type">String</span> <span class="variable">SERVLET_CONFIG_BEAN_NAME</span> <span class="operator">=</span> <span class="string">&quot;servletConfig&quot;</span>;</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 配置Servlet容器</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setServletContext</span><span class="params">(<span class="meta">@Nullable</span> ServletContext servletContext)</span>;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setServletConfig</span><span class="params">(<span class="meta">@Nullable</span> ServletConfig servletConfig)</span>;</span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	ServletConfig <span class="title function_">getServletConfig</span><span class="params">()</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 设置命名空间</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setNamespace</span><span class="params">(<span class="meta">@Nullable</span> String namespace)</span>;</span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	String <span class="title function_">getNamespace</span><span class="params">()</span>;</span><br><span class="line">	</span><br><span class="line">	<span class="comment">// 设置配置文件的路径，比如WEB-INF</span></span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setConfigLocation</span><span class="params">(String configLocation)</span>;</span><br><span class="line">	<span class="keyword">void</span> <span class="title function_">setConfigLocations</span><span class="params">(String... configLocations)</span>;</span><br><span class="line">	<span class="meta">@Nullable</span></span><br><span class="line">	String[] getConfigLocations();</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一般 web 环境下实例化的上下文都为该接口的实例。</p>
+<h2 id="三、总结"><a href="#三、总结" class="headerlink" title="三、总结"></a>三、总结</h2><p>在 spring 中，容器分为两大类：<code>BeanFactory</code>  和 <code>ApplicationContext</code>。</p>
+<p><strong>BeanFactory</strong></p>
+<p>其中，<code>BeanFactory</code> 是纯粹的用于管理 bean 对象生命周期的容器，它的接口体系分为四层：</p>
+<ol>
+<li><p><code>BeanFactory</code> 接口本身，是容器的最高层抽象；</p>
+</li>
+<li><p><code>HierarchicalBeanFactory</code> ：分层工厂，表示一个存在层级关系的容器；</p>
+<p><code>ListableBeanFactory</code>：批量工厂，表示一个允许根据名称、类型或类注解等属性批量的操作 bean 的容器；</p>
+<p> <code>AutowireCapableBeanFactory</code>：自动装配工厂，表示一个可以关联需要自动装配的 bean 的容器；</p>
+</li>
+<li><p><code>ConfigurableBeanFactory</code>：分层配置工厂 ，是 <code>HierarchicalBeanFactory</code> 和 <code>SingletonBeanRegistry</code>  接口的组合，表示一个分层的、可以以单例模式操作 bean，并且允许调整配置的容器；</p>
+</li>
+<li><p><code>ConfigurableListableBeanFactory</code>：可配置的批量工厂，是<code>ConfigurableBeanFactory</code> 与 <code>AutowireCapableBeanFactory</code> 接口的组合，具备 <code>BeanFactory</code> 体系中的全部能力。</p>
+</li>
+</ol>
+<p><strong>ApplicationContext</strong></p>
+<p><code>ApplicationContext</code> 是基于 <code>BeanFactory</code> 的扩展，它实现了其他的接口，因此具有一些 <code>BeanFactory</code> 不具备的功能：</p>
+<ul>
+<li><code>ApplicationEventPublisher</code>：提供向监听器发布事件的功能；</li>
+<li><code>ResourcePatternResolver</code> 与 <code>EnvironmentCapable</code>：提供选择性的某个特定环境的文件资源中加载配置的功能；</li>
+<li><code>MessageSource</code>：提供解析消息并支持国际化配置的功能；</li>
+</ul>
+<p>从层次来说，<code>ApplicationContext</code> 主要分为三层：</p>
+<ol>
+<li><p><code>ApplicationContext</code> 接口本身，是基于 <code>BeanFactory</code> 接口的扩展，是整个应用上下文体系的最顶层接口；</p>
+</li>
+<li><p><code>WebApplicationContext</code>：web 应用上下文，用于承载 <code>ServletContext</code>；</p>
+<p><code>ConfigurableApplicationContext</code>：用于非 web 环境下的可配置应用上下文；</p>
+</li>
+<li><p><code>ConfigurableApplicationContext</code>：可配置的 web 应用上下文，同时继承了 <code>WebApplicationContext</code> 和 <code>ConfigurableApplicationContext</code> 接口，代表了一个可以配置的 web 上下文容器。</p>
+<p>在一般的 web 环境中启动的都是该上下文的实例。</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Spring/" rel="tag"># Spring</a>
+              <a href="/tags/%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90/" rel="tag"># 源码分析</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/" rel="prev" title="发布自己的jar包到Maven官方仓库">
+                  <i class="fa fa-angle-left"></i> 发布自己的jar包到Maven官方仓库
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/05/19/spring/%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3Spring%E5%AE%B9%E5%99%A8%E5%88%9D%E5%A7%8B%E5%8C%96%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E4%B8%8A%E4%B8%8B%E6%96%87%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96/" rel="next" title="深入理解Spring容器初始化（一）：上下文的初始化">
+                  深入理解Spring容器初始化（一）：上下文的初始化 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Createsequence</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">261k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">15:47</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

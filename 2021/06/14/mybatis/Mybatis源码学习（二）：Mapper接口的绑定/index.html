@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"createsequence.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.18.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="概述根据上一篇文章，我们了解了 Mybatis 的配置文件是如何被加载的。在完成这一步之后，Mybatis 还需要根据配置文件中指定的路径去加载 Mapper 接口与写有 sql 的相应映射文件，最终完成两者的绑定。 在本篇文章，我们将结合源码阐述这个过程。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mybatis源码学习（二）：Mapper接口的绑定">
+<meta property="og:url" content="https://createsequence.github.io/2021/06/14/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMapper%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%BB%91%E5%AE%9A/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="概述根据上一篇文章，我们了解了 Mybatis 的配置文件是如何被加载的。在完成这一步之后，Mybatis 还需要根据配置文件中指定的路径去加载 Mapper 接口与写有 sql 的相应映射文件，最终完成两者的绑定。 在本篇文章，我们将结合源码阐述这个过程。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20210609000011106.png">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20210619202948385.png">
+<meta property="article:published_time" content="2021-06-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-06-21T15:35:35.000Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="Mybatis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.xiajibagao.top/image-20210609000011106.png">
+
+
+<link rel="canonical" href="https://createsequence.github.io/2021/06/14/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMapper%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%BB%91%E5%AE%9A/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://createsequence.github.io/2021/06/14/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMapper%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%BB%91%E5%AE%9A/","path":"2021/06/14/mybatis/Mybatis源码学习（二）：Mapper接口的绑定/","title":"Mybatis源码学习（二）：Mapper接口的绑定"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Mybatis源码学习（二）：Mapper接口的绑定 | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+  <!-- 引入目录截取js -->
+  <script type="text/javascript" src="/js/custom.js"></script>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Createsequence's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E5%8A%A0%E8%BD%BD%E6%8E%A5%E5%8F%A3"><span class="nav-text">一、加载接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-XMLConfigBuilder"><span class="nav-text">1.XMLConfigBuilder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-MapperRegistry"><span class="nav-text">2.MapperRegistry</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%E7%9A%84%E8%A7%A3%E6%9E%90"><span class="nav-text">二、映射文件的解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E6%A0%87%E7%AD%BE%E4%B8%8E%E5%AF%B9%E8%B1%A1%E4%B9%8B%E9%97%B4%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-text">1.标签与对象之间的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-MapperAnnotationBuilder"><span class="nav-text">2.MapperAnnotationBuilder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-XMLMapperBuilder"><span class="nav-text">3.XMLMapperBuilder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-bindMapperForNamespace-%E6%96%B9%E6%B3%95"><span class="nav-text">4.bindMapperForNamespace 方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-parsePendingStatements-%E6%96%B9%E6%B3%95"><span class="nav-text">5.parsePendingStatements 方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-MappedStatement"><span class="nav-text">6.MappedStatement</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%85%B3%E4%BA%8E%E6%8E%A5%E5%8F%A3%E4%B8%8E%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%E5%85%B3%E7%B3%BB%E7%9A%84%E6%80%9D%E8%80%83"><span class="nav-text">三、关于接口与映射文件关系的思考</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%85%88%E5%8A%A0%E8%BD%BD%E6%8E%A5%E5%8F%A3%E8%BF%98%E6%98%AF%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%EF%BC%9F"><span class="nav-text">1.先加载接口还是映射文件？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%8E%A5%E5%8F%A3%E5%8F%AF%E4%B8%8D%E5%8F%AF%E4%BB%A5%E6%9C%89%E5%A4%9A%E4%B8%AA%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%EF%BC%9F"><span class="nav-text">2.接口可不可以有多个映射文件？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Createsequence"
+      src="/images/Createsequence.jpg">
+  <p class="site-author-name" itemprop="name">Createsequence</p>
+  <div class="site-description" itemprop="description">一个努力前进的程序猿</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Createsequence" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Createsequence" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://createsequence.github.io/2021/06/14/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMapper%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%BB%91%E5%AE%9A/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+      <meta itemprop="name" content="Createsequence">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+      <meta itemprop="description" content="一个努力前进的程序猿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Mybatis源码学习（二）：Mapper接口的绑定 | Createsequence's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mybatis源码学习（二）：Mapper接口的绑定
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-06-14 00:00:00" itemprop="dateCreated datePublished" datetime="2021-06-14T00:00:00+08:00">2021-06-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2021-06-21 23:35:35" itemprop="dateModified" datetime="2021-06-21T23:35:35+08:00">2021-06-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mybatis/" itemprop="url" rel="index"><span itemprop="name">Mybatis</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>4.1k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>15 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>根据上一篇文章，我们了解了 Mybatis 的配置文件是如何被加载的。在完成这一步之后，Mybatis 还需要根据配置文件中指定的路径去加载 Mapper 接口与写有 sql 的相应映射文件，最终完成两者的绑定。</p>
+<p>在本篇文章，我们将结合源码阐述这个过程。</p>
+<p>这是关于 Mybatis 的第二篇文章，前文：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.xiajibagao.top/2021/06/05/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/">Mybatis源码学习（一）：配置文件的加载</a></p>
+</blockquote>
+<h2 id="一、加载接口"><a href="#一、加载接口" class="headerlink" title="一、加载接口"></a>一、加载接口</h2><p><img src="http://img.xiajibagao.top/image-20210609000011106.png" alt="image-20210609000011106"></p>
+<h3 id="1-XMLConfigBuilder"><a href="#1-XMLConfigBuilder" class="headerlink" title="1.XMLConfigBuilder"></a>1.XMLConfigBuilder</h3><p>见名知意，这个类的作用在于<strong>解析映射文件</strong>，根据上文，我们会了解到他里面有各种 <code>标签名+Element</code>为名的解析方法，其中，针对 Mapper 映射文件解析方法就是<code>mapperElement()</code>。</p>
+<p>在开始之前，我们需要知道，在映射文件中有四种指定 Mybatis 接口的方式：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">mappers</span>&gt;</span></span><br><span class="line">    <span class="comment">&lt;!--需保证接口与xml同包同名--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">package</span> <span class="attr">name</span>=<span class="string">&quot;com.huang.read.base&quot;</span>/&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mapper</span> <span class="attr">class</span>=<span class="string">&quot;com.huang.read.base.PersonDao&quot;</span> /&gt;</span></span><br><span class="line">    </span><br><span class="line">    <span class="comment">&lt;!--不需要需保证接口与xml同包同名--&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mapper</span> <span class="attr">resource</span>=<span class="string">&quot;com/huang/read/base/PersonDao.xml&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">mapper</span> <span class="attr">url</span>=<span class="string">&quot;C:\document\GitProject\mybatis-3\src\main\java\com\huang\read\base\PersonDao.xml&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mappers</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>这决定了获取在<code>XMLConfigBuilder</code>中解析 Mapper 映射文件的方法<code>mapperElement()</code>会有四种不同处理逻辑：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">mapperElement</span><span class="params">(XNode parent)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="keyword">if</span> (parent != <span class="literal">null</span>) &#123;</span><br><span class="line">        <span class="keyword">for</span> (XNode child : parent.getChildren()) &#123;</span><br><span class="line">            <span class="comment">// 1. 如果是通过package标签配置整包扫描</span></span><br><span class="line">            <span class="keyword">if</span> (<span class="string">&quot;package&quot;</span>.equals(child.getName())) &#123;</span><br><span class="line">                <span class="type">String</span> <span class="variable">mapperPackage</span> <span class="operator">=</span> child.getStringAttribute(<span class="string">&quot;name&quot;</span>);</span><br><span class="line">                <span class="comment">// 注册扫描到的接口</span></span><br><span class="line">                configuration.addMappers(mapperPackage);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123; <span class="comment">// 如果是通过mapper标签配置</span></span><br><span class="line">                </span><br><span class="line">                <span class="comment">// 获取标签上的resource、url和class属性</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">resource</span> <span class="operator">=</span> child.getStringAttribute(<span class="string">&quot;resource&quot;</span>);</span><br><span class="line">                <span class="type">String</span> <span class="variable">url</span> <span class="operator">=</span> child.getStringAttribute(<span class="string">&quot;url&quot;</span>);</span><br><span class="line">                <span class="type">String</span> <span class="variable">mapperClass</span> <span class="operator">=</span> child.getStringAttribute(<span class="string">&quot;class&quot;</span>);</span><br><span class="line">                </span><br><span class="line">                <span class="comment">// 2.使用resource</span></span><br><span class="line">                <span class="keyword">if</span> (resource != <span class="literal">null</span> &amp;&amp; url == <span class="literal">null</span> &amp;&amp; mapperClass == <span class="literal">null</span>) &#123;</span><br><span class="line">                    ErrorContext.instance().resource(resource);</span><br><span class="line">                    <span class="keyword">try</span>(<span class="type">InputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> Resources.getResourceAsStream(resource)) &#123;</span><br><span class="line">                        <span class="type">XMLMapperBuilder</span> <span class="variable">mapperParser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">XMLMapperBuilder</span>(inputStream, configuration, resource, configuration.getSqlFragments());</span><br><span class="line">                        <span class="comment">// 注册扫描到的接口</span></span><br><span class="line">                        mapperParser.parse();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (resource == <span class="literal">null</span> &amp;&amp; url != <span class="literal">null</span> &amp;&amp; mapperClass == <span class="literal">null</span>) &#123;</span><br><span class="line">                    <span class="comment">// 3.使用url</span></span><br><span class="line">                    </span><br><span class="line">                    ErrorContext.instance().resource(url);</span><br><span class="line">                    <span class="keyword">try</span>(<span class="type">InputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> Resources.getUrlAsStream(url))&#123;</span><br><span class="line">                        <span class="type">XMLMapperBuilder</span> <span class="variable">mapperParser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">XMLMapperBuilder</span>(inputStream, configuration, url, configuration.getSqlFragments());</span><br><span class="line">                        <span class="comment">// 注册扫描到的接口</span></span><br><span class="line">                        mapperParser.parse();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> <span class="keyword">if</span> (resource == <span class="literal">null</span> &amp;&amp; url == <span class="literal">null</span> &amp;&amp; mapperClass != <span class="literal">null</span>) &#123;</span><br><span class="line">                    <span class="comment">// 4.使用class</span></span><br><span class="line">                    </span><br><span class="line">                    Class&lt;?&gt; mapperInterface = Resources.classForName(mapperClass);</span><br><span class="line">                    <span class="comment">// 注册扫描到的接口</span></span><br><span class="line">                    configuration.addMapper(mapperInterface);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">BuilderException</span>(<span class="string">&quot;A mapper element may only specify a url, resource or class, but not more than one.&quot;</span>);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-MapperRegistry"><a href="#2-MapperRegistry" class="headerlink" title="2.MapperRegistry"></a>2.MapperRegistry</h3><p><code>MapperRegistry</code>类在<code>Configuration</code>中。当我们使用<code>addMapper()</code>和 <code>addMappers()</code>将一个映射文件或者多个映射文件接口添加到配置的时候，最终配置会添加到<code>Configuration</code>中一个<code>MapperRegistry</code>实例里。</p>
+<p><strong>他存放了接口与其对应的映射文件的各种信息，当接口和通过映射文件生产的实现类代理通常一起添加到注册表中时，也就完成了绑定</strong>。</p>
+<p><code>MapperRegistry</code>内部维护了一个以 Mapper 接口的类作为 key ，接口实现类工厂——暂时先这么理解——作为的 value 的 HashMap 集合 <code>knownMappers</code>，一个代理工厂中可以生产接口中的所有方法实现：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">final</span> Map&lt;Class&lt;?&gt;, MapperProxyFactory&lt;?&gt;&gt; knownMappers = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;();</span><br></pre></td></tr></table></figure>
+
+<p>当我们想将一个 package 下的所有 Mapper 接口添加到 <code>knownMappers</code>中时，会调用 <code>MapperRegistry.addMappers()</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addMappers</span><span class="params">(String packageName, Class&lt;?&gt; superType)</span> &#123;</span><br><span class="line">    ResolverUtil&lt;Class&lt;?&gt;&gt; resolverUtil = <span class="keyword">new</span> <span class="title class_">ResolverUtil</span>&lt;&gt;();</span><br><span class="line">    <span class="comment">// 扫描指定包下的所有类，并将属于superType的类保留下来</span></span><br><span class="line">    resolverUtil.find(<span class="keyword">new</span> <span class="title class_">ResolverUtil</span>.IsA(superType), packageName);</span><br><span class="line">    <span class="comment">// 获取类集合</span></span><br><span class="line">    Set&lt;Class&lt;? <span class="keyword">extends</span> <span class="title class_">Class</span>&lt;?&gt;&gt;&gt; mapperSet = resolverUtil.getClasses();</span><br><span class="line">    <span class="comment">// 遍历集合并将类加入knownMappers</span></span><br><span class="line">    <span class="keyword">for</span> (Class&lt;?&gt; mapperClass : mapperSet) &#123;</span><br><span class="line">        addMapper(mapperClass);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>通过<code>ResolverUtil</code>工具类获取指定包下的所有接口类后，遍历并调用——实际上直接添加单个接口类也是调用这个——<code>addMapper(Class&lt;T&gt; type)</code>方法将之一个一个的添加到<code>knownMappers</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> &lt;T&gt; <span class="keyword">void</span> <span class="title function_">addMapper</span><span class="params">(Class&lt;T&gt; type)</span> &#123;</span><br><span class="line">    <span class="comment">// 判断是否为接口</span></span><br><span class="line">    <span class="keyword">if</span> (type.isInterface()) &#123;</span><br><span class="line">        <span class="comment">// 判断这个Mapper接口是否已经加入了knownMappers</span></span><br><span class="line">        <span class="keyword">if</span> (hasMapper(type)) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">BindingException</span>(<span class="string">&quot;Type &quot;</span> + type + <span class="string">&quot; is already known to the MapperRegistry.&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">boolean</span> <span class="variable">loadCompleted</span> <span class="operator">=</span> <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            </span><br><span class="line">            knownMappers.put(type, <span class="keyword">new</span> <span class="title class_">MapperProxyFactory</span>&lt;&gt;(type));</span><br><span class="line">            <span class="comment">// 解析映射文件</span></span><br><span class="line">            <span class="type">MapperAnnotationBuilder</span> <span class="variable">parser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MapperAnnotationBuilder</span>(config, type);</span><br><span class="line">            <span class="comment">// 添加相关配置</span></span><br><span class="line">            parser.parse();</span><br><span class="line">            loadCompleted = <span class="literal">true</span>;</span><br><span class="line">        &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">            <span class="comment">// 如果因为异常导致加载失败，则移除已经载入的接口</span></span><br><span class="line">            <span class="keyword">if</span> (!loadCompleted) &#123;</span><br><span class="line">                knownMappers.remove(type);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里又涉及到了两个类：<code>MapperProxyFactory&lt;&gt;</code>与<code>MapperAnnotationBuilder</code>，这两个类都与 Mapper 接口生成实现类有关：</p>
+<ul>
+<li>前者负责通过代理创建接口实现类；</li>
+<li>后者扫描代码中的注解并且加载 XXXMapper.xml 的映射文件。</li>
+</ul>
+<p>后者在下文就会讲到，前者将在实现类部分的文章细说。总而言之，至此所有 Xml 文件中指定的 Mapper 接口都加载完毕了。</p>
+<h2 id="二、映射文件的解析"><a href="#二、映射文件的解析" class="headerlink" title="二、映射文件的解析"></a>二、映射文件的解析</h2><p><img src="http://img.xiajibagao.top/image-20210619202948385.png" alt="image-20210619202948385"></p>
+<h3 id="1-标签与对象之间的关系"><a href="#1-标签与对象之间的关系" class="headerlink" title="1.标签与对象之间的关系"></a>1.标签与对象之间的关系</h3><p>我们以最简单的映射文件配置为例：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">mapper</span> <span class="attr">namespace</span>=<span class="string">&quot;com.huang.read.base.PersonDao&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">select</span> <span class="attr">id</span>=<span class="string">&quot;selectByPrimaryKey&quot;</span> <span class="attr">parameterType</span>=<span class="string">&quot;java.lang.Integer&quot;</span> <span class="attr">resultMap</span>=<span class="string">&quot;BaseResultMap&quot;</span>&gt;</span></span><br><span class="line">        select</span><br><span class="line">        id, `name`</span><br><span class="line">        from Person</span><br><span class="line">        where id = #&#123;id,jdbcType=INTEGER&#125;</span><br><span class="line">    <span class="tag">&lt;/<span class="name">select</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">mapper</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>接口<code>Mapper</code>：一个映射文件对应，也就是 <code>&lt;mapper&gt;&lt;/mapper&gt;</code>对应一个 Mapper 接口类，以<code>namespace</code>作为唯一标识；</li>
+<li>方法声明<code>MappedStatement</code>：一个完整的方法配置块——比如上面的 <code>&lt;select&gt;&lt;/select&gt;</code> ——对应的 Mybatis 的一个 <code>MappedStatement</code>；</li>
+<li>绑定 SQL <code>BoundSql</code>：一段方法声明中的 sql 片段对应 Mybatis 的一个<code>BoundSql</code>。</li>
+</ul>
+<p>所有的映射文件最终都会被解析为上述三个对象。</p>
+<h3 id="2-MapperAnnotationBuilder"><a href="#2-MapperAnnotationBuilder" class="headerlink" title="2.MapperAnnotationBuilder"></a>2.MapperAnnotationBuilder</h3><p><strong>只有 package 或者 class 的配置方式才会进入这个类，否则像 url 或者 resources 会直接从 XMLMapperBuilder 开始。</strong></p>
+<p><code>MapperAnnotationBuilder</code>这个类虽然听名是解析注解的，其实由于 mybaits 支持<code>@Select</code>这样注解式的 sql ，因此<strong>解析映射文件与绑定接口</strong>也被放在这里一起处理。</p>
+<p>我们先看看他的构造方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">MapperAnnotationBuilder</span><span class="params">(Configuration configuration, Class&lt;?&gt; type)</span> &#123;</span><br><span class="line">    <span class="comment">// 将 xx.xx.xx 格式转为 xx/xx/xx.java (best guess) 格式</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">resource</span> <span class="operator">=</span> type.getName().replace(<span class="string">&#x27;.&#x27;</span>, <span class="string">&#x27;/&#x27;</span>) + <span class="string">&quot;.java (best guess)&quot;</span>;</span><br><span class="line">    <span class="comment">// 生成Mapper构建辅助类</span></span><br><span class="line">    <span class="built_in">this</span>.assistant = <span class="keyword">new</span> <span class="title class_">MapperBuilderAssistant</span>(configuration, resource);</span><br><span class="line">    <span class="comment">// 设置全局配置类</span></span><br><span class="line">    <span class="built_in">this</span>.configuration = configuration;</span><br><span class="line">    <span class="comment">// 设置类型为当前接口类型</span></span><br><span class="line">    <span class="built_in">this</span>.type = type;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><code>MapperBuilderAssistant</code>这个类主要作用是解析映射文件中的标签，并将创建为对应的对象，这里我们暂时不过多研究，了解作用即可。</p>
+</blockquote>
+<p>接着是入口方法<code>parse()</code>，这也是一个扫描配置项-初始化为配置类的一次性过程：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 加载所有映射文件及相关注解</span></span><br><span class="line"><span class="type">MapperAnnotationBuilder</span> <span class="variable">parser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MapperAnnotationBuilder</span>(config, type);</span><br><span class="line"><span class="comment">// 转为配置文件</span></span><br><span class="line">parser.parse();</span><br></pre></td></tr></table></figure>
+
+<p>完成初始化后，调用<code>parse()</code>方法将配置信息存入配置类：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">parse</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">String</span> <span class="variable">resource</span> <span class="operator">=</span> type.toString();</span><br><span class="line">    <span class="comment">// 防止重复加载</span></span><br><span class="line">    <span class="keyword">if</span> (!configuration.isResourceLoaded(resource)) &#123;</span><br><span class="line">        <span class="comment">// 加载映射文件信息</span></span><br><span class="line">        loadXmlResource();</span><br><span class="line">        configuration.addLoadedResource(resource);</span><br><span class="line">        <span class="comment">// 设置映射文件与接口对应的Namespace</span></span><br><span class="line">        assistant.setCurrentNamespace(type.getName());</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 加载二级缓存配置信息</span></span><br><span class="line">        parseCache();</span><br><span class="line">        parseCacheRef();</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 遍历接口中的方法</span></span><br><span class="line">        <span class="keyword">for</span> (Method method : type.getMethods()) &#123;</span><br><span class="line">            <span class="comment">// 检查该方法是没有对应的sql</span></span><br><span class="line">            <span class="keyword">if</span> (!canHaveStatement(method)) &#123;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 获取方法上的注解</span></span><br><span class="line">            <span class="keyword">if</span> (getAnnotationWrapper(method, <span class="literal">false</span>, Select.class, SelectProvider.class).isPresent()</span><br><span class="line">                &amp;&amp; method.getAnnotation(ResultMap.class) == <span class="literal">null</span>) &#123;</span><br><span class="line">                parseResultMap(method);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 将statement添加到配置</span></span><br><span class="line">                parseStatement(method);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IncompleteElementException e) &#123;</span><br><span class="line">                configuration.addIncompleteMethod(<span class="keyword">new</span> <span class="title class_">MethodResolver</span>(<span class="built_in">this</span>, method));</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    parsePendingMethods();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于 Mybatis 的缓存与注解不影响主体逻辑，因此这里暂时先忽略。</p>
+<h3 id="3-XMLMapperBuilder"><a href="#3-XMLMapperBuilder" class="headerlink" title="3.XMLMapperBuilder"></a>3.XMLMapperBuilder</h3><p>元素文件与接口的绑定主要逻辑在于<code>loadXmlResource()</code>方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">loadXmlResource</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// Spring may not know the real resource name so we check a flag</span></span><br><span class="line">    <span class="comment">// to prevent loading again a resource twice</span></span><br><span class="line">    <span class="comment">// this flag is set at XMLMapperBuilder#bindMapperForNamespace</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 是否已经被加载过</span></span><br><span class="line">    <span class="keyword">if</span> (!configuration.isResourceLoaded(<span class="string">&quot;namespace:&quot;</span> + type.getName())) &#123;</span><br><span class="line">        <span class="comment">// 将 xxx.xxx.xxx 的接口全限定名替换为 xxx/xxx/xxx.xml，获取对应的xml文件</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">xmlResource</span> <span class="operator">=</span> type.getName().replace(<span class="string">&#x27;.&#x27;</span>, <span class="string">&#x27;/&#x27;</span>) + <span class="string">&quot;.xml&quot;</span>;</span><br><span class="line">        <span class="comment">// 如果 xxx/xxx/xxx.xml 不行，换成 /xxx/xxx/xxx.xml 再试试</span></span><br><span class="line">        <span class="type">InputStream</span> <span class="variable">inputStream</span> <span class="operator">=</span> type.getResourceAsStream(<span class="string">&quot;/&quot;</span> + xmlResource);</span><br><span class="line">        <span class="keyword">if</span> (inputStream == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">// Search XML mapper that is not in the module but in the classpath.</span></span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 如果加载不到，就通过相对路径找</span></span><br><span class="line">                inputStream = Resources.getResourceAsStream(type.getClassLoader(), xmlResource);</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IOException e2) &#123;</span><br><span class="line">                <span class="comment">// ignore, resource is not required</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (inputStream != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="type">XMLMapperBuilder</span> <span class="variable">xmlParser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">XMLMapperBuilder</span>(inputStream, assistant.getConfiguration(), xmlResource, configuration.getSqlFragments(), type.getName());</span><br><span class="line">            xmlParser.parse();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>XMLMapperBuilder</code>实际上跟 <code>XMLConfigBuilder</code>作用类似，最后也是通过 <code>XPathParser</code> 工具类去解析 Xml 文件，只不过<code>XMLMapperBuilder</code>解析的是映射文件而不是配置文件。</p>
+<p>我们查看它的入口方法 <code>parse()</code> ：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">parse</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 检查配置文件是否被加载过</span></span><br><span class="line">    <span class="keyword">if</span> (!configuration.isResourceLoaded(resource)) &#123;</span><br><span class="line">        <span class="comment">// 解析根节点mapper标签，然后标记为已解析</span></span><br><span class="line">        <span class="comment">// 注意，方法声明在这一步进行解析</span></span><br><span class="line">        configurationElement(parser.evalNode(<span class="string">&quot;/mapper&quot;</span>));</span><br><span class="line">        configuration.addLoadedResource(resource);</span><br><span class="line">        <span class="comment">// 解析映射文件，并且绑定到接口对应的Namespace</span></span><br><span class="line">        bindMapperForNamespace();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 解析ResultMap</span></span><br><span class="line">    parsePendingResultMaps();</span><br><span class="line">    <span class="comment">// 解析二级缓存</span></span><br><span class="line">    parsePendingCacheRefs();</span><br><span class="line">    <span class="comment">// 转为Mapper中的方法声明</span></span><br><span class="line">    parsePendingStatements();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-bindMapperForNamespace-方法"><a href="#4-bindMapperForNamespace-方法" class="headerlink" title="4.bindMapperForNamespace 方法"></a>4.bindMapperForNamespace 方法</h3><p><code>parse()</code>里调用了 <code>bindMapperForNamespace()</code>  方法，这里根据映射文件的 namespace 属性把映射文件与接口绑定起来了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">bindMapperForNamespace</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 获取配置文件中的namespace属性</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">namespace</span> <span class="operator">=</span> builderAssistant.getCurrentNamespace();</span><br><span class="line">    <span class="keyword">if</span> (namespace != <span class="literal">null</span>) &#123;</span><br><span class="line">        Class&lt;?&gt; boundType = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">// 根据配置文件找到接口类</span></span><br><span class="line">            boundType = Resources.classForName(namespace);</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ClassNotFoundException e) &#123;</span><br><span class="line">            <span class="comment">// ignore, bound type is not required</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 如果这个接口类还未加载过，则加载进全局配置类的映射注册表MapperRegistry中</span></span><br><span class="line">        <span class="keyword">if</span> (boundType != <span class="literal">null</span> &amp;&amp; !configuration.hasMapper(boundType)) &#123;</span><br><span class="line">            <span class="comment">// Spring may not know the real resource name so we set a flag</span></span><br><span class="line">            <span class="comment">// to prevent loading again this resource from the mapper interface</span></span><br><span class="line">            <span class="comment">// look at MapperAnnotationBuilder#loadXmlResource</span></span><br><span class="line">            configuration.addLoadedResource(<span class="string">&quot;namespace:&quot;</span> + namespace);</span><br><span class="line">            configuration.addMapper(boundType);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的 <code>addMapper()</code>方法其实还是要往 <code>MapperRegister</code>里面注册接口。也就是说<strong>同一个接口实际上可能会被注册两次</strong>，在 <code>XMLConfigBuilder</code>的 <code>mapperElement()</code>里注册一次，在现在 <code>XMLMapperBuilder</code>的<code>bindMapperForNamespace()</code>里面再注册一次，这也是<strong>为什么第二次注册需要检查接口是否重复注册的原因</strong>了。 </p>
+<h3 id="5-parsePendingStatements-方法"><a href="#5-parsePendingStatements-方法" class="headerlink" title="5.parsePendingStatements 方法"></a>5.parsePendingStatements 方法</h3><p>映射文件里的标签声明的 sql 方法在<code>XMLMapperBuilder.parse()</code>中的<code>parsePendingStatements()</code>方法被解析对应的 statement 对象:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">parsePendingStatements</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 获取所有映射文件中的方法声明</span></span><br><span class="line">    Collection&lt;XMLStatementBuilder&gt; incompleteStatements = configuration.getIncompleteStatements();</span><br><span class="line">    <span class="keyword">synchronized</span> (incompleteStatements) &#123;</span><br><span class="line">        Iterator&lt;XMLStatementBuilder&gt; iter = incompleteStatements.iterator();</span><br><span class="line">        <span class="keyword">while</span> (iter.hasNext()) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 遍历并转换为Statement对象</span></span><br><span class="line">                iter.next().parseStatementNode();</span><br><span class="line">                iter.remove();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IncompleteElementException e) &#123;</span><br><span class="line">                <span class="comment">// Statement is still missing a resource...</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>对应的转换方法为：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">XMLStatementBuilder</span> <span class="keyword">extends</span> <span class="title class_">BaseBuilder</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">parseStatementNode</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">// 获得 id 属性</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">id</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;id&quot;</span>);</span><br><span class="line">        <span class="type">String</span> <span class="variable">databaseId</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;databaseId&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (!databaseIdMatchesCurrent(id, databaseId, <span class="built_in">this</span>.requiredDatabaseId)) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="type">String</span> <span class="variable">nodeName</span> <span class="operator">=</span> context.getNode().getNodeName();</span><br><span class="line">        <span class="comment">// 判断sql类型（select，insert，update，delete）</span></span><br><span class="line">        <span class="type">SqlCommandType</span> <span class="variable">sqlCommandType</span> <span class="operator">=</span> SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));</span><br><span class="line">        <span class="comment">// 是否为select语句</span></span><br><span class="line">        <span class="type">boolean</span> <span class="variable">isSelect</span> <span class="operator">=</span> sqlCommandType == SqlCommandType.SELECT;</span><br><span class="line">        <span class="comment">// 如果不是select，是否清空缓存</span></span><br><span class="line">        <span class="type">boolean</span> <span class="variable">flushCache</span> <span class="operator">=</span> context.getBooleanAttribute(<span class="string">&quot;flushCache&quot;</span>, !isSelect);</span><br><span class="line">        <span class="comment">// 如果是select，是否使用缓存</span></span><br><span class="line">        <span class="type">boolean</span> <span class="variable">useCache</span> <span class="operator">=</span> context.getBooleanAttribute(<span class="string">&quot;useCache&quot;</span>, isSelect);</span><br><span class="line">        <span class="type">boolean</span> <span class="variable">resultOrdered</span> <span class="operator">=</span> context.getBooleanAttribute(<span class="string">&quot;resultOrdered&quot;</span>, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Include Fragments before parsing</span></span><br><span class="line">        <span class="type">XMLIncludeTransformer</span> <span class="variable">includeParser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">XMLIncludeTransformer</span>(configuration, builderAssistant);</span><br><span class="line">        <span class="comment">// 将&lt;include /&gt;转换对应的&lt;sql /&gt;节点</span></span><br><span class="line">        includeParser.applyIncludes(context.getNode());</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获取参数类型名称并转为对应java类型</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">parameterType</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;parameterType&quot;</span>);</span><br><span class="line">        Class&lt;?&gt; parameterTypeClass = resolveClass(parameterType);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 获得对应驱动脚本</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">lang</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;lang&quot;</span>);</span><br><span class="line">        <span class="type">LanguageDriver</span> <span class="variable">langDriver</span> <span class="operator">=</span> getLanguageDriver(lang);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Parse selectKey after includes and remove them.</span></span><br><span class="line">        <span class="comment">// 将&lt;selectKey /&gt;解析成selectKeyGenerator生成器</span></span><br><span class="line">        processSelectKeyNodes(id, parameterTypeClass, langDriver);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Parse the SQL (pre: &lt;selectKey&gt; and &lt;include&gt; were parsed and removed)</span></span><br><span class="line">        KeyGenerator keyGenerator;</span><br><span class="line">        <span class="type">String</span> <span class="variable">keyStatementId</span> <span class="operator">=</span> id + SelectKeyGenerator.SELECT_KEY_SUFFIX;</span><br><span class="line">        keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, <span class="literal">true</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> (configuration.hasKeyGenerator(keyStatementId)) &#123;</span><br><span class="line">            <span class="comment">// 如果上面存在&lt;selectKey /&gt;子节点，则获取上面对其解析后生成的selectKeyGenerator</span></span><br><span class="line">            keyGenerator = configuration.getKeyGenerator(keyStatementId);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 如果配置了useGeneratedKeys并且为insert语句，就使用Jdbc3KeyGenerator</span></span><br><span class="line">            keyGenerator = context.getBooleanAttribute(<span class="string">&quot;useGeneratedKeys&quot;</span>,</span><br><span class="line">                                                       configuration.isUseGeneratedKeys() &amp;&amp; SqlCommandType.INSERT.equals(sqlCommandType))</span><br><span class="line">                ? Jdbc3KeyGenerator.INSTANCE</span><br><span class="line">                : NoKeyGenerator.INSTANCE;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 创建对应的 SqlSource 对象，保存了该节点下 SQL 相关信息</span></span><br><span class="line">        <span class="type">SqlSource</span> <span class="variable">sqlSource</span> <span class="operator">=</span> langDriver.createSqlSource(configuration, context, parameterTypeClass);</span><br><span class="line">        <span class="comment">// 获得statement类型，默认为PREPARED</span></span><br><span class="line">        <span class="type">StatementType</span> <span class="variable">statementType</span> <span class="operator">=</span> StatementType.valueOf(context.getStringAttribute(<span class="string">&quot;statementType&quot;</span>, StatementType.PREPARED.toString()));</span><br><span class="line">        <span class="type">Integer</span> <span class="variable">fetchSize</span> <span class="operator">=</span> context.getIntAttribute(<span class="string">&quot;fetchSize&quot;</span>);</span><br><span class="line">        <span class="type">Integer</span> <span class="variable">timeout</span> <span class="operator">=</span> context.getIntAttribute(<span class="string">&quot;timeout&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 获取入参与返回值类型</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">parameterMap</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;parameterMap&quot;</span>);</span><br><span class="line">        <span class="type">String</span> <span class="variable">resultType</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;resultType&quot;</span>);</span><br><span class="line">        Class&lt;?&gt; resultTypeClass = resolveClass(resultType);</span><br><span class="line">        <span class="type">String</span> <span class="variable">resultMap</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;resultMap&quot;</span>);</span><br><span class="line">        <span class="type">String</span> <span class="variable">resultSetType</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;resultSetType&quot;</span>);</span><br><span class="line">        <span class="type">ResultSetType</span> <span class="variable">resultSetTypeEnum</span> <span class="operator">=</span> resolveResultSetType(resultSetType);</span><br><span class="line">        <span class="keyword">if</span> (resultSetTypeEnum == <span class="literal">null</span>) &#123;</span><br><span class="line">            resultSetTypeEnum = configuration.getDefaultResultSetType();</span><br><span class="line">        &#125;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 获取useGeneratedKeys需要的相关属性</span></span><br><span class="line">        <span class="type">String</span> <span class="variable">keyProperty</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;keyProperty&quot;</span>);</span><br><span class="line">        <span class="type">String</span> <span class="variable">keyColumn</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;keyColumn&quot;</span>);</span><br><span class="line">        <span class="type">String</span> <span class="variable">resultSets</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;resultSets&quot;</span>);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 根据以上信息生成一个MappedStatement对象</span></span><br><span class="line">        builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType, fetchSize, timeout,</span><br><span class="line">                                            parameterMap, parameterTypeClass, resultMap, resultTypeClass, resultSetTypeEnum, flushCache, useCache,</span><br><span class="line">                                            resultOrdered, keyGenerator, keyProperty, keyColumn, databaseId, langDriver, resultSets);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>关于方法声明标签中一些属性的具体作用，可以参考<a target="_blank" rel="noopener" href="https://juejin.cn/post/6844904143392358407">Mybatis源码之美:3.7.深入了解select元素</a>。</p>
+<p>接着，在 <code>MapperBuilderAssistant.addMappedStatement()</code>中，经过一系列的处理：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> MappedStatement <span class="title function_">addMappedStatement</span><span class="params">(</span></span><br><span class="line"><span class="params">    String id,</span></span><br><span class="line"><span class="params">    SqlSource sqlSource,</span></span><br><span class="line"><span class="params">    StatementType statementType,</span></span><br><span class="line"><span class="params">    SqlCommandType sqlCommandType,</span></span><br><span class="line"><span class="params">    Integer fetchSize,</span></span><br><span class="line"><span class="params">    Integer timeout,</span></span><br><span class="line"><span class="params">    String parameterMap,</span></span><br><span class="line"><span class="params">    Class&lt;?&gt; parameterType,</span></span><br><span class="line"><span class="params">    String resultMap,</span></span><br><span class="line"><span class="params">    Class&lt;?&gt; resultType,</span></span><br><span class="line"><span class="params">    ResultSetType resultSetType,</span></span><br><span class="line"><span class="params">    <span class="type">boolean</span> flushCache,</span></span><br><span class="line"><span class="params">    <span class="type">boolean</span> useCache,</span></span><br><span class="line"><span class="params">    <span class="type">boolean</span> resultOrdered,</span></span><br><span class="line"><span class="params">    KeyGenerator keyGenerator,</span></span><br><span class="line"><span class="params">    String keyProperty,</span></span><br><span class="line"><span class="params">    String keyColumn,</span></span><br><span class="line"><span class="params">    String databaseId,</span></span><br><span class="line"><span class="params">    LanguageDriver lang,</span></span><br><span class="line"><span class="params">    String resultSets)</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (unresolvedCacheRef) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">IncompleteElementException</span>(<span class="string">&quot;Cache-ref not yet resolved&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    id = applyCurrentNamespace(id, <span class="literal">false</span>);</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">isSelect</span> <span class="operator">=</span> sqlCommandType == SqlCommandType.SELECT;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构建一个MappedStatement</span></span><br><span class="line">    MappedStatement.<span class="type">Builder</span> <span class="variable">statementBuilder</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MappedStatement</span>.Builder(configuration, id, sqlSource, sqlCommandType)</span><br><span class="line">        .resource(resource)</span><br><span class="line">        .fetchSize(fetchSize)</span><br><span class="line">        .timeout(timeout)</span><br><span class="line">        .statementType(statementType)</span><br><span class="line">        .keyGenerator(keyGenerator)</span><br><span class="line">        .keyProperty(keyProperty)</span><br><span class="line">        .keyColumn(keyColumn)</span><br><span class="line">        .databaseId(databaseId)</span><br><span class="line">        .lang(lang)</span><br><span class="line">        .resultOrdered(resultOrdered)</span><br><span class="line">        .resultSets(resultSets)</span><br><span class="line">        .resultMaps(getStatementResultMaps(resultMap, resultType, id))</span><br><span class="line">        .resultSetType(resultSetType)</span><br><span class="line">        .flushCacheRequired(valueOrDefault(flushCache, !isSelect))</span><br><span class="line">        .useCache(valueOrDefault(useCache, isSelect))</span><br><span class="line">        .cache(currentCache);</span><br><span class="line"></span><br><span class="line">    <span class="type">ParameterMap</span> <span class="variable">statementParameterMap</span> <span class="operator">=</span> getStatementParameterMap(parameterMap, parameterType, id);</span><br><span class="line">    <span class="keyword">if</span> (statementParameterMap != <span class="literal">null</span>) &#123;</span><br><span class="line">        statementBuilder.parameterMap(statementParameterMap);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 加入 Configuration中的</span></span><br><span class="line">    <span class="type">MappedStatement</span> <span class="variable">statement</span> <span class="operator">=</span> statementBuilder.build();</span><br><span class="line">    configuration.addMappedStatement(statement);</span><br><span class="line">    <span class="keyword">return</span> statement;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>最终生成的<code>MappedStatement</code>会以方法声明的 id 作为标识，加入全局配置类中的 Map 集合<code>mappedStatements</code>中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addMappedStatement</span><span class="params">(MappedStatement ms)</span> &#123;</span><br><span class="line">    mappedStatements.put(ms.getId(), ms);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// StrictMap是一个继承了HashMap的自定义集合，针对Myabtis存放MappedStatement的需求针对方法做了一些调整</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">final</span> Map&lt;String, MappedStatement&gt; mappedStatements = <span class="keyword">new</span> <span class="title class_">StrictMap</span>&lt;MappedStatement&gt;(<span class="string">&quot;Mapped Statements collection&quot;</span>)</span><br><span class="line">    .conflictMessageProducer((savedValue, targetValue) -&gt;</span><br><span class="line">                             <span class="string">&quot;. please check &quot;</span> + savedValue.getResource() + <span class="string">&quot; and &quot;</span> + targetValue.getResource());</span><br></pre></td></tr></table></figure>
+
+<h3 id="6-MappedStatement"><a href="#6-MappedStatement" class="headerlink" title="6.MappedStatement"></a>6.MappedStatement</h3><p><code>MappedStatement</code>对应了映射文件中的一个方法声明，每个<code>MappedStatement</code>对象都以 <code>namespace.id</code>的形式区分，里面包含了映射文件中一个方法签名所有必要的数据，包括 sql 对象，映射文件路径，入参和返回值类型等等。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">final</span> <span class="keyword">class</span> <span class="title class_">MappedStatement</span> &#123;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 映射文件路径</span></span><br><span class="line">    <span class="keyword">private</span> String resource;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 配置类</span></span><br><span class="line">    <span class="keyword">private</span> Configuration configuration;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 方法声明的全限定名 namespace.id</span></span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 批量查询行数</span></span><br><span class="line">    <span class="keyword">private</span> Integer fetchSize;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 超时时间</span></span><br><span class="line">    <span class="keyword">private</span> Integer timeout;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// statement类型，有STATEMENT PREPARED CALLABLE三种，分别对应不同的Statement</span></span><br><span class="line">    <span class="keyword">private</span> StatementType statementType;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 返回值类型</span></span><br><span class="line">    <span class="keyword">private</span> ResultSetType resultSetType;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// sql对象获取方法</span></span><br><span class="line">    <span class="keyword">private</span> SqlSource sqlSource;</span><br><span class="line">    <span class="comment">// 语言驱动</span></span><br><span class="line">    <span class="keyword">private</span> LanguageDriver lang;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 缓存对象</span></span><br><span class="line">    <span class="keyword">private</span> Cache cache;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 执行后是否清空缓存</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">boolean</span> flushCacheRequired;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 是否使用缓存</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">boolean</span> useCache;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 入参类型</span></span><br><span class="line">    <span class="keyword">private</span> ParameterMap parameterMap;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// ResultMap</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;ResultMap&gt; resultMaps;</span><br><span class="line">    <span class="comment">// 是否有嵌套的ResultMap</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">boolean</span> hasNestedResultMaps;</span><br><span class="line">    <span class="keyword">private</span> <span class="type">boolean</span> resultOrdered;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// sql类型</span></span><br><span class="line">    <span class="keyword">private</span> SqlCommandType sqlCommandType;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// keuy生成器</span></span><br><span class="line">    <span class="keyword">private</span> KeyGenerator keyGenerator;</span><br><span class="line">    <span class="keyword">private</span> String[] keyProperties;</span><br><span class="line">    <span class="keyword">private</span> String[] keyColumns;</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 数据库标识</span></span><br><span class="line">    <span class="keyword">private</span> String databaseId;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 日志</span></span><br><span class="line">    <span class="keyword">private</span> Log statementLog;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 多结果集</span></span><br><span class="line">    <span class="keyword">private</span> String[] resultSets;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="三、关于接口与映射文件关系的思考"><a href="#三、关于接口与映射文件关系的思考" class="headerlink" title="三、关于接口与映射文件关系的思考"></a>三、关于接口与映射文件关系的思考</h2><h3 id="1-先加载接口还是映射文件？"><a href="#1-先加载接口还是映射文件？" class="headerlink" title="1.先加载接口还是映射文件？"></a>1.先加载接口还是映射文件？</h3><p>关于这个问题，我们回头看看 <code>XMLConfigBuilder</code> 里的 <code>mapperElement()</code>，其实就能理明白接口与映射文件的加载顺序。</p>
+<p>首先，Myabtis 的四种配置方式，其实本质上对应着两种顺序：</p>
+<ul>
+<li><strong>先找接口，再根据接口全限定名找映射文件</strong>：<code>&lt;package&gt;</code>和 <code>&lt;mapper class=&quot;xxx.xxx.xxx&quot;&gt;</code>；</li>
+<li><strong>先找映射文件，再根据 namespace 找接口</strong>： <code>&lt;mapper url=&quot;xxx/xxx/xxx.xml&quot;&gt;</code> 和  <code>&lt;mapper resource=&quot;xxx/xxx/xxx.xml&quot;&gt;</code></li>
+</ul>
+<p><strong>先找接口</strong></p>
+<ol>
+<li><p>直接先在指定位置找到接口类，注册到 <code>MapperRegister</code>里面；</p>
+</li>
+<li><p>在此时创建 <code>MapperAnnotationBuilder</code>，解析<code>@Select</code>这样的 sql 标签；</p>
+</li>
+<li><p>接着将接口类的全限定名 <code>com.xxx.xxx.class</code> 转成 <code>com/xxx/xxx/xml</code>作为映射文件路径，然后创建 <code>XMLMapperBuilder</code>去根据路径解析映射文件，表现出来的形式就是接口与映射文件需要同包同名；</p>
+</li>
+<li><p>解析映射文件的过程中，再根据映射文件的 namespace 属性找接口，试着再注册一次，如果已经注册过就不注册。</p>
+<p>另外需要注意的是，这里如果映射文件的 namespace 跟 <code>MapperAnnotationBuilder</code>的全限定名不一样就会报错。</p>
+</li>
+</ol>
+<p><strong>先找映射文件</strong></p>
+<ol>
+<li>直接根据配置文件路径找到映射文件；</li>
+<li>根据映射文件 namespace 找到并且注册接口。</li>
+</ol>
+<p>这里我们就完全明白了：</p>
+<ul>
+<li><p>为什么<code>XMLMapperBuilder</code>解析映射文件注册接口的时候要做重复校验？</p>
+<p>因为根据配置方式的不同，可能在加载映射文件之前接口已经被注册一次了；</p>
+</li>
+<li><p>为什么 package 和 class 的配置方式需要接口和映射文件同包同名？</p>
+<p>因为加载完接口会直接根据接口全限定名找对应的映射文件；</p>
+</li>
+</ul>
+<h3 id="2-接口可不可以有多个映射文件？"><a href="#2-接口可不可以有多个映射文件？" class="headerlink" title="2.接口可不可以有多个映射文件？"></a>2.接口可不可以有多个映射文件？</h3><p>答案是<strong>可以</strong>，根据上述理论，一个接口是可以有多个映射文件的。</p>
+<p>也就是说，如果有一个接口叫 <code>Person.class</code>，里面的 <code>selectOne()</code> 方法在 <code>Person.xml</code>，而  <code>selectList()</code>方法在<code>Person2.xml</code>，而两个映射文件的 namespace 都指向了 <code>Person.class</code>。</p>
+<p>当我们在配置文件中以 <code>&lt;mapper url=&quot;xxx/xxx/xxx.xml&quot;&gt;</code> 或  <code>&lt;mapper resource=&quot;xxx/xxx/xxx.xml&quot;&gt;</code> 的方式配置它并运行程序，那么实际上 <code>Person.class</code>所有的方法都可以正常调用。</p>
+<p>从理论上来说，<code>Person.xml</code> 和 <code>Person2.xml</code>的信息最终都会合并到一个 <code>Statement</code> 里头，这两个映射文件除了 <code>&lt;Mapper&gt;&lt;/Mapper&gt;</code>跟标签外，其他<strong>内容都是互通的</strong>，在<code>Person.xml</code>配置的 <code>&lt;Sql&gt;</code>或者 <code>&lt;ResultMap&gt;</code> 标签在 <code>Person2.xml</code>中一样可以正常使用。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>我们总结一下 Mapper 接口与映射文件的加载过程：</p>
+<ol>
+<li><p>在 <code>XmlConfigBuilder</code> 解析 <code>&lt;mappers&gt;&lt;/ mappers&gt;</code>标签，获取要解析的 Mapper 集合</p>
+<p>如果 mapper 是以 package 标签或者  mapper 的 class 属性配置的，就带着配置文件路径直接跳到步骤 4</p>
+<p>如果 mapper 是以 mapper 的 resource 或者 url 属性配置的，就继续步骤 2；</p>
+</li>
+<li><p>在 <code>MapperRegister</code> 中注册接口；</p>
+</li>
+<li><p>对每一个 Mapper 接口创建一个 <code>MapperAnnotationBuilder</code>，用于解析 <code>@Select</code>这样的 sql 标签</p>
+<p>将 <code>xxx.xxx.xxx</code> 的接口全限定名转为 <code>xxx/xxx/xxx.xml</code>作为步骤 4 的配置文件路径；</p>
+</li>
+<li><p>创建一个 <code>XMLMapperBUilder</code>，并根据配置文件路径找到映射文件并解析；</p>
+</li>
+<li><p>调用 <code>bindMapperForNamespace()</code>方法，解析映射文件并获取映射文件的 namespace 属性，找到并将接口注册到 <code>MapperRegister</code> 中；</p>
+</li>
+<li><p>调用 <code>parsePendingStatements()</code>方法，解析映射文件的方法声明，然后通过 <code>XMLStatementBuilder</code>转为 <code>MappedStatement</code>。</p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mybatis/" rel="tag"># Mybatis</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/05/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/" rel="prev" title="Mybatis源码学习（一）：配置文件的加载">
+                  <i class="fa fa-angle-left"></i> Mybatis源码学习（一）：配置文件的加载
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2021/07/11/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%E4%B8%ADsql%E7%9A%84%E8%A7%A3%E6%9E%90/" rel="next" title="Mybatis源码学习（三）：映射文件中sql的解析">
+                  Mybatis源码学习（三）：映射文件中sql的解析 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Createsequence</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">261k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">15:47</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

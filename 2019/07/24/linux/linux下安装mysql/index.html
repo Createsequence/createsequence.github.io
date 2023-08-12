@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"createsequence.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.18.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="1.安装1234567891011121314151617181920#获取安装用的Yum Repositorywget -i -c http:&#x2F;&#x2F;dev.mysql.com&#x2F;get&#x2F;mysql57-community-release-el7-10.noarch.rpmyum -y install mysql57-community-release-el7-10.noarch.rpm#安装MySQ">
+<meta property="og:type" content="article">
+<meta property="og:title" content="linux下安装mysql">
+<meta property="og:url" content="https://createsequence.github.io/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85mysql/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="1.安装1234567891011121314151617181920#获取安装用的Yum Repositorywget -i -c http:&#x2F;&#x2F;dev.mysql.com&#x2F;get&#x2F;mysql57-community-release-el7-10.noarch.rpmyum -y install mysql57-community-release-el7-10.noarch.rpm#安装MySQ">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-07-23T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-10-27T01:56:15.000Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://createsequence.github.io/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85mysql/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://createsequence.github.io/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85mysql/","path":"2019/07/24/linux/linux下安装mysql/","title":"linux下安装mysql"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>linux下安装mysql | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+  <!-- 引入目录截取js -->
+  <script type="text/javascript" src="/js/custom.js"></script>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Createsequence's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%AE%89%E8%A3%85"><span class="nav-text">1.安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E4%BF%AE%E6%94%B9%E5%AF%86%E7%A0%81"><span class="nav-text">2.修改密码</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E4%BF%AE%E6%94%B9%E8%BF%9C%E7%A8%8B%E8%BF%9E%E6%8E%A5%E6%9D%83%E9%99%90"><span class="nav-text">3.修改远程连接权限</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Createsequence"
+      src="/images/Createsequence.jpg">
+  <p class="site-author-name" itemprop="name">Createsequence</p>
+  <div class="site-description" itemprop="description">一个努力前进的程序猿</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Createsequence" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Createsequence" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://createsequence.github.io/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85mysql/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+      <meta itemprop="name" content="Createsequence">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+      <meta itemprop="description" content="一个努力前进的程序猿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="linux下安装mysql | Createsequence's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          linux下安装mysql
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2019-07-24 00:00:00" itemprop="dateCreated datePublished" datetime="2019-07-24T00:00:00+08:00">2019-07-24</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2020-10-27 09:56:15" itemprop="dateModified" datetime="2020-10-27T09:56:15+08:00">2020-10-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/linux/" itemprop="url" rel="index"><span itemprop="name">linux</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>425</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="1-安装"><a href="#1-安装" class="headerlink" title="1.安装"></a>1.安装</h2><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#获取安装用的Yum Repository</span></span><br><span class="line"><span class="string">wget</span> <span class="string">-i</span> <span class="string">-c</span> <span class="string">http://dev.mysql.com/get/mysql57-community-release-el7-10.noarch.rpm</span></span><br><span class="line"><span class="string">yum</span> <span class="string">-y</span> <span class="string">install</span> <span class="string">mysql57-community-release-el7-10.noarch.rpm</span></span><br><span class="line"><span class="comment">#安装MySQL服务</span></span><br><span class="line"><span class="string">yum</span> <span class="string">-y</span> <span class="string">install</span> <span class="string">mysql-community-server</span></span><br><span class="line"><span class="comment">#查看版本</span></span><br><span class="line"><span class="string">mysql</span> <span class="string">-v</span></span><br><span class="line"><span class="comment">#启动mysql</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">start</span> <span class="string">mysqld.service</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#找回初始密码并登录  jWTAeq-DF9tJ</span></span><br><span class="line"><span class="string">grep</span> <span class="string">&#x27;temporary password&#x27;</span> <span class="string">/var/log/mysqld.log</span></span><br><span class="line"><span class="string">mysql</span> <span class="string">-uroot</span> <span class="string">-p</span></span><br><span class="line"><span class="comment">#注意;找不到初始密码及其他情况参考下文&quot;修改密码&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#使用初始密码登录后需要先修改一次密码后才能操作</span></span><br><span class="line"><span class="string">ALTER</span> <span class="string">USER</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;localhost&#x27;</span> <span class="string">IDENTIFIED</span> <span class="string">BY</span> <span class="string">&#x27;新密码&#x27;</span><span class="string">;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#为避免Repository每次yum操作都会自动更新</span></span><br><span class="line"><span class="string">yum</span> <span class="string">-y</span> <span class="string">remove</span> <span class="string">mysql57-community-release-el7-10.noarch</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="2-修改密码"><a href="#2-修改密码" class="headerlink" title="2.修改密码"></a>2.修改密码</h2><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#1.找回密码</span></span><br><span class="line"><span class="string">grep</span> <span class="string">&#x27;temporary password&#x27;</span> <span class="string">/var/log/mysqld.log</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#2.强制修改密码</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">stop</span> <span class="string">mysqld</span> <span class="comment">#停止服务</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">set-environment</span> <span class="string">MYSQLD_OPTS=&quot;--skip-grant-tables&quot;</span> <span class="comment">#跳过密码</span></span><br><span class="line"><span class="string">systemctl</span> <span class="string">start</span> <span class="string">mysqld</span> <span class="comment">#启动服务</span></span><br><span class="line"><span class="string">mysql</span> <span class="string">-u</span> <span class="string">root</span> <span class="comment">#登录</span></span><br><span class="line"><span class="string">UPDATE</span> <span class="string">mysql.user</span> <span class="string">SET</span> <span class="string">authentication_string</span> <span class="string">=</span> <span class="string">PASSWORD(&#x27;新密码&#x27;)</span> <span class="string">WHERE</span> <span class="string">User</span> <span class="string">=</span> <span class="string">&#x27;root&#x27;</span> <span class="string">AND</span> <span class="string">Host</span> <span class="string">=</span> <span class="string">&#x27;localhost&#x27;</span><span class="string">;</span> <span class="comment">#设置新密码</span></span><br><span class="line"><span class="string">FLUSH</span> <span class="string">PRIVILEGES;</span> <span class="comment">#刷新权限</span></span><br><span class="line"><span class="string">quit</span> <span class="comment">#退出</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#3.用操作系统账号修改密码</span></span><br><span class="line"><span class="string">mysql</span> <span class="string">-uroot</span> <span class="string">-p</span> <span class="comment">#使用centos账号密码登录</span></span><br><span class="line"><span class="string">UPDATE</span> <span class="string">mysql.user</span> <span class="string">SET</span> <span class="string">authentication_string</span> <span class="string">=</span> <span class="string">PASSWORD(&#x27;新密码&#x27;)</span> <span class="string">WHERE</span> <span class="string">User</span> <span class="string">=</span> <span class="string">&#x27;root&#x27;</span> <span class="string">AND</span> <span class="string">Host</span> <span class="string">=</span> <span class="string">&#x27;localhost&#x27;</span><span class="string">;</span> <span class="comment">#设置新密码</span></span><br><span class="line"><span class="string">FLUSH</span> <span class="string">PRIVILEGES;</span> <span class="comment">#刷新权限</span></span><br><span class="line"><span class="string">quit</span> <span class="comment">#退出</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="3-修改远程连接权限"><a href="#3-修改远程连接权限" class="headerlink" title="3.修改远程连接权限"></a>3.修改远程连接权限</h2><figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#选择mysql</span></span><br><span class="line"><span class="string">use</span> <span class="string">mysql;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#授权远程连接</span></span><br><span class="line"><span class="string">GRANT</span> <span class="string">ALL</span> <span class="string">PRIVILEGES</span> <span class="string">ON</span> <span class="string">*.*</span> <span class="string">TO</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;%&#x27;</span> <span class="string">IDENTIFIED</span> <span class="string">BY</span> <span class="string">&#x27;YYBrhr_2018&#x27;</span> <span class="string">WITH</span> <span class="string">GRANT</span> <span class="string">OPTION;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#注意：如果navicat远程连接报1521错误</span></span><br><span class="line"><span class="string">GRANT</span> <span class="string">ALL</span> <span class="string">ON</span> <span class="string">*.*</span> <span class="string">TO</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;%&#x27;;</span> <span class="comment">#远程连接授权</span></span><br><span class="line"><span class="string">ALTER</span> <span class="string">USER</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;%&#x27;</span> <span class="string">IDENTIFIED</span> <span class="string">BY</span> <span class="string">&#x27;password&#x27;</span> <span class="string">PASSWORD</span> <span class="string">EXPIRE</span> <span class="string">NEVER;</span> <span class="comment">#更改加密规则</span></span><br><span class="line"><span class="string">ALTER</span> <span class="string">USER</span> <span class="string">&#x27;root&#x27;</span><span class="string">@&#x27;%&#x27;</span> <span class="string">IDENTIFIED</span> <span class="string">WITH</span> <span class="string">mysql_native_password</span> <span class="string">BY</span> <span class="string">&#x27;123456&#x27;</span><span class="string">;</span> <span class="comment">#更改密码</span></span><br><span class="line"><span class="string">FLUSH</span> <span class="string">PRIVILEGES;</span> <span class="comment">#刷新权限</span></span><br></pre></td></tr></table></figure>
+
+<p>注意，这一步需要小心，在自己的服务器或者内网的服务器就算了，如果是在外网的生产服务器上，务必先咨询同事。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/linux/" rel="tag"># linux</a>
+              <a href="/tags/mysql/" rel="tag"># mysql</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85tomcat/" rel="prev" title="linux下安装tomcat">
+                  <i class="fa fa-angle-left"></i> linux下安装tomcat
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2019/07/24/linux/linux%E4%B8%8B%E5%AE%89%E8%A3%85jdk/" rel="next" title="linux下安装jdk">
+                  linux下安装jdk <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Createsequence</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">261k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">15:47</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

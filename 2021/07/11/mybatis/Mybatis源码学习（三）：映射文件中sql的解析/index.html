@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"createsequence.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.18.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="概述根据上一篇文章，我们了解了 Mybatis 如何在加载配置文件后，根据指定配置方式寻找接口并且完成映射文件信息与接口的绑定的。在本篇文章，我们将延续上文，结合源码阐述映射文件中方法声明里的 sql 被解析为 java 对象的过程。 这是关于 Mybatis 的第三篇文章，前文：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mybatis源码学习（三）：映射文件中sql的解析">
+<meta property="og:url" content="https://createsequence.github.io/2021/07/11/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%E4%B8%ADsql%E7%9A%84%E8%A7%A3%E6%9E%90/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="概述根据上一篇文章，我们了解了 Mybatis 如何在加载配置文件后，根据指定配置方式寻找接口并且完成映射文件信息与接口的绑定的。在本篇文章，我们将延续上文，结合源码阐述映射文件中方法声明里的 sql 被解析为 java 对象的过程。 这是关于 Mybatis 的第三篇文章，前文：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20210711012449848.png">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20210622225424211.png">
+<meta property="og:image" content="http://img.xiajibagao.top/image-20210622235212852.png">
+<meta property="article:published_time" content="2021-07-10T16:00:00.000Z">
+<meta property="article:modified_time" content="2021-07-11T02:10:35.000Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="Mybatis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.xiajibagao.top/image-20210711012449848.png">
+
+
+<link rel="canonical" href="https://createsequence.github.io/2021/07/11/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%E4%B8%ADsql%E7%9A%84%E8%A7%A3%E6%9E%90/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://createsequence.github.io/2021/07/11/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%E4%B8%ADsql%E7%9A%84%E8%A7%A3%E6%9E%90/","path":"2021/07/11/mybatis/Mybatis源码学习（三）：映射文件中sql的解析/","title":"Mybatis源码学习（三）：映射文件中sql的解析"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Mybatis源码学习（三）：映射文件中sql的解析 | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+  <!-- 引入目录截取js -->
+  <script type="text/javascript" src="/js/custom.js"></script>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Createsequence's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81sql%E8%A7%A3%E6%9E%90"><span class="nav-text">一、sql解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-XMLMapperBuilder"><span class="nav-text">1.XMLMapperBuilder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-parseStatementNode%E6%96%B9%E6%B3%95"><span class="nav-text">2.parseStatementNode方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-SqlSource"><span class="nav-text">3.SqlSource</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-LanguageDriver"><span class="nav-text">4.LanguageDriver</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-XMLLanguageDriver"><span class="nav-text">5.XMLLanguageDriver</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-XMLScriptBuilder"><span class="nav-text">7.XMLScriptBuilder</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-SqlNode"><span class="nav-text">8.SqlNode</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#8-RawSqlSource%E4%B8%8EDynamicSqlSource"><span class="nav-text">8.RawSqlSource与DynamicSqlSource</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#9-SqlSourceBuilder"><span class="nav-text">9.SqlSourceBuilder</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%80%BB%E7%BB%93"><span class="nav-text">二、总结</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Createsequence"
+      src="/images/Createsequence.jpg">
+  <p class="site-author-name" itemprop="name">Createsequence</p>
+  <div class="site-description" itemprop="description">一个努力前进的程序猿</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Createsequence" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Createsequence" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://createsequence.github.io/2021/07/11/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%89%EF%BC%89%EF%BC%9A%E6%98%A0%E5%B0%84%E6%96%87%E4%BB%B6%E4%B8%ADsql%E7%9A%84%E8%A7%A3%E6%9E%90/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+      <meta itemprop="name" content="Createsequence">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+      <meta itemprop="description" content="一个努力前进的程序猿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Mybatis源码学习（三）：映射文件中sql的解析 | Createsequence's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Mybatis源码学习（三）：映射文件中sql的解析
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2021-07-11 00:00:00 / 修改时间：10:10:35" itemprop="dateCreated datePublished" datetime="2021-07-11T00:00:00+08:00">2021-07-11</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Mybatis/" itemprop="url" rel="index"><span itemprop="name">Mybatis</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>3.8k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>14 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>根据上一篇文章，我们了解了 Mybatis 如何在加载配置文件后，根据指定配置方式寻找接口并且完成映射文件信息与接口的绑定的。在本篇文章，我们将延续上文，结合源码阐述映射文件中方法声明里的 sql 被解析为 java 对象的过程。</p>
+<p>这是关于 Mybatis 的第三篇文章，前文：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://blog.xiajibagao.top/2021/06/05/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%9A%84%E5%8A%A0%E8%BD%BD/">Mybatis源码学习（一）：配置文件的加载</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.xiajibagao.top/2021/06/14/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMapper%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%BB%91%E5%AE%9A/">Mybatis源码学习（二）：Mapper接口的绑定</a></p>
+</blockquote>
+<h2 id="一、sql解析"><a href="#一、sql解析" class="headerlink" title="一、sql解析"></a>一、sql解析</h2><p><img src="http://img.xiajibagao.top/image-20210711012449848.png" alt="image-20210711012449848"></p>
+<h3 id="1-XMLMapperBuilder"><a href="#1-XMLMapperBuilder" class="headerlink" title="1.XMLMapperBuilder"></a>1.XMLMapperBuilder</h3><p>Sql 解析与 <code>MappedStatement</code>的生成都在 <code>XMLMapperBuilder</code> 进行。根据上文可知，在 <code>XMLMapperBuilder</code> 的 <code>parsePendingStatements()</code>方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">parsePendingStatements</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 获取所有映射文件中的方法声明</span></span><br><span class="line">    Collection&lt;XMLStatementBuilder&gt; incompleteStatements = configuration.getIncompleteStatements();</span><br><span class="line">    <span class="keyword">synchronized</span> (incompleteStatements) &#123;</span><br><span class="line">        Iterator&lt;XMLStatementBuilder&gt; iter = incompleteStatements.iterator();</span><br><span class="line">        <span class="keyword">while</span> (iter.hasNext()) &#123;</span><br><span class="line">            <span class="keyword">try</span> &#123;</span><br><span class="line">                <span class="comment">// 遍历并转换为Statement对象</span></span><br><span class="line">                iter.next().parseStatementNode();</span><br><span class="line">                iter.remove();</span><br><span class="line">            &#125; <span class="keyword">catch</span> (IncompleteElementException e) &#123;</span><br><span class="line">                <span class="comment">// Statement is still missing a resource...</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中，<code>Configuration</code>类中的<code>IncompleteStatements</code>是在<code>XMLMapperBuilder.parse()</code>时添加进去的，我们可以理解他是一个刚从配置文件中根据<code>&lt;select&gt;&lt;delete&gt;&lt;update&gt;&lt;insert&gt;</code>标签名拿到的 XML 节点，还没有做任何解析。</p>
+<p>等到完成了接口与映射文件信息的绑定以后，再遍映射文件中的方法声明依次解析。</p>
+<h3 id="2-parseStatementNode方法"><a href="#2-parseStatementNode方法" class="headerlink" title="2.parseStatementNode方法"></a>2.parseStatementNode方法</h3><p>这个方法比较长，但是主要作用就是解析一个方法声明中的属性与子标签：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">parseStatementNode</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 获取id属性</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">id</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;id&quot;</span>);</span><br><span class="line">    <span class="type">String</span> <span class="variable">databaseId</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;databaseId&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (!databaseIdMatchesCurrent(id, databaseId, <span class="built_in">this</span>.requiredDatabaseId)) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取标签节点名称</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">nodeName</span> <span class="operator">=</span> context.getNode().getNodeName();</span><br><span class="line">    <span class="comment">// 判断sql类型</span></span><br><span class="line">    <span class="type">SqlCommandType</span> <span class="variable">sqlCommandType</span> <span class="operator">=</span> SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));</span><br><span class="line">    <span class="comment">// 如果是select就判断是否需要获取/清空缓存</span></span><br><span class="line">    <span class="type">boolean</span> <span class="variable">isSelect</span> <span class="operator">=</span> sqlCommandType == SqlCommandType.SELECT;</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">flushCache</span> <span class="operator">=</span> context.getBooleanAttribute(<span class="string">&quot;flushCache&quot;</span>, !isSelect);</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">useCache</span> <span class="operator">=</span> context.getBooleanAttribute(<span class="string">&quot;useCache&quot;</span>, isSelect);</span><br><span class="line">    <span class="type">boolean</span> <span class="variable">resultOrdered</span> <span class="operator">=</span> context.getBooleanAttribute(<span class="string">&quot;resultOrdered&quot;</span>, <span class="literal">false</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将include节点转为相应的sql节点</span></span><br><span class="line">    <span class="comment">// Include Fragments before parsing</span></span><br><span class="line">    <span class="type">XMLIncludeTransformer</span> <span class="variable">includeParser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">XMLIncludeTransformer</span>(configuration, builderAssistant);</span><br><span class="line">    includeParser.applyIncludes(context.getNode());</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取入参类型</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">parameterType</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;parameterType&quot;</span>);</span><br><span class="line">    Class&lt;?&gt; parameterTypeClass = resolveClass(parameterType);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取lang</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">lang</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;lang&quot;</span>);</span><br><span class="line">    <span class="type">LanguageDriver</span> <span class="variable">langDriver</span> <span class="operator">=</span> getLanguageDriver(lang);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 获取selectKey节点，解析完成后删除</span></span><br><span class="line">    <span class="comment">// Parse selectKey after includes and remove them.</span></span><br><span class="line">    processSelectKeyNodes(id, parameterTypeClass, langDriver);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 解析sql</span></span><br><span class="line">    <span class="comment">// Parse the SQL (pre: &lt;selectKey&gt; and &lt;include&gt; were parsed and removed)</span></span><br><span class="line">    KeyGenerator keyGenerator; <span class="comment">// 生成主键</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">keyStatementId</span> <span class="operator">=</span> id + SelectKeyGenerator.SELECT_KEY_SUFFIX;</span><br><span class="line">    keyStatementId = builderAssistant.applyCurrentNamespace(keyStatementId, <span class="literal">true</span>);</span><br><span class="line">    <span class="comment">// 如果设置了selectKey，则在插入获取主键生成器生成的主键</span></span><br><span class="line">    <span class="keyword">if</span> (configuration.hasKeyGenerator(keyStatementId)) &#123;</span><br><span class="line">        keyGenerator = configuration.getKeyGenerator(keyStatementId);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        keyGenerator = context.getBooleanAttribute(<span class="string">&quot;useGeneratedKeys&quot;</span>,</span><br><span class="line">                                                   configuration.isUseGeneratedKeys() &amp;&amp; SqlCommandType.INSERT.equals(sqlCommandType))</span><br><span class="line">            ? Jdbc3KeyGenerator.INSTANCE : NoKeyGenerator.INSTANCE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建对应的SqlSource对象</span></span><br><span class="line">    <span class="type">SqlSource</span> <span class="variable">sqlSource</span> <span class="operator">=</span> langDriver.createSqlSource(configuration, context, parameterTypeClass);</span><br><span class="line">    <span class="comment">// 获取Statement类型，默认为prepared</span></span><br><span class="line">    <span class="type">StatementType</span> <span class="variable">statementType</span> <span class="operator">=</span> StatementType.valueOf(context.getStringAttribute(<span class="string">&quot;statementType&quot;</span>, StatementType.PREPARED.toString()));</span><br><span class="line">    <span class="comment">// 获取一些连接参数</span></span><br><span class="line">    <span class="type">Integer</span> <span class="variable">fetchSize</span> <span class="operator">=</span> context.getIntAttribute(<span class="string">&quot;fetchSize&quot;</span>);</span><br><span class="line">    <span class="type">Integer</span> <span class="variable">timeout</span> <span class="operator">=</span> context.getIntAttribute(<span class="string">&quot;timeout&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 入参和返回值类型</span></span><br><span class="line">    <span class="type">String</span> <span class="variable">parameterMap</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;parameterMap&quot;</span>);</span><br><span class="line">    <span class="type">String</span> <span class="variable">resultType</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;resultType&quot;</span>);</span><br><span class="line">    Class&lt;?&gt; resultTypeClass = resolveClass(resultType);</span><br><span class="line">    <span class="type">String</span> <span class="variable">resultMap</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;resultMap&quot;</span>);</span><br><span class="line">    <span class="type">String</span> <span class="variable">resultSetType</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;resultSetType&quot;</span>);</span><br><span class="line">    <span class="type">ResultSetType</span> <span class="variable">resultSetTypeEnum</span> <span class="operator">=</span> resolveResultSetType(resultSetType);</span><br><span class="line">    <span class="keyword">if</span> (resultSetTypeEnum == <span class="literal">null</span>) &#123;</span><br><span class="line">        resultSetTypeEnum = configuration.getDefaultResultSetType();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="type">String</span> <span class="variable">keyProperty</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;keyProperty&quot;</span>);</span><br><span class="line">    <span class="type">String</span> <span class="variable">keyColumn</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;keyColumn&quot;</span>);</span><br><span class="line">    <span class="type">String</span> <span class="variable">resultSets</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;resultSets&quot;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 构建MappedStatement并添加到配置类</span></span><br><span class="line">    builderAssistant.addMappedStatement(id, sqlSource, statementType, sqlCommandType,</span><br><span class="line">                                        fetchSize, timeout, parameterMap, parameterTypeClass, resultMap, resultTypeClass,</span><br><span class="line">                                        resultSetTypeEnum, flushCache, useCache, resultOrdered,</span><br><span class="line">                                        keyGenerator, keyProperty, keyColumn, databaseId, langDriver, resultSets);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-SqlSource"><a href="#3-SqlSource" class="headerlink" title="3.SqlSource"></a>3.SqlSource</h3><p>仍然还是在上文的 <code>parseStatementNode()</code>方法中，暂且忽略缓存与各种返回值类型的处理，我们关注一下<code>addMappedStatement()</code>中传入的变量 <code>sqlSource</code> ，它本身是一个接口，跟<code>DataSource</code>的功能一样，通过<code>SqlSource</code>接口的实现类，可以获取 sql 对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">SqlSource</span> &#123;</span><br><span class="line">    BoundSql <span class="title function_">getBoundSql</span><span class="params">(Object parameterObject)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>他具有的唯一一个抽象方法即为<code>getBoundSql()</code>，这个方法获取的 <code>BoundSql</code>类就是实际上的我们认为的方法声明中的那个 sql 对象：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BoundSql</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String sql;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;ParameterMapping&gt; parameterMappings;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Object parameterObject;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, Object&gt; additionalParameters;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> MetaObject metaParameters;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>里面包含有带占位符和动态标签的原始 sql 语句，以及方法声明上相关的入参。</p>
+<h3 id="4-LanguageDriver"><a href="#4-LanguageDriver" class="headerlink" title="4.LanguageDriver"></a>4.LanguageDriver</h3><p>LanguageDriver 本身也是一个接口，他的实现类用于解析参数以及注解和映射文件中的 sql，并最终根据此生成 sql 数据源，我们可以简单的理解为针对指定格式 sql 语句的解析器：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">LanguageDriver</span> &#123;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 创建一个参数处理器，将处理完参数后得到实际参数传递给JDBC语句。</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">    ParameterHandler <span class="title function_">createParameterHandler</span><span class="params">(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql)</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 解析XML并创建SqlSource</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">    SqlSource <span class="title function_">createSqlSource</span><span class="params">(Configuration configuration, XNode script, Class&lt;?&gt; parameterType)</span>;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/**</span></span><br><span class="line"><span class="comment">   * 解析注解并创建SqlSource</span></span><br><span class="line"><span class="comment">   */</span></span><br><span class="line">    SqlSource <span class="title function_">createSqlSource</span><span class="params">(Configuration configuration, String script, Class&lt;?&gt; parameterType)</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>SqlSource</code> 通过 <code>LanguageDriver.createSqlSource()</code>创建：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">lang</span> <span class="operator">=</span> context.getStringAttribute(<span class="string">&quot;lang&quot;</span>);</span><br><span class="line"><span class="type">LanguageDriver</span> <span class="variable">langDriver</span> <span class="operator">=</span> getLanguageDriver(lang);</span><br><span class="line">... ...</span><br><span class="line"><span class="type">SqlSource</span> <span class="variable">sqlSource</span> <span class="operator">=</span> langDriver.createSqlSource(configuration, context, parameterTypeClass);</span><br></pre></td></tr></table></figure>
+
+<p>而这里的<code>getLanguageDriver()</code>方法，最终会回到<code>Configuration.getLanguageDriver()</code>中：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (langClass == <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> languageRegistry.getDefaultDriver();</span><br><span class="line">&#125;</span><br><span class="line">languageRegistry.register(langClass);</span><br><span class="line"><span class="keyword">return</span> languageRegistry.getDriver(langClass);</span><br></pre></td></tr></table></figure>
+
+<p>而映射文件里方法声明中 <code>lang</code> 属性我们一般不会刻意设置，按上述逻辑，获取的是默认的语言驱动，这里的语言驱动来自于 <code>Configuration</code> 初始化时候注册的 <code>XMLLanguageDriver</code>和 <code>RawLanguageDriver</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="title function_">Configuration</span><span class="params">()</span> &#123;</span><br><span class="line">	... ...</span><br><span class="line">    languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);</span><br><span class="line">    languageRegistry.register(RawLanguageDriver.class);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-XMLLanguageDriver"><a href="#5-XMLLanguageDriver" class="headerlink" title="5.XMLLanguageDriver"></a>5.XMLLanguageDriver</h3><p><code>XMLLanguageDriver</code> 是<code>LanguageDriver</code>接口的实现，它用于解析 xml 格式的 sql 语句——或者更准确点说，是 mybatis 特定的方法声明语法。</p>
+<p><code>RawLanguageDriver</code>继承了<code>XMLLanguageDriver</code>，而<code>XMLLanguageDriver</code>又实现了<code>LanguageDriver</code>接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">XMLLanguageDriver</span> <span class="keyword">implements</span> <span class="title class_">LanguageDriver</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 创建参数处理器</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> ParameterHandler <span class="title function_">createParameterHandler</span><span class="params">(MappedStatement mappedStatement, Object parameterObject, BoundSql boundSql)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">DefaultParameterHandler</span>(mappedStatement, parameterObject, boundSql);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 解析映射文件的sql</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> SqlSource <span class="title function_">createSqlSource</span><span class="params">(Configuration configuration, XNode script, Class&lt;?&gt; parameterType)</span> &#123;</span><br><span class="line">        <span class="type">XMLScriptBuilder</span> <span class="variable">builder</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">XMLScriptBuilder</span>(configuration, script, parameterType);</span><br><span class="line">        <span class="keyword">return</span> builder.parseScriptNode();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 解析有复杂参数的sql</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> SqlSource <span class="title function_">createSqlSource</span><span class="params">(Configuration configuration, String script, Class&lt;?&gt; parameterType)</span> &#123;</span><br><span class="line">        <span class="comment">// issue #3</span></span><br><span class="line">        <span class="comment">// 解析使用@Select这类sql标签上的sql</span></span><br><span class="line">        <span class="keyword">if</span> (script.startsWith(<span class="string">&quot;&lt;script&gt;&quot;</span>)) &#123;</span><br><span class="line">            <span class="type">XPathParser</span> <span class="variable">parser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">XPathParser</span>(script, <span class="literal">false</span>, configuration.getVariables(), <span class="keyword">new</span> <span class="title class_">XMLMapperEntityResolver</span>());</span><br><span class="line">            <span class="comment">// 先转为xml再按照映射文件的方式解析</span></span><br><span class="line">            <span class="keyword">return</span> createSqlSource(configuration, parser.evalNode(<span class="string">&quot;/script&quot;</span>), parameterType);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line"></span><br><span class="line">            <span class="comment">// issue #127</span></span><br><span class="line">			<span class="comment">// 替换占位符中的变量，转为sql语法节点</span></span><br><span class="line">            script = PropertyParser.parse(script, configuration.getVariables());</span><br><span class="line">            <span class="type">TextSqlNode</span> <span class="variable">textSqlNode</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TextSqlNode</span>(script);</span><br><span class="line">            <span class="comment">// 如果含有动态标签</span></span><br><span class="line">            <span class="keyword">if</span> (textSqlNode.isDynamic()) &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">DynamicSqlSource</span>(configuration, textSqlNode);</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 不含动态标签</span></span><br><span class="line">                <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">RawSqlSource</span>(configuration, script, parameterType);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>基于<code>XMLLanguageDriver</code>，<code>RawLanguageDriver</code>进一步完善了方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RawLanguageDriver</span> <span class="keyword">extends</span> <span class="title class_">XMLLanguageDriver</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> SqlSource <span class="title function_">createSqlSource</span><span class="params">(Configuration configuration, XNode script, Class&lt;?&gt; parameterType)</span> &#123;</span><br><span class="line">        <span class="type">SqlSource</span> <span class="variable">source</span> <span class="operator">=</span> <span class="built_in">super</span>.createSqlSource(configuration, script, parameterType);</span><br><span class="line">        checkIsNotDynamic(source);</span><br><span class="line">        <span class="keyword">return</span> source;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> SqlSource <span class="title function_">createSqlSource</span><span class="params">(Configuration configuration, String script, Class&lt;?&gt; parameterType)</span> &#123;</span><br><span class="line">        <span class="type">SqlSource</span> <span class="variable">source</span> <span class="operator">=</span> <span class="built_in">super</span>.createSqlSource(configuration, script, parameterType);</span><br><span class="line">        checkIsNotDynamic(source);</span><br><span class="line">        <span class="keyword">return</span> source;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">checkIsNotDynamic</span><span class="params">(SqlSource source)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (!RawSqlSource.class.equals(source.getClass())) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">BuilderException</span>(<span class="string">&quot;Dynamic content is not allowed when using RAW language&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主要是再做检查，<strong>防止非静态的 sql 使用 RawSqlSource</strong>。</p>
+<p><strong>对于 Myabtis 来说，sql 中带有 <code>$&#123;&#125;</code>和<code>&lt;where&gt;</code>这类动态标签的都认为是动态 sql，反之则是静态 sql</strong></p>
+<h3 id="7-XMLScriptBuilder"><a href="#7-XMLScriptBuilder" class="headerlink" title="7.XMLScriptBuilder"></a>7.XMLScriptBuilder</h3><p><code>XMLScriptBuilder</code>这个类用于对 Mybatis 的映射文件中的方法声明里的动态标签做解析。它的内部有一个 <code>NodeHandle</code>接口实现类集合，用于处理专门的动态标签：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">initNodeHandlerMap</span><span class="params">()</span> &#123;</span><br><span class="line">    nodeHandlerMap.put(<span class="string">&quot;trim&quot;</span>, <span class="keyword">new</span> <span class="title class_">TrimHandler</span>());</span><br><span class="line">    nodeHandlerMap.put(<span class="string">&quot;where&quot;</span>, <span class="keyword">new</span> <span class="title class_">WhereHandler</span>());</span><br><span class="line">    nodeHandlerMap.put(<span class="string">&quot;set&quot;</span>, <span class="keyword">new</span> <span class="title class_">SetHandler</span>());</span><br><span class="line">    nodeHandlerMap.put(<span class="string">&quot;foreach&quot;</span>, <span class="keyword">new</span> <span class="title class_">ForEachHandler</span>());</span><br><span class="line">    nodeHandlerMap.put(<span class="string">&quot;if&quot;</span>, <span class="keyword">new</span> <span class="title class_">IfHandler</span>());</span><br><span class="line">    nodeHandlerMap.put(<span class="string">&quot;choose&quot;</span>, <span class="keyword">new</span> <span class="title class_">ChooseHandler</span>());</span><br><span class="line">    nodeHandlerMap.put(<span class="string">&quot;when&quot;</span>, <span class="keyword">new</span> <span class="title class_">IfHandler</span>());</span><br><span class="line">    nodeHandlerMap.put(<span class="string">&quot;otherwise&quot;</span>, <span class="keyword">new</span> <span class="title class_">OtherwiseHandler</span>());</span><br><span class="line">    nodeHandlerMap.put(<span class="string">&quot;bind&quot;</span>, <span class="keyword">new</span> <span class="title class_">BindHandler</span>());</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> SqlSource <span class="title function_">parseScriptNode</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="comment">// 解析动态标签</span></span><br><span class="line">    <span class="type">MixedSqlNode</span> <span class="variable">rootSqlNode</span> <span class="operator">=</span> parseDynamicTags(context);</span><br><span class="line">    SqlSource sqlSource;</span><br><span class="line">    <span class="keyword">if</span> (isDynamic) &#123;</span><br><span class="line">        <span class="comment">// 是否带有动态标签的非静态sql</span></span><br><span class="line">        sqlSource = <span class="keyword">new</span> <span class="title class_">DynamicSqlSource</span>(configuration, rootSqlNode);</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        <span class="comment">// 静态sql</span></span><br><span class="line">        sqlSource = <span class="keyword">new</span> <span class="title class_">RawSqlSource</span>(configuration, rootSqlNode, parameterType);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> sqlSource;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">protected</span> MixedSqlNode <span class="title function_">parseDynamicTags</span><span class="params">(XNode node)</span> &#123;</span><br><span class="line">    List&lt;SqlNode&gt; contents = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">    <span class="comment">// 解析方法声明中的节点</span></span><br><span class="line">    <span class="type">NodeList</span> <span class="variable">children</span> <span class="operator">=</span> node.getNode().getChildNodes();</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; children.getLength(); i++) &#123;</span><br><span class="line">        <span class="type">XNode</span> <span class="variable">child</span> <span class="operator">=</span> node.newXNode(children.item(i));</span><br><span class="line">        <span class="keyword">if</span> (child.getNode().getNodeType() == Node.CDATA_SECTION_NODE || child.getNode().getNodeType() == Node.TEXT_NODE) &#123;</span><br><span class="line">            <span class="comment">// 获取sql语句</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">data</span> <span class="operator">=</span> child.getStringBody(<span class="string">&quot;&quot;</span>);</span><br><span class="line">            <span class="type">TextSqlNode</span> <span class="variable">textSqlNode</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">TextSqlNode</span>(data);</span><br><span class="line">            <span class="comment">// 是带有$&#123;&#125;的动态sql</span></span><br><span class="line">            <span class="keyword">if</span> (textSqlNode.isDynamic()) &#123;</span><br><span class="line">                contents.add(textSqlNode);</span><br><span class="line">                isDynamic = <span class="literal">true</span>;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// 是静态sql</span></span><br><span class="line">                contents.add(<span class="keyword">new</span> <span class="title class_">StaticTextSqlNode</span>(data));</span><br><span class="line">            &#125;</span><br><span class="line">            </span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (child.getNode().getNodeType() == Node.ELEMENT_NODE) &#123; <span class="comment">// issue #628</span></span><br><span class="line">            <span class="comment">// sql中带有动态标签</span></span><br><span class="line">            <span class="type">String</span> <span class="variable">nodeName</span> <span class="operator">=</span> child.getNode().getNodeName();</span><br><span class="line">            <span class="comment">// 获取对应的拦截器</span></span><br><span class="line">            <span class="type">NodeHandler</span> <span class="variable">handler</span> <span class="operator">=</span> nodeHandlerMap.get(nodeName);</span><br><span class="line">            <span class="keyword">if</span> (handler == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">BuilderException</span>(<span class="string">&quot;Unknown element &lt;&quot;</span> + nodeName + <span class="string">&quot;&gt; in SQL statement.&quot;</span>);</span><br><span class="line">            &#125;</span><br><span class="line">            handler.handleNode(child, contents);</span><br><span class="line">            isDynamic = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">MixedSqlNode</span>(contents);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h3 id="8-SqlNode"><a href="#8-SqlNode" class="headerlink" title="8.SqlNode"></a>8.SqlNode</h3><p><code>parseDynamicTags()</code>最终返回的 <code>MixedSqlNode</code> 是一个 SqlNode 实现类，SqlNode 是一个表示节点的特殊接口：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">interface</span> <span class="title class_">SqlNode</span> &#123;</span><br><span class="line">  <span class="type">boolean</span> <span class="title function_">apply</span><span class="params">(DynamicContext context)</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>他的方法及其简单，每个 SqlNode 实现类都会实现<code>apply()</code>方法，当调用以后，sql 节点会被解析为正常的 sql 语句放入 <code>DynamicContext</code>上下文中。</p>
+<p>所有方法声明中的 sql 节点都实现类这个接口：</p>
+<p><img src="http://img.xiajibagao.top/image-20210622225424211.png" alt="image-20210622225424211"></p>
+<p>简而言之，他们的实现类很多，但是实际上就分四类：</p>
+<ol>
+<li>StaticTextSqlNode：顾名思义，普通的静态 sql 语句部分，只带有<code>#&#123;&#125;</code>表达式而不含有动态标签和<code>$&#123;&#125;</code>赋值表达式；</li>
+<li>TextSqlNode：带有<code>$&#123;&#125;</code>赋值表达式的 sql 语句；</li>
+<li>动态标签节点：除了<code>TextSqlNode</code>、<code>MixedSqlNode</code>和<code>StaticTextSqlNode</code>的所有其他实现类，即处理 Mybatis 动态标签的特殊节点；</li>
+<li>MixedSqlNode：如<code>parseDynamicTags()</code>所示，这是一个混合了所有类型标签的节点，也是实际上的根节点；</li>
+</ol>
+<p>我们以 <code>StaticTextSqlNode</code>为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">StaticTextSqlNode</span> <span class="keyword">implements</span> <span class="title class_">SqlNode</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String text;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">StaticTextSqlNode</span><span class="params">(String text)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.text = text;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">apply</span><span class="params">(DynamicContext context)</span> &#123;</span><br><span class="line">        <span class="comment">// 拼接sql</span></span><br><span class="line">        context.appendSql(text);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>普通静态 sql 节点 <code>apply()</code>以后就把当前的节点内的 sql 拼接到上下文的 sql 中，同理，其他的实现类也差不多。由于节点之间还有嵌套关系，因此有些节点还会自己维护一个独立的上下文，内部处理的时候先把 sql 拼到独立上下文里面，等自己的节点处理完再把独立上下文中的 sql 拼接到父目录的上下文中。</p>
+<p><img src="http://img.xiajibagao.top/image-20210622235212852.png" alt="image-20210622235212852"></p>
+<p>根据各自的逻辑处理后，最终都会把节点代表的 sql 拼接到上下文里，最终所有节点逻辑处理完，就会在上下文中拼接处一条完整的 sql。</p>
+<p>而起到这个作用的，就是根节点 <code>MixedSqlNode</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MixedSqlNode</span> <span class="keyword">implements</span> <span class="title class_">SqlNode</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;SqlNode&gt; contents;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MixedSqlNode</span><span class="params">(List&lt;SqlNode&gt; contents)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.contents = contents;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">apply</span><span class="params">(DynamicContext context)</span> &#123;</span><br><span class="line">        contents.forEach(node -&gt; node.apply(context));</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>MixedSqlNode</code>内部有所有的 <code>SqlNode</code>，它的 <code>apply()</code>方法就是遍历节点然后把每个节点的 <code>apply()</code>方法都执行一遍。</p>
+<p>这里另外提到一点，对于动态标签里的语法，比如 <code>&lt;if test=&quot;...&quot;&gt;</code>里的 test，这里的表达式实际上是 Ognl 表达式，这在 jsp 中也有使用，我们可以简单理解为一个脚本语言，通过表达式，我们可以实现一些简单的功能，比如取值或者比较等等。</p>
+<h3 id="8-RawSqlSource与DynamicSqlSource"><a href="#8-RawSqlSource与DynamicSqlSource" class="headerlink" title="8.RawSqlSource与DynamicSqlSource"></a>8.RawSqlSource与DynamicSqlSource</h3><p><code>XMLLanguageDriver.createSqlSource()</code>最终会根据<code>textSqlNode.isDynamic()</code>的结果——也就是方法声明的 sql 中是否含有动态标签——区分要创建哪一种 <code>SqlSource</code>，带<code>$&#123;&#125;</code>和动态标签的用<code>DynamicSqlSource</code>，不带的用 <code>RawSqlSource</code>。</p>
+<p>我们以比较简单的 <code>RawSqlSource</code> 为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">RawSqlSource</span> <span class="keyword">implements</span> <span class="title class_">SqlSource</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> SqlSource sqlSource;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">RawSqlSource</span><span class="params">(Configuration configuration, SqlNode rootSqlNode, Class&lt;?&gt; parameterType)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>(configuration, getSql(configuration, rootSqlNode), parameterType);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">RawSqlSource</span><span class="params">(Configuration configuration, String sql, Class&lt;?&gt; parameterType)</span> &#123;</span><br><span class="line">        <span class="type">SqlSourceBuilder</span> <span class="variable">sqlSourceParser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SqlSourceBuilder</span>(configuration);</span><br><span class="line">        Class&lt;?&gt; clazz = parameterType == <span class="literal">null</span> ? Object.class : parameterType;</span><br><span class="line">        <span class="comment">// 将#&#123;&#125;表达式替换为？占位符</span></span><br><span class="line">        sqlSource = sqlSourceParser.parse(sql, clazz, <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从上下文中获取根标签，也就是之前提到的MixedSqlNode</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> String <span class="title function_">getSql</span><span class="params">(Configuration configuration, SqlNode rootSqlNode)</span> &#123;</span><br><span class="line">        <span class="type">DynamicContext</span> <span class="variable">context</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DynamicContext</span>(configuration, <span class="literal">null</span>);</span><br><span class="line">        <span class="comment">// 解析处理所有的SqlNode，并拼接到context里</span></span><br><span class="line">        rootSqlNode.apply(context);</span><br><span class="line">        <span class="comment">// 获取拼接好的sql</span></span><br><span class="line">        <span class="keyword">return</span> context.getSql();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> BoundSql <span class="title function_">getBoundSql</span><span class="params">(Object parameterObject)</span> &#123;</span><br><span class="line">        <span class="comment">// 获取最终的BoundSql</span></span><br><span class="line">        <span class="keyword">return</span> sqlSource.getBoundSql(parameterObject);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可以看到，<code>getSql()</code>本质上就是拿到处理好的 sql 节点，然后调用他们的 <code>apply()</code>方法，最终拼接到上下文中，然后再返回这个拼好的 sql。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DynamicSqlSource</span> <span class="keyword">implements</span> <span class="title class_">SqlSource</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Configuration configuration;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> SqlNode rootSqlNode;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">DynamicSqlSource</span><span class="params">(Configuration configuration, SqlNode rootSqlNode)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.configuration = configuration;</span><br><span class="line">        <span class="built_in">this</span>.rootSqlNode = rootSqlNode;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> BoundSql <span class="title function_">getBoundSql</span><span class="params">(Object parameterObject)</span> &#123;</span><br><span class="line">        <span class="comment">// 获取上下文并解析根标签</span></span><br><span class="line">        <span class="type">DynamicContext</span> <span class="variable">context</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">DynamicContext</span>(configuration, parameterObject);</span><br><span class="line">        rootSqlNode.apply(context);</span><br><span class="line">        <span class="type">SqlSourceBuilder</span> <span class="variable">sqlSourceParser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SqlSourceBuilder</span>(configuration);</span><br><span class="line">        Class&lt;?&gt; parameterType = parameterObject == <span class="literal">null</span> ? Object.class : parameterObject.getClass();</span><br><span class="line">        <span class="comment">// 将#&#123;&#125;表达式替换为？占位符，获取最终的BoundSql</span></span><br><span class="line">        <span class="type">SqlSource</span> <span class="variable">sqlSource</span> <span class="operator">=</span> sqlSourceParser.parse(context.getSql(), parameterType, context.getBindings());</span><br><span class="line">        <span class="type">BoundSql</span> <span class="variable">boundSql</span> <span class="operator">=</span> sqlSource.getBoundSql(parameterObject);</span><br><span class="line">        <span class="comment">// 添加参数到boundSql中</span></span><br><span class="line">        context.getBindings().forEach(boundSql::setAdditionalParameter);</span><br><span class="line">        <span class="keyword">return</span> boundSql;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>DynamicSqlSource</code> 和<code>RawSqlSource</code>没有什么区别，只不过由于存在动态标签与<code>$&#123;&#125;</code>，相比简单的静态 sql，需要先将这两者解析为 sql。</p>
+<h3 id="9-SqlSourceBuilder"><a href="#9-SqlSourceBuilder" class="headerlink" title="9.SqlSourceBuilder"></a>9.SqlSourceBuilder</h3><p><code>SqlSourceBuilder.getBoundSql()</code>的主要作用就是将<code>#&#123;&#125;</code>占位符替换为 jdbc 中的<code>?</code>占位符：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> SqlSource <span class="title function_">parse</span><span class="params">(String originalSql, Class&lt;?&gt; parameterType, Map&lt;String, Object&gt; additionalParameters)</span> &#123;</span><br><span class="line">    <span class="comment">// 参数处理器</span></span><br><span class="line">    <span class="type">ParameterMappingTokenHandler</span> <span class="variable">handler</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">ParameterMappingTokenHandler</span>(configuration, parameterType, additionalParameters);</span><br><span class="line">    <span class="comment">// #&#123;&#125;赋值表达式处理器</span></span><br><span class="line">    <span class="type">GenericTokenParser</span> <span class="variable">parser</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">GenericTokenParser</span>(<span class="string">&quot;#&#123;&quot;</span>, <span class="string">&quot;&#125;&quot;</span>, handler);</span><br><span class="line">    String sql;</span><br><span class="line">    <span class="comment">// 如果有额外的空格就先删除</span></span><br><span class="line">    <span class="keyword">if</span> (configuration.isShrinkWhitespacesInSql()) &#123;</span><br><span class="line">        <span class="comment">// 将#&#123;&#125;表达式替换为具体的参数值</span></span><br><span class="line">        sql = parser.parse(removeExtraWhitespaces(originalSql));</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        sql = parser.parse(originalSql);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 转为静态StaticSqlSource</span></span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">StaticSqlSource</span>(configuration, sql, handler.getParameterMappings());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所有的 sql 最后都会完成解析，变为最终的自带？占位符的静态 sql 字符串，sql 与对应的入参、返回值类型等信息最终被封装为一个对象，这个对象就是 <code>BoundSql</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BoundSql</span> &#123;</span><br><span class="line">    <span class="comment">// sql字符串</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> String sql;</span><br><span class="line">    <span class="comment">// 与占位符对应的入参信息</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;ParameterMapping&gt; parameterMappings;</span><br><span class="line">    <span class="comment">// 参数</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Object parameterObject;</span><br><span class="line">    <span class="comment">// 附加参数</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;String, Object&gt; additionalParameters;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> MetaObject metaParameters;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>里面包含有带占位符和动态标签的原始 sql 语句，以及方法声明上相关的入参。</p>
+<p>然后我们再回头看看<code>DynamicSqlSource</code>，我们知道由于存在动态标签，因此<code>DynamicSqlSource</code>会在创建了<code>StaticSqlSource</code>之后，通过<code>StaticSqlSource</code>拿到仍然带有动态标签数据的 <code>BoundSql</code>，接着在根据入参处理动态标签，最终再生成一个 <code>BoundSql</code>。</p>
+<h2 id="二、总结"><a href="#二、总结" class="headerlink" title="二、总结"></a>二、总结</h2><p>我们总结一下 Mapper 中方法声明被变成 sql 加载进 Mybatis 的过程：</p>
+<ol>
+<li><p>方法声明的解析发生在一个 Mapper 文件被加载——也就是 <code>XMLMapperBuilder</code>构建——的时候，此时各个 statement 都还只是未被解析的 XML 节点；</p>
+</li>
+<li><p>在<code>XMLMapperBuilder</code>中，先通过<code>parsePendingStatements()</code>遍历节点，然后依次调用节点的 <code>parseStatementNode()</code>方法，在这一步主要一下几件事：</p>
+<ul>
+<li>获取 id、超时时间与缓存等相关的配置信息；</li>
+<li>获取方法入参与返回值类型；</li>
+<li>解析 <code>&lt;include&gt;</code>节点，并替换为相应的内容；</li>
+<li>解析 <code>&lt;selectKey&gt;</code>节点，根据配置设置相应的主键生成策略，完成后然后删除节点；</li>
+<li>解析sql，根据配置的<code>LanguageDriver</code>将 sql 解析为对应的 <code>SqlSource</code>；</li>
+<li>获取 <code>StatementTyoe</code>，默认都为<code>prepared</code>；</li>
+</ul>
+<p>然后根据以上的信息构建一个 <code>MappedStatement</code>对象，这个 <code>MappedStatement</code>即是后续方法实现的基础。</p>
+</li>
+</ol>
+<p>然后回头再看看步骤二，步骤二干了很多事，但是最重要的在于**解析 statement 语法生成 <code>SqlSource</code>**：</p>
+<ol>
+<li><p>获取 <code>LanguageDriver</code> 接口实现类，该实现类为来在配置文件加载时 Mybatis 默认提供的 <code>XMLLanguageDriver</code>，主要用来解析 Myabtis 特有的带有动态标签与参数标签的语法；</p>
+</li>
+<li><p>在 <code>LanguageDriver</code>中创建<code>XMLScriptBuilder</code>用于解析 statement 中的语法，这里如果是类似 <code>@Select</code>这样注解形式的sql，就先解析为 xml 再用<code>XMLScriptBuilder</code>；</p>
+</li>
+<li><p>在<code>XMLScriptBuilder</code>中将 statement 语法也解析为一串的 XML 节点，并根据节点对应的语法做了区分：</p>
+<ul>
+<li>如果是带有 <code>$&#123;&#125;</code>表达式的字符串节点被认为是动态 sql 节点，转为<code>TextSqlNode</code>，</li>
+<li>如果是只带有<code>#&#123;&#125;</code>表达式的字符串节点或者干脆就是纯字符串的字符串节点，转为<code>StaticTextSqlNode</code>，</li>
+<li>如果是动态标签，就通过节点解析器<code>NodeHandler</code>处理，最后转为类似 <code>WhereSqlNode</code>这样的动态标签节点；</li>
+</ul>
+</li>
+<li><p>还是在<code>XMLScriptBuilder</code>中，解析出来的各种 Node 都是 <code>SqlNode</code> 接口的实现类，他们都有 <code>apply()</code>方法，当调用的时候，会把自身对应的数据解析为 sql 并拼接到一个上下文对象的 sql 字符串中。</p>
+<p>最终这些节点都被添加到一个集合中，最终放入一个根节点 <code>MixedSqlNode</code>里，当调用<code>MixedSqlNode</code>的<code>apply()</code>方法时，就会调用所有节点的<code>apply()</code>方法民，最终就会得到一个完整的 sql。</p>
+</li>
+<li><p>回到<code>LanguageDriver</code>中，在它的<code>createSqlSource()</code>方法中，根据是否带有<code>$&#123;&#125;</code>与动态标签区分为<code>DynamicSqlSource</code>与<code>RawSqlSource</code>两种 <code>DataSource</code>。</p>
+<ul>
+<li><code>RawSqlSource</code>：调用<code>MixedSqlNode.apply()</code>拿到完整的 sql，然后把 <code>#&#123;&#125;</code>表达式替换为 <code>?</code>占位符，接着根据 sql 创建一个<code>StaticSqlSource</code>，然后通过<code>StaticSqlSource</code>获取<code>boundSql</code>。</li>
+<li><code>DynamicSqlSource</code>：跟<code>RawSqlSource</code>一样，先获得完整的 sql，并生成一个<code>StaticSqlSource</code>对象，然后通过<code>StaticSqlSource</code>拿到<code>boundSql</code>，接着**再根据传入的参数处理 <code>BoundSql</code>中的动态标签，最终再生成一个 <code>BoundSql</code>**。</li>
+</ul>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Mybatis/" rel="tag"># Mybatis</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2021/06/14/mybatis/Mybatis%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9AMapper%E6%8E%A5%E5%8F%A3%E7%9A%84%E7%BB%91%E5%AE%9A/" rel="prev" title="Mybatis源码学习（二）：Mapper接口的绑定">
+                  <i class="fa fa-angle-left"></i> Mybatis源码学习（二）：Mapper接口的绑定
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/02/18/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/%E5%8F%91%E5%B8%83%E8%87%AA%E5%B7%B1%E7%9A%84jar%E5%8C%85%E5%88%B0Maven%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93/" rel="next" title="发布自己的jar包到Maven官方仓库">
+                  发布自己的jar包到Maven官方仓库 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Createsequence</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">261k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">15:47</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>

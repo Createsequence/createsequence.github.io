@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha256-HtsXJanqjKTc8vVQjO4YMhiqFoXkfBsjBWcX91T1jr8=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"createsequence.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.18.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":false,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="一、什么是队列队列是一种特殊的线性表。 队列元素的进出遵循“先进先出”原则：即只允许在前端（front）也就是队头进行删除操作，而只能在后端（rear）也就是队尾进行插入操作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数据结构与算法（一）：队列">
+<meta property="og:url" content="https://createsequence.github.io/2020/06/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%98%9F%E5%88%97/index.html">
+<meta property="og:site_name" content="Createsequence&#39;s Blog">
+<meta property="og:description" content="一、什么是队列队列是一种特殊的线性表。 队列元素的进出遵循“先进先出”原则：即只允许在前端（front）也就是队头进行删除操作，而只能在后端（rear）也就是队尾进行插入操作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://img.xiajibagao.top/20200614170712.png">
+<meta property="og:image" content="http://img.xiajibagao.top/20200614170726.png">
+<meta property="article:published_time" content="2020-06-13T16:00:00.000Z">
+<meta property="article:modified_time" content="2020-10-27T02:00:56.000Z">
+<meta property="article:author" content="Createsequence">
+<meta property="article:tag" content="数据结构与算法">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://img.xiajibagao.top/20200614170712.png">
+
+
+<link rel="canonical" href="https://createsequence.github.io/2020/06/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%98%9F%E5%88%97/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://createsequence.github.io/2020/06/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%98%9F%E5%88%97/","path":"2020/06/14/数据结构/数据结构与算法（一）：队列/","title":"数据结构与算法（一）：队列"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>数据结构与算法（一）：队列 | Createsequence's Blog</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+  <!-- 引入目录截取js -->
+  <script type="text/javascript" src="/js/custom.js"></script>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Createsequence's Blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+  </ul>
+</nav>
+
+
+
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E3%80%81%E4%BB%80%E4%B9%88%E6%98%AF%E9%98%9F%E5%88%97"><span class="nav-text">一、什么是队列</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E3%80%81%E6%A8%A1%E6%8B%9F%E9%98%9F%E5%88%97"><span class="nav-text">二、模拟队列</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%AE%80%E5%8D%95%E7%9A%84%E4%BD%BF%E7%94%A8%E6%95%B0%E7%BB%84%E6%A8%A1%E6%8B%9F%E9%98%9F%E5%88%97%EF%BC%9A"><span class="nav-text">1.简单的使用数组模拟队列：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E8%A7%A3%E5%86%B3%E2%80%9C%E5%86%85%E5%AD%98%E6%BA%A2%E5%87%BA%E2%80%9D"><span class="nav-text">2.解决“内存溢出”</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%89%E3%80%81%E5%BE%AA%E7%8E%AF%E9%98%9F%E5%88%97"><span class="nav-text">三、循环队列</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%8E%AF%E5%BD%A2%E9%98%9F%E5%88%97%E7%9A%84%E4%B8%8B%E6%A0%87%E8%AE%A1%E7%AE%97"><span class="nav-text">1.环形队列的下标计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E7%8E%AF%E5%BD%A2%E9%98%9F%E5%88%97%E7%9A%84%E7%8A%B6%E6%80%81%E5%88%A4%E6%96%AD"><span class="nav-text">2.环形队列的状态判断</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0"><span class="nav-text">3.代码实现</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Createsequence"
+      src="/images/Createsequence.jpg">
+  <p class="site-author-name" itemprop="name">Createsequence</p>
+  <div class="site-description" itemprop="description">一个努力前进的程序猿</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">99</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">22</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/Createsequence" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;Createsequence" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://createsequence.github.io/2020/06/14/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%B8%80%EF%BC%89%EF%BC%9A%E9%98%9F%E5%88%97/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Createsequence.jpg">
+      <meta itemprop="name" content="Createsequence">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Createsequence's Blog">
+      <meta itemprop="description" content="一个努力前进的程序猿">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="数据结构与算法（一）：队列 | Createsequence's Blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          数据结构与算法（一）：队列
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2020-06-14 00:00:00" itemprop="dateCreated datePublished" datetime="2020-06-14T00:00:00+08:00">2020-06-14</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2020-10-27 10:00:56" itemprop="dateModified" datetime="2020-10-27T10:00:56+08:00">2020-10-27</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">数据结构与算法</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>1.4k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>5 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="一、什么是队列"><a href="#一、什么是队列" class="headerlink" title="一、什么是队列"></a>一、什么是队列</h2><p>队列是一种特殊的<strong>线性表</strong>。</p>
+<p>队列元素的进出遵循“<strong>先进先出</strong>”原则：即只允许在前端（front）也就是<strong>队头</strong>进行<strong>删除</strong>操作，而只能在后端（rear）也就是<strong>队尾</strong>进行<strong>插入</strong>操作。</p>
+<p><img src="http://img.xiajibagao.top/20200614170712.png"></p>
+<p>如图所示：</p>
+<ul>
+<li>队列的最大长度为MaxSize，最大下标为MaxSize-1</li>
+<li>入队时队头下标不变而队尾下标改变，出队时则相反</li>
+</ul>
+<h2 id="二、模拟队列"><a href="#二、模拟队列" class="headerlink" title="二、模拟队列"></a>二、模拟队列</h2><h3 id="1-简单的使用数组模拟队列："><a href="#1-简单的使用数组模拟队列：" class="headerlink" title="1.简单的使用数组模拟队列："></a>1.简单的使用数组模拟队列：</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：huang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-06-11 16:28</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：用数组模拟队列</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Queue</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//队列最大长度</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> maxSize;</span><br><span class="line">    <span class="comment">//存放数据的数组</span></span><br><span class="line">    <span class="keyword">private</span> Object[] arr;</span><br><span class="line">    <span class="comment">//头指针，指向队头的元素的前一个位置</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> front;</span><br><span class="line">    <span class="comment">//尾指针，指向队尾的元素所在位置</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> rear;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//构造器</span></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Queue</span><span class="params">(<span class="type">int</span> size)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.maxSize = size;</span><br><span class="line">        <span class="built_in">this</span>.arr = <span class="keyword">new</span> <span class="title class_">Object</span>[maxSize];</span><br><span class="line">        <span class="built_in">this</span>.front = -<span class="number">1</span>;</span><br><span class="line">        <span class="built_in">this</span>.rear = -<span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断队列是否为空</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isEmpty</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">//当头指针和尾指针相等时队列为空</span></span><br><span class="line">        <span class="keyword">return</span> rear == front;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断队列是否已满</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isFull</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="comment">//当尾指针等于maxSize-1时队列满</span></span><br><span class="line">        <span class="keyword">return</span> rear == maxSize - <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 入队</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> item 入队元素</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">addQueue</span><span class="params">(Object item)</span> &#123;</span><br><span class="line">        <span class="comment">//判断队列是否已满</span></span><br><span class="line">        <span class="keyword">if</span> (isFull()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;队列已满！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//尾指针后移</span></span><br><span class="line">        rear++;</span><br><span class="line">        arr[rear] = item;</span><br><span class="line">        <span class="keyword">return</span> rear;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 出队</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">quitQueue</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">//判断队列是否为空</span></span><br><span class="line">        <span class="keyword">if</span> (isEmpty()) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;队列为空！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//头指针后移</span></span><br><span class="line">        front++;</span><br><span class="line">        <span class="keyword">return</span> arr[front];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-解决“内存溢出”"><a href="#2-解决“内存溢出”" class="headerlink" title="2.解决“内存溢出”"></a>2.解决“内存溢出”</h3><p>咋一眼看上去没问题，但是实际上随着入队和出队操作，头指针和尾指针会不断后移，最后都到达maxSize-1的位置，此时即使实际上有空闲空间也无法往里面添加数据了。</p>
+<p>如果要解决这个问题，可以这样改进：</p>
+<p>当入队的时候进行一次判断，如果尾指针已经移动到maxSize-1的位置，并且头指针不在-1位置，也就是队列仍然还有空位，就触发一次数据迁移。</p>
+<p>打个比方，如果队列长度为6，现在头指针在3，尾指针在5，触发数据迁移后下标3-5的数据移动到0-2去，然后把头指针移到0，尾指针移到2。</p>
+<p>基于这个逻辑，只需要改变一下<code>addQueue()</code>入队方法即可：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 入队</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> item 入队元素</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">addQueue</span><span class="params">(Object item)</span> &#123;</span><br><span class="line">    <span class="comment">//判断队列是已满还是只是尾指针到头</span></span><br><span class="line">    <span class="keyword">if</span> (isFull()) &#123;</span><br><span class="line">        <span class="comment">//队列已满</span></span><br><span class="line">        <span class="keyword">if</span> (front == -<span class="number">1</span>)&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;队列已满！&quot;</span>);</span><br><span class="line">        &#125;<span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//尾指针到头，触发数据迁移</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> front; i &lt; rear; i++) &#123;</span><br><span class="line">                arr[i - front] = arr[i];</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">//移动指针</span></span><br><span class="line">            rear = rear - front;</span><br><span class="line">            front = -<span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//尾指针后移</span></span><br><span class="line">    rear++;</span><br><span class="line">    arr[rear] = item;</span><br><span class="line">    <span class="keyword">return</span> rear;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>虽然问题解决了，但是频繁的移动数据会消耗性能，为此仍需要加以改进：</p>
+<p>当尾指针到头以后，如果头指针前还有空闲空间，尾指针应当能移动到头指针之前的位置，也就是队头元素出队了，空出的空间将可以放在队尾被元素入队。</p>
+<p>打个比方，就相当于原本的队列是一条直线，走到头就没了，现在要把头和尾连接到一起，让它变成<strong>循环队列</strong>。</p>
+<h2 id="三、循环队列"><a href="#三、循环队列" class="headerlink" title="三、循环队列"></a>三、循环队列</h2><img src="http://img.xiajibagao.top/20200614170726.png" style="zoom: 67%;" />
+
+<p>对于循环队列，有两个问题需要考虑，一个是下标，另一个是队空和队满的判断条件</p>
+<h3 id="1-环形队列的下标计算"><a href="#1-环形队列的下标计算" class="headerlink" title="1.环形队列的下标计算"></a>1.环形队列的下标计算</h3><p>由于队头元素出队后空间即用于队尾元素入队，所以很可能出现长度5的队列，头指针在1，尾指针在4，这个时候在按照原来的思路用rear+1去入队就会下标越界，因此需要进行取余操作，也就是<code>（rear+1）% maxSize</code>，这样获取下标的问题就解决了。</p>
+<h3 id="2-环形队列的状态判断"><a href="#2-环形队列的状态判断" class="headerlink" title="2.环形队列的状态判断"></a>2.环形队列的状态判断</h3><p>由于队列变为环形，所以front&#x3D;rear即可能是队满也可能是队空，针对这个问题有两种思路：</p>
+<p><strong>第一种</strong>是添加一个变量来记录队列中元素的数量，以区分front&#x3D;rear时是队满还队空；</p>
+<p><strong>第二种</strong>是在rear后预留一个空位，通过计算判断rear+1后是否等于front以判断队满还是队空；</p>
+<p>这里先用第二种来实现一下：</p>
+<ul>
+<li><p>队空的时候就是<code>front=rear</code></p>
+</li>
+<li><p>队满的时候就是<code>rear+1=front</code>，考虑到多次操作后指针可能跑了不止一圈，rear和front可能会大于maxSize，故也需要进行取余操作，所以正确的公式是</p>
+<p><code>(rear+1)%maxSize = front%maxSize</code></p>
+</li>
+</ul>
+<h3 id="3-代码实现"><a href="#3-代码实现" class="headerlink" title="3.代码实现"></a>3.代码实现</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Author</span>：huang</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Date</span>：2020-06-14 16:13</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@Description</span>：环形队列</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">CricleQueue</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//队列最大长度</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> maxSize;</span><br><span class="line">    <span class="comment">//存放数据的数组</span></span><br><span class="line">    <span class="keyword">private</span> Object[] arr;</span><br><span class="line">    <span class="comment">//头指针，指向队头的元素的位置</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> front;</span><br><span class="line">    <span class="comment">//尾指针，指向队尾的元素的位置</span></span><br><span class="line">    <span class="keyword">private</span> <span class="type">int</span> rear;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">CricleQueue</span><span class="params">(<span class="type">int</span> maxSize)</span> &#123;</span><br><span class="line">        <span class="comment">//由于需要在尾指针后空一位作为队满队空的区分，所以实际大小是maxSize+1</span></span><br><span class="line">        <span class="built_in">this</span>.maxSize = maxSize + <span class="number">1</span>;</span><br><span class="line">        <span class="built_in">this</span>.arr = <span class="keyword">new</span> <span class="title class_">Object</span>[maxSize + <span class="number">1</span>];</span><br><span class="line">        <span class="built_in">this</span>.front = <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">this</span>.rear = <span class="number">0</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断队列是否为空</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isEmpty</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="comment">//当头指针和尾指针相等时队列为空</span></span><br><span class="line">        <span class="keyword">return</span> rear == front;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断队列是否已满</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">isFull</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="comment">//头尾指针+1并取余时相等时队列满</span></span><br><span class="line">        <span class="keyword">return</span> (rear + <span class="number">1</span>) % maxSize == front;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 入队</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> item</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">addQueue</span><span class="params">(Object item)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (isFull())&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;队列已满！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        arr[rear] = item;</span><br><span class="line">        rear = (rear + <span class="number">1</span>) % maxSize;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 出队</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span></span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Object <span class="title function_">quitQueue</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (isEmpty())&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">RuntimeException</span>(<span class="string">&quot;队列为空！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">Object</span> <span class="variable">item</span> <span class="operator">=</span> arr[front];</span><br><span class="line">        front = (front + <span class="number">1</span>) % maxSize;</span><br><span class="line">        <span class="keyword">return</span> item;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95/" rel="tag"># 数据结构与算法</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2020/06/04/%E6%9D%82%E4%B8%83%E4%B9%B1%E5%85%AB/Typora%E4%BD%BF%E7%94%A8%E4%B8%83%E7%89%9B%E4%BA%91%E5%9B%BE%E5%BA%8A/" rel="prev" title="Typora使用七牛云图床">
+                  <i class="fa fa-angle-left"></i> Typora使用七牛云图床
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2020/06/20/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%B8%8E%E7%AE%97%E6%B3%95%EF%BC%88%E4%BA%8C%EF%BC%89%EF%BC%9A%E5%8D%95%E9%93%BE%E8%A1%A8/" rel="next" title="数据结构与算法（二）：单链表">
+                  数据结构与算法（二）：单链表 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2023</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">Createsequence</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">261k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">15:47</span>
+  </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
+</html>
